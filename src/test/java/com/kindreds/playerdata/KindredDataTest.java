@@ -1,6 +1,7 @@
 package com.kindreds.playerdata;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.RegistryByteBuf;
@@ -50,6 +51,8 @@ class KindredDataTest {
         data.unlockedNodes().add("keen_eyes");
         data.setActiveVisionLens(lens);
         data.cooldowns().put("shout_of_valor", 12345L);
+        Identifier forest = Identifier.of("minecraft", "forest");
+        data.discoveredBiomes().add(forest);
         // race is deliberately wire-only (see KindredData.race javadoc) - set it here so the
         // assertion below actually proves the persistent CODEC drops it, rather than trivially
         // passing because it was never set in the first place.
@@ -62,7 +65,36 @@ class KindredDataTest {
         assertTrue(back.hasNode("keen_eyes"));
         assertEquals(lens, back.activeVisionLens());
         assertEquals(12345L, back.cooldowns().getLong("shout_of_valor"));
+        assertEquals(Set.of(forest), back.discoveredBiomes(),
+                "discoveredBiomes must survive the persistent CODEC round trip (Task 13 anti-farm fix)");
         assertNull(back.race(), "race must not be persisted by the JSON/NBT CODEC");
+    }
+
+    @Test
+    void codecLoadsPreTask13DataMissingDiscoveredBiomesAsEmptyMutableSet() {
+        // Simulates an old save file written before "discovered_biomes" existed: the field is
+        // simply absent from the JSON. The optionalFieldOf default must still parse, and the
+        // resulting set must be a real mutable Set (not a shared/immutable default) so
+        // ActivityHooks can immediately .add() to it after load - see KindredData.CODEC's javadoc
+        // note on this exact hazard.
+        JsonObject json = new JsonObject();
+        json.add("discipline_xp", new JsonObject());
+        json.add("unlocked_nodes", new com.google.gson.JsonArray());
+        json.add("titles", new com.google.gson.JsonArray());
+        json.addProperty("corruption", 0);
+        json.add("cooldowns", new JsonObject());
+        // "discovered_biomes" intentionally omitted.
+
+        KindredData back = KindredData.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
+
+        assertTrue(back.discoveredBiomes().isEmpty());
+        assertDoesNotThrow(() -> back.discoveredBiomes().add(Identifier.of("minecraft", "plains")));
+
+        // Decoding a second object from the same field-less JSON must not share the first
+        // decode's Set instance (each decode gets its own fresh HashSet).
+        KindredData other = KindredData.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
+        assertTrue(other.discoveredBiomes().isEmpty(),
+                "a second decode from field-less JSON must not observe the first decode's mutations");
     }
 
     @Test

@@ -11,6 +11,7 @@ import com.kindreds.network.RespecC2S;
 import com.kindreds.network.SetVisionLensC2S;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.network.UnlockResultS2C;
+import com.kindreds.playerdata.DeathHandler;
 import com.kindreds.progression.ActivityHooks;
 import com.kindreds.progression.RaceScaling;
 import net.fabricmc.api.ModInitializer;
@@ -64,6 +65,7 @@ public class Kindreds implements ModInitializer {
 
         ActivityHooks.register();
         CurseContextService.register();
+        DeathHandler.register();
 
         // Push each player's server-authoritative skill data to their own client as soon as their
         // play session is ready, so client-side UI/HUD has real data from the very first tick

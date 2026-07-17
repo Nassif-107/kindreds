@@ -29,10 +29,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -249,10 +247,18 @@ public final class ActivityHooks {
             return;
         }
         Identifier biomeId = key.get().getValue();
-        if (!state.discoveredBiomes.add(biomeId)) {
-            return; // already discovered this session
+        if (race.isEmpty()) {
+            return;
         }
-        race.ifPresent(r -> award(player, r, SURVIVAL, SURVIVAL_NEW_BIOME_XP));
+        // Persisted on KindredData (Task 13) rather than the old in-memory-per-session set: an
+        // in-memory set reset on every relog/server restart, which let a relog macro re-farm the
+        // same biome's xp indefinitely. KindredData.discoveredBiomes() survives save/load, so
+        // add() only returns true the first time this player has ever discovered this biome.
+        KindredData data = KindredAttachment.get(player);
+        if (!data.discoveredBiomes().add(biomeId)) {
+            return; // already discovered (ever, not just this session)
+        }
+        award(player, race.get(), SURVIVAL, SURVIVAL_NEW_BIOME_XP);
     }
 
     private static Optional<Identifier> cachedRace(ServerPlayerEntity player, PlayerTickState state) {
@@ -297,6 +303,5 @@ public final class ActivityHooks {
         int ticksSinceBiomeCheck;
         int ticksSinceRaceCheck; // cachedRace == null forces a check on first use regardless
         Optional<Identifier> cachedRace;
-        final Set<Identifier> discoveredBiomes = new HashSet<>();
     }
 }
