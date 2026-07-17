@@ -135,7 +135,12 @@ public class SkillTreeScreen extends Screen {
 
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float deltaTicks) {
-        this.renderBackground(ctx, mouseX, mouseY, deltaTicks);
+        // Darkened backdrop. We deliberately avoid Screen#renderBackground here: since 1.21.2 it
+        // routes through applyBlur(), which throws "Can only blur once per frame" for this
+        // non-pausing screen (shouldPause()==false, so the world keeps rendering behind it) under
+        // the Sodium/Iris pipeline this pack ships. A flat darkening is blur-guard-immune and
+        // renders identically across vanilla/Sodium/Iris.
+        ctx.fill(0, 0, this.width, this.height, 0xC80A0A0A);
 
         if (tree == null) {
             renderNoRacePrompt(ctx);
