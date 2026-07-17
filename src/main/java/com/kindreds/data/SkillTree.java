@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The full skill tree for one race.
@@ -19,4 +20,9 @@ public record SkillTree(Identifier race, Identifier theme, List<SkillNode> nodes
             Identifier.CODEC.fieldOf("theme").forGetter(SkillTree::theme),
             SkillNode.CODEC.listOf().fieldOf("nodes").forGetter(SkillTree::nodes)
     ).apply(instance, SkillTree::new));
+
+    /** Finds the node with the given id within this tree, if any. */
+    public Optional<SkillNode> node(String id) {
+        return nodes.stream().filter(n -> n.id().equals(id)).findFirst();
+    }
 }
