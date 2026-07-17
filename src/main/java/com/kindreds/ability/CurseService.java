@@ -36,12 +36,13 @@ import java.util.List;
  * on a single node's context-ending/unowned transition ({@code CurseContextService}) - without any
  * curse-specific bookkeeping beyond knowing which attribute each {@code curseId} targets.
  *
- * <p><b>Config gating:</b> the brief ties curses to the server's {@code enableCurses} config
- * flag. {@code KindredsConfig} (Task 2) is not yet loaded/held anywhere at runtime as of this
- * task (no task has wired a live instance into the running server) - that wiring is out of this
- * task's scope. Once it exists, the natural place to gate is the call site in
- * {@code RequestUnlockC2S} (skip invoking {@link #apply} for {@link CurseDef} abilities when the
- * config's {@code enableCurses} is false), not here.
+ * <p><b>Config gating:</b> {@link #apply} is gated on the server's {@code enableCurses} config
+ * flag ({@link Kindreds#CONFIG}) - when disabled, the drawback is simply never
+ * applied (the unlock itself still proceeds; only the debuff effect is suppressed). {@link
+ * #remove} is intentionally <b>not</b> gated: a curse applied while {@code enableCurses} was
+ * true must still be removable (respec, etc.) after the flag is later flipped off, and removing a
+ * modifier that was never added is already a safe no-op. The contextual (nonblank {@code when})
+ * path is gated separately in {@code CurseContextService}'s per-tick check.
  */
 public final class CurseService {
     private CurseService() {
@@ -49,11 +50,16 @@ public final class CurseService {
 
     /** Applies {@code curse}'s drawback to {@code player}, tagged with {@code nodeId} - unless
      * {@code curse.when()} is nonblank, in which case this is a no-op (see the class javadoc):
-     * that curse's lifecycle belongs to {@code CurseContextService} instead. Unknown legacy curse
-     * ids are logged and otherwise ignored (fail safe, not fail loud - a bad datapack entry
-     * shouldn't break the rest of the unlock). */
+     * that curse's lifecycle belongs to {@code CurseContextService} instead. Also a no-op (fail
+     * safe, no logging - this is an intentional server setting, not bad data) when {@code
+     * enableCurses} is disabled in {@link Kindreds#CONFIG}. Unknown legacy curse ids
+     * are logged and otherwise ignored (fail safe, not fail loud - a bad datapack entry shouldn't
+     * break the rest of the unlock). */
     public static void apply(ServerPlayerEntity player, CurseDef curse, String nodeId) {
         if (!curse.when().isEmpty()) {
+            return;
+        }
+        if (!Kindreds.CONFIG.enableCurses) {
             return;
         }
         if (curse.effect().isPresent()) {

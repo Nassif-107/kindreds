@@ -19,7 +19,7 @@
       "cost": { "discipline": "kindreds:survival", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.movement_efficiency", "operation": "add_value", "amount": 1.0 }
+        { "type": "attribute", "attribute": "minecraft:movement_efficiency", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
@@ -29,7 +29,7 @@
       "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": ["elf.eyes_of_the_eldar"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
         {
           "type": "curse",
           "curse_id": "deep_dark_unease",
@@ -47,7 +47,7 @@
       "cost": { "discipline": "kindreds:archery", "points": 3 },
       "prereqs": ["elf.eyes_of_the_eldar"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_speed", "operation": "add_multiplied_base", "amount": 0.2 }
+        { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.2 }
       ]
     },
     {
@@ -57,7 +57,7 @@
       "cost": { "discipline": "kindreds:archery", "points": 4 },
       "prereqs": ["elf.marksman.elven_marksman"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_speed", "operation": "add_multiplied_base", "amount": 0.15 }
+        { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.15 }
       ]
     },
     {
@@ -96,7 +96,7 @@
       "cost": { "discipline": "kindreds:survival", "points": 3 },
       "prereqs": ["elf.warden.tireless"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.movement_speed", "operation": "add_multiplied_total", "amount": 0.1 }
+        { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_total", "amount": 0.1 }
       ]
     },
     {

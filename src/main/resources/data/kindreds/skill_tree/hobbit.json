@@ -19,7 +19,7 @@
       "cost": { "discipline": "kindreds:survival", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.safe_fall_distance", "operation": "add_value", "amount": 3.0 }
+        { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 3.0 }
       ]
     },
     {
@@ -29,13 +29,13 @@
       "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 1.0 },
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 1.0 },
         {
           "type": "curse",
           "curse_id": "small_folk",
           "severity": 1,
           "when": "",
-          "effect": { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": -0.5 }
+          "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": -0.5 }
         }
       ]
     },
@@ -57,7 +57,7 @@
       "cost": { "discipline": "kindreds:stealth", "points": 4 },
       "prereqs": ["hobbit.burglar.unassuming"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.0 }
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
@@ -108,7 +108,7 @@
       "prereqs": ["hobbit.homebody.second_breakfast"],
       "deed_advancement": "kindreds:deed/hobbit_ringbearers_resolve",
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 4.0 },
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
         { "type": "status_effect", "effect": "minecraft:luck", "amplifier": 0, "duration_ticks": -1 }
       ]
     }

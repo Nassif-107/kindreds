@@ -19,8 +19,8 @@
       "cost": { "discipline": "kindreds:combat", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 1.0 },
-        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.05 }
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 1.0 },
+        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.05 }
       ]
     },
     {
@@ -30,13 +30,13 @@
       "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 1.0 },
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 1.0 },
         {
           "type": "curse",
           "curse_id": "mortal_frailty",
           "severity": 1,
           "when": "",
-          "effect": { "type": "attribute", "attribute": "minecraft:generic.armor_toughness", "operation": "add_value", "amount": -0.5 }
+          "effect": { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": -0.5 }
         }
       ]
     },
@@ -48,8 +48,8 @@
       "cost": { "discipline": "kindreds:combat", "points": 3 },
       "prereqs": ["human.steady_the_line"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.1 },
-        { "type": "attribute", "attribute": "minecraft:generic.armor_toughness", "operation": "add_value", "amount": 1.0 }
+        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 },
+        { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
@@ -89,8 +89,8 @@
       "cost": { "discipline": "kindreds:survival", "points": 3 },
       "prereqs": ["human.steady_the_line"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.safe_fall_distance", "operation": "add_value", "amount": 4.0 },
-        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.05 }
+        { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 4.0 },
+        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.05 }
       ]
     },
     {
@@ -130,7 +130,7 @@
       "cost": { "discipline": "kindreds:archery", "points": 3 },
       "prereqs": ["human.rangers_craft"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_speed", "operation": "add_multiplied_base", "amount": 0.15 }
+        { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.15 }
       ]
     },
     {

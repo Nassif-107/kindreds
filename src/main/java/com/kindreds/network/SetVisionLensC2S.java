@@ -31,6 +31,13 @@ import java.util.Optional;
  * the only real enforcement point for {@code activeVisionLens}: a modified/desynced client could
  * otherwise claim any lens is active with no server-side consequence, since the field itself is just
  * cosmetic client render state.
+ *
+ * <p><b>Config gating:</b> also the enforcement point for the server's {@code enableVision} config
+ * flag ({@link Kindreds#CONFIG}) - a nonempty request is ignored while it's disabled, so a disabled
+ * server never grants an active lens no matter what the client optimistically set locally; the next
+ * {@code SyncKindredDataS2C} corrects the client back to {@code null}. Turning a lens off (empty
+ * {@code lensId}) is never gated, so a lens active from before the flag was disabled can still be
+ * cleared.
  */
 public record SetVisionLensC2S(Optional<Identifier> lensId) implements CustomPayload {
     public static final CustomPayload.Id<SetVisionLensC2S> ID =
@@ -62,6 +69,13 @@ public record SetVisionLensC2S(Optional<Identifier> lensId) implements CustomPay
         KindredData data = KindredAttachment.get(player);
         if (lensId.isEmpty()) {
             data.setActiveVisionLens(null);
+            return;
+        }
+
+        if (!Kindreds.CONFIG.enableVision) {
+            Kindreds.LOGGER.warn(
+                    "[Kindreds] player {} requested vision lens '{}' but vision is disabled server-side; ignoring",
+                    player.getGameProfile().getName(), lensId.get());
             return;
         }
 

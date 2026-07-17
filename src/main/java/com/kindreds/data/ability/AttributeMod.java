@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 /**
  * Flat or percentage modifier applied to a vanilla entity attribute.
  *
- * @param attribute the attribute registry id (e.g. {@code minecraft:generic.max_health})
+ * @param attribute the attribute registry id (e.g. {@code minecraft:max_health})
  * @param operation attribute modifier operation name (e.g. {@code add_value},
  *                  {@code add_multiplied_base}, {@code add_multiplied_total})
  * @param amount    modifier magnitude

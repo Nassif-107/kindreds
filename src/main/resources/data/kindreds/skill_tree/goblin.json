@@ -19,7 +19,7 @@
       "cost": { "discipline": "kindreds:smithing", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.15 }
+        { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.15 }
       ]
     },
     {
@@ -29,7 +29,7 @@
       "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_speed", "operation": "add_multiplied_base", "amount": 0.05 },
+        { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.05 },
         {
           "type": "curse",
           "curse_id": "dread_of_the_sun",
@@ -94,7 +94,7 @@
       "cost": { "discipline": "kindreds:stealth", "points": 3 },
       "prereqs": ["goblin.tinkers_hands"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 0.5 }
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 0.5 }
       ]
     },
     {
@@ -122,7 +122,7 @@
       "prereqs": ["goblin.swarm.screech"],
       "deed_advancement": "kindreds:deed/goblin_instruments_of_torture",
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 2.0 }
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 2.0 }
       ]
     }
   ]

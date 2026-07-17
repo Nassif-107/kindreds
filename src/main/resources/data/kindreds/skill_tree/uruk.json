@@ -19,8 +19,8 @@
       "cost": { "discipline": "kindreds:combat", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.1 },
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.0 }
+        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 },
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
@@ -30,13 +30,13 @@
       "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 0.5 },
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 0.5 },
         {
           "type": "curse",
           "curse_id": "forged_not_born",
           "severity": 1,
           "when": "",
-          "effect": { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": -1.0 }
+          "effect": { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -1.0 }
         }
       ]
     },
@@ -76,7 +76,7 @@
       "prereqs": ["uruk.relentless.forced_march"],
       "deed_advancement": "kindreds:deed/uruk_sun_defiance",
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 3.0 },
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 3.0 },
         { "type": "status_effect", "effect": "minecraft:fire_resistance", "amplifier": 0, "duration_ticks": -1 }
       ]
     },
@@ -88,7 +88,7 @@
       "cost": { "discipline": "kindreds:combat", "points": 3 },
       "prereqs": ["uruk.heavy_hand"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.armor_toughness", "operation": "add_value", "amount": 1.0 }
+        { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
@@ -98,7 +98,7 @@
       "cost": { "discipline": "kindreds:combat", "points": 4 },
       "prereqs": ["uruk.discipline.isengard_drilling"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 2.0 }
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 }
       ]
     },
     {
@@ -109,8 +109,8 @@
       "prereqs": ["uruk.discipline.breeding_pits_gift"],
       "deed_advancement": "kindreds:deed/uruk_fighting_uruk_hai",
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 2.0 },
-        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.15 }
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.15 }
       ]
     }
   ]

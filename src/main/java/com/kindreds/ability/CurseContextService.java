@@ -150,7 +150,12 @@ public final class CurseContextService {
                 boolean wasActive = active.contains(node.id());
                 // Short-circuits before matchesContext() when unowned, same as the old early-continue
                 // did - no spurious "unknown when" log noise for nodes the player doesn't even have.
-                boolean contextMatches = owned && matchesContext(curse.when(), player);
+                // Also short-circuits when enableCurses is disabled server-side: treating that as
+                // "never in context" (rather than skipping the tick entirely) routes an already-
+                // active contextual curse through decideTransition's REMOVE branch below, so
+                // flipping the config off doesn't strand a persistent modifier that was applied
+                // while curses were still enabled.
+                boolean contextMatches = owned && Kindreds.CONFIG.enableCurses && matchesContext(curse.when(), player);
                 switch (decideTransition(owned, contextMatches, wasActive)) {
                     case APPLY -> {
                         applyContextualCurse(player, curse, node.id());

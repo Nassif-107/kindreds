@@ -19,8 +19,8 @@
       "cost": { "discipline": "kindreds:combat", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 2.0 },
-        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.05 }
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.05 }
       ]
     },
     {
@@ -30,7 +30,7 @@
       "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.1 },
+        { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.1 },
         {
           "type": "curse",
           "curse_id": "dragon_sickness",
@@ -48,7 +48,7 @@
       "cost": { "discipline": "kindreds:mining", "points": 3 },
       "prereqs": ["dwarf.aules_inheritance"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.2 }
+        { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.2 }
       ]
     },
     {
@@ -97,7 +97,7 @@
       "cost": { "discipline": "kindreds:smithing", "points": 4 },
       "prereqs": ["dwarf.forgemaster.fire_blood"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.0 }
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
@@ -126,7 +126,7 @@
       "cost": { "discipline": "kindreds:combat", "points": 3 },
       "prereqs": ["dwarf.stone_hard"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.5 }
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.5 }
       ]
     },
     {

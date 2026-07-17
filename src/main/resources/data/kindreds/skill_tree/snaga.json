@@ -19,8 +19,8 @@
       "cost": { "discipline": "kindreds:mining", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:player.block_interaction_range", "operation": "add_value", "amount": 0.5 },
-        { "type": "attribute", "attribute": "minecraft:player.entity_interaction_range", "operation": "add_value", "amount": 0.5 }
+        { "type": "attribute", "attribute": "minecraft:block_interaction_range", "operation": "add_value", "amount": 0.5 },
+        { "type": "attribute", "attribute": "minecraft:entity_interaction_range", "operation": "add_value", "amount": 0.5 }
       ]
     },
     {
@@ -30,7 +30,7 @@
       "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.movement_speed", "operation": "add_multiplied_total", "amount": 0.02 },
+        { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_total", "amount": 0.02 },
         {
           "type": "curse",
           "curse_id": "dread_of_the_sun",
@@ -48,7 +48,7 @@
       "cost": { "discipline": "kindreds:combat", "points": 3 },
       "prereqs": ["snaga.reach_of_the_overlooked"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 1.0 }
+        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
@@ -58,7 +58,7 @@
       "cost": { "discipline": "kindreds:combat", "points": 4 },
       "prereqs": ["snaga.underdog.kicked_awake"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.5 }
+        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.5 }
       ]
     },
     {
@@ -99,7 +99,7 @@
       "cost": { "discipline": "kindreds:mining", "points": 3 },
       "prereqs": ["snaga.quiet.quiet_feet"],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.1 }
+        { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.1 }
       ]
     },
     {
