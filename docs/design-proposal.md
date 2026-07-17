@@ -83,14 +83,35 @@ A hand-built, **pannable/zoomable node canvas** (drag-pan, scroll-zoom): clear l
 
 ---
 
-## 8. Phased roadmap (each phase is fun & playable on its own)
+## 8. Tree structure: one deep tree per race, with vocation branches
 
-- **Phase 1 — The Foundation.** Skill-tree engine + data model, activity-based point earning, the tree-screen UX, and **2 complete race trees** (proposed: **Elf** + **Dwarf** — one passive/ambient, one active/utility) with real buffs *and* debuffs, plus **1 signature vision each** (Elf Keen-sight, Dwarf Stone-sense). Ship this and it's already great.
-- **Phase 2 — All races + full Vision system.** Remaining 6 races' trees; the one-lens vision framework; place/time power.
-- **Phase 3 — The epic layers.** Shadow/Corruption, Deeds & Legend/titles/reputation, the Fellowship bonus, Song magic.
-- **Phase 4 — The world fights back.** Petrifying trolls, Nazgûl dread, bosses, The Darkening, difficulty scaling.
+Each race has **one tree** = a **shared trunk** (racial baseline) **+ 2–3 vocation branches** (specializations). The **point-ceiling forces you down one or two branches**, so within a single race you get *distinct builds* (Elf *Marksman* vs *Warden* vs *Loremaster*; Dwarf *Delver* vs *Forgemaster* vs *Ironbreaker*; etc.). Trees are **deep** (many nodes across branches, curses, exclusive choices, cross-training, deed-capstones) so it's **replayable — not a one-night thing** — with meaningful **combinations** across branches, race, vision lens, place/time, and the Fellowship. Trees grow across phases (P1 = trunk + first tiers; later phases deepen branches + add capstones).
 
-Each phase → its own spec → plan → build → play-test.
+## 9. The full systems (everything folded in, tagged by phase)
+
+**Lore-deep:**
+- **Racial crafting & materials** — tree-gated exclusive recipes/gear (Elven bows/cloaks/rope/lembas, Dwarven mithril & khazad-steel, Uruk war-gear); ties smithing/mining skills to real unlocks. *(P2–P3)*
+- **⭐ Titles → NPC diplomacy** — earning **"Elf-friend"** makes Lothlórien NPCs non-hostile & willing to trade/aid, hooking directly into the **base mod's faction-diplomacy** (and finally giving it the reputation layer it lacks). Your legend reshapes the living world. *(P3)*
+- **Herblore & healing** — athelas/kingsfoil gathering, Elven medicine, Ent-draughts, healing actives. *(P2–P3)*
+- **Racial mounts & beasts** — Rohirrim horse-mastery, warg-riding orcs (via *Of Beasts and Wild Things*), Elven animal-friendship. *(P3)*
+- **Canonical time/place power-spikes** — Durin's Day (Dwarves), star/moon phases (Elves), the Dawnless Day (Orcs); *when & where* you fight matters. *(P2)*
+- **Living lore-codex** — fills as you explore/discover, feeds the **Lore** discipline, teaches the world. *(P2–P3)*
+- **Shadow/Corruption**, **Deeds & Legend/titles**, **Fellowship bonus**, **Song & horn magic**, **tougher-world enemies** (petrifying trolls, Nazgûl Black Breath, the Balrog, The Darkening). *(P3–P4)*
+
+**General Minecraft quality (throughout):**
+- **Deep pack integration** — actives tuned for **Better Combat**/Combat Roll, **Jade** tooltips, **REI** recipe support, **Xaero** waypoints auto-dropped for deeds/discoveries.
+- **Config presets** — Casual / Normal / Legendary, plus every knob individually tunable (server-authoritative, MP).
+- **Juice** — satisfying unlock & ability sound + VFX, a themed **advancement tab** for deeds, ambient race music in the UI.
+- **Fully data-driven & datapack-extensible** with an addon API, so content is *endless* and community-moddable.
+
+## 10. Phased roadmap (each phase is fun & playable on its own)
+
+- **Phase 1 — The Foundation.** Data-driven engine, activity progression, the lore-themed tree UX, config/MP/death, the Vision framework + 2 signature lenses, and a **focused first tree (trunk + first branch tiers) for ALL 8 races** — real buffs, real curses, tiered deeds. Playable & great on day one.
+- **Phase 2 — Depth & senses.** Deepen every branch; full Vision set + place/time power; racial crafting begins; herblore; the lore-codex; canonical time-events.
+- **Phase 3 — Legend & the living world.** Shadow/Corruption; Deeds & Legend **titles that reshape NPC diplomacy**; Fellowship bonus; mounts/beasts; song & horn magic; cross-training.
+- **Phase 4 — The world fights back.** Petrifying trolls, Nazgûl dread, bosses (Balrog/Shelob/Watcher), The Darkening, difficulty scaling; final balance & juice pass.
+
+Each phase → its own spec → plan → build → play-test. **Phase 1's architecture anticipates all later systems** (title/diplomacy hooks, crafting-unlock flags, codex triggers) so nothing later requires a rewrite.
 
 ---
 

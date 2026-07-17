@@ -82,6 +82,8 @@ com.kindreds
 
 **Data flow:** activity (server event) → `ProgressionService` awards discipline XP → points. Player opens tree (keybind → `OpenTreeC2S`) → server sends `SyncKindredDataS2C` → `SkillTreeScreen` renders. Player clicks unlock → `RequestUnlockC2S` → `UnlockService` validates (points/prereqs/exclusivity/deed) → applies via `AbilityApplier` → `SyncKindredDataS2C` back. Actives: keybind → `ActivateAbilityC2S` → `ActiveAbilityService`. Vision: keybind → `SetVisionLensC2S` (server records) + client `VisionManager` renders.
 
+**Forward-compatibility (so no later phase needs a rewrite):** the data model reserves clean seams for the P2–P4 systems — `AbilityDef` is a **sealed/extensible** type (new primitives like `unlock_recipe`, `grant_title`, `mount_affinity`, `codex_entry` slot in without touching consumers); `KindredData` reserves `titles[]`, `corruption`, and `codexEntries[]` fields (unused in P1); the effect `when` context (place/time) is parsed now, used more later; and `UnlockService`/`AbilityApplier` dispatch on ability type via the registry so adding a type is additive. **Title→diplomacy** will hook the base mod's faction state through the same `RaceAccess` bridge. All P1 code is written against these interfaces, not around them.
+
 ---
 
 ## 4. Data model & JSON schemas (data-driven)
@@ -216,35 +218,62 @@ On a server, the server's config governs everyone; single-player uses the same f
 
 ---
 
-## 12. Example trees (the authoring pattern) — fully specced
+## 11a. Tree structure & deed tiers (applies to every race)
 
-### 12a. ELF — first tree (theme: starlit mallorn; identity: ambient ranger-survivor)
-*Discipline lean: Archery ×1.5, Survival ×1.2, Mining ×0.6. Signature vision: Keen-sight.*
+**One tree per race = shared trunk + 2–3 vocation branches.** The trunk holds the racial baseline (incl. the signature vision); each branch is a specialization. The **point-ceiling forces you down one or two branches**, so a single race yields distinct builds and real cross-branch **combinations** → deep, replayable. Phase 1 ships the **trunk + tier 1–2 of each branch**; later phases extend branches to tier 4–5 and add **branch capstones**, curses, and cross-training.
 
-| Node | Tier | Discipline cost | Prereq | Effect (buff) | Tradeoff |
+**Deed tiers (effort ∝ reward):**
+- **T1 (early nodes):** no deed — points + having done the activity.
+- **T2 (strong mid nodes):** a *moderate* deed (e.g. mine 64 mithril; slay 50 orcs at night; land 200 bow hits).
+- **T3 (capstones):** a *signature lore feat* — epic & memorable but achievable in a normal playthrough (not a grind, not astronomical).
+
+## 12. Example trees (the authoring pattern) — fully specced, branch-structured
+
+### 12a. ELF — theme: starlit mallorn on parchment · identity: ambient ranger-survivor
+*Discipline lean: Archery ×1.5, Survival ×1.2, Stealth ×1.1, Mining ×0.6. Signature vision: Keen-sight.*
+**Branches:** **Marksman** (archery) · **Warden** (nature/stealth/survival) · **Loremaster** (song/heal/lore — mostly P2+).
+
+**Trunk**
+| Node | Tier | Cost | Prereq | Effect | Tradeoff |
 |---|---|---|---|---|---|
-| **Eyes of the Eldar** | 1 | Archery 1 | — | Unlock **Keen-sight** vision (friend/foe outline + starlight gamma) | — |
-| **Light Step** | 1 | Survival 1 | — | Powdered-snow + freeze immunity; no slow on snow/ice (attr) | — |
-| **Tireless** | 2 | Survival 2 | Light Step | No sprint-hunger drain; immune to Mining Fatigue aboveground | — |
-| **Elven Marksman** | 2 | Archery 3 | Eyes of the Eldar | Bows draw ~20% faster; arrows fly truer/farther (attr + active-ish) | — |
-| **Deep-Dark Unease** *(curse)* | 2 | Lore 1 | Eyes of the Eldar | +2 max health (1 heart) | In deep dark (low light, not under sky): `delvers_fear_strength` debuff builds (uses base mod's dormant attribute) |
-| **Woodland Grace** | 3 | Survival 3 | Tireless | +move speed & silent movement in forest biomes (contextual) | Weaker (no bonus) in caves/wastes |
-| **Starlit Aim** *(capstone, deed-gated)* | 3 | Archery 5 | Elven Marksman + **deed: "Slay 100 foes by bow"** | Active: a charged shot with bonus damage + brief Glowing on the target | Long cooldown |
+| Eyes of the Eldar | 1 | Archery 1 | — | Unlock **Keen-sight** vision | — |
+| Light Step | 1 | Survival 1 | — | Powdered-snow + freeze immunity; no slow on snow/ice | — |
+| Deep-Dark Unease *(curse)* | 1 | Lore 1 | Eyes of the Eldar | +2 max health | In deep dark: `delvers_fear_strength` builds |
 
-### 12b. DWARF — first tree (theme: carved rune-stone, forge-blue; identity: deep-delver tank-smith)
+**Branch — Marksman**
+| Elven Marksman | 2 | Archery 3 | Eyes of the Eldar | Bows draw ~20% faster; arrows fly farther/truer | — |
+| Unwearied Draw | 2 | Archery 4 | Elven Marksman | No bow-draw slowdown; hold at full draw indefinitely | — |
+| **Starlit Aim** *(capstone T3)* | 3 | Archery 6 | Unwearied Draw + **deed: land a killing blow from ≥60 blocks** | Active: charged armor-piercing shot + brief Glowing mark on target | Long cooldown |
+
+**Branch — Warden**
+| Tireless | 2 | Survival 2 | Light Step | No sprint-hunger drain; immune to Mining Fatigue aboveground | — |
+| Woodland Grace | 2 | Survival 3 | Tireless | +speed & silent movement in forest biomes | No bonus in caves/wastes |
+| **Song of Rest** *(capstone T3)* | 3 | Survival 5 | Woodland Grace + **deed: survive 3 in-game nights in Mirkwood/deep forest** | Active AoE: Regen + Resistance to nearby allies (Elvish song) | Channel; interrupt-able |
+
+### 12b. DWARF — theme: carved rune-stone, forge-blue · identity: deep-delver tank-smith
 *Discipline lean: Mining ×1.6, Smithing ×1.4, Combat ×1.1, Archery ×0.7. Signature vision: Stone-sense.*
+**Branches:** **Delver** (mining/stone) · **Forgemaster** (smithing/gear) · **Ironbreaker** (tank/combat).
 
-| Node | Tier | Discipline cost | Prereq | Effect (buff) | Tradeoff |
-|---|---|---|---|---|---|
-| **Aulë's Inheritance** | 1 | Mining 1 | — | Unlock **Stone-sense** vision (ore/cavity outlines through rock + underground brightness) | — |
-| **Stone-hard** | 1 | Combat 1 | — | +2 max health (1 heart) + minor knockback resistance (attr) | — |
-| **Deep-Delver** | 2 | Mining 3 | Aulë's Inheritance | No Mining Fatigue; mining speed rises the deeper you are (contextual attr) | — |
-| **Fire-blood** | 2 | Survival 2 | Stone-hard | Fire/lava resistance tier (reduced fire damage + shorter burn) | — |
-| **Dragon-sickness** *(curse)* | 2 | Lore 1 | — | +mining_efficiency (faster mining) | Carrying large amounts of gold/gems → Nausea + increased mob aggro until spent |
-| **Forgemaster** | 3 | Smithing 4 | Deep-Delver | Better tool/armor repair & durability; unlock a dwarf-only smithing recipe (P1 stub) | — |
-| **Unbroken Will** *(capstone, deed-gated)* | 3 | Combat 5 | Stone-hard + **deed: "Survive a fight below Y-0 against N foes"** | Active war-fury: temporary knockback immunity + damage resistance while standing ground | Rooted (reduced move speed) during the effect |
+**Trunk**
+| Aulë's Inheritance | 1 | Mining 1 | — | Unlock **Stone-sense** vision | — |
+| Stone-hard | 1 | Combat 1 | — | +2 max health + minor knockback resistance | — |
+| Dragon-sickness *(curse)* | 1 | Lore 1 | — | +mining_efficiency | Carrying much gold/gems → Nausea + extra mob aggro until spent |
 
-*(The other 6 races — Gondor, Rohan, Dale, Hobbit, Orc/Goblin/Snaga, Uruk — get an equivalent ~3-tier first tree authored as JSON during the build, following this exact pattern and the branch sketches in `research/lore/{elves-and-men,dwarves-and-hobbits,evil-races}.md`. Each ships: a signature vision (Orc Dawnless-sight, Hobbit Unseen, etc.), a lore buff set, at least one curse/tradeoff, and a deed-gated capstone. Rohan's tree is mounted-conditional; Orc/Goblin/Snaga carry the Dread-of-the-Sun contextual debuff; Uruk gets Sun-Defiance.)*
+**Branch — Delver**
+| Deep-Delver | 2 | Mining 3 | Aulë's Inheritance | No Mining Fatigue; mining speed rises with depth | — |
+| Cavern-lung | 2 | Survival 2 | Deep-Delver | Slower suffocation/less cave-hazard damage; night-vision deep underground | — |
+| **Heart of the Mountain** *(capstone T3)* | 3 | Mining 6 | Cavern-lung + **deed: mine 64 mithril / reach bedrock in the Mithril Cave** | Stone-sense reveals ore across a large radius + brief Haste II | — |
+
+**Branch — Forgemaster**
+| Fire-blood | 2 | Survival 2 | Stone-hard | Fire/lava resistance tier (less fire damage + shorter burn) | — |
+| Forgemaster | 2 | Smithing 4 | Fire-blood | Better repair/durability; unlock a dwarf-only smithing recipe | — |
+| **Khazâd Craft** *(capstone T3)* | 3 | Smithing 6 | Forgemaster + **deed: forge a full mithril/khazad-steel set** | Craft an exclusive masterwork tool/armor; +bonus when using dwarf-forged gear | — |
+
+**Branch — Ironbreaker**
+| Wrath of Durin | 2 | Combat 3 | Stone-hard | +melee damage vs orc-kind & giants (contextual) | — |
+| **Unbroken Will** *(capstone T3)* | 3 | Combat 6 | Wrath of Durin + **deed: defeat a great terror of the deep (troll/boss) below Y-0** | Active war-fury: knockback immunity + damage resistance while standing ground | Rooted (reduced move speed) during it |
+
+*(The other 6 races — Gondor, Rohan, Dale, Hobbit, Orc/Goblin/Snaga, Uruk — get an equivalent branch-structured tree authored as JSON during the build, following this pattern + the branch sketches in `research/lore/{elves-and-men,dwarves-and-hobbits,evil-races}.md`. Each ships: a trunk with its **signature vision** (Orc Dawnless-sight, Hobbit Unseen, Gondor Tracking, etc.), a lore buff set, ≥1 curse/tradeoff, 2–3 vocation branches, and tiered deed-capstones. Rohan's tree is mounted-conditional; Orc/Goblin/Snaga carry the contextual **Dread-of-the-Sun** debuff; Uruk gets **Sun-Defiance**.)*
 
 ---
 
