@@ -14,8 +14,8 @@
       "abilities": [
         {
           "type": "vision_unlock",
-          "vision_id": "ore_highlight",
-          "radius": 16
+          "vision_id": "stone_sense",
+          "radius": 24
         }
       ]
     }

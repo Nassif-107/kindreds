@@ -5,6 +5,7 @@ import com.kindreds.config.KindredsConfig;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.network.ActivateAbilityC2S;
 import com.kindreds.network.RequestUnlockC2S;
+import com.kindreds.network.SetVisionLensC2S;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.network.UnlockResultS2C;
 import com.kindreds.progression.ActivityHooks;
@@ -34,6 +35,7 @@ public class Kindreds implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(UnlockResultS2C.ID, UnlockResultS2C.CODEC);
         RequestUnlockC2S.registerServerHandler();
         ActivateAbilityC2S.registerServerHandler();
+        SetVisionLensC2S.registerServerHandler();
 
         KindredsCommand.register();
 

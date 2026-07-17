@@ -3,6 +3,10 @@ package com.kindreds;
 import com.kindreds.network.ActivateAbilityC2S;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.playerdata.ClientKindredData;
+import com.kindreds.vision.VisionManager;
+import com.kindreds.vision.lens.KeenSightLens;
+import com.kindreds.vision.lens.StoneSenseLens;
+import com.kindreds.vision.overlay.HudTintOverlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -27,6 +31,18 @@ public class KindredsClient implements ClientModInitializer {
             GLFW.GLFW_KEY_UNKNOWN,
             "key.category.kindreds"));
 
+    /**
+     * "Cycle vision" keybind: advances {@link VisionManager}'s active lens among {@code [off,
+     * ...unlocked lenses]} (see {@link VisionManager#cycle}). Default-unbound for the same reason
+     * as {@link #USE_ABILITY_KEY}: with no dedicated vision-select UI yet, auto-binding this to an
+     * unused key could swap a player's vision lens without them ever having opted in.
+     */
+    private static final KeyBinding CYCLE_VISION_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.kindreds.cycle_vision",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            "key.category.kindreds"));
+
     @Override
     public void onInitializeClient() {
         // Store the latest server-authoritative skill data for client-side UI/HUD to read; hop
@@ -46,7 +62,18 @@ public class KindredsClient implements ClientModInitializer {
                     ClientPlayNetworking.send(new ActivateAbilityC2S(""));
                 }
             }
+            while (CYCLE_VISION_KEY.wasPressed()) {
+                VisionManager.cycle(client);
+            }
         });
+
+        // Vision framework: world-render outline lenses + Iris-safe HUD tint. Each lens registers
+        // its own WorldRenderEvents.AFTER_TRANSLUCENT hook and gates itself on VisionManager's
+        // active-lens/Iris state, so registering both here unconditionally is safe - at most one
+        // renders anything on a given frame.
+        StoneSenseLens.register();
+        KeenSightLens.register();
+        HudTintOverlay.register();
 
         Kindreds.LOGGER.info("[Kindreds] client initialized");
     }

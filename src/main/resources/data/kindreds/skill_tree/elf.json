@@ -17,6 +17,11 @@
           "attribute": "minecraft:generic.max_health",
           "operation": "add_value",
           "amount": 1.0
+        },
+        {
+          "type": "vision_unlock",
+          "vision_id": "keen_sight",
+          "radius": 32
         }
       ]
     }
