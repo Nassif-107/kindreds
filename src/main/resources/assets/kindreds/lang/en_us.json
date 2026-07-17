@@ -2,5 +2,11 @@
   "kindreds.name": "Kindreds of Middle-earth",
   "key.category.kindreds": "Kindreds of Middle-earth",
   "key.kindreds.use_ability": "Use ability",
-  "key.kindreds.cycle_vision": "Cycle vision"
+  "key.kindreds.cycle_vision": "Cycle vision",
+  "key.kindreds.open_tree": "Open skill tree",
+
+  "kindreds.node.keen_eyes.name": "Keen Eyes",
+  "kindreds.node.keen_eyes.flavor": "The Eldar see further and truer than any other people under the stars.",
+  "kindreds.node.stonesense.name": "Stonesense",
+  "kindreds.node.stonesense.flavor": "A Dwarf never truly loses his way in the deep places of the world."
 }
