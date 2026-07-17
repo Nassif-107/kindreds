@@ -1,0 +1,28 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "in_deep_forest": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": { "biomes": "#minecraft:is_forest" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:oak_sapling" },
+    "title": { "text": "Song of Rest" },
+    "description": { "text": "Dwell in the deep forest, as the Elves of old." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["in_deep_forest"]]
+}

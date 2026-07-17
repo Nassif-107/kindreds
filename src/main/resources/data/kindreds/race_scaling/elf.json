@@ -1,0 +1,9 @@
+{
+  "race": "middle-earth:elf",
+  "multipliers": {
+    "kindreds:archery": 1.5,
+    "kindreds:survival": 1.2,
+    "kindreds:stealth": 1.1,
+    "kindreds:mining": 0.6
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "race": "middle-earth:snaga",
+  "theme": "kindreds:snaga",
+  "nodes": [
+    {
+      "id": "snaga.overlooked_eye",
+      "tier": 1,
+      "pos": [-60, 0],
+      "cost": { "discipline": "kindreds:stealth", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "vision_unlock", "vision_id": "scavengers_eye", "radius": 20 }
+      ]
+    },
+    {
+      "id": "snaga.reach_of_the_overlooked",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": { "discipline": "kindreds:mining", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:player.block_interaction_range", "operation": "add_value", "amount": 0.5 },
+        { "type": "attribute", "attribute": "minecraft:player.entity_interaction_range", "operation": "add_value", "amount": 0.5 }
+      ]
+    },
+    {
+      "id": "snaga.dread_of_the_sun",
+      "tier": 1,
+      "pos": [60, 0],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.movement_speed", "operation": "add_multiplied_total", "amount": 0.02 },
+        {
+          "type": "curse",
+          "curse_id": "dread_of_the_sun",
+          "severity": 1,
+          "when": "daylight",
+          "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": 120 }
+        }
+      ]
+    },
+
+    {
+      "id": "snaga.underdog.kicked_awake",
+      "tier": 2,
+      "pos": [-60, 30],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["snaga.reach_of_the_overlooked"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "snaga.underdog.underdog",
+      "tier": 2,
+      "pos": [-60, 60],
+      "cost": { "discipline": "kindreds:combat", "points": 4 },
+      "prereqs": ["snaga.underdog.kicked_awake"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.5 }
+      ]
+    },
+    {
+      "id": "snaga.underdog.whatever_it_takes",
+      "tier": 3,
+      "pos": [-60, 90],
+      "cost": { "discipline": "kindreds:combat", "points": 6 },
+      "prereqs": ["snaga.underdog.underdog"],
+      "deed_advancement": "kindreds:deed/snaga_whatever_it_takes",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:whatever_it_takes",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 100 },
+            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 100 },
+            { "effect": "minecraft:resistance", "amplifier": 1, "duration_ticks": 100 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "snaga.quiet.quiet_feet",
+      "tier": 2,
+      "pos": [60, 30],
+      "cost": { "discipline": "kindreds:stealth", "points": 3 },
+      "prereqs": ["snaga.overlooked_eye"],
+      "abilities": [
+        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -1.5 }
+      ]
+    },
+    {
+      "id": "snaga.quiet.waste_not",
+      "tier": 2,
+      "pos": [60, 60],
+      "cost": { "discipline": "kindreds:mining", "points": 3 },
+      "prereqs": ["snaga.quiet.quiet_feet"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.1 }
+      ]
+    },
+    {
+      "id": "snaga.quiet.slit_and_run",
+      "tier": 3,
+      "pos": [60, 90],
+      "cost": { "discipline": "kindreds:stealth", "points": 6 },
+      "prereqs": ["snaga.quiet.waste_not"],
+      "deed_advancement": "kindreds:deed/snaga_slit_and_run",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:slit_and_run",
+          "cooldown_ticks": 1200,
+          "effects": [
+            { "effect": "minecraft:invisibility", "amplifier": 0, "duration_ticks": 60 },
+            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 60 }
+          ]
+        }
+      ]
+    }
+  ]
+}

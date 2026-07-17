@@ -3,19 +3,148 @@
   "theme": "kindreds:dwarf",
   "nodes": [
     {
-      "id": "stonesense",
+      "id": "dwarf.aules_inheritance",
       "tier": 1,
-      "pos": [0, 0],
-      "cost": {
-        "discipline": "kindreds:mining",
-        "points": 1
-      },
+      "pos": [-80, 0],
+      "cost": { "discipline": "kindreds:mining", "points": 1 },
       "prereqs": [],
       "abilities": [
+        { "type": "vision_unlock", "vision_id": "stone_sense", "radius": 24 }
+      ]
+    },
+    {
+      "id": "dwarf.stone_hard",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": { "discipline": "kindreds:combat", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.05 }
+      ]
+    },
+    {
+      "id": "dwarf.dragon_sickness",
+      "tier": 1,
+      "pos": [90, 0],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.1 },
         {
-          "type": "vision_unlock",
-          "vision_id": "stone_sense",
-          "radius": 24
+          "type": "curse",
+          "curse_id": "dragon_sickness",
+          "severity": 1,
+          "when": "carrying_treasure",
+          "effect": { "type": "status_effect", "effect": "minecraft:nausea", "amplifier": 0, "duration_ticks": 100 }
+        }
+      ]
+    },
+
+    {
+      "id": "dwarf.delver.deep_delver",
+      "tier": 2,
+      "pos": [-80, 30],
+      "cost": { "discipline": "kindreds:mining", "points": 3 },
+      "prereqs": ["dwarf.aules_inheritance"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.2 }
+      ]
+    },
+    {
+      "id": "dwarf.delver.cavern_lung",
+      "tier": 2,
+      "pos": [-80, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 2 },
+      "prereqs": ["dwarf.delver.deep_delver"],
+      "abilities": [
+        { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+    {
+      "id": "dwarf.delver.heart_of_the_mountain",
+      "tier": 3,
+      "pos": [-80, 90],
+      "cost": { "discipline": "kindreds:mining", "points": 6 },
+      "prereqs": ["dwarf.delver.cavern_lung"],
+      "deed_advancement": "kindreds:deed/dwarf_heart_of_the_mountain",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:heart_of_the_mountain",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:haste", "amplifier": 1, "duration_ticks": 200 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "dwarf.forgemaster.fire_blood",
+      "tier": 2,
+      "pos": [-20, 30],
+      "cost": { "discipline": "kindreds:survival", "points": 2 },
+      "prereqs": ["dwarf.stone_hard"],
+      "abilities": [
+        { "type": "status_effect", "effect": "minecraft:fire_resistance", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+    {
+      "id": "dwarf.forgemaster.master_smithing",
+      "tier": 2,
+      "pos": [-20, 60],
+      "cost": { "discipline": "kindreds:smithing", "points": 4 },
+      "prereqs": ["dwarf.forgemaster.fire_blood"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "dwarf.forgemaster.khazad_craft",
+      "tier": 3,
+      "pos": [-20, 90],
+      "cost": { "discipline": "kindreds:smithing", "points": 6 },
+      "prereqs": ["dwarf.forgemaster.master_smithing"],
+      "deed_advancement": "kindreds:deed/dwarf_khazad_craft",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:khazad_craft",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:resistance", "amplifier": 1, "duration_ticks": 200 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "dwarf.ironbreaker.wrath_of_durin",
+      "tier": 2,
+      "pos": [60, 30],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["dwarf.stone_hard"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.5 }
+      ]
+    },
+    {
+      "id": "dwarf.ironbreaker.unbroken_will",
+      "tier": 3,
+      "pos": [60, 60],
+      "cost": { "discipline": "kindreds:combat", "points": 6 },
+      "prereqs": ["dwarf.ironbreaker.wrath_of_durin"],
+      "deed_advancement": "kindreds:deed/dwarf_unbroken_will",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:unbroken_will",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:resistance", "amplifier": 2, "duration_ticks": 100 },
+            { "effect": "minecraft:slowness", "amplifier": 1, "duration_ticks": 100 }
+          ]
         }
       ]
     }

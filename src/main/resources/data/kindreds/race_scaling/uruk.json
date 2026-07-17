@@ -1,0 +1,11 @@
+{
+  "race": "middle-earth:uruk",
+  "multipliers": {
+    "kindreds:combat": 1.4,
+    "kindreds:survival": 1.2,
+    "kindreds:mining": 0.8,
+    "kindreds:stealth": 0.7,
+    "kindreds:archery": 0.8,
+    "kindreds:lore": 0.6
+  }
+}

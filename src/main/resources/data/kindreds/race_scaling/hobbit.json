@@ -1,0 +1,11 @@
+{
+  "race": "middle-earth:hobbit",
+  "multipliers": {
+    "kindreds:stealth": 1.6,
+    "kindreds:survival": 1.3,
+    "kindreds:lore": 0.9,
+    "kindreds:mining": 0.8,
+    "kindreds:archery": 0.9,
+    "kindreds:combat": 0.6
+  }
+}

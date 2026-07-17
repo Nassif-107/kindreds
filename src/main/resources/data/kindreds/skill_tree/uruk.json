@@ -1,0 +1,117 @@
+{
+  "race": "middle-earth:uruk",
+  "theme": "kindreds:uruk",
+  "nodes": [
+    {
+      "id": "uruk.relentless_gaze",
+      "tier": 1,
+      "pos": [-60, 0],
+      "cost": { "discipline": "kindreds:combat", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "vision_unlock", "vision_id": "relentless_gaze", "radius": 24 }
+      ]
+    },
+    {
+      "id": "uruk.heavy_hand",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": { "discipline": "kindreds:combat", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.1 },
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "uruk.forged_not_born",
+      "tier": 1,
+      "pos": [60, 0],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 0.5 },
+        {
+          "type": "curse",
+          "curse_id": "forged_not_born",
+          "severity": 1,
+          "when": "",
+          "effect": { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": -1.0 }
+        }
+      ]
+    },
+
+    {
+      "id": "uruk.relentless.relentless_march",
+      "tier": 2,
+      "pos": [-60, 30],
+      "cost": { "discipline": "kindreds:survival", "points": 3 },
+      "prereqs": ["uruk.relentless_gaze"],
+      "abilities": [
+        { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+    {
+      "id": "uruk.relentless.forced_march",
+      "tier": 2,
+      "pos": [-60, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 4 },
+      "prereqs": ["uruk.relentless.relentless_march"],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:forced_march",
+          "cooldown_ticks": 1200,
+          "effects": [
+            { "effect": "minecraft:speed", "amplifier": 3, "duration_ticks": 100 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uruk.relentless.sun_defiance",
+      "tier": 3,
+      "pos": [-60, 90],
+      "cost": { "discipline": "kindreds:survival", "points": 6 },
+      "prereqs": ["uruk.relentless.forced_march"],
+      "deed_advancement": "kindreds:deed/uruk_sun_defiance",
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 3.0 },
+        { "type": "status_effect", "effect": "minecraft:fire_resistance", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+
+    {
+      "id": "uruk.discipline.isengard_drilling",
+      "tier": 2,
+      "pos": [60, 30],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["uruk.heavy_hand"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.armor_toughness", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "uruk.discipline.breeding_pits_gift",
+      "tier": 2,
+      "pos": [60, 60],
+      "cost": { "discipline": "kindreds:combat", "points": 4 },
+      "prereqs": ["uruk.discipline.isengard_drilling"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 2.0 }
+      ]
+    },
+    {
+      "id": "uruk.discipline.fighting_uruk_hai",
+      "tier": 3,
+      "pos": [60, 90],
+      "cost": { "discipline": "kindreds:combat", "points": 6 },
+      "prereqs": ["uruk.discipline.breeding_pits_gift"],
+      "deed_advancement": "kindreds:deed/uruk_fighting_uruk_hai",
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "minecraft:generic.knockback_resistance", "operation": "add_value", "amount": 0.15 }
+      ]
+    }
+  ]
+}

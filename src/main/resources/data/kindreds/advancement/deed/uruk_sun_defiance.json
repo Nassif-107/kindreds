@@ -1,0 +1,18 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "endured": {
+      "trigger": "minecraft:consume_item",
+      "conditions": { "item": { "items": "minecraft:golden_apple" } }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:golden_apple" },
+    "title": { "text": "Sun-Defiance" },
+    "description": { "text": "Endure what lesser orc-kind cannot - even the Sun itself." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["endured"]]
+}

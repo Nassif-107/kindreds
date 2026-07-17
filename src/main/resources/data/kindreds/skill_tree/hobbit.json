@@ -1,0 +1,116 @@
+{
+  "race": "middle-earth:hobbit",
+  "theme": "kindreds:hobbit",
+  "nodes": [
+    {
+      "id": "hobbit.light_feet",
+      "tier": 1,
+      "pos": [-60, 0],
+      "cost": { "discipline": "kindreds:stealth", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "vision_unlock", "vision_id": "unseen", "radius": 16 }
+      ]
+    },
+    {
+      "id": "hobbit.leathery_soles",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": { "discipline": "kindreds:survival", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.safe_fall_distance", "operation": "add_value", "amount": 3.0 }
+      ]
+    },
+    {
+      "id": "hobbit.small_folk",
+      "tier": 1,
+      "pos": [60, 0],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 1.0 },
+        {
+          "type": "curse",
+          "curse_id": "small_folk",
+          "severity": 1,
+          "when": "",
+          "effect": { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": -0.5 }
+        }
+      ]
+    },
+
+    {
+      "id": "hobbit.burglar.unassuming",
+      "tier": 2,
+      "pos": [-60, 30],
+      "cost": { "discipline": "kindreds:stealth", "points": 3 },
+      "prereqs": ["hobbit.light_feet"],
+      "abilities": [
+        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -2.0 }
+      ]
+    },
+    {
+      "id": "hobbit.burglar.quiet_killer",
+      "tier": 2,
+      "pos": [-60, 60],
+      "cost": { "discipline": "kindreds:stealth", "points": 4 },
+      "prereqs": ["hobbit.burglar.unassuming"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "hobbit.burglar.thief_of_erebor",
+      "tier": 3,
+      "pos": [-60, 90],
+      "cost": { "discipline": "kindreds:stealth", "points": 6 },
+      "prereqs": ["hobbit.burglar.quiet_killer"],
+      "deed_advancement": "kindreds:deed/hobbit_thief_of_erebor",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:thief_of_erebor",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:invisibility", "amplifier": 0, "duration_ticks": 100 },
+            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 100 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "hobbit.homebody.packed_lunch",
+      "tier": 2,
+      "pos": [60, 30],
+      "cost": { "discipline": "kindreds:survival", "points": 3 },
+      "prereqs": ["hobbit.leathery_soles"],
+      "abilities": [
+        { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+    {
+      "id": "hobbit.homebody.second_breakfast",
+      "tier": 2,
+      "pos": [60, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 4 },
+      "prereqs": ["hobbit.homebody.packed_lunch"],
+      "abilities": [
+        { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+    {
+      "id": "hobbit.homebody.ringbearers_resolve",
+      "tier": 3,
+      "pos": [60, 90],
+      "cost": { "discipline": "kindreds:survival", "points": 6 },
+      "prereqs": ["hobbit.homebody.second_breakfast"],
+      "deed_advancement": "kindreds:deed/hobbit_ringbearers_resolve",
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 4.0 },
+        { "type": "status_effect", "effect": "minecraft:luck", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    }
+  ]
+}

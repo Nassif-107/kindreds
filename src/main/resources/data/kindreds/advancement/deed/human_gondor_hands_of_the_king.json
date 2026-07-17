@@ -1,0 +1,18 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "drank_healing": {
+      "trigger": "minecraft:consume_item",
+      "conditions": { "item": { "items": "minecraft:potion" } }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:potion" },
+    "title": { "text": "Hands of the King" },
+    "description": { "text": "The hands of the king are the hands of a healer - work the art of healing." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["drank_healing"]]
+}

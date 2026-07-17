@@ -1,0 +1,11 @@
+{
+  "race": "middle-earth:human",
+  "multipliers": {
+    "kindreds:combat": 1.1,
+    "kindreds:archery": 1.1,
+    "kindreds:survival": 1.1,
+    "kindreds:lore": 1.05,
+    "kindreds:stealth": 0.9,
+    "kindreds:mining": 0.9
+  }
+}

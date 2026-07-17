@@ -1,0 +1,129 @@
+{
+  "race": "middle-earth:goblin",
+  "theme": "kindreds:goblin",
+  "nodes": [
+    {
+      "id": "goblin.tunnel_sight",
+      "tier": 1,
+      "pos": [-60, 0],
+      "cost": { "discipline": "kindreds:mining", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "vision_unlock", "vision_id": "tunnel_sight", "radius": 24 }
+      ]
+    },
+    {
+      "id": "goblin.tinkers_hands",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": { "discipline": "kindreds:smithing", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.15 }
+      ]
+    },
+    {
+      "id": "goblin.dread_of_the_sun",
+      "tier": 1,
+      "pos": [60, 0],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_speed", "operation": "add_multiplied_base", "amount": 0.05 },
+        {
+          "type": "curse",
+          "curse_id": "dread_of_the_sun",
+          "severity": 1,
+          "when": "daylight",
+          "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": 120 }
+        }
+      ]
+    },
+
+    {
+      "id": "goblin.wallcling.wall_cling_plus",
+      "tier": 2,
+      "pos": [-60, 30],
+      "cost": { "discipline": "kindreds:stealth", "points": 3 },
+      "prereqs": ["goblin.tunnel_sight"],
+      "abilities": [
+        { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "goblin.wallcling.ambush_drop",
+      "tier": 2,
+      "pos": [-60, 60],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["goblin.wallcling.wall_cling_plus"],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:ambush_drop",
+          "cooldown_ticks": 600,
+          "effects": [
+            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 20 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "goblin.wallcling.great_goblins_horde",
+      "tier": 3,
+      "pos": [-60, 90],
+      "cost": { "discipline": "kindreds:combat", "points": 6 },
+      "prereqs": ["goblin.wallcling.ambush_drop"],
+      "deed_advancement": "kindreds:deed/goblin_great_goblins_horde",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:great_goblins_horde",
+          "cooldown_ticks": 3600,
+          "effects": [
+            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 200 },
+            { "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": 200 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "goblin.swarm.cave_rat_swarm",
+      "tier": 2,
+      "pos": [60, 30],
+      "cost": { "discipline": "kindreds:stealth", "points": 3 },
+      "prereqs": ["goblin.tinkers_hands"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 0.5 }
+      ]
+    },
+    {
+      "id": "goblin.swarm.screech",
+      "tier": 2,
+      "pos": [60, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 3 },
+      "prereqs": ["goblin.swarm.cave_rat_swarm"],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:screech",
+          "cooldown_ticks": 1200,
+          "effects": [
+            { "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": 200 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "goblin.swarm.instruments_of_torture",
+      "tier": 3,
+      "pos": [60, 90],
+      "cost": { "discipline": "kindreds:smithing", "points": 6 },
+      "prereqs": ["goblin.swarm.screech"],
+      "deed_advancement": "kindreds:deed/goblin_instruments_of_torture",
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 2.0 }
+      ]
+    }
+  ]
+}

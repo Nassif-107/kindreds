@@ -1,0 +1,131 @@
+{
+  "race": "middle-earth:orc",
+  "theme": "kindreds:orc",
+  "nodes": [
+    {
+      "id": "orc.darksight",
+      "tier": 1,
+      "pos": [-60, 0],
+      "cost": { "discipline": "kindreds:stealth", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "vision_unlock", "vision_id": "dawnless_sight", "radius": 24 }
+      ]
+    },
+    {
+      "id": "orc.scavengers_stomach",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": { "discipline": "kindreds:survival", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+    {
+      "id": "orc.dread_of_the_sun",
+      "tier": 1,
+      "pos": [60, 0],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.05 },
+        {
+          "type": "curse",
+          "curse_id": "dread_of_the_sun",
+          "severity": 1,
+          "when": "daylight",
+          "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": 120 }
+        }
+      ]
+    },
+
+    {
+      "id": "orc.shadow.cave_reared",
+      "tier": 2,
+      "pos": [-60, 30],
+      "cost": { "discipline": "kindreds:mining", "points": 3 },
+      "prereqs": ["orc.darksight"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:player.mining_efficiency", "operation": "add_value", "amount": 0.15 }
+      ]
+    },
+    {
+      "id": "orc.shadow.blade_in_the_dark",
+      "tier": 2,
+      "pos": [-60, 60],
+      "cost": { "discipline": "kindreds:stealth", "points": 4 },
+      "prereqs": ["orc.shadow.cave_reared"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.5 }
+      ]
+    },
+    {
+      "id": "orc.shadow.eye_is_upon_you",
+      "tier": 3,
+      "pos": [-60, 90],
+      "cost": { "discipline": "kindreds:lore", "points": 6 },
+      "prereqs": ["orc.shadow.blade_in_the_dark"],
+      "deed_advancement": "kindreds:deed/orc_eye_is_upon_you",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:eye_is_upon_you",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 200 },
+            { "effect": "minecraft:fire_resistance", "amplifier": 0, "duration_ticks": 200 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "orc.warband.pack_tactics",
+      "tier": 2,
+      "pos": [60, 30],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["orc.scavengers_stomach"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_damage", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "orc.warband.orc_draught",
+      "tier": 2,
+      "pos": [60, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 3 },
+      "prereqs": ["orc.warband.pack_tactics"],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:orc_draught",
+          "cooldown_ticks": 1200,
+          "effects": [
+            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 200 },
+            { "effect": "minecraft:haste", "amplifier": 1, "duration_ticks": 200 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orc.warband.war_horn",
+      "tier": 3,
+      "pos": [60, 90],
+      "cost": { "discipline": "kindreds:combat", "points": 6 },
+      "prereqs": ["orc.warband.orc_draught"],
+      "deed_advancement": "kindreds:deed/orc_war_horn",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:war_horn",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 200 },
+            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 200 }
+          ]
+        }
+      ]
+    }
+  ]
+}

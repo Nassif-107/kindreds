@@ -1,0 +1,31 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "long_shot": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "distance": { "horizontal": { "min": 60.0 } }
+            }
+          }
+        ],
+        "killing_blow": {
+          "tags": [ { "expected": true, "id": "minecraft:is_projectile" } ]
+        }
+      }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:bow" },
+    "title": { "text": "Starlit Aim" },
+    "description": { "text": "Land a killing blow from 60 blocks or more." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["long_shot"]]
+}

@@ -1,0 +1,11 @@
+{
+  "race": "middle-earth:snaga",
+  "multipliers": {
+    "kindreds:stealth": 1.3,
+    "kindreds:mining": 1.2,
+    "kindreds:survival": 1.0,
+    "kindreds:archery": 0.8,
+    "kindreds:lore": 0.7,
+    "kindreds:combat": 0.7
+  }
+}

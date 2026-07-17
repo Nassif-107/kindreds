@@ -5,8 +5,8 @@
   "key.kindreds.cycle_vision": "Cycle vision",
   "key.kindreds.open_tree": "Open skill tree",
 
-  "kindreds.node.keen_eyes.name": "Keen Eyes",
-  "kindreds.node.keen_eyes.flavor": "The Eldar see further and truer than any other people under the stars.",
-  "kindreds.node.stonesense.name": "Stonesense",
-  "kindreds.node.stonesense.flavor": "A Dwarf never truly loses his way in the deep places of the world."
+  "kindreds.node.elf.eyes_of_the_eldar.name": "Eyes of the Eldar",
+  "kindreds.node.elf.eyes_of_the_eldar.flavor": "The Eldar see further and truer than any other people under the stars.",
+  "kindreds.node.dwarf.aules_inheritance.name": "Aulë's Inheritance",
+  "kindreds.node.dwarf.aules_inheritance.flavor": "A Dwarf never truly loses his way in the deep places of the world."
 }

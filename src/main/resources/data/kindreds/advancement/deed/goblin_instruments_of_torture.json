@@ -1,0 +1,18 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "gadget_crafted": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [ { "items": "minecraft:crossbow" } ] }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:crossbow" },
+    "title": { "text": "Instruments of Torture" },
+    "description": { "text": "Craft a clever, cruel gadget - goblins make many clever ones." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["gadget_crafted"]]
+}

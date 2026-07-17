@@ -1,0 +1,17 @@
+{
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:written_book" },
+    "title": { "text": "Deeds of the Kindreds" },
+    "description": { "text": "Root of every race's capstone deed - the feats that unlock a Kindred's signature power." },
+    "background": "minecraft:gui/advancements/backgrounds/stone",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "requirements": [["tick"]]
+}

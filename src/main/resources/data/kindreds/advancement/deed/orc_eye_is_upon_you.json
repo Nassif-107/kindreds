@@ -1,0 +1,28 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "in_the_wastes": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": { "biomes": "minecraft:nether_wastes" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:ender_eye" },
+    "title": { "text": "The Eye Is Upon You" },
+    "description": { "text": "Stand in the master's own wastes and feel the Eye's favor." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["in_the_wastes"]]
+}

@@ -3,25 +3,118 @@
   "theme": "kindreds:elf",
   "nodes": [
     {
-      "id": "keen_eyes",
+      "id": "elf.eyes_of_the_eldar",
       "tier": 1,
-      "pos": [0, 0],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 1
-      },
+      "pos": [-30, 0],
+      "cost": { "discipline": "kindreds:archery", "points": 1 },
       "prereqs": [],
       "abilities": [
+        { "type": "vision_unlock", "vision_id": "keen_sight", "radius": 32 }
+      ]
+    },
+    {
+      "id": "elf.light_step",
+      "tier": 1,
+      "pos": [30, 0],
+      "cost": { "discipline": "kindreds:survival", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.movement_efficiency", "operation": "add_value", "amount": 1.0 }
+      ]
+    },
+    {
+      "id": "elf.deep_dark_unease",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
+      "prereqs": ["elf.eyes_of_the_eldar"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.max_health", "operation": "add_value", "amount": 2.0 },
         {
-          "type": "attribute",
-          "attribute": "minecraft:generic.max_health",
-          "operation": "add_value",
-          "amount": 1.0
-        },
+          "type": "curse",
+          "curse_id": "deep_dark_unease",
+          "severity": 1,
+          "when": "deep_dark",
+          "effect": { "type": "attribute", "attribute": "middle-earth:delvers_fear_strength", "operation": "add_value", "amount": 20.0 }
+        }
+      ]
+    },
+
+    {
+      "id": "elf.marksman.elven_marksman",
+      "tier": 2,
+      "pos": [-30, 30],
+      "cost": { "discipline": "kindreds:archery", "points": 3 },
+      "prereqs": ["elf.eyes_of_the_eldar"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_speed", "operation": "add_multiplied_base", "amount": 0.2 }
+      ]
+    },
+    {
+      "id": "elf.marksman.unwearied_draw",
+      "tier": 2,
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:archery", "points": 4 },
+      "prereqs": ["elf.marksman.elven_marksman"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.attack_speed", "operation": "add_multiplied_base", "amount": 0.15 }
+      ]
+    },
+    {
+      "id": "elf.marksman.starlit_aim",
+      "tier": 3,
+      "pos": [-30, 90],
+      "cost": { "discipline": "kindreds:archery", "points": 6 },
+      "prereqs": ["elf.marksman.unwearied_draw"],
+      "deed_advancement": "kindreds:deed/elf_starlit_aim",
+      "abilities": [
         {
-          "type": "vision_unlock",
-          "vision_id": "keen_sight",
-          "radius": 32
+          "type": "active",
+          "ability_id": "kindreds:starlit_aim",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 60 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "elf.warden.tireless",
+      "tier": 2,
+      "pos": [30, 30],
+      "cost": { "discipline": "kindreds:survival", "points": 2 },
+      "prereqs": ["elf.light_step"],
+      "abilities": [
+        { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 }
+      ]
+    },
+    {
+      "id": "elf.warden.woodland_grace",
+      "tier": 2,
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 3 },
+      "prereqs": ["elf.warden.tireless"],
+      "abilities": [
+        { "type": "attribute", "attribute": "minecraft:generic.movement_speed", "operation": "add_multiplied_total", "amount": 0.1 }
+      ]
+    },
+    {
+      "id": "elf.warden.song_of_rest",
+      "tier": 3,
+      "pos": [30, 90],
+      "cost": { "discipline": "kindreds:survival", "points": 5 },
+      "prereqs": ["elf.warden.woodland_grace"],
+      "deed_advancement": "kindreds:deed/elf_song_of_rest",
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_rest",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 200 },
+            { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 200 }
+          ]
         }
       ]
     }

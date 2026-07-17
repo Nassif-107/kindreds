@@ -1,0 +1,18 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "burgled": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [ { "items": "minecraft:diamond" } ] }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:diamond" },
+    "title": { "text": "Thief of Erebor" },
+    "description": { "text": "Come home with treasure worthy of a burglar's tale." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["burgled"]]
+}

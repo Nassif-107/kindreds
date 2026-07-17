@@ -1,0 +1,9 @@
+{
+  "race": "middle-earth:dwarf",
+  "multipliers": {
+    "kindreds:mining": 1.6,
+    "kindreds:smithing": 1.4,
+    "kindreds:combat": 1.1,
+    "kindreds:archery": 0.7
+  }
+}

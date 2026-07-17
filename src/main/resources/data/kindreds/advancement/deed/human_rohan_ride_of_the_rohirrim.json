@@ -1,0 +1,26 @@
+{
+  "parent": "kindreds:deed/root",
+  "criteria": {
+    "mounted_kill": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "vehicle": {} }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": { "id": "minecraft:saddle" },
+    "title": { "text": "Ride of the Rohirrim" },
+    "description": { "text": "Defeat a foe while mounted - ride now, ride to victory!" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [["mounted_kill"]]
+}
