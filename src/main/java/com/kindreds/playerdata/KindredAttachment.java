@@ -25,6 +25,20 @@ public final class KindredAttachment {
     public static final AttachmentType<KindredData> TYPE =
             AttachmentRegistry.createPersistent(Identifier.of(Kindreds.MOD_ID, "player"), KindredData.CODEC);
 
+    /**
+     * Forces this class to load (and thus registers {@link #TYPE}) during mod initialization.
+     * {@code TYPE} is a lazy {@code static final}, so without an explicit touch here the attachment
+     * type isn't registered until the first {@link #get}/{@link #set} at runtime - which is AFTER
+     * the server loads player NBT on join, producing "unknown attachment type kindreds:player" and
+     * silently dropping the player's saved progress. Call once from {@link Kindreds#onInitialize()}.
+     */
+    public static AttachmentType<KindredData> init() {
+        // Returning TYPE forces this class to load (running the static initializer that registers
+        // the attachment). Callers ignore the return; it exists only to make the reference a
+        // genuine use the compiler/JIT can't elide.
+        return TYPE;
+    }
+
     /** Returns {@code player}'s {@link KindredData}, creating (and attaching) a fresh default
      * instance if none exists yet. */
     public static KindredData get(PlayerEntity player) {

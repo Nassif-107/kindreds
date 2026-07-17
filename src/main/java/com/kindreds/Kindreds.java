@@ -12,6 +12,7 @@ import com.kindreds.network.SetVisionLensC2S;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.network.UnlockResultS2C;
 import com.kindreds.playerdata.DeathHandler;
+import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.progression.ActivityHooks;
 import com.kindreds.progression.RaceScaling;
 import net.fabricmc.api.ModInitializer;
@@ -34,6 +35,12 @@ public class Kindreds implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        // Register the persistent player-data attachment FIRST, at mod-init time. Its AttachmentType
+        // is a lazy static final; if left to register on first use (join-time sync), the server has
+        // already loaded player NBT and dropped the unknown "kindreds:player" attachment, wiping
+        // saved progress. Forcing the class to load here registers it before any world loads.
+        KindredAttachment.init();
+
         KindredsRegistries.register();
 
         PayloadTypeRegistry.playS2C().register(SyncKindredDataS2C.ID, SyncKindredDataS2C.CODEC);

@@ -46,8 +46,12 @@ public class SkillTreeScreen extends Screen {
     private static final float MIN_ZOOM = 0.5f;
     private static final float MAX_ZOOM = 2.2f;
 
-    private final SkillTree tree;
-    private final Theme theme;
+    // Not final: resolved lazily from the live client-synced race (see refreshTreeForRace()). The
+    // join-time sync can land after this screen opens, so tree/theme may start null and become
+    // non-null once the race arrives, flipping the no-race prompt to the real tree in place.
+    private SkillTree tree;
+    private Theme theme;
+    private Identifier resolvedForRace;
     private final KindredData initialData;
 
     private float panX;
@@ -68,12 +72,10 @@ public class SkillTreeScreen extends Screen {
     private record NodeHit(SkillNode node, float x, float y, float radius) {
     }
 
-    public SkillTreeScreen(SkillTree tree, KindredData data, Theme theme) {
-        super(Text.literal(tree != null ? NodeTooltip.displayName(tree.race().getPath()) + " - Skill Tree"
-                : "Skill Tree"));
-        this.tree = tree;
-        this.theme = theme;
+    public SkillTreeScreen(KindredData data) {
+        super(Text.literal("Skill Tree"));
         this.initialData = data;
+        // Leave tree/theme/resolvedForRace null so the first render() resolves from live data.
     }
 
     /** Resolves the current player's race -&gt; {@link SkillTree} -&gt; {@link Theme} from the
@@ -81,30 +83,50 @@ public class SkillTreeScreen extends Screen {
      * Called by {@code KindredsClient}'s "Open skill tree" keybind, which also fires
      * {@link OpenTreeC2S} alongside this so the server refreshes the client's data. */
     public static void open(MinecraftClient client) {
-        KindredData data = ClientKindredData.INSTANCE;
-        Identifier race = data.race();
-        SkillTree tree = null;
-        Theme theme = null;
+        // The screen resolves its own race -> tree -> theme each frame from the live synced data
+        // (see refreshTreeForRace()), so opening never has to wait on the race being cached yet -
+        // if the join-time sync hasn't delivered it, the OpenTreeC2S the keybind fires alongside
+        // this refreshes it a tick later and the screen updates in place.
+        client.setScreen(new SkillTreeScreen(ClientKindredData.INSTANCE));
+    }
 
-        if (race != null && client.world != null) {
-            try {
-                Registry<SkillTree> trees = client.world.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
-                for (SkillTree candidate : trees) {
-                    if (candidate.race().equals(race)) {
-                        tree = candidate;
-                        break;
-                    }
-                }
-                if (tree != null) {
-                    Registry<Theme> themes = client.world.getRegistryManager().getOrThrow(KindredsRegistries.THEME);
-                    theme = themes.get(tree.theme());
-                }
-            } catch (RuntimeException e) {
-                // Registries not synced yet - fall through to the no-tree prompt.
-            }
+    /**
+     * Re-resolves {@link #tree}/{@link #theme} from the client-mirrored synced registries whenever
+     * the player's race first becomes known (or changes) after this screen opened. Cheap and
+     * idempotent: once resolved for the current race it returns immediately; while the race is still
+     * unknown, or the dynamic registries haven't synced yet, it stays on the no-race prompt and
+     * retries on the next frame. Called at the top of {@link #render}.
+     */
+    private void refreshTreeForRace() {
+        Identifier race = currentData().race();
+        if (tree != null && java.util.Objects.equals(race, resolvedForRace)) {
+            return;
         }
-
-        client.setScreen(new SkillTreeScreen(tree, data, theme));
+        resolvedForRace = race;
+        tree = null;
+        theme = null;
+        if (race == null) {
+            return;
+        }
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world == null) {
+            return;
+        }
+        try {
+            Registry<SkillTree> trees = client.world.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
+            for (SkillTree candidate : trees) {
+                if (candidate.race().equals(race)) {
+                    tree = candidate;
+                    break;
+                }
+            }
+            if (tree != null) {
+                Registry<Theme> themes = client.world.getRegistryManager().getOrThrow(KindredsRegistries.THEME);
+                theme = themes.get(tree.theme());
+            }
+        } catch (RuntimeException ignored) {
+            // Registries not synced yet - stay on the prompt; retried next frame.
+        }
     }
 
     private KindredData currentData() {
@@ -141,6 +163,8 @@ public class SkillTreeScreen extends Screen {
         // the Sodium/Iris pipeline this pack ships. A flat darkening is blur-guard-immune and
         // renders identically across vanilla/Sodium/Iris.
         ctx.fill(0, 0, this.width, this.height, 0xC80A0A0A);
+
+        refreshTreeForRace();
 
         if (tree == null) {
             renderNoRacePrompt(ctx);
