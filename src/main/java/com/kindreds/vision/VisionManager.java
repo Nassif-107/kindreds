@@ -134,6 +134,24 @@ public final class VisionManager {
         ClientPlayNetworking.send(new SetVisionLensC2S(Optional.ofNullable(next)));
     }
 
+    // --- World-leave gamma cleanup --------------------------------------------------------------
+
+    /** Force-restores every gamma-lifting lens's saved gamma, unconditionally, and clears its
+     * boosted state. Both {@link StoneSenseLens} and {@link KeenSightLens} otherwise only restore
+     * their boosted gamma from inside their own {@code render()}, which is driven by {@code
+     * WorldRenderEvents.AFTER_TRANSLUCENT} - an event that stops firing the moment {@code
+     * MinecraftClient.world} becomes {@code null} (an ordinary disconnect, no crash needed). Without
+     * this, cycling a lens on underground/at night and then disconnecting mid-boost would strand the
+     * player's gamma option at the boosted value on the title screen and every world after, until
+     * they manually touched the brightness slider. Callers: {@code
+     * ClientPlayConnectionEvents.DISCONNECT} in {@code KindredsClient}. Centralized here so there's
+     * a single call to keep in sync as more gamma-lifting lenses are added. */
+    public static void onWorldLeave() {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        StoneSenseLens.resetGamma(mc);
+        KeenSightLens.resetGamma(mc);
+    }
+
     // --- Iris detection -------------------------------------------------------------------------
 
     private static final boolean IRIS_LOADED = FabricLoader.getInstance().isModLoaded("iris");

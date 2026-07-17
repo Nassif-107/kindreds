@@ -93,12 +93,42 @@ public final class KeenSightLens {
         }
     }
 
+    /** Force-restores gamma to the value saved before this lens boosted it, regardless of whether
+     * the option still holds the boosted value, and clears the saved state - a no-op if this lens
+     * never boosted gamma. Unlike {@link #applyNightGammaBoost}, this doesn't depend on {@code
+     * render()} running again to fire: it exists specifically for paths where it can't (e.g. {@code
+     * MinecraftClient.world} has already gone {@code null} on disconnect, so {@link
+     * WorldRenderEvents#AFTER_TRANSLUCENT} stops firing entirely). See {@code
+     * VisionManager#onWorldLeave()}. */
+    public static void resetGamma(MinecraftClient mc) {
+        if (savedGamma != null) {
+            mc.options.getGamma().setValue(savedGamma);
+            savedGamma = null;
+        }
+    }
+
+    /** Cached {@link VisionManager#radiusFor(Identifier, int)} result, recomputed at most once per
+     * game tick rather than every render frame - matches {@code StoneSenseLens}'s scan throttle in
+     * spirit (registry lookup + unlocked-node walk is comparatively expensive and this lens, unlike
+     * stone-sense, isn't otherwise throttled since its entity scan runs every frame). */
+    private static int cachedRadius = DEFAULT_RADIUS;
+    private static long lastRadiusTick = Long.MIN_VALUE;
+
+    private static int radius(MinecraftClient mc) {
+        long time = mc.world.getTime();
+        if (time != lastRadiusTick) {
+            lastRadiusTick = time;
+            cachedRadius = VisionManager.radiusFor(ID, DEFAULT_RADIUS);
+        }
+        return cachedRadius;
+    }
+
     private static void drawOutlines(WorldRenderContext ctx, MinecraftClient mc) {
         MatrixStack matrices = ctx.matrixStack();
         if (matrices == null) {
             return;
         }
-        int radius = VisionManager.radiusFor(ID, DEFAULT_RADIUS);
+        int radius = radius(mc);
         ClientWorld world = mc.world;
         Vec3d eye = mc.player.getEyePos();
         double radiusSq = (double) radius * radius;

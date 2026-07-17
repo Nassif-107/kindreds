@@ -107,6 +107,20 @@ public final class StoneSenseLens {
         }
     }
 
+    /** Force-restores gamma to the value saved before this lens boosted it, regardless of whether
+     * the option still holds the boosted value, and clears the saved state - a no-op if this lens
+     * never boosted gamma. Unlike {@link #applyUndergroundGammaBoost}, this doesn't depend on
+     * {@code render()} running again to fire: it exists specifically for paths where it can't
+     * (e.g. {@code MinecraftClient.world} has already gone {@code null} on disconnect, so {@link
+     * WorldRenderEvents#AFTER_TRANSLUCENT} stops firing entirely). See {@code
+     * VisionManager#onWorldLeave()}. */
+    public static void resetGamma(MinecraftClient mc) {
+        if (savedGamma != null) {
+            mc.options.getGamma().setValue(savedGamma);
+            savedGamma = null;
+        }
+    }
+
     private static void maybeRescan(MinecraftClient mc) {
         long time = mc.world.getTime();
         if (time - lastScanTick < SCAN_INTERVAL_TICKS) {

@@ -10,6 +10,7 @@ import com.kindreds.vision.overlay.HudTintOverlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -74,6 +75,13 @@ public class KindredsClient implements ClientModInitializer {
         StoneSenseLens.register();
         KeenSightLens.register();
         HudTintOverlay.register();
+
+        // FIX (gamma stranded on disconnect): the lenses' own render()-driven gamma restore can't
+        // fire once MinecraftClient.world goes null, since WorldRenderEvents.AFTER_TRANSLUCENT stops
+        // firing entirely at that point (an ordinary Disconnect/Leave, no crash needed) - see
+        // VisionManager.onWorldLeave()'s javadoc. Matches the Mithril Locator mod's
+        // ClientPlayConnectionEvents.DISCONNECT-driven state reset.
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> VisionManager.onWorldLeave());
 
         Kindreds.LOGGER.info("[Kindreds] client initialized");
     }
