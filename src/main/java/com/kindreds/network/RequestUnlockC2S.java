@@ -8,6 +8,7 @@ import com.kindreds.data.SkillTree;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
+import com.kindreds.playerdata.RaceAccess;
 import com.kindreds.progression.ProgressionService;
 import com.kindreds.progression.UnlockService;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -34,25 +35,23 @@ import java.util.Optional;
  * ever sent on join otherwise (Task 4), so any mutation here <b>must</b> re-send it or the client
  * silently goes stale. On failure it reports the reason via {@link UnlockResultS2C} instead.
  *
- * <h2>Resolving the player's tree (interim, pending Task 8)</h2>
- * The brief describes resolving "the player's race, then the race's tree" from the
- * {@code SKILL_TREE} registry. Reading a player's actual race from the base Middle-earth mod is
- * Task 8's job ({@code RaceAccess}) and doesn't exist yet as of this task. As an interim stand-in
- * that needs no assumptions about that future API, {@link #resolveTree} instead scans every
- * {@link SkillTree} in the {@code SKILL_TREE} dynamic registry for the one containing the
- * requested node id ({@link SkillNode#id()} is authored unique per its own tree - see its
- * javadoc - and P1's trees are authored with disjoint id namespaces per race, so this is safe in
- * practice). Once Task 8 lands, the natural follow-up is to resolve the tree via
- * {@code SKILL_TREE registry entry for RaceAccess.raceOf(player)} instead (and optionally assert
- * the resolved node's tree matches that race, as a sanity check against a malicious/buggy client
- * requesting a foreign-race node id that happens to collide).
+ * <h2>Resolving the player's tree</h2>
+ * {@link #resolveTree} first asks {@link RaceAccess#getRace} for the requesting player's base-mod
+ * race, then looks up the {@link SkillTree} in the {@code SKILL_TREE} dynamic registry whose
+ * {@link SkillTree#race()} matches it. This is the primary path: it's correct even if two trees
+ * ever authored a colliding node id, since the player's race pins down exactly one tree.
  *
- * <p>Since disjoint id namespaces are only a convention (not enforced anywhere), {@link
- * #resolveTree} also guards against a duplicate node id accidentally authored across two trees: if
- * the scan finds more than one match it logs a warning and rejects the unlock with reason
- * {@code "ambiguous_node"} rather than silently picking one (which could validate - and apply
- * abilities from - the wrong tree). This is interim safety for Task 12's tree authoring; it goes
- * away once Task 8 resolves trees by race instead of by id-scan.
+ * <p>If {@code RaceAccess.getRace} comes back empty - the base Middle-earth mod isn't loaded, or
+ * the player hasn't picked a race yet (e.g. standalone testing, or mid-onboarding) - {@link
+ * #resolveTree} falls back to its original Task-6-era behavior: scanning every {@link SkillTree}
+ * for the one containing the requested node id ({@link SkillNode#id()} is authored unique per its
+ * own tree - see its javadoc - and P1's trees are authored with disjoint id namespaces per race,
+ * so this is safe in practice). Since disjoint id namespaces are only a convention (not enforced
+ * anywhere), the fallback scan still guards against a duplicate node id accidentally authored
+ * across two trees: if it finds more than one match it logs a warning and rejects the unlock with
+ * reason {@code "ambiguous_node"} rather than silently picking one (which could validate - and
+ * apply abilities from - the wrong tree). This is safety net for Task 12's tree authoring, kept
+ * around for the no-race fallback case.
  */
 public record RequestUnlockC2S(String nodeId) implements CustomPayload {
     public static final CustomPayload.Id<RequestUnlockC2S> ID =
@@ -81,7 +80,7 @@ public record RequestUnlockC2S(String nodeId) implements CustomPayload {
     }
 
     private static void handle(MinecraftServer server, ServerPlayerEntity player, String nodeId) {
-        TreeResolution resolution = resolveTree(server, nodeId);
+        TreeResolution resolution = resolveTree(server, player, nodeId);
         if (resolution.tree().isEmpty()) {
             UnlockResultS2C.sendTo(player, false, resolution.failureReason());
             return;
@@ -120,11 +119,33 @@ public record RequestUnlockC2S(String nodeId) implements CustomPayload {
         UnlockResultS2C.sendTo(player, true, "ok");
     }
 
-    /** See the "Resolving the player's tree" section of this class's javadoc. Result carries a
-     * distinct {@code "ambiguous_node"} failure reason (as opposed to {@code "unknown_node"}) when
-     * the id is found in more than one tree, so the caller can report the real cause. */
-    private static TreeResolution resolveTree(MinecraftServer server, String nodeId) {
+    /** See the "Resolving the player's tree" section of this class's javadoc: prefers resolving by
+     * the player's base-mod race, falling back to the Task-6-era node-id scan (with its
+     * {@code "ambiguous_node"} guard) only when the race is unknown. */
+    private static TreeResolution resolveTree(MinecraftServer server, ServerPlayerEntity player, String nodeId) {
         Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
+
+        Optional<Identifier> race = RaceAccess.getRace(player);
+        if (race.isPresent()) {
+            for (SkillTree tree : trees) {
+                if (tree.race().equals(race.get())) {
+                    return TreeResolution.found(tree);
+                }
+            }
+            Kindreds.LOGGER.warn(
+                    "[Kindreds] player {}'s race {} has no matching skill tree in the SKILL_TREE registry",
+                    player.getGameProfile().getName(), race.get());
+            return TreeResolution.failure("no_tree_for_race");
+        }
+
+        return resolveTreeByNodeScan(trees, nodeId);
+    }
+
+    /** Fallback used only when the player's race is unknown (base mod absent, or race not yet
+     * chosen) - see {@link #resolveTree}. Carries a distinct {@code "ambiguous_node"} failure
+     * reason (as opposed to {@code "unknown_node"}) when the id is found in more than one tree, so
+     * the caller can report the real cause. */
+    private static TreeResolution resolveTreeByNodeScan(Registry<SkillTree> trees, String nodeId) {
         SkillTree match = null;
         int matchCount = 0;
         for (SkillTree tree : trees) {
