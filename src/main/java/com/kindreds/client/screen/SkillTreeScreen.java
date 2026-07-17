@@ -1,110 +1,140 @@
 package com.kindreds.client.screen;
 
-import com.kindreds.data.Discipline;
 import com.kindreds.data.Disciplines;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.data.Theme;
-import com.kindreds.network.OpenTreeC2S;
 import com.kindreds.network.RequestUnlockC2S;
 import com.kindreds.network.RespecC2S;
 import com.kindreds.playerdata.ClientKindredData;
 import com.kindreds.playerdata.KindredData;
+import com.kindreds.progression.LevelCurve;
 import com.kindreds.progression.ProgressionService;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.registry.Registry;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.TreeMap;
 
 /**
- * The lore-themed skill-tree screen: a pannable/zoomable node canvas (left ~75%) over the race's
- * themed background, plus a "character page" side panel (right ~25%) with discipline gauges, the
- * active vision lens, titles, and a respec button. See package javadoc / Task 11 brief for the full
- * design; this class owns layout, input (pan/zoom/click), and pulling state together each frame -
- * actual drawing is delegated to {@link TreeRenderer} (canvas) and {@link NodeTooltip} (hover card).
+ * The lore-themed skill-tree screen, redesigned as a <b>discipline-focused</b> view:
+ * <ul>
+ *   <li><b>Left rail</b> - one tab per discipline that has nodes in this race's tree, each showing
+ *       its level and available points. Click to focus that discipline.</li>
+ *   <li><b>Center canvas</b> - only the focused discipline's branch, auto-centered at a fixed,
+ *       readable spacing (independent of the raw authored {@code pos} scale) with node names drawn
+ *       inline, vertical scroll when the branch is tall.</li>
+ *   <li><b>Right panel</b> - the selected node's full detail (effects in plain language, cost,
+ *       prereqs, deed) with an Unlock action, or the focused discipline's summary + XP bar when no
+ *       node is selected; plus vision, titles, and respec.</li>
+ * </ul>
  *
- * <h2>Live data, not a snapshot</h2>
- * The {@link KindredData} passed to the constructor is only a starting point - every frame re-reads
- * {@link ClientKindredData#INSTANCE} instead (see {@link #currentData()}), so the screen reflects
- * unlocks/respecs the instant the server's {@code SyncKindredDataS2C} lands, with no need to
- * recreate the screen.
- *
- * <h2>No race / no tree</h2>
- * If the player hasn't chosen a race yet (or the base mod isn't installed), {@code tree} is
- * {@code null} and the screen shows a gentle prompt instead of a canvas (see {@link #open}).
+ * <p>Race -&gt; tree -&gt; theme is resolved live each frame from the client-mirrored synced data
+ * (see {@link #refreshTreeForRace}), so the screen self-heals if the join-time race sync lands after
+ * it opens. Unlock attempts get audible + visual feedback via {@link #onUnlockResult}.
  */
 public class SkillTreeScreen extends Screen {
-    private static final float MIN_ZOOM = 0.5f;
-    private static final float MAX_ZOOM = 2.2f;
+    private static final int TAB_W = 152;
+    private static final int PANEL_W = 214;
+    private static final int MARGIN = 8;
+    private static final int GAP = 8;
 
-    // Not final: resolved lazily from the live client-synced race (see refreshTreeForRace()). The
-    // join-time sync can land after this screen opens, so tree/theme may start null and become
-    // non-null once the race arrives, flipping the no-race prompt to the real tree in place.
+    private static final int COL_SPACING = 132;
+    private static final int ROW_SPACING = 86;
+    private static final int NODE_R = 15;
+    private static final int CANVAS_TOP_PAD = 44;   // room for the discipline title band
+    private static final int CANVAS_BOTTOM_PAD = 20;
+
+    // Not final: resolved lazily from the live client-synced race (see refreshTreeForRace()).
     private SkillTree tree;
     private Theme theme;
     private Identifier resolvedForRace;
     private final KindredData initialData;
 
-    private float panX;
-    private float panY;
-    private float zoom = 1.0f;
+    private List<String> tabDisciplines = List.of();   // discipline paths that have nodes, in order
+    private String selectedDiscipline;                 // e.g. "combat"
+    private SkillNode selectedNode;
 
-    private boolean dragging;
-    private boolean suppressDragThisPress;
+    private float scrollY;
+    private float contentHeight;
 
-    private int canvasX, canvasY, canvasW, canvasH;
-    private int panelX, panelY, panelW, panelH;
-    private int[] respecButton = new int[4]; // x, y, w, h
+    // Layout rects (x, y, w, h), recomputed in init().
+    private int[] rail = new int[4];
+    private int[] canvas = new int[4];
+    private int[] panel = new int[4];
+    private int[] unlockButton = new int[4];  // only valid while an unlockable node is selected
+    private int[] respecButton = new int[4];
 
-    private SkillNode hoveredNode;
-    private TreeRenderer.NodeState hoveredNodeState;
-    private final List<NodeHit> nodeHits = new ArrayList<>();
+    private final List<int[]> tabRects = new ArrayList<>();   // parallel to tabDisciplines: x,y,w,h
+    private final List<Placed> placed = new ArrayList<>();
+    private Placed hovered;
 
-    private record NodeHit(SkillNode node, float x, float y, float radius) {
+    // Unlock feedback.
+    private String pendingUnlockNodeId;
+    private String flashNodeId;
+    private float flashTimer;
+
+    private record Placed(SkillNode node, float x, float y, float r, TreeRenderer.NodeState state) {
     }
 
     public SkillTreeScreen(KindredData data) {
         super(Text.literal("Skill Tree"));
         this.initialData = data;
-        // Leave tree/theme/resolvedForRace null so the first render() resolves from live data.
     }
 
-    /** Resolves the current player's race -&gt; {@link SkillTree} -&gt; {@link Theme} from the
-     * client-mirrored synced registries and opens the screen (or a no-race prompt if unresolved).
-     * Called by {@code KindredsClient}'s "Open skill tree" keybind, which also fires
-     * {@link OpenTreeC2S} alongside this so the server refreshes the client's data. */
+    /** Opens the screen; it resolves its own race/tree/theme each frame from live synced data. */
     public static void open(MinecraftClient client) {
-        // The screen resolves its own race -> tree -> theme each frame from the live synced data
-        // (see refreshTreeForRace()), so opening never has to wait on the race being cached yet -
-        // if the join-time sync hasn't delivered it, the OpenTreeC2S the keybind fires alongside
-        // this refreshes it a tick later and the screen updates in place.
         client.setScreen(new SkillTreeScreen(ClientKindredData.INSTANCE));
     }
 
-    /**
-     * Re-resolves {@link #tree}/{@link #theme} from the client-mirrored synced registries whenever
-     * the player's race first becomes known (or changes) after this screen opened. Cheap and
-     * idempotent: once resolved for the current race it returns immediately; while the race is still
-     * unknown, or the dynamic registries haven't synced yet, it stays on the no-race prompt and
-     * retries on the next frame. Called at the top of {@link #render}.
-     */
+    private KindredData currentData() {
+        KindredData live = ClientKindredData.INSTANCE;
+        return live != null ? live : initialData;
+    }
+
+    // --- Layout / lifecycle ----------------------------------------------------------------------
+
+    @Override
+    protected void init() {
+        rail = new int[]{MARGIN, MARGIN, TAB_W, height - 2 * MARGIN};
+        panel = new int[]{width - PANEL_W - MARGIN, MARGIN, PANEL_W, height - 2 * MARGIN};
+        int cx = rail[0] + rail[2] + GAP;
+        canvas = new int[]{cx, MARGIN, panel[0] - GAP - cx, height - 2 * MARGIN};
+    }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
+
+    /** Re-resolves {@link #tree}/{@link #theme} from the client-mirrored synced registries when the
+     * race first becomes known (or changes) after this screen opened, and (re)builds the discipline
+     * tab list. Cheap and idempotent; retries next frame while the race/registries aren't ready. */
     private void refreshTreeForRace() {
         Identifier race = currentData().race();
-        if (tree != null && java.util.Objects.equals(race, resolvedForRace)) {
+        if (tree != null && Objects.equals(race, resolvedForRace)) {
             return;
         }
         resolvedForRace = race;
         tree = null;
         theme = null;
+        tabDisciplines = List.of();
+        selectedDiscipline = null;
+        selectedNode = null;
         if (race == null) {
             return;
         }
@@ -123,45 +153,63 @@ public class SkillTreeScreen extends Screen {
             if (tree != null) {
                 Registry<Theme> themes = client.world.getRegistryManager().getOrThrow(KindredsRegistries.THEME);
                 theme = themes.get(tree.theme());
+                buildTabs();
             }
         } catch (RuntimeException ignored) {
             // Registries not synced yet - stay on the prompt; retried next frame.
         }
     }
 
-    private KindredData currentData() {
-        KindredData live = ClientKindredData.INSTANCE;
-        return live != null ? live : initialData;
+    /** Builds the discipline tab list from the disciplines that actually have nodes in this tree,
+     * in the canonical {@link Disciplines#ALL} order, and picks a sensible default focus. */
+    private void buildTabs() {
+        List<String> withNodes = new ArrayList<>();
+        for (String disc : Disciplines.ALL) {
+            for (SkillNode node : tree.nodes()) {
+                if (node.cost().disciplineId().getPath().equals(disc)) {
+                    withNodes.add(disc);
+                    break;
+                }
+            }
+        }
+        tabDisciplines = withNodes;
+        // Default focus: the first discipline that already has points to spend, else the first tab.
+        KindredData data = currentData();
+        selectedDiscipline = withNodes.isEmpty() ? null : withNodes.get(0);
+        for (String disc : withNodes) {
+            if (available(data, disc) > 0) {
+                selectedDiscipline = disc;
+                break;
+            }
+        }
+        scrollY = 0;
+        selectedNode = null;
     }
 
-    // --- Layout -----------------------------------------------------------------------------------
+    // --- Discipline point helpers ----------------------------------------------------------------
 
-    @Override
-    protected void init() {
-        canvasX = 8;
-        canvasY = 8;
-        canvasW = Math.max(100, (int) (width * 0.75f) - 12);
-        canvasH = height - 16;
-        panelX = canvasX + canvasW + 8;
-        panelY = 8;
-        panelW = Math.max(80, width - panelX - 8);
-        panelH = height - 16;
+    private static Identifier disciplineId(String path) {
+        return Identifier.of("kindreds", path);
     }
 
-    @Override
-    public boolean shouldPause() {
-        return false;
+    private int level(KindredData d, String disc) {
+        return ProgressionService.pointsForLevel(d.xpIn(disciplineId(disc)));
     }
 
-    // --- Render -------------------------------------------------------------------------------
+    private int spent(KindredData d, String disc) {
+        return ProgressionService.pointsSpent(d, tree, disciplineId(disc));
+    }
+
+    private int available(KindredData d, String disc) {
+        return ProgressionService.pointsAvailable(d, tree, disciplineId(disc));
+    }
+
+    // --- Render ----------------------------------------------------------------------------------
 
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float deltaTicks) {
-        // Darkened backdrop. We deliberately avoid Screen#renderBackground here: since 1.21.2 it
-        // routes through applyBlur(), which throws "Can only blur once per frame" for this
-        // non-pausing screen (shouldPause()==false, so the world keeps rendering behind it) under
-        // the Sodium/Iris pipeline this pack ships. A flat darkening is blur-guard-immune and
-        // renders identically across vanilla/Sodium/Iris.
+        // Flat darkened backdrop (avoids Screen#renderBackground's blur, which crashes non-pausing
+        // screens under this pack's Sodium/Iris pipeline).
         ctx.fill(0, 0, this.width, this.height, 0xC80A0A0A);
 
         refreshTreeForRace();
@@ -171,53 +219,22 @@ public class SkillTreeScreen extends Screen {
             super.render(ctx, mouseX, mouseY, deltaTicks);
             return;
         }
+        if (flashTimer > 0) {
+            flashTimer = Math.max(0, flashTimer - deltaTicks);
+        }
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
 
         KindredData data = currentData();
+        renderTabRail(ctx, data, mouseX, mouseY);
+        renderCanvas(ctx, data, mouseX, mouseY);
+        renderPanel(ctx, data, mouseX, mouseY);
 
-        TreeRenderer.drawBackground(ctx, theme, canvasX, canvasY, canvasW, canvasH);
-
-        ctx.enableScissor(canvasX, canvasY, canvasX + canvasW, canvasY + canvasH);
-        TreeRenderer.CanvasTransform t =
-                new TreeRenderer.CanvasTransform(canvasX, canvasY, canvasW, canvasH, panX, panY, zoom);
-        TreeRenderer.drawEdges(ctx, tree, theme, t);
-
-        nodeHits.clear();
-        hoveredNode = null;
-        for (SkillNode node : tree.nodes()) {
-            float sx = t.screenX(node.pos()[0]);
-            float sy = t.screenY(node.pos()[1]);
-            float radius = TreeRenderer.radiusFor(node, zoom);
-            if (TreeRenderer.isCulled(sx, sy, radius, canvasX, canvasY, canvasW, canvasH)) {
-                continue;
-            }
-            boolean hovered = distance(mouseX, mouseY, sx, sy) <= radius
-                    && mouseX >= canvasX && mouseX <= canvasX + canvasW
-                    && mouseY >= canvasY && mouseY <= canvasY + canvasH;
-            TreeRenderer.NodeState state = TreeRenderer.stateOf(node, data, tree);
-            if (hovered) {
-                hoveredNode = node;
-                hoveredNodeState = state;
-            }
-            TreeRenderer.drawNode(ctx, node, state, theme, sx, sy, radius, hovered);
-            nodeHits.add(new NodeHit(node, sx, sy, radius));
+        if (hovered != null) {
+            NodeTooltip.render(ctx, MinecraftClient.getInstance(), hovered.node(), hovered.state(),
+                    tree, theme, mouseX, mouseY, width, height);
         }
-        ctx.disableScissor();
-
-        TreeRenderer.drawFrame(ctx, theme, canvasX, canvasY, canvasW, canvasH);
-
-        renderSidePanel(ctx, data, mouseX, mouseY);
-
-        if (hoveredNode != null) {
-            NodeTooltip.render(ctx, MinecraftClient.getInstance(), hoveredNode, hoveredNodeState, tree, theme,
-                    mouseX, mouseY, width, height);
-        }
-
         super.render(ctx, mouseX, mouseY, deltaTicks);
-    }
-
-    private static double distance(double x1, double y1, double x2, double y2) {
-        double dx = x1 - x2, dy = y1 - y2;
-        return Math.sqrt(dx * dx + dy * dy);
     }
 
     private void renderNoRacePrompt(DrawContext ctx) {
@@ -226,170 +243,394 @@ public class SkillTreeScreen extends Screen {
         ctx.drawText(textRenderer, msg, (width - w) / 2, height / 2, 0xFFDDDDDD, true);
     }
 
-    // --- Side panel -----------------------------------------------------------------------------
+    // --- Tab rail --------------------------------------------------------------------------------
 
-    private void renderSidePanel(DrawContext ctx, KindredData data, int mouseX, int mouseY) {
-        TreeRenderer.drawBackground(ctx, theme, panelX, panelY, panelW, panelH);
-        TreeRenderer.drawFrame(ctx, theme, panelX, panelY, panelW, panelH);
+    private void renderTabRail(DrawContext ctx, KindredData data, int mouseX, int mouseY) {
+        TreeRenderer.drawBackground(ctx, theme, rail[0], rail[1], rail[2], rail[3]);
+        TreeRenderer.drawFrame(ctx, theme, rail[0], rail[1], rail[2], rail[3]);
+        int accent = ThemeAssets.accent(theme);
+        int x = rail[0] + 10;
+        int y = rail[1] + 10;
+        ctx.drawText(textRenderer, Text.literal("Disciplines").formatted(Formatting.BOLD), x, y, accent, false);
+        y += 16;
+
+        tabRects.clear();
+        int rowH = 34;
+        for (String disc : tabDisciplines) {
+            int[] r = {rail[0] + 6, y, rail[2] - 12, rowH - 4};
+            tabRects.add(r);
+            boolean sel = disc.equals(selectedDiscipline);
+            boolean hover = within(r, mouseX, mouseY);
+            int avail = available(data, disc);
+
+            if (sel) {
+                ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], ThemeAssets.withAlpha(accent, 70));
+                ctx.drawBorder(r[0], r[1], r[2], r[3], accent);
+            } else if (hover) {
+                ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], 0x40FFFFFF);
+            }
+
+            int textColor = sel ? 0xFFFFFFFF : 0xFFD8D2C0;
+            ctx.drawText(textRenderer, Text.literal(titleCase(disc)).formatted(sel ? Formatting.BOLD : Formatting.RESET),
+                    r[0] + 8, r[1] + 5, textColor, false);
+            String sub = "Lv " + level(data, disc) + "   " + spent(data, disc) + " spent";
+            ctx.drawText(textRenderer, Text.literal(sub), r[0] + 8, r[1] + 17, 0xFF9A9484, false);
+            if (avail > 0) {
+                String pts = "+" + avail;
+                int pw = textRenderer.getWidth(pts);
+                ctx.drawText(textRenderer, Text.literal(pts).formatted(Formatting.BOLD),
+                        r[0] + r[2] - pw - 8, r[1] + 11, 0xFF66DD66, true);
+            }
+            y += rowH;
+        }
+    }
+
+    // --- Canvas (focused discipline branch) ------------------------------------------------------
+
+    private void renderCanvas(DrawContext ctx, KindredData data, int mouseX, int mouseY) {
+        TreeRenderer.drawBackground(ctx, theme, canvas[0], canvas[1], canvas[2], canvas[3]);
+        TreeRenderer.drawFrame(ctx, theme, canvas[0], canvas[1], canvas[2], canvas[3]);
 
         int accent = ThemeAssets.accent(theme);
-        int textX = panelX + 10;
-        int y = panelY + 10;
+        String title = selectedDiscipline == null ? "" : titleCase(selectedDiscipline) + " Path";
+        int tw = textRenderer.getWidth(title);
+        ctx.drawText(textRenderer, Text.literal(title).formatted(Formatting.BOLD),
+                canvas[0] + (canvas[2] - tw) / 2, canvas[1] + 14, accent, true);
 
-        String raceName = NodeTooltip.displayName(tree.race().getPath());
-        ctx.fill(textX, y, textX + 16, y + 16, ThemeAssets.ownedColor(theme));
-        ctx.drawBorder(textX, y, 16, 16, accent);
-        ctx.drawText(textRenderer, Text.literal(raceName), textX + 22, y + 4, 0xFFFFFFFF, true);
-        y += 26;
+        layout(data);
 
-        ctx.drawText(textRenderer, Text.literal("Disciplines"), textX, y, accent, false);
-        y += 12;
+        int top = canvas[1] + 1;
+        int bottom = canvas[1] + canvas[3] - 1;
+        ctx.enableScissor(canvas[0] + 1, top + CANVAS_TOP_PAD - 12, canvas[0] + canvas[2] - 1, bottom);
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        Registry<Discipline> disciplines = null;
-        if (client.world != null) {
-            try {
-                disciplines = client.world.getRegistryManager().getOrThrow(KindredsRegistries.DISCIPLINE);
-            } catch (RuntimeException ignored) {
-                // Not synced yet - gauges fall back to id-derived names/colors below.
+        // Edges first (only within this discipline's placed set).
+        for (Placed p : placed) {
+            for (String prereqId : p.node().prereqs()) {
+                findPlaced(prereqId).ifPresent(pre ->
+                        drawEdge(ctx, pre.x(), pre.y(), p.x(), p.y(), ThemeAssets.edgeColor(theme)));
             }
         }
 
-        int gaugeWidth = panelW - 20;
-        for (String path : Disciplines.ALL) {
-            Identifier disciplineId = Identifier.of("kindreds", path);
-            int level = ProgressionService.pointsForLevel(data.xpIn(disciplineId));
-            int spent = ProgressionService.pointsSpent(data, tree, disciplineId);
-            int available = Math.max(0, level - spent);
+        hovered = null;
+        for (Placed p : placed) {
+            boolean hover = dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 4
+                    && mouseY >= top + CANVAS_TOP_PAD - 12 && mouseY <= bottom;
+            if (hover) {
+                hovered = p;
+            }
+            boolean selected = selectedNode != null && selectedNode.id().equals(p.node().id());
+            if (flashNodeId != null && flashNodeId.equals(p.node().id()) && flashTimer > 0) {
+                float g = (8f - flashTimer) / 8f;               // 0 -> 1 as it settles
+                int ring = (int) (p.r() + 6 + g * 14);
+                int alpha = (int) (200 * (1 - g));
+                ctx.drawBorder((int) p.x() - ring, (int) p.y() - ring, ring * 2, ring * 2,
+                        ThemeAssets.withAlpha(0xFFFFE070, Math.max(0, alpha)));
+            }
+            TreeRenderer.drawNode(ctx, p.node(), p.state(), theme, p.x(), p.y(), p.r(), hover || selected);
 
-            Discipline discipline = disciplines != null ? disciplines.get(disciplineId) : null;
-            String name = discipline != null ? discipline.name() : NodeTooltip.displayName(path);
-            int color = discipline != null ? ThemeAssets.opaque(discipline.colorInt()) : accent;
+            // Inline node name so the branch is readable at a glance.
+            String name = NodeTooltip.displayName(p.node().id());
+            int nw = textRenderer.getWidth(name);
+            int nameColor = switch (p.state()) {
+                case OWNED -> 0xFFB9F2B0;
+                case AVAILABLE -> 0xFFFFF3C0;
+                case SEALED -> ThemeAssets.WARNING_COLOR;
+                case LOCKED -> 0xFF8A8478;
+            };
+            ctx.drawText(textRenderer, Text.literal(name), (int) p.x() - nw / 2, (int) (p.y() + p.r() + 4),
+                    nameColor, true);
+            String costTag = p.state() == TreeRenderer.NodeState.OWNED ? "✔"
+                    : p.node().cost().points() + " pt";
+            int cw = textRenderer.getWidth(costTag);
+            ctx.drawText(textRenderer, Text.literal(costTag), (int) p.x() - cw / 2, (int) (p.y() + p.r() + 15),
+                    0xFF9A9484, true);
+        }
+        ctx.disableScissor();
 
-            ctx.drawText(textRenderer, Text.literal(name + "  " + spent + "/" + level
-                    + (available > 0 ? " (+" + available + ")" : "")), textX, y, 0xFFE0E0E0, false);
-            y += 9;
-            int barH = 5;
-            ctx.fill(textX, y, textX + gaugeWidth, y + barH, 0xFF202020);
-            // Filled portion = spent / level (points spent can't exceed points earned in practice,
-            // but clamp defensively against desync).
-            int filled = level <= 0 ? 0 : Math.round(gaugeWidth * Math.min(1f, spent / (float) level));
-            ctx.fill(textX, y, textX + filled, y + barH, color);
-            ctx.drawBorder(textX, y, gaugeWidth, barH, ThemeAssets.withAlpha(accent, 140));
-            y += barH + 6;
+        if (placed.isEmpty()) {
+            String none = "No path here yet.";
+            int w = textRenderer.getWidth(none);
+            ctx.drawText(textRenderer, Text.literal(none), canvas[0] + (canvas[2] - w) / 2,
+                    canvas[1] + canvas[3] / 2, 0xFF9A9484, true);
+        }
+    }
+
+    /** Places the focused discipline's nodes at fixed, readable spacing, centered horizontally, so
+     * layout is independent of the raw authored {@code pos} magnitudes (which differ per tree). Column
+     * order comes from distinct x values, row order from distinct y values. */
+    private void layout(KindredData data) {
+        placed.clear();
+        if (selectedDiscipline == null) {
+            contentHeight = 0;
+            return;
+        }
+        List<SkillNode> nodes = new ArrayList<>();
+        TreeMap<Integer, Integer> xIndex = new TreeMap<>();
+        TreeMap<Integer, Integer> yIndex = new TreeMap<>();
+        for (SkillNode node : tree.nodes()) {
+            if (node.cost().disciplineId().getPath().equals(selectedDiscipline)) {
+                nodes.add(node);
+                xIndex.put(node.pos()[0], 0);
+                yIndex.put(node.pos()[1], 0);
+            }
+        }
+        indexKeys(xIndex);
+        indexKeys(yIndex);
+
+        int cols = xIndex.size();
+        int rows = yIndex.size();
+        contentHeight = Math.max(0, (rows - 1) * ROW_SPACING) + NODE_R * 2 + 40;
+
+        float startX = canvas[0] + canvas[2] / 2f - (cols - 1) * COL_SPACING / 2f;
+        float startY = canvas[1] + CANVAS_TOP_PAD + NODE_R + scrollY;
+
+        for (SkillNode node : nodes) {
+            int col = xIndex.get(node.pos()[0]);
+            int row = yIndex.get(node.pos()[1]);
+            float sx = startX + col * COL_SPACING;
+            float sy = startY + row * ROW_SPACING;
+            float r = node.deedAdvancement().isPresent() ? NODE_R * 1.4f : NODE_R;
+            placed.add(new Placed(node, sx, sy, r, TreeRenderer.stateOf(node, data, tree)));
+        }
+    }
+
+    /** Replaces each key's placeholder value with its rank (0-based) among the sorted keys. */
+    private static void indexKeys(TreeMap<Integer, Integer> map) {
+        int i = 0;
+        for (Integer key : map.keySet()) {
+            map.put(key, i++);
+        }
+    }
+
+    private Optional<Placed> findPlaced(String nodeId) {
+        for (Placed p : placed) {
+            if (p.node().id().equals(nodeId)) {
+                return Optional.of(p);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static void drawEdge(DrawContext ctx, float x1, float y1, float x2, float y2, int color) {
+        // Simple orthogonal-ish connector: vertical then horizontal, drawn as thin fills.
+        int thick = 2;
+        int midY = (int) ((y1 + y2) / 2);
+        ctx.fill((int) x1 - thick / 2, (int) Math.min(y1, midY), (int) x1 + thick / 2 + 1, (int) Math.max(y1, midY), color);
+        ctx.fill((int) Math.min(x1, x2), midY - thick / 2, (int) Math.max(x1, x2), midY + thick / 2 + 1, color);
+        ctx.fill((int) x2 - thick / 2, (int) Math.min(midY, y2), (int) x2 + thick / 2 + 1, (int) Math.max(midY, y2), color);
+    }
+
+    // --- Detail panel ----------------------------------------------------------------------------
+
+    private void renderPanel(DrawContext ctx, KindredData data, int mouseX, int mouseY) {
+        TreeRenderer.drawBackground(ctx, theme, panel[0], panel[1], panel[2], panel[3]);
+        TreeRenderer.drawFrame(ctx, theme, panel[0], panel[1], panel[2], panel[3]);
+
+        int accent = ThemeAssets.accent(theme);
+        int x = panel[0] + 10;
+        int y = panel[1] + 10;
+
+        // Race header.
+        String raceName = titleCase(tree.race().getPath());
+        ctx.fill(x, y, x + 16, y + 16, ThemeAssets.ownedColor(theme));
+        ctx.drawBorder(x, y, 16, 16, accent);
+        ctx.drawText(textRenderer, Text.literal(raceName).formatted(Formatting.BOLD), x + 22, y + 4, 0xFFFFFFFF, true);
+        y += 26;
+        ctx.fill(x, y, panel[0] + panel[2] - 10, y + 1, ThemeAssets.withAlpha(accent, 120));
+        y += 6;
+
+        unlockButton = new int[]{0, 0, 0, 0};
+        if (selectedNode != null) {
+            y = renderNodeDetail(ctx, data, x, y);
+        } else {
+            y = renderDisciplineSummary(ctx, data, x, y);
         }
 
-        y += 6;
-        ctx.drawText(textRenderer, Text.literal("Vision"), textX, y, accent, false);
-        y += 12;
-        Identifier lens = data.activeVisionLens();
-        String lensName = lens != null ? NodeTooltip.displayName(lens.getPath()) : "None equipped";
-        ctx.drawText(textRenderer, Text.literal(lensName), textX, y, 0xFFE0E0E0, false);
-        y += 18;
-
-        ctx.drawText(textRenderer, Text.literal("Titles"), textX, y, accent, false);
-        y += 12;
+        // Vision + titles, anchored lower.
+        int vy = panel[1] + panel[3] - 96;
+        ctx.drawText(textRenderer, Text.literal("Vision").formatted(Formatting.BOLD), x, vy, accent, false);
+        Identifier lensId = data.activeVisionLens();
+        String lens = lensId != null ? titleCase(lensId.getPath()) : "None equipped";
+        ctx.drawText(textRenderer, Text.literal(lens), x, vy + 12, 0xFFD8D2C0, false);
+        ctx.drawText(textRenderer, Text.literal("Titles").formatted(Formatting.BOLD), x, vy + 30, accent, false);
         String titles = data.titles().isEmpty() ? "None earned yet" : String.join(", ", data.titles());
-        for (var line : textRenderer.wrapLines(Text.literal(titles), gaugeWidth)) {
-            ctx.drawText(textRenderer, line, textX, y, 0xFFE0E0E0, false);
+        for (var line : textRenderer.wrapLines(Text.literal(titles), panel[2] - 20)) {
+            ctx.drawText(textRenderer, line, x, vy + 42, 0xFFD8D2C0, false);
+            break;
+        }
+
+        // Respec button.
+        respecButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 30, panel[2] - 20, 22};
+        boolean rHover = within(respecButton, mouseX, mouseY);
+        ctx.fill(respecButton[0], respecButton[1], respecButton[0] + respecButton[2], respecButton[1] + respecButton[3],
+                rHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
+        ctx.drawBorder(respecButton[0], respecButton[1], respecButton[2], respecButton[3], accent);
+        Text rt = Text.literal("Unlearn the old ways");
+        int rtw = textRenderer.getWidth(rt);
+        ctx.drawText(textRenderer, rt, respecButton[0] + (respecButton[2] - rtw) / 2, respecButton[1] + 7, 0xFFFFFFFF, true);
+    }
+
+    private int renderDisciplineSummary(DrawContext ctx, KindredData data, int x, int y) {
+        if (selectedDiscipline == null) {
+            ctx.drawText(textRenderer, Text.literal("Select a discipline.").formatted(Formatting.GRAY), x, y, 0xFFB0AAA0, false);
+            return y + 16;
+        }
+        int accent = ThemeAssets.accent(theme);
+        int lvl = level(data, selectedDiscipline);
+        int sp = spent(data, selectedDiscipline);
+        int av = available(data, selectedDiscipline);
+        ctx.drawText(textRenderer, Text.literal(titleCase(selectedDiscipline)).formatted(Formatting.BOLD), x, y, accent, false);
+        y += 14;
+        ctx.drawText(textRenderer, Text.literal("Level " + lvl + "  ·  " + sp + " spent  ·  "), x, y, 0xFFD8D2C0, false);
+        y += 12;
+        ctx.drawText(textRenderer, Text.literal(av + " point(s) to spend").formatted(av > 0 ? Formatting.GREEN : Formatting.GRAY),
+                x, y, av > 0 ? 0xFF66DD66 : 0xFF9A9484, false);
+        y += 16;
+
+        // XP-to-next-level bar.
+        long xp = data.xpIn(disciplineId(selectedDiscipline));
+        long cur = LevelCurve.xpForLevel(lvl);
+        long next = LevelCurve.xpForLevel(lvl + 1);
+        float frac = next > cur ? (float) (xp - cur) / (float) (next - cur) : 0f;
+        frac = Math.max(0f, Math.min(1f, frac));
+        int barW = panel[2] - 20;
+        ctx.fill(x, y, x + barW, y + 6, 0x60000000);
+        ctx.fill(x, y, x + (int) (barW * frac), y + 6, ThemeAssets.ownedColor(theme));
+        ctx.drawBorder(x, y, barW, 6, ThemeAssets.withAlpha(accent, 160));
+        y += 12;
+        ctx.drawText(textRenderer, Text.literal("XP " + xp + " / " + next).formatted(Formatting.DARK_GRAY), x, y, 0xFF9A9484, false);
+        y += 18;
+        ctx.drawText(textRenderer, Text.literal("Click a node to inspect it.").formatted(Formatting.ITALIC),
+                x, y, 0xFF9A9484, false);
+        return y + 16;
+    }
+
+    private int renderNodeDetail(DrawContext ctx, KindredData data, int x, int y) {
+        int accent = ThemeAssets.accent(theme);
+        SkillNode node = selectedNode;
+        TreeRenderer.NodeState state = TreeRenderer.stateOf(node, data, tree);
+        int wrap = panel[2] - 20;
+
+        ctx.drawText(textRenderer, Text.literal(NodeTooltip.displayName(node.id())).formatted(Formatting.BOLD),
+                x, y, 0xFFFFFFFF, true);
+        y += 13;
+        String status = switch (state) {
+            case OWNED -> "Owned";
+            case AVAILABLE -> "Available";
+            case SEALED -> "Sealed - needs a deed";
+            case LOCKED -> "Locked";
+        };
+        int statusColor = switch (state) {
+            case OWNED -> 0xFF66DD66;
+            case AVAILABLE -> 0xFFFFE070;
+            case SEALED -> ThemeAssets.WARNING_COLOR;
+            case LOCKED -> 0xFF9A9484;
+        };
+        ctx.drawText(textRenderer, Text.literal(status), x, y, statusColor, false);
+        y += 14;
+
+        for (var line : textRenderer.wrapLines(Text.literal(NodeTooltip.flavor(node)).formatted(Formatting.GRAY), wrap)) {
+            ctx.drawText(textRenderer, line, x, y, 0xFFB6B0A2, false);
             y += 10;
         }
+        y += 4;
+        ctx.drawText(textRenderer, Text.literal("Effects").formatted(Formatting.BOLD), x, y, accent, false);
+        y += 12;
+        for (var ability : node.abilities()) {
+            // describe() embeds legacy color codes (e.g. curses); the String draw path honors them.
+            for (var line : textRenderer.wrapLines(Text.literal(NodeTooltip.describe(ability)), wrap)) {
+                ctx.drawText(textRenderer, line, x + 4, y, 0xFFE6E0D0, false);
+                y += 10;
+            }
+        }
+        y += 4;
+        ctx.drawText(textRenderer, Text.literal("Cost: " + node.cost().points() + " " + titleCase(selectedDiscipline) + " pt"),
+                x, y, 0xFF7FD0E0, false);
+        y += 12;
+        if (!node.prereqs().isEmpty()) {
+            List<String> names = new ArrayList<>();
+            for (String pid : node.prereqs()) {
+                names.add(tree.node(pid).map(n -> NodeTooltip.displayName(n.id())).orElse(pid));
+            }
+            for (var line : textRenderer.wrapLines(Text.literal("Requires: " + String.join(", ", names)).formatted(Formatting.DARK_GRAY), wrap)) {
+                ctx.drawText(textRenderer, line, x, y, 0xFF9A9484, false);
+                y += 10;
+            }
+        }
+        node.deedAdvancement().ifPresent(deed -> { /* shown via status line above */ });
 
-        int btnH = 20;
-        int btnY = panelY + panelH - btnH - 10;
-        respecButton = new int[]{textX, btnY, gaugeWidth, btnH};
-        boolean hovered = isWithin(respecButton, mouseX, mouseY);
-        ctx.fill(respecButton[0], respecButton[1], respecButton[0] + respecButton[2], respecButton[1] + respecButton[3],
-                hovered ? ThemeAssets.mix(ThemeAssets.secondary(theme), 0xFFFFFFFF, 0.15f) : ThemeAssets.secondary(theme));
-        ctx.drawBorder(respecButton[0], respecButton[1], respecButton[2], respecButton[3], accent);
-        Text respecText = Text.literal("Unlearn the old ways");
-        int tw = textRenderer.getWidth(respecText);
-        ctx.drawText(textRenderer, respecText, respecButton[0] + (respecButton[2] - tw) / 2,
-                respecButton[1] + (respecButton[3] - 9) / 2, 0xFFFFFFFF, true);
+        // Unlock action for an unlockable node.
+        if (state == TreeRenderer.NodeState.AVAILABLE || state == TreeRenderer.NodeState.SEALED) {
+            y += 6;
+            unlockButton = new int[]{x, y, wrap, 20};
+            boolean hover = within(unlockButton, lastMouseX, lastMouseY);
+            int fill = state == TreeRenderer.NodeState.SEALED ? ThemeAssets.withAlpha(ThemeAssets.WARNING_COLOR, 90)
+                    : (hover ? 0xC0225522 : 0x80183018);
+            ctx.fill(unlockButton[0], unlockButton[1], unlockButton[0] + unlockButton[2], unlockButton[1] + unlockButton[3], fill);
+            ctx.drawBorder(unlockButton[0], unlockButton[1], unlockButton[2], unlockButton[3],
+                    state == TreeRenderer.NodeState.SEALED ? ThemeAssets.WARNING_COLOR : 0xFF66DD66);
+            String label = state == TreeRenderer.NodeState.SEALED
+                    ? "Attempt (deed-sealed)"
+                    : "Learn  (" + node.cost().points() + " pt)";
+            int lw = textRenderer.getWidth(label);
+            ctx.drawText(textRenderer, Text.literal(label), unlockButton[0] + (unlockButton[2] - lw) / 2, unlockButton[1] + 6, 0xFFFFFFFF, true);
+            y += 24;
+        }
+        return y;
     }
 
-    private static boolean isWithin(int[] bounds, double x, double y) {
-        return x >= bounds[0] && x <= bounds[0] + bounds[2] && y >= bounds[1] && y <= bounds[1] + bounds[3];
-    }
+    // --- Input -----------------------------------------------------------------------------------
 
-    // --- Input --------------------------------------------------------------------------------
+    private int lastMouseX, lastMouseY;
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        suppressDragThisPress = false;
-
-        if (tree == null) {
+        if (tree == null || button != 0) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
-
-        if (button == 0 && isWithin(respecButton, mouseX, mouseY)) {
-            suppressDragThisPress = true;
+        // Respec.
+        if (within(respecButton, mouseX, mouseY)) {
             openRespecConfirm();
             return true;
         }
-
-        if (button == 0) {
-            for (NodeHit hit : nodeHits) {
-                if (distance(mouseX, mouseY, hit.x(), hit.y()) <= hit.radius()) {
-                    suppressDragThisPress = true;
-                    onNodeClicked(hit.node());
-                    return true;
-                }
+        // Unlock button.
+        if (selectedNode != null && within(unlockButton, mouseX, mouseY)) {
+            attemptUnlock(selectedNode);
+            return true;
+        }
+        // Discipline tabs.
+        for (int i = 0; i < tabRects.size(); i++) {
+            if (within(tabRects.get(i), mouseX, mouseY)) {
+                selectedDiscipline = tabDisciplines.get(i);
+                selectedNode = null;
+                scrollY = 0;
+                return true;
             }
         }
-
-        if (button == 0 && mouseX >= canvasX && mouseX <= canvasX + canvasW
-                && mouseY >= canvasY && mouseY <= canvasY + canvasH) {
-            dragging = true;
+        // Canvas nodes.
+        for (Placed p : placed) {
+            if (dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 4) {
+                selectedNode = p.node();
+                return true;
+            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        dragging = false;
-        suppressDragThisPress = false;
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (dragging && !suppressDragThisPress && button == 0) {
-            panX += (float) deltaX;
-            panY += (float) deltaY;
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (tree != null && within(canvas, mouseX, mouseY)) {
+            float viewH = canvas[3] - CANVAS_TOP_PAD - CANVAS_BOTTOM_PAD;
+            float minScroll = Math.min(0, viewH - contentHeight);
+            scrollY = Math.max(minScroll, Math.min(0, scrollY + (float) verticalAmount * 24));
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        if (tree == null || mouseX < canvasX || mouseX > canvasX + canvasW || mouseY < canvasY || mouseY > canvasY + canvasH) {
-            return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-        }
-        TreeRenderer.CanvasTransform before =
-                new TreeRenderer.CanvasTransform(canvasX, canvasY, canvasW, canvasH, panX, panY, zoom);
-        float worldX = before.worldXOf(mouseX);
-        float worldY = before.worldYOf(mouseY);
-
-        float factor = (float) Math.pow(1.15, verticalAmount);
-        zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom * factor));
-
-        // Keep the point under the cursor fixed: recompute pan so worldX/worldY still project to
-        // (mouseX, mouseY) at the new zoom.
-        float centerX = canvasX + canvasW / 2f;
-        float centerY = canvasY + canvasH / 2f;
-        panX = (float) (mouseX - centerX - worldX * TreeRenderer.GRID_SPACING * zoom);
-        panY = (float) (mouseY - centerY - worldY * TreeRenderer.GRID_SPACING * zoom);
-        return true;
-    }
-
-    private void onNodeClicked(SkillNode node) {
-        KindredData data = currentData();
-        TreeRenderer.NodeState state = TreeRenderer.stateOf(node, data, tree);
-        if (state == TreeRenderer.NodeState.AVAILABLE || state == TreeRenderer.NodeState.SEALED) {
-            ClientPlayNetworking.send(new RequestUnlockC2S(node.id()));
-        }
+    private void attemptUnlock(SkillNode node) {
+        pendingUnlockNodeId = node.id();
+        ClientPlayNetworking.send(new RequestUnlockC2S(node.id()));
     }
 
     private void openRespecConfirm() {
@@ -400,31 +641,76 @@ public class SkillTreeScreen extends Screen {
             }
             client.setScreen(this);
         }, Text.literal("Unlearn the old ways?"),
-                Text.literal("This will remove every unlocked node and refund none of your discipline points. "
-                        + "Consumes the configured respec item.")));
+                Text.literal("This removes every unlocked node and refunds none of your discipline points.")));
     }
 
-    // --- Server feedback (UnlockResultS2C) ------------------------------------------------------
+    // --- Unlock feedback -------------------------------------------------------------------------
 
-    /** Called by {@code KindredsClient}'s {@code UnlockResultS2C} receiver so the currently-open
-     * screen (if any) can react to a rejected/accepted unlock or respec with a toast - the tree
-     * itself already re-renders from {@link ClientKindredData#INSTANCE} on success without any extra
-     * handling needed here. */
+    /** Entry point from {@code KindredsClient}'s {@code UnlockResultS2C} receiver; routes to the open
+     * tree screen (if any) for sound + node flash, and always surfaces a toast. */
     public static void handleUnlockResult(MinecraftClient client, boolean ok, String reason) {
-        if (ok) {
-            return; // the next SyncKindredDataS2C already updates the live view; no toast needed.
+        if (client.currentScreen instanceof SkillTreeScreen screen) {
+            screen.onUnlockResult(client, ok, reason);
+            return;
         }
-        String message = switch (reason) {
-            case "insufficient_points" -> "Not enough discipline points.";
-            case "missing_prereq" -> "You must learn its prerequisite first.";
-            case "exclusive_conflict" -> "You have already chosen a rival path.";
-            case "deed_not_earned" -> "The deed for this feat has not yet been proven.";
-            case "already_unlocked" -> "Already learned.";
-            case "respec_insufficient_item" -> "You lack the item required to respec.";
-            case "respec_item_invalid" -> "Respec is misconfigured on this server.";
-            default -> "That cannot be done right now.";
+        toast(client, ok, reason);
+    }
+
+    private void onUnlockResult(MinecraftClient client, boolean ok, String reason) {
+        if (ok) {
+            client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.3f));
+            flashNodeId = pendingUnlockNodeId;
+            flashTimer = 8f;
+        } else {
+            client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_VILLAGER_NO, 1.0f));
+        }
+        pendingUnlockNodeId = null;
+        toast(client, ok, reason);
+    }
+
+    private static void toast(MinecraftClient client, boolean ok, String reason) {
+        Text title = Text.literal(ok ? "Skill learned" : "Cannot learn");
+        Text body = Text.literal(ok ? "A new strength awakens." : humanizeReason(reason));
+        SystemToast.add(client.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, title, body);
+    }
+
+    private static String humanizeReason(String reason) {
+        if (reason == null) {
+            return "Not allowed right now.";
+        }
+        return switch (reason) {
+            case "insufficient_points" -> "Not enough points in that discipline.";
+            case "missing_prereq" -> "Unlock its prerequisite first.";
+            case "already_owned" -> "You already know this.";
+            case "deed_not_earned" -> "Earn its deed first to break the seal.";
+            case "no_tree_for_race", "no_such_node", "ambiguous_node" -> "This skill isn't available.";
+            default -> titleCase(reason);
         };
-        SystemToast.add(client.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION,
-                Text.literal("Kindreds"), Text.literal(message));
+    }
+
+    // --- Small helpers ---------------------------------------------------------------------------
+
+    private static boolean within(int[] r, double x, double y) {
+        return x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3];
+    }
+
+    private static double dist(double x1, double y1, double x2, double y2) {
+        double dx = x1 - x2, dy = y1 - y2;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    private static String titleCase(String path) {
+        String[] words = path.replace('_', ' ').replace('/', ' ').replace('.', ' ').split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            if (!sb.isEmpty()) {
+                sb.append(' ');
+            }
+            sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+        }
+        return sb.toString();
     }
 }

@@ -141,7 +141,7 @@ public final class NodeTooltip {
     /** {@code kindreds.node.<id>.flavor}, falling back to a generic (still in-voice) line derived
      * from the node's first ability so every node reads as *something* even before real lore text is
      * authored for it. */
-    private static String flavor(SkillNode node) {
+    static String flavor(SkillNode node) {
         String key = "kindreds.node." + node.id() + ".flavor";
         if (I18n.hasTranslation(key)) {
             return I18n.translate(key);
@@ -160,7 +160,7 @@ public final class NodeTooltip {
 
     /** One line describing the mechanical effect of a single ability - curses render in the warning
      * tint via a Minecraft color code prefix so {@code addWrapped}'s wrapping still applies. */
-    private static String describe(AbilityDef ability) {
+    static String describe(AbilityDef ability) {
         return switch (ability) {
             case AttributeMod a -> String.format(Locale.ROOT, "%s%.1f %s",
                     a.amount() >= 0 ? "+" : "", a.amount(), titleCase(a.attribute().getPath()));
