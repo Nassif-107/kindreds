@@ -2,6 +2,7 @@ package com.kindreds.command;
 
 import com.kindreds.Kindreds;
 import com.kindreds.config.KindredsConfig;
+import com.kindreds.data.Disciplines;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillTree;
 import com.kindreds.network.SyncKindredDataS2C;
@@ -26,7 +27,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -51,18 +51,16 @@ import java.util.Optional;
  * {@code <discipline>} accepts the short path of one of the 7 built-in ids ({@code combat},
  * {@code archery}, {@code mining}, {@code stealth}, {@code smithing}, {@code survival},
  * {@code lore}) - i.e. without the {@code kindreds:} namespace, matching how a command-line user
- * would expect to type it. {@link #DISCIPLINE_IDS} both drives suggestions and validates the
- * input; the full {@link Identifier} is reconstructed as {@code kindreds:<word>}.
+ * would expect to type it. {@link Disciplines#ALL} (shared with the skill-tree UI's discipline
+ * gauges, so the two can't desync) both drives suggestions and validates the input; the full
+ * {@link Identifier} is reconstructed as {@code kindreds:<word>}.
  */
 public final class KindredsCommand {
     private KindredsCommand() {
     }
 
-    private static final List<String> DISCIPLINE_IDS = List.of(
-            "combat", "archery", "mining", "stealth", "smithing", "survival", "lore");
-
     private static final SuggestionProvider<ServerCommandSource> DISCIPLINE_SUGGESTIONS =
-            (context, builder) -> CommandSource.suggestMatching(DISCIPLINE_IDS, builder);
+            (context, builder) -> CommandSource.suggestMatching(Disciplines.ALL, builder);
 
     /** Registers the command. Call once from {@link Kindreds#onInitialize()}. */
     public static void register() {
@@ -109,7 +107,7 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("=== Kindreds inspect: " + targetName + " ==="), false);
         source.sendFeedback(() -> Text.literal("Race: " + race.map(Identifier::toString).orElse("none")), false);
 
-        for (String disciplinePath : DISCIPLINE_IDS) {
+        for (String disciplinePath : Disciplines.ALL) {
             Identifier disciplineId = Identifier.of(Kindreds.MOD_ID, disciplinePath);
             long xp = data.xpIn(disciplineId);
             int level = ProgressionService.pointsForLevel(xp);
@@ -130,9 +128,9 @@ public final class KindredsCommand {
     // --- grantxp -----------------------------------------------------------------------------
 
     private static int grantXp(ServerCommandSource source, ServerPlayerEntity target, String disciplinePath, long amount) {
-        if (!DISCIPLINE_IDS.contains(disciplinePath)) {
+        if (!Disciplines.ALL.contains(disciplinePath)) {
             source.sendError(Text.literal("Unknown discipline '" + disciplinePath + "'. Valid: "
-                    + String.join(", ", DISCIPLINE_IDS)));
+                    + String.join(", ", Disciplines.ALL)));
             return 0;
         }
         Identifier discipline = Identifier.of(Kindreds.MOD_ID, disciplinePath);

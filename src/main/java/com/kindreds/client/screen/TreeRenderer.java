@@ -201,7 +201,9 @@ public final class TreeRenderer {
      * already culled via {@link #isCulled} - this always draws. */
     public static void drawNode(DrawContext ctx, SkillNode node, NodeState state, Theme theme,
                                  float screenX, float screenY, float radius, boolean hovered) {
-        boolean capstone = node.deedAdvancement().isPresent();
+        // A capstone only renders its warning-tinted "seal" ring while still locked/sealed/available -
+        // once unlocked (OWNED) it's fully lit like any other owned node, per "owned = fully lit".
+        boolean sealed = node.deedAdvancement().isPresent() && state != NodeState.OWNED;
 
         int color = switch (state) {
             case LOCKED -> ThemeAssets.lockedColor(theme);
@@ -210,7 +212,7 @@ public final class TreeRenderer {
             case OWNED -> ThemeAssets.ownedColor(theme);
         };
 
-        if (capstone) {
+        if (sealed) {
             drawDiamond(ctx, screenX, screenY, radius * 1.25f, ThemeAssets.withAlpha(ThemeAssets.WARNING_COLOR, 160));
         }
         drawDiamond(ctx, screenX, screenY, radius, color);

@@ -1,6 +1,7 @@
 package com.kindreds.client.screen;
 
 import com.kindreds.data.Discipline;
+import com.kindreds.data.Disciplines;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
@@ -44,8 +45,6 @@ import java.util.List;
 public class SkillTreeScreen extends Screen {
     private static final float MIN_ZOOM = 0.5f;
     private static final float MAX_ZOOM = 2.2f;
-    private static final List<String> DISCIPLINE_PATHS =
-            List.of("combat", "archery", "mining", "stealth", "smithing", "survival", "lore");
 
     private final SkillTree tree;
     private final Theme theme;
@@ -63,6 +62,7 @@ public class SkillTreeScreen extends Screen {
     private int[] respecButton = new int[4]; // x, y, w, h
 
     private SkillNode hoveredNode;
+    private TreeRenderer.NodeState hoveredNodeState;
     private final List<NodeHit> nodeHits = new ArrayList<>();
 
     private record NodeHit(SkillNode node, float x, float y, float radius) {
@@ -164,10 +164,11 @@ public class SkillTreeScreen extends Screen {
             boolean hovered = distance(mouseX, mouseY, sx, sy) <= radius
                     && mouseX >= canvasX && mouseX <= canvasX + canvasW
                     && mouseY >= canvasY && mouseY <= canvasY + canvasH;
+            TreeRenderer.NodeState state = TreeRenderer.stateOf(node, data, tree);
             if (hovered) {
                 hoveredNode = node;
+                hoveredNodeState = state;
             }
-            TreeRenderer.NodeState state = TreeRenderer.stateOf(node, data, tree);
             TreeRenderer.drawNode(ctx, node, state, theme, sx, sy, radius, hovered);
             nodeHits.add(new NodeHit(node, sx, sy, radius));
         }
@@ -175,10 +176,10 @@ public class SkillTreeScreen extends Screen {
 
         TreeRenderer.drawFrame(ctx, theme, canvasX, canvasY, canvasW, canvasH);
 
-        renderSidePanel(ctx, data);
+        renderSidePanel(ctx, data, mouseX, mouseY);
 
         if (hoveredNode != null) {
-            NodeTooltip.render(ctx, MinecraftClient.getInstance(), hoveredNode, tree, theme,
+            NodeTooltip.render(ctx, MinecraftClient.getInstance(), hoveredNode, hoveredNodeState, tree, theme,
                     mouseX, mouseY, width, height);
         }
 
@@ -198,7 +199,7 @@ public class SkillTreeScreen extends Screen {
 
     // --- Side panel -----------------------------------------------------------------------------
 
-    private void renderSidePanel(DrawContext ctx, KindredData data) {
+    private void renderSidePanel(DrawContext ctx, KindredData data, int mouseX, int mouseY) {
         TreeRenderer.drawBackground(ctx, theme, panelX, panelY, panelW, panelH);
         TreeRenderer.drawFrame(ctx, theme, panelX, panelY, panelW, panelH);
 
@@ -226,7 +227,7 @@ public class SkillTreeScreen extends Screen {
         }
 
         int gaugeWidth = panelW - 20;
-        for (String path : DISCIPLINE_PATHS) {
+        for (String path : Disciplines.ALL) {
             Identifier disciplineId = Identifier.of("kindreds", path);
             int level = ProgressionService.pointsForLevel(data.xpIn(disciplineId));
             int spent = ProgressionService.pointsSpent(data, tree, disciplineId);
@@ -268,7 +269,7 @@ public class SkillTreeScreen extends Screen {
         int btnH = 20;
         int btnY = panelY + panelH - btnH - 10;
         respecButton = new int[]{textX, btnY, gaugeWidth, btnH};
-        boolean hovered = isWithin(respecButton, lastMouseX, lastMouseY);
+        boolean hovered = isWithin(respecButton, mouseX, mouseY);
         ctx.fill(respecButton[0], respecButton[1], respecButton[0] + respecButton[2], respecButton[1] + respecButton[3],
                 hovered ? ThemeAssets.mix(ThemeAssets.secondary(theme), 0xFFFFFFFF, 0.15f) : ThemeAssets.secondary(theme));
         ctx.drawBorder(respecButton[0], respecButton[1], respecButton[2], respecButton[3], accent);
@@ -278,10 +279,6 @@ public class SkillTreeScreen extends Screen {
                 respecButton[1] + (respecButton[3] - 9) / 2, 0xFFFFFFFF, true);
     }
 
-    // Tracked purely so renderSidePanel (called from render(), which already has mouseX/mouseY) can
-    // report hover state on the respec button without threading two more params through.
-    private double lastMouseX, lastMouseY;
-
     private static boolean isWithin(int[] bounds, double x, double y) {
         return x >= bounds[0] && x <= bounds[0] + bounds[2] && y >= bounds[1] && y <= bounds[1] + bounds[3];
     }
@@ -290,8 +287,6 @@ public class SkillTreeScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
         suppressDragThisPress = false;
 
         if (tree == null) {
@@ -330,21 +325,12 @@ public class SkillTreeScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
         if (dragging && !suppressDragThisPress && button == 0) {
             panX += (float) deltaX;
             panY += (float) deltaY;
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-    }
-
-    @Override
-    public void mouseMoved(double mouseX, double mouseY) {
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
-        super.mouseMoved(mouseX, mouseY);
     }
 
     @Override

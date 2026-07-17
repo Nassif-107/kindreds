@@ -45,10 +45,10 @@ public final class NodeTooltip {
     private static final int PADDING = 6;
     private static final int LINE_HEIGHT = 10;
 
-    public static void render(DrawContext ctx, MinecraftClient client, SkillNode node, SkillTree tree, Theme theme,
-                               int mouseX, int mouseY, int screenW, int screenH) {
+    public static void render(DrawContext ctx, MinecraftClient client, SkillNode node, TreeRenderer.NodeState state,
+                               SkillTree tree, Theme theme, int mouseX, int mouseY, int screenW, int screenH) {
         TextRenderer tr = client.textRenderer;
-        List<OrderedText> lines = buildLines(client, node, tree);
+        List<OrderedText> lines = buildLines(client, node, state, tree);
 
         int width = MAX_WIDTH;
         for (OrderedText line : lines) {
@@ -80,7 +80,8 @@ public final class NodeTooltip {
         }
     }
 
-    private static List<OrderedText> buildLines(MinecraftClient client, SkillNode node, SkillTree tree) {
+    private static List<OrderedText> buildLines(MinecraftClient client, SkillNode node, TreeRenderer.NodeState state,
+                                                 SkillTree tree) {
         TextRenderer tr = client.textRenderer;
         List<OrderedText> lines = new ArrayList<>();
 
@@ -104,8 +105,17 @@ public final class NodeTooltip {
                     .formatted(Formatting.DARK_GRAY));
         }
 
-        node.deedAdvancement().ifPresent(deed -> addWrapped(lines, tr,
-                Text.literal("Sealed - Deed: " + titleCase(deed.getPath())).withColor(ThemeAssets.WARNING_COLOR)));
+        // "Sealed" only applies while the capstone isn't yet OWNED - once unlocked it's fully lit and
+        // shown as an earned deed instead (see TreeRenderer.drawNode for the matching seal-ring gate).
+        node.deedAdvancement().ifPresent(deed -> {
+            if (state != TreeRenderer.NodeState.OWNED) {
+                addWrapped(lines, tr, Text.literal("Sealed - Deed: " + titleCase(deed.getPath()))
+                        .withColor(ThemeAssets.WARNING_COLOR));
+            } else {
+                addWrapped(lines, tr, Text.literal("Deed earned: " + titleCase(deed.getPath()))
+                        .formatted(Formatting.GREEN));
+            }
+        });
 
         return lines;
     }

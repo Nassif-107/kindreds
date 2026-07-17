@@ -50,6 +50,10 @@ class KindredDataTest {
         data.unlockedNodes().add("keen_eyes");
         data.setActiveVisionLens(lens);
         data.cooldowns().put("shout_of_valor", 12345L);
+        // race is deliberately wire-only (see KindredData.race javadoc) - set it here so the
+        // assertion below actually proves the persistent CODEC drops it, rather than trivially
+        // passing because it was never set in the first place.
+        data.setRace(Identifier.of("middle-earth", "elf"));
 
         JsonElement json = KindredData.CODEC.encodeStart(JsonOps.INSTANCE, data).result().orElseThrow();
         KindredData back = KindredData.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
@@ -58,6 +62,7 @@ class KindredDataTest {
         assertTrue(back.hasNode("keen_eyes"));
         assertEquals(lens, back.activeVisionLens());
         assertEquals(12345L, back.cooldowns().getLong("shout_of_valor"));
+        assertNull(back.race(), "race must not be persisted by the JSON/NBT CODEC");
     }
 
     @Test
@@ -78,6 +83,10 @@ class KindredDataTest {
         data.setActiveVisionLens(lens);
         data.setCorruption(3);
         data.cooldowns().put("shout_of_valor", 12345L);
+        // race rides the wire only (see KindredData.race javadoc) - covered here since
+        // SyncKindredDataS2C's PACKET_CODEC is the only place it's ever (de)serialized.
+        Identifier elfRace = Identifier.of("middle-earth", "elf");
+        data.setRace(elfRace);
 
         RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), DynamicRegistryManager.EMPTY);
         KindredData.PACKET_CODEC.encode(buf, data);
@@ -91,5 +100,6 @@ class KindredDataTest {
         assertEquals(lens, back.activeVisionLens());
         assertEquals(3, back.corruption());
         assertEquals(12345L, back.cooldowns().getLong("shout_of_valor"));
+        assertEquals(elfRace, back.race());
     }
 }
