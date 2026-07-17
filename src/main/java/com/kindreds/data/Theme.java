@@ -7,9 +7,9 @@ import net.minecraft.util.Identifier;
 /**
  * Visual theming for a race's skill tree screen (colors + background texture).
  *
- * Not registered as its own dynamic registry in this task - it is loaded and
- * referenced by {@link SkillTree#theme()} (an {@link Identifier}) and consumed
- * directly by the GUI layer in a later task.
+ * Registered as its own synced dynamic registry ({@link KindredsRegistries#THEME}) and
+ * referenced by {@link SkillTree#theme()} (an {@link Identifier}); consumed directly by the
+ * {@code client.screen} GUI layer (Task 11).
  *
  * @param primaryColor      packed RGB primary accent color
  * @param secondaryColor    packed RGB secondary accent color

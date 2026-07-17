@@ -24,9 +24,20 @@ public final class KindredsRegistries {
     public static final RegistryKey<Registry<SkillTree>> SKILL_TREE =
             RegistryKey.ofRegistry(Identifier.of(Kindreds.MOD_ID, "skill_tree"));
 
+    /**
+     * Backs {@link SkillTree#theme()}: entries are loaded from
+     * {@code data/<namespace>/theme/<path>.json} (e.g. {@code data/kindreds/theme/elf.json} resolves
+     * as {@code kindreds:elf}, matching the id the Elf tree JSON references) and synced to the client
+     * the same way {@link #DISCIPLINE}/{@link #SKILL_TREE} are, so the tree screen (Task 11) can
+     * resolve a race's theme from the client-mirrored registry manager.
+     */
+    public static final RegistryKey<Registry<Theme>> THEME =
+            RegistryKey.ofRegistry(Identifier.of(Kindreds.MOD_ID, "theme"));
+
     /** Registers all Kindreds dynamic registries. Must be called from {@link Kindreds#onInitialize()}. */
     public static void register() {
         DynamicRegistries.registerSynced(DISCIPLINE, Discipline.CODEC);
         DynamicRegistries.registerSynced(SKILL_TREE, SkillTree.CODEC);
+        DynamicRegistries.registerSynced(THEME, Theme.CODEC);
     }
 }
