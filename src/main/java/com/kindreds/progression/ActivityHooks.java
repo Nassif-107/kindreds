@@ -98,8 +98,15 @@ public final class ActivityHooks {
 
     private static final long LORE_ADVANCEMENT_XP = 15;
 
-    /** How often the per-player race cache (used by the tick-driven hooks only) is refreshed. */
-    private static final int RACE_CACHE_TICKS = 6000; // 5 minutes @ 20 tps
+    /** How often the per-player race cache (used by the tick-driven hooks only) is refreshed once
+     * a race has actually been resolved (present). */
+    private static final int RACE_CACHE_TICKS_PRESENT = 6000; // 5 minutes @ 20 tps
+
+    /** How often the cache is rechecked while still empty (no race resolved yet — e.g. player just
+     * joined, or hasn't picked a race yet). Much shorter than {@link #RACE_CACHE_TICKS_PRESENT} so a
+     * freshly-picked race is picked up quickly instead of being stuck behind a stale empty cache for
+     * up to 5 minutes. */
+    private static final int RACE_CACHE_TICKS_EMPTY = 200; // 10 seconds @ 20 tps
 
     private static final Map<UUID, PlayerTickState> TICK_STATE = new HashMap<>();
 
@@ -138,9 +145,12 @@ public final class ActivityHooks {
         if (!(killer instanceof ServerPlayerEntity player) || !isEligible(player)) {
             return;
         }
-        award(player, COMBAT, COMBAT_KILL_XP);
+        // Resolve once and reuse for both awards below, instead of resolving RaceAccess.getRace
+        // twice on a sneak-kill (mirrors how the tick path reuses cachedRace).
+        Optional<Identifier> race = RaceAccess.getRace(player);
+        race.ifPresent(r -> award(player, r, COMBAT, COMBAT_KILL_XP));
         if (player.isSneaking()) {
-            award(player, STEALTH, STEALTH_SNEAK_KILL_BONUS_XP);
+            race.ifPresent(r -> award(player, r, STEALTH, STEALTH_SNEAK_KILL_BONUS_XP));
         }
     }
 
@@ -247,7 +257,13 @@ public final class ActivityHooks {
 
     private static Optional<Identifier> cachedRace(ServerPlayerEntity player, PlayerTickState state) {
         state.ticksSinceRaceCheck++;
-        if (state.ticksSinceRaceCheck >= RACE_CACHE_TICKS || state.cachedRace == null) {
+        // Distinguish "confirmed present -> cache long" from "still empty -> recheck soon", so a
+        // player who has no race yet (e.g. just joined) doesn't get stuck with a stale empty result
+        // reused for the full 5-minute window once they do pick a race.
+        int interval = (state.cachedRace != null && state.cachedRace.isPresent())
+                ? RACE_CACHE_TICKS_PRESENT
+                : RACE_CACHE_TICKS_EMPTY;
+        if (state.cachedRace == null || state.ticksSinceRaceCheck >= interval) {
             state.cachedRace = RaceAccess.getRace(player);
             state.ticksSinceRaceCheck = 0;
         }
@@ -279,7 +295,7 @@ public final class ActivityHooks {
     private static final class PlayerTickState {
         int sneakTicks;
         int ticksSinceBiomeCheck;
-        int ticksSinceRaceCheck = RACE_CACHE_TICKS; // force a check on first use
+        int ticksSinceRaceCheck; // cachedRace == null forces a check on first use regardless
         Optional<Identifier> cachedRace;
         final Set<Identifier> discoveredBiomes = new HashSet<>();
     }
