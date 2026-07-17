@@ -59,7 +59,7 @@ public class Kindreds implements ModInitializer {
                     CONFIG.xpRateGlobal, CONFIG.deathPenalty);
         });
 
-        // Materialize data/kindreds/race_scaling/*.json into RaceScaling's plain lookup table -
+        // Materialize data/kindreds/kindreds/race_scaling/*.json into RaceScaling's plain lookup table -
         // both on server start (registries are fully loaded by SERVER_STARTED) and after every
         // datapack /reload, so an authored change is picked up without a server restart.
         ServerLifecycleEvents.SERVER_STARTED.register(server ->

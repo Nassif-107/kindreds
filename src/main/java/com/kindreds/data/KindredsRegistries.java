@@ -10,8 +10,8 @@ import net.minecraft.util.Identifier;
  * Synced dynamic registries backing the Kindreds data-driven content model.
  *
  * <p>Entries are loaded from data pack JSON at
- * {@code data/<namespace>/discipline/<path>.json} and
- * {@code data/<namespace>/skill_tree/<path>.json}, and are synced from server
+ * {@code data/<namespace>/kindreds/discipline/<path>.json} and
+ * {@code data/<namespace>/kindreds/skill_tree/<path>.json}, and are synced from server
  * to client using the same codec (see {@link DynamicRegistries#registerSynced}).
  */
 public final class KindredsRegistries {
@@ -26,7 +26,7 @@ public final class KindredsRegistries {
 
     /**
      * Backs {@link SkillTree#theme()}: entries are loaded from
-     * {@code data/<namespace>/theme/<path>.json} (e.g. {@code data/kindreds/theme/elf.json} resolves
+     * {@code data/<namespace>/kindreds/theme/<path>.json} (e.g. {@code data/kindreds/kindreds/theme/elf.json} resolves
      * as {@code kindreds:elf}, matching the id the Elf tree JSON references) and synced to the client
      * the same way {@link #DISCIPLINE}/{@link #SKILL_TREE} are, so the tree screen (Task 11) can
      * resolve a race's theme from the client-mirrored registry manager.
@@ -36,7 +36,7 @@ public final class KindredsRegistries {
 
     /**
      * Backs {@code com.kindreds.progression.RaceScaling}'s per-race, per-discipline xp multiplier
-     * table: entries are loaded from {@code data/<namespace>/race_scaling/<path>.json} the same way
+     * table: entries are loaded from {@code data/<namespace>/kindreds/race_scaling/<path>.json} the same way
      * the other three registries are, and materialized into {@code RaceScaling}'s plain lookup
      * table on server start / datapack reload (see {@code Kindreds#onInitialize()}).
      */

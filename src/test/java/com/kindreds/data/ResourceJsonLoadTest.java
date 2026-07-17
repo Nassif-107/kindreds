@@ -29,7 +29,7 @@ class ResourceJsonLoadTest {
     @ParameterizedTest
     @ValueSource(strings = {"combat", "archery", "mining", "stealth", "smithing", "survival", "lore"})
     void disciplineJsonDecodes(String name) {
-        assertDecodes(Discipline.CODEC, "data/kindreds/discipline/" + name + ".json");
+        assertDecodes(Discipline.CODEC, "data/kindreds/kindreds/discipline/" + name + ".json");
     }
 
     private static final String[] RACES =
@@ -38,25 +38,25 @@ class ResourceJsonLoadTest {
     @ParameterizedTest
     @ValueSource(strings = {"elf", "dwarf", "human", "hobbit", "orc", "uruk", "snaga", "goblin"})
     void themeJsonDecodes(String name) {
-        assertDecodes(Theme.CODEC, "data/kindreds/theme/" + name + ".json");
+        assertDecodes(Theme.CODEC, "data/kindreds/kindreds/theme/" + name + ".json");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"elf", "dwarf", "human", "hobbit", "orc", "uruk", "snaga", "goblin"})
     void skillTreeJsonDecodes(String name) {
-        assertDecodes(SkillTree.CODEC, "data/kindreds/skill_tree/" + name + ".json");
+        assertDecodes(SkillTree.CODEC, "data/kindreds/kindreds/skill_tree/" + name + ".json");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"elf", "dwarf", "human", "hobbit", "orc", "uruk", "snaga", "goblin"})
     void raceScalingJsonDecodes(String name) {
-        assertDecodes(RaceScalingEntry.CODEC, "data/kindreds/race_scaling/" + name + ".json");
+        assertDecodes(RaceScalingEntry.CODEC, "data/kindreds/kindreds/race_scaling/" + name + ".json");
     }
 
     @Test
     void sanityCheckAllSevenDisciplinesArePresent() {
         for (String name : new String[]{"combat", "archery", "mining", "stealth", "smithing", "survival", "lore"}) {
-            assertTrue(getClass().getClassLoader().getResource("data/kindreds/discipline/" + name + ".json") != null,
+            assertTrue(getClass().getClassLoader().getResource("data/kindreds/kindreds/discipline/" + name + ".json") != null,
                     "Missing discipline JSON: " + name);
         }
     }
@@ -64,11 +64,11 @@ class ResourceJsonLoadTest {
     @Test
     void sanityCheckAllEightRacesHaveTreeThemeAndScaling() {
         for (String race : RACES) {
-            assertTrue(getClass().getClassLoader().getResource("data/kindreds/skill_tree/" + race + ".json") != null,
+            assertTrue(getClass().getClassLoader().getResource("data/kindreds/kindreds/skill_tree/" + race + ".json") != null,
                     "Missing skill_tree JSON: " + race);
-            assertTrue(getClass().getClassLoader().getResource("data/kindreds/theme/" + race + ".json") != null,
+            assertTrue(getClass().getClassLoader().getResource("data/kindreds/kindreds/theme/" + race + ".json") != null,
                     "Missing theme JSON: " + race);
-            assertTrue(getClass().getClassLoader().getResource("data/kindreds/race_scaling/" + race + ".json") != null,
+            assertTrue(getClass().getClassLoader().getResource("data/kindreds/kindreds/race_scaling/" + race + ".json") != null,
                     "Missing race_scaling JSON: " + race);
         }
     }
@@ -84,7 +84,7 @@ class ResourceJsonLoadTest {
     @Test
     void everyDeedAdvancementReferencedBySkillTreesExistsAndParsesAsJson() {
         for (String race : RACES) {
-            JsonElement tree = readJson("data/kindreds/skill_tree/" + race + ".json");
+            JsonElement tree = readJson("data/kindreds/kindreds/skill_tree/" + race + ".json");
             for (JsonElement nodeElement : tree.getAsJsonObject().getAsJsonArray("nodes")) {
                 JsonObject node = nodeElement.getAsJsonObject();
                 if (!node.has("deed_advancement")) {

@@ -10,8 +10,8 @@ import java.util.Map;
  * One race's per-discipline XP multiplier table, data-driven (Task 12 Stage C).
  *
  * <p>Registered as its own synced dynamic registry ({@link KindredsRegistries#RACE_SCALING}),
- * loaded from {@code data/<namespace>/race_scaling/<path>.json} the same way {@link Discipline}/
- * {@link SkillTree}/{@link Theme} are - e.g. {@code data/kindreds/race_scaling/elf.json} resolves
+ * loaded from {@code data/<namespace>/kindreds/race_scaling/<path>.json} the same way {@link Discipline}/
+ * {@link SkillTree}/{@link Theme} are - e.g. {@code data/kindreds/kindreds/race_scaling/elf.json} resolves
  * as the registry entry {@code kindreds:elf}, whose {@link #race} field then names the actual
  * base-mod race ({@code middle-earth:elf}) it applies to. {@code com.kindreds.progression.RaceScaling}
  * materializes every entry in this registry into its plain in-memory lookup table on server start

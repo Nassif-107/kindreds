@@ -96,7 +96,7 @@ class TreeAttributeIdsTest {
     void everyMinecraftAttributeIdInEverySkillTreeIsARealVanillaAttribute() {
         Set<String> badIds = new TreeSet<>();
         for (String race : RACES) {
-            JsonObject tree = readJson("data/kindreds/skill_tree/" + race + ".json").getAsJsonObject();
+            JsonObject tree = readJson("data/kindreds/kindreds/skill_tree/" + race + ".json").getAsJsonObject();
             Set<String> attributeIds = new HashSet<>();
             collectAttributeIds(tree, attributeIds);
             for (String id : attributeIds) {
