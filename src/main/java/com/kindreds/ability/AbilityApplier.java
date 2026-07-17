@@ -11,6 +11,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -196,6 +197,25 @@ public final class AbilityApplier {
             // particle clutter on a long-lived racial buff), showIcon=true (still visible in HUD).
             p.addStatusEffect(new StatusEffectInstance(effect, duration, def.amplifier(), false, false, true));
         }, () -> Kindreds.LOGGER.warn("[Kindreds] unknown status effect id '{}'", def.effect()));
+    }
+
+    // --- ActiveAbilityDef (Task 9) ---------------------------------------------------------------
+
+    /**
+     * P1 placeholder effect for {@link ActiveAbilityDef} activation, called by
+     * {@code ActiveAbilityService#activate} once it has resolved an unlocked, off-cooldown active
+     * ability. {@link ActiveAbilityDef} only carries {@code abilityId} + {@code cooldownTicks} -
+     * no effect payload of its own yet - so every active ability currently grants the same short
+     * self-buff (Speed II for 5s) when triggered, regardless of {@code def.abilityId()}. A later
+     * task that authors real, differentiated active abilities will need to extend
+     * {@link ActiveAbilityDef}'s schema with an actual effect definition and branch on
+     * {@code def.abilityId()} here (mirroring {@link CurseService}'s curse-id dispatch); until
+     * then this keeps the activation framework - unlock gating, cooldown tracking, network
+     * round-trip - real and end-to-end testable even though no two active abilities differ in
+     * effect yet.
+     */
+    public static void applyActiveEffect(ServerPlayerEntity p, ActiveAbilityDef def) {
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100, 1, false, true, true));
     }
 
     // --- Shared attribute-id scheme (also used by CurseService) ---------------------------------

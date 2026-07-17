@@ -1,7 +1,9 @@
 package com.kindreds;
 
+import com.kindreds.command.KindredsCommand;
 import com.kindreds.config.KindredsConfig;
 import com.kindreds.data.KindredsRegistries;
+import com.kindreds.network.ActivateAbilityC2S;
 import com.kindreds.network.RequestUnlockC2S;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.network.UnlockResultS2C;
@@ -31,6 +33,9 @@ public class Kindreds implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(SyncKindredDataS2C.ID, SyncKindredDataS2C.CODEC);
         PayloadTypeRegistry.playS2C().register(UnlockResultS2C.ID, UnlockResultS2C.CODEC);
         RequestUnlockC2S.registerServerHandler();
+        ActivateAbilityC2S.registerServerHandler();
+
+        KindredsCommand.register();
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             CONFIG = KindredsConfig.load(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));
