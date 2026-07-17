@@ -24,8 +24,9 @@ import net.minecraft.util.Identifier;
  *
  * <p>Each known {@code curseId} is implemented as a persistent attribute modifier, reusing
  * {@link AbilityApplier}'s node-tagged id scheme ({@code kindreds:node/<nodeId>/<attrPath>}) so
- * it is automatically found and removed by {@link AbilityApplier#removeAll} without any curse-
- * specific bookkeeping.
+ * it is automatically found and removed by {@link AbilityApplier#removeAll} (or, for a full
+ * per-ability respec, {@link AbilityApplier#removeNode} via {@link #remove}) without any curse-
+ * specific bookkeeping beyond knowing which attribute each {@code curseId} targets.
  *
  * <p><b>Config gating:</b> the brief ties curses to the server's {@code enableCurses} config
  * flag. {@code KindredsConfig} (Task 2) is not yet loaded/held anywhere at runtime as of this
@@ -68,5 +69,32 @@ public final class CurseService {
         }
         Identifier id = AbilityApplier.attributeModifierId(nodeId, attrPath);
         instance.addPersistentModifier(new EntityAttributeModifier(id, amount, op));
+    }
+
+    /** Reverses {@code curse}'s drawback on {@code player} - mirrors {@link #apply}'s dispatch on
+     * {@code curseId} but removes the node-tagged modifier instead of adding it. Used by {@link
+     * AbilityApplier#removeNode} for a full per-ability respec; unknown curse ids are logged and
+     * otherwise ignored, same as {@link #apply}. */
+    public static void remove(ServerPlayerEntity player, CurseDef curse, String nodeId) {
+        switch (curse.curseId()) {
+            case "frailty" -> attributeDrawbackRemoval(player, EntityAttributes.MAX_HEALTH, nodeId);
+            case "clumsiness" -> attributeDrawbackRemoval(player, EntityAttributes.ATTACK_DAMAGE, nodeId);
+            case "sluggishness" -> attributeDrawbackRemoval(player, EntityAttributes.MOVEMENT_SPEED, nodeId);
+            default -> Kindreds.LOGGER.warn(
+                    "[Kindreds] node {} references unknown curse id '{}' during removal", nodeId, curse.curseId());
+        }
+    }
+
+    private static void attributeDrawbackRemoval(ServerPlayerEntity player, RegistryEntry<EntityAttribute> attribute,
+                                                  String nodeId) {
+        EntityAttributeInstance instance = player.getAttributeInstance(attribute);
+        if (instance == null) {
+            return;
+        }
+        String attrPath = AbilityApplier.attributePath(attribute);
+        if (attrPath == null) {
+            return;
+        }
+        instance.removeModifier(AbilityApplier.attributeModifierId(nodeId, attrPath));
     }
 }

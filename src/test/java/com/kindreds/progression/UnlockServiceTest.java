@@ -72,6 +72,24 @@ class UnlockServiceTest {
     }
 
     @Test
+    void failsWithMissingPrereqWhenOnlyOneOfTwoOwned() {
+        // archer_3 requires BOTH archer_1 and archer_2; only archer_1 is owned. Proves every
+        // prereq id is checked, not just the first one in the list.
+        SkillTree tree = tree(
+                simple("archer_1", ARCHERY, 1),
+                simple("archer_2", ARCHERY, 1),
+                node("archer_3", ARCHERY, 1, List.of("archer_1", "archer_2"), Optional.empty(), Optional.empty()));
+        KindredData data = new KindredData();
+        data.unlockedNodes().add("archer_1"); // archer_2 NOT unlocked
+
+        UnlockService.UnlockResult result = UnlockService.canUnlock(
+                data, tree, "archer_3", PLENTY_POINTS, ALL_DEEDS_EARNED);
+
+        assertFalse(result.ok());
+        assertEquals("missing_prereq", result.reason());
+    }
+
+    @Test
     void failsWithExclusiveConflict() {
         SkillTree tree = tree(
                 node("path_a", ARCHERY, 1, List.of(), Optional.of("vocation"), Optional.empty()),

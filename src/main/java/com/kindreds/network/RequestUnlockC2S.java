@@ -46,6 +46,13 @@ import java.util.Optional;
  * {@code SKILL_TREE registry entry for RaceAccess.raceOf(player)} instead (and optionally assert
  * the resolved node's tree matches that race, as a sanity check against a malicious/buggy client
  * requesting a foreign-race node id that happens to collide).
+ *
+ * <p>Since disjoint id namespaces are only a convention (not enforced anywhere), {@link
+ * #resolveTree} also guards against a duplicate node id accidentally authored across two trees: if
+ * the scan finds more than one match it logs a warning and rejects the unlock with reason
+ * {@code "ambiguous_node"} rather than silently picking one (which could validate - and apply
+ * abilities from - the wrong tree). This is interim safety for Task 12's tree authoring; it goes
+ * away once Task 8 resolves trees by race instead of by id-scan.
  */
 public record RequestUnlockC2S(String nodeId) implements CustomPayload {
     public static final CustomPayload.Id<RequestUnlockC2S> ID =
@@ -74,12 +81,12 @@ public record RequestUnlockC2S(String nodeId) implements CustomPayload {
     }
 
     private static void handle(MinecraftServer server, ServerPlayerEntity player, String nodeId) {
-        Optional<SkillTree> maybeTree = resolveTree(server, nodeId);
-        if (maybeTree.isEmpty()) {
-            UnlockResultS2C.sendTo(player, false, "unknown_node");
+        TreeResolution resolution = resolveTree(server, nodeId);
+        if (resolution.tree().isEmpty()) {
+            UnlockResultS2C.sendTo(player, false, resolution.failureReason());
             return;
         }
-        SkillTree tree = maybeTree.get();
+        SkillTree tree = resolution.tree().get();
         KindredData data = KindredAttachment.get(player);
 
         UnlockService.UnlockResult result = UnlockService.canUnlock(
@@ -96,23 +103,58 @@ public record RequestUnlockC2S(String nodeId) implements CustomPayload {
 
         UnlockService.applyUnlock(data, nodeId);
         SkillNode node = tree.node(nodeId).orElseThrow(); // present: canUnlock already found it
-        for (AbilityDef ability : node.abilities()) {
-            AbilityApplier.apply(player, ability, nodeId);
+        try {
+            for (AbilityDef ability : node.abilities()) {
+                AbilityApplier.apply(player, ability, nodeId);
+            }
+        } catch (RuntimeException e) {
+            // Belt-and-suspenders: AbilityApplier.apply is designed to never throw on untrusted
+            // JSON data (bad operations/ids are logged and skipped), but if something unexpected
+            // slips through anyway, the node is already marked unlocked above - we must still
+            // reach the sync below so the client doesn't silently diverge from server state.
+            Kindreds.LOGGER.error("[Kindreds] unexpected exception applying abilities for node {} on player {}",
+                    nodeId, player.getGameProfile().getName(), e);
         }
 
         SyncKindredDataS2C.sendTo(player);
         UnlockResultS2C.sendTo(player, true, "ok");
     }
 
-    /** See the "Resolving the player's tree" section of this class's javadoc. */
-    private static Optional<SkillTree> resolveTree(MinecraftServer server, String nodeId) {
+    /** See the "Resolving the player's tree" section of this class's javadoc. Result carries a
+     * distinct {@code "ambiguous_node"} failure reason (as opposed to {@code "unknown_node"}) when
+     * the id is found in more than one tree, so the caller can report the real cause. */
+    private static TreeResolution resolveTree(MinecraftServer server, String nodeId) {
         Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
+        SkillTree match = null;
+        int matchCount = 0;
         for (SkillTree tree : trees) {
             if (tree.node(nodeId).isPresent()) {
-                return Optional.of(tree);
+                match = tree;
+                matchCount++;
             }
         }
-        return Optional.empty();
+        if (matchCount == 0) {
+            return TreeResolution.failure("unknown_node");
+        }
+        if (matchCount > 1) {
+            Kindreds.LOGGER.warn(
+                    "[Kindreds] node id '{}' is present in {} different skill trees; rejecting unlock as ambiguous "
+                            + "(fix the duplicate id)", nodeId, matchCount);
+            return TreeResolution.failure("ambiguous_node");
+        }
+        return TreeResolution.found(match);
+    }
+
+    /** Result of {@link #resolveTree}: exactly one of {@link #tree} or {@link #failureReason} is
+     * present. */
+    private record TreeResolution(Optional<SkillTree> tree, String failureReason) {
+        static TreeResolution found(SkillTree tree) {
+            return new TreeResolution(Optional.of(tree), null);
+        }
+
+        static TreeResolution failure(String reason) {
+            return new TreeResolution(Optional.empty(), reason);
+        }
     }
 
     private static boolean isDeedEarned(MinecraftServer server, ServerPlayerEntity player, Identifier deedId) {
