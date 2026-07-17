@@ -35,6 +35,17 @@ public final class KindredData {
     private int corruption;
     private final Object2LongMap<String> cooldowns;
 
+    /**
+     * The player's base-mod race id, mirrored client-side so the tree screen (Task 11) can resolve
+     * {@code race -> SkillTree -> Theme} without needing its own network round trip. Deliberately
+     * <b>not</b> part of the persistent {@link #CODEC} (NBT storage): it's derived, transient state
+     * ({@link com.kindreds.playerdata.RaceAccess} re-resolves it from the base mod every time), not
+     * owned data - persisting a stale value would serve no purpose and risks the attachment
+     * disagreeing with the live base-mod race after e.g. a race change. It IS part of
+     * {@link #PACKET_CODEC} (see that field) so every {@code SyncKindredDataS2C} refreshes it.
+     */
+    private Identifier race;
+
     public KindredData() {
         this(new Object2LongOpenHashMap<>(), new HashSet<>(), null, new HashSet<>(), 0, new Object2LongOpenHashMap<>());
     }
@@ -84,6 +95,16 @@ public final class KindredData {
 
     public Object2LongMap<String> cooldowns() {
         return cooldowns;
+    }
+
+    /** The player's base-mod race id, or {@code null} if unknown (base mod absent, or no race
+     * chosen yet). See {@link #race} for why this isn't persisted. */
+    public Identifier race() {
+        return race;
+    }
+
+    public void setRace(Identifier race) {
+        this.race = race;
     }
 
     /** Accumulates {@code amount} xp into {@code discipline} (creating the entry if absent). */
@@ -143,14 +164,26 @@ public final class KindredData {
 
     // --- Network codec (S2C sync) --------------------------------------------------------------
 
+    /** Same optional-{@link Identifier} shape/rationale as {@code activeVisionLens}'s packet codec
+     * entry below; factored out since both it and {@link #race} need the identical
+     * {@code Optional<Identifier> <-> nullable Identifier} adaptation. */
+    private static final PacketCodec<? super RegistryByteBuf, Identifier> NULLABLE_IDENTIFIER_PACKET_CODEC =
+            PacketCodecs.optional(Identifier.PACKET_CODEC).xmap(opt -> opt.orElse(null), Optional::ofNullable);
+
+    /**
+     * Seven fields wide: {@link #race} (see its javadoc) rides along on the wire only - it's
+     * deliberately absent from the persistent {@link #CODEC} above. The trailing factory builds the
+     * object via the existing six-arg constructor and then sets {@code race} on it, rather than
+     * adding a seventh constructor parameter that every other (persistence-only) call site would
+     * have to pass {@code null} for.
+     */
     public static final PacketCodec<RegistryByteBuf, KindredData> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.map((IntFunction<Object2LongMap<Identifier>>) Object2LongOpenHashMap::new,
                     Identifier.PACKET_CODEC, PacketCodecs.VAR_LONG),
             KindredData::disciplineXp,
             STRING_SET_PACKET_CODEC,
             KindredData::unlockedNodes,
-            PacketCodecs.optional(Identifier.PACKET_CODEC)
-                    .xmap(opt -> opt.orElse(null), Optional::ofNullable),
+            NULLABLE_IDENTIFIER_PACKET_CODEC,
             KindredData::activeVisionLens,
             STRING_SET_PACKET_CODEC,
             KindredData::titles,
@@ -159,5 +192,11 @@ public final class KindredData {
             PacketCodecs.map((IntFunction<Object2LongMap<String>>) Object2LongOpenHashMap::new,
                     PacketCodecs.STRING, PacketCodecs.VAR_LONG),
             KindredData::cooldowns,
-            KindredData::new);
+            NULLABLE_IDENTIFIER_PACKET_CODEC,
+            KindredData::race,
+            (xp, unlockedNodes, lens, titles, corruption, cooldowns, race) -> {
+                KindredData data = new KindredData(xp, unlockedNodes, lens, titles, corruption, cooldowns);
+                data.setRace(race);
+                return data;
+            });
 }

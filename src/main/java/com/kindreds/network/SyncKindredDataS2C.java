@@ -3,6 +3,7 @@ package com.kindreds.network;
 import com.kindreds.Kindreds;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
+import com.kindreds.playerdata.RaceAccess;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -29,8 +30,18 @@ public record SyncKindredDataS2C(KindredData data) implements CustomPayload {
         return ID;
     }
 
-    /** Serializes {@code player}'s current {@link KindredData} and sends it to just that player. */
+    /**
+     * Serializes {@code player}'s current {@link KindredData} and sends it to just that player.
+     *
+     * <p>Refreshes {@link KindredData#race()} from {@link RaceAccess} first (rather than trusting
+     * whatever was last stored) - this is the one place every sync path (join, unlock, respec,
+     * {@code OpenTreeC2S}) funnels through, so it's the simplest spot to guarantee the client's
+     * mirrored race id never goes stale, without every call site needing its own
+     * {@code RaceAccess.getRace} call.
+     */
     public static void sendTo(ServerPlayerEntity player) {
-        ServerPlayNetworking.send(player, new SyncKindredDataS2C(KindredAttachment.get(player)));
+        KindredData data = KindredAttachment.get(player);
+        data.setRace(RaceAccess.getRace(player).orElse(null));
+        ServerPlayNetworking.send(player, new SyncKindredDataS2C(data));
     }
 }

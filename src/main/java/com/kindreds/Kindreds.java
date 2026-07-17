@@ -4,7 +4,9 @@ import com.kindreds.command.KindredsCommand;
 import com.kindreds.config.KindredsConfig;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.network.ActivateAbilityC2S;
+import com.kindreds.network.OpenTreeC2S;
 import com.kindreds.network.RequestUnlockC2S;
+import com.kindreds.network.RespecC2S;
 import com.kindreds.network.SetVisionLensC2S;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.network.UnlockResultS2C;
@@ -36,6 +38,8 @@ public class Kindreds implements ModInitializer {
         RequestUnlockC2S.registerServerHandler();
         ActivateAbilityC2S.registerServerHandler();
         SetVisionLensC2S.registerServerHandler();
+        OpenTreeC2S.registerServerHandler();
+        RespecC2S.registerServerHandler();
 
         KindredsCommand.register();
 

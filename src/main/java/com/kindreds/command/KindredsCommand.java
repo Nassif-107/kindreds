@@ -1,16 +1,15 @@
 package com.kindreds.command;
 
 import com.kindreds.Kindreds;
-import com.kindreds.ability.AbilityApplier;
 import com.kindreds.config.KindredsConfig;
 import com.kindreds.data.KindredsRegistries;
-import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.playerdata.RaceAccess;
 import com.kindreds.progression.ProgressionService;
+import com.kindreds.progression.RespecService;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -43,9 +42,9 @@ import java.util.Optional;
  *       testing progression without grinding.</li>
  *   <li>{@code /kindreds reload} (op level 2) - reloads {@link Kindreds#CONFIG} from
  *       {@code <configDir>/kindreds-server.json}.</li>
- *   <li>{@code /kindreds respec [player]} (op level 2) - admin/mechanism respec: reverses every
- *       unlocked node's abilities via {@link AbilityApplier#removeNode} and clears them. The
- *       player-facing respec UI + item cost is Task 11; this is the admin escape hatch.</li>
+ *   <li>{@code /kindreds respec [player]} (op level 2) - admin/mechanism respec, via
+ *       {@link RespecService#reverseAll}. The player-facing respec UI + item cost
+ *       ({@code RespecC2S}) shares that same reversal logic; this is the admin escape hatch.</li>
  * </ul>
  *
  * <h2>Discipline argument</h2>
@@ -162,29 +161,15 @@ public final class KindredsCommand {
     // --- respec ------------------------------------------------------------------------------
 
     private static int respec(ServerCommandSource source, ServerPlayerEntity target) {
-        KindredData data = KindredAttachment.get(target);
-        Registry<SkillTree> trees = source.getServer().getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
-
-        int reversedCount = 0;
-        for (String nodeId : List.copyOf(data.unlockedNodes())) {
-            SkillNode node = findNodeInAnyTree(trees, nodeId);
-            if (node != null) {
-                AbilityApplier.removeNode(target, node.abilities(), nodeId);
-                reversedCount++;
-            } else {
-                Kindreds.LOGGER.warn(
-                        "[Kindreds] /kindreds respec: node {} (unlocked by {}) not found in any registered skill "
-                                + "tree; clearing the unlock without reversing its abilities",
-                        nodeId, target.getGameProfile().getName());
-            }
-        }
-        data.unlockedNodes().clear();
+        // Delegates to RespecService (Task 11), which also backs the player-facing RespecC2S -
+        // this admin command and the paid in-game respec must never quietly diverge in what
+        // "reversed" means.
+        int reversedCount = RespecService.reverseAll(target);
         SyncKindredDataS2C.sendTo(target);
 
-        int reversed = reversedCount;
         String targetName = target.getGameProfile().getName();
         source.sendFeedback(() -> Text.literal(
-                "Respecced " + targetName + ": reversed " + reversed + " node(s)"), true);
+                "Respecced " + targetName + ": reversed " + reversedCount + " node(s)"), true);
         return 1;
     }
 
@@ -198,21 +183,5 @@ public final class KindredsCommand {
             }
         }
         return Optional.empty();
-    }
-
-    /** Scans every registered {@link SkillTree} (not just the target's race tree) for
-     * {@code nodeId}, so a respec still reverses correctly even if the player's race is unknown
-     * (base mod absent) or has since changed - mirrors {@code RequestUnlockC2S}'s node-id-scan
-     * fallback for the same reason. Node ids are authored unique per tree (see that class's
-     * javadoc), so the first match is used without an ambiguity check here - this is an
-     * admin/testing tool, not the untrusted-input unlock path. */
-    private static SkillNode findNodeInAnyTree(Registry<SkillTree> trees, String nodeId) {
-        for (SkillTree tree : trees) {
-            Optional<SkillNode> node = tree.node(nodeId);
-            if (node.isPresent()) {
-                return node.get();
-            }
-        }
-        return null;
     }
 }
