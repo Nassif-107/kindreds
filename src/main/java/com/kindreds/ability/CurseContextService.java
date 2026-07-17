@@ -51,8 +51,13 @@ import java.util.UUID;
  * AbilityApplier}'s attribute modifiers throw if the same modifier id is added twice. Only a true
  * off-to-on or on-to-off transition calls {@link AbilityApplier#apply}/{@link
  * AbilityApplier#removeNode}. Ownership is re-derived from {@link KindredData#hasNode} every tick
- * (not cached), so a node lost to a future respec is naturally cleaned up within one tick interval
- * without any extra wiring - see {@link #tickPlayer}.
+ * (not cached) and folded into the same "matches" boolean the context check produces, so a node
+ * lost to a future respec drives the identical on-to-off transition a context ending would - the
+ * applied effect is actually stripped (not just the {@link #ACTIVE} bookkeeping) within one tick
+ * interval, without any extra wiring - see {@link #tickPlayer}. This matters because at least one
+ * contextual effect (Elf's Deep-Dark Unease) is a <b>persistent</b> attribute modifier that would
+ * never otherwise self-expire, and re-unlocking + re-entering the context after an unremoved
+ * respec would throw on the duplicate persistent-modifier id.
  *
  * <p>Not persisted - {@link #ACTIVE} resets on server restart, which is harmless: the very next
  * tick re-evaluates every online player's context from scratch and re-applies whatever should be
@@ -99,28 +104,65 @@ public final class CurseContextService {
         Set<String> active = ACTIVE.computeIfAbsent(player.getUuid(), id -> new HashSet<>());
 
         for (SkillNode node : treeOpt.get().nodes()) {
-            if (!data.hasNode(node.id())) {
-                // Not (or no longer) owned - if it was previously active, drop the bookkeeping too
-                // so a respec doesn't leave a stale "active" entry a future re-unlock would treat as
-                // already-on.
-                active.remove(node.id());
-                continue;
-            }
+            // Re-derived every tick (not cached) rather than short-circuited away when unowned: the
+            // invariant is "effect present iff owned AND in-context", so losing ownership (a respec)
+            // must go through the very same off-transition below that context-ending does, or the
+            // applied effect (e.g. Elf's persistent delvers_fear_strength modifier) would be orphaned
+            // - it doesn't self-expire and nothing else would ever strip it.
+            boolean owned = data.hasNode(node.id());
             for (AbilityDef ability : node.abilities()) {
                 if (!(ability instanceof CurseDef curse) || curse.when().isEmpty()) {
                     continue;
                 }
-                boolean matches = matchesContext(curse.when(), player);
                 boolean wasActive = active.contains(node.id());
-                if (matches && !wasActive) {
-                    applyContextualCurse(player, curse, node.id());
-                    active.add(node.id());
-                } else if (!matches && wasActive) {
-                    removeContextualCurse(player, curse, node.id());
-                    active.remove(node.id());
+                // Short-circuits before matchesContext() when unowned, same as the old early-continue
+                // did - no spurious "unknown when" log noise for nodes the player doesn't even have.
+                boolean contextMatches = owned && matchesContext(curse.when(), player);
+                switch (decideTransition(owned, contextMatches, wasActive)) {
+                    case APPLY -> {
+                        applyContextualCurse(player, curse, node.id());
+                        active.add(node.id());
+                    }
+                    case REMOVE -> {
+                        removeContextualCurse(player, curse, node.id());
+                        active.remove(node.id());
+                    }
+                    case NONE -> {
+                        // No transition this tick - already in the right state.
+                    }
                 }
             }
         }
+    }
+
+    /** The three outcomes {@link #decideTransition} can produce for a single contextual curse on a
+     * single tick - see that method's javadoc for the decision rule. */
+    enum Transition { APPLY, REMOVE, NONE }
+
+    /**
+     * Pure decision rule behind {@link #tickPlayer}'s apply/remove bookkeeping, split out so it's
+     * unit-testable without a running Minecraft server. The invariant: a contextual curse's effect
+     * should be present exactly when {@code owned && contextMatches} - this method independently
+     * re-derives that AND (rather than trusting a caller to have pre-folded it), so a currently-
+     * active curse whose owned-and-in-context state has gone false - whether because the node was
+     * respec'd away ({@code !owned}) or the context itself ended ({@code owned && !contextMatches})
+     * - always transitions to {@link Transition#REMOVE}, never silently to {@link Transition#NONE}.
+     * That's precisely Task 12's fix: a contextual curse's effect (e.g. a persistent attribute
+     * modifier) does not self-expire and would otherwise be orphaned by a respec.
+     *
+     * @param owned          whether the node granting this curse is currently unlocked
+     * @param contextMatches whether the player currently matches the curse's {@code when} context
+     * @param wasActive      whether this curse's effect is currently tracked as applied
+     */
+    static Transition decideTransition(boolean owned, boolean contextMatches, boolean wasActive) {
+        boolean shouldBeActive = owned && contextMatches;
+        if (shouldBeActive && !wasActive) {
+            return Transition.APPLY;
+        }
+        if (!shouldBeActive && wasActive) {
+            return Transition.REMOVE;
+        }
+        return Transition.NONE;
     }
 
     private static void applyContextualCurse(ServerPlayerEntity player, CurseDef curse, String nodeId) {

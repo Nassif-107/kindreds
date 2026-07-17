@@ -35,7 +35,7 @@
           "curse_id": "dread_of_the_sun",
           "severity": 1,
           "when": "daylight",
-          "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": 120 }
+          "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": -1 }
         }
       ]
     },

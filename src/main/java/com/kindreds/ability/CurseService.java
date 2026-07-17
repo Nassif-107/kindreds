@@ -31,9 +31,10 @@ import java.util.List;
  *
  * <p>Each known legacy {@code curseId} is implemented as a persistent attribute modifier, reusing
  * {@link AbilityApplier}'s node-tagged id scheme ({@code kindreds:node/<nodeId>/<attrPath>}) so
- * it is automatically found and removed by {@link AbilityApplier#removeAll} (or, for a full
- * per-ability respec, {@link AbilityApplier#removeNode} via {@link #remove}) without any curse-
- * specific bookkeeping beyond knowing which attribute each {@code curseId} targets.
+ * it is found and removed again by {@link AbilityApplier#removeNode} (via {@link #remove}) -
+ * used both for a full per-ability respec and, for a contextual curse's {@code effect} payload,
+ * on a single node's context-ending/unowned transition ({@code CurseContextService}) - without any
+ * curse-specific bookkeeping beyond knowing which attribute each {@code curseId} targets.
  *
  * <p><b>Config gating:</b> the brief ties curses to the server's {@code enableCurses} config
  * flag. {@code KindredsConfig} (Task 2) is not yet loaded/held anywhere at runtime as of this

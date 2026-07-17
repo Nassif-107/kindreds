@@ -35,23 +35,21 @@ import java.util.List;
  * <h2>Attribute modifiers</h2>
  * Every persistent attribute change this class makes (both {@link AttributeMod} abilities and
  * {@link CurseDef} drawbacks routed through {@link CurseService}) is tagged with the id
- * {@code kindreds:node/<nodeId>/<attribute path>} (see {@link #attributeModifierId}). That scheme
- * is what lets {@link #removeAll} reverse a node's effects knowing only its id - it doesn't need
- * the original {@link AbilityDef} list, it just re-derives the same ids and asks every attribute
- * instance to drop a modifier with that id (a no-op if it never had one).
+ * {@code kindreds:node/<nodeId>/<attribute path>} (see {@link #attributeModifierId}). {@link
+ * #removeNode} re-derives that same id per ability to remove exactly the modifier it (or {@link
+ * CurseService}) added - it doesn't need to scan the whole attribute registry, since it's always
+ * given the node's actual ability list.
  *
  * <h2>Status effects</h2>
- * {@link StatusEffectDef} abilities are <b>not</b> reversible by {@link #removeAll} the same way:
- * a {@link StatusEffectInstance} carries no id field to tag it with a node, and re-deriving "which
- * effects came from which node" from the node id alone would require either extending the wire
- * format or a side ledger. {@link #removeNode}, given the node's actual {@link AbilityDef} list,
- * does not have that problem - vanilla removes status effects by effect *type*
- * ({@link ServerPlayerEntity#removeStatusEffect(net.minecraft.registry.entry.RegistryEntry)}), so
- * no per-node id tagging is needed for it. For P1, a node's status effect is applied once with
- * {@link StatusEffectInstance#INFINITE} duration when {@code durationTicks == -1} (documented as
- * "reapplied indefinitely while owned") and otherwise left as a fixed-duration buff; nothing
- * currently calls {@link #removeNode} yet (nodes are never revoked in Phase 1) - it exists as the
- * reversal API a future respec system (Task 13) will call.
+ * {@link StatusEffectDef} abilities carry no id field to tag with a node - a {@link
+ * StatusEffectInstance} has no per-application id, so {@link #removeNode} removes them by effect
+ * *type* instead ({@link ServerPlayerEntity#removeStatusEffect(net.minecraft.registry.entry.RegistryEntry)}),
+ * which is why {@link #removeNode} (given the node's actual {@link AbilityDef} list) is the one
+ * true reversal API, used by both a full respec ({@code RespecService#reverseAll}) and a single
+ * contextual curse's context-ending transition ({@code CurseContextService}). For P1, a node's
+ * status effect is applied once with {@link StatusEffectInstance#INFINITE} duration when {@code
+ * durationTicks == -1} (documented as "reapplied indefinitely while owned") and otherwise left as
+ * a fixed-duration buff.
  *
  * <h2>Vision / active abilities</h2>
  * {@link VisionUnlock} and {@link ActiveAbilityDef} have no attribute/effect side effects of their
@@ -79,32 +77,8 @@ public final class AbilityApplier {
     }
 
     /**
-     * Reverses every effect of {@code nodeId} that can be self-described purely from the node id
-     * - in practice, every attribute modifier (both direct {@link AttributeMod} abilities and
-     * {@link CurseDef} drawbacks), by sweeping the whole attribute registry and asking every
-     * instance to drop a modifier with the id {@code nodeId} would have used (a no-op if it never
-     * had one). Does <b>not</b> reverse {@link StatusEffectDef} abilities - use {@link #removeNode}
-     * (which is given the node's actual ability list) for a fully reversing respec.
-     */
-    public static void removeAll(ServerPlayerEntity p, String nodeId) {
-        for (EntityAttribute attribute : Registries.ATTRIBUTE) {
-            RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(attribute);
-            String attrPath = attributePath(entry);
-            if (attrPath == null) {
-                continue;
-            }
-            EntityAttributeInstance instance = p.getAttributeInstance(entry);
-            if (instance == null) {
-                continue;
-            }
-            instance.removeModifier(attributeModifierId(nodeId, attrPath));
-        }
-    }
-
-    /**
      * Fully reverses {@code nodeId}'s effects on {@code p}, dispatching per-ability on the sealed
-     * {@link AbilityDef} subtype (mirroring {@link #apply}'s dispatch) rather than {@link
-     * #removeAll}'s blind attribute-registry sweep:
+     * {@link AbilityDef} subtype (mirroring {@link #apply}'s dispatch):
      * <ul>
      *   <li>{@link AttributeMod} - removes the node-tagged {@link EntityAttributeModifier} id
      *       for that attribute.</li>
@@ -117,9 +91,10 @@ public final class AbilityApplier {
      *   <li>{@link VisionUnlock} / {@link ActiveAbilityDef} - no-op (no side effects to reverse;
      *       see the class javadoc).</li>
      * </ul>
-     * Unlike {@link #removeAll(ServerPlayerEntity, String)}, this needs the node's ability list
-     * (not just its id) - nothing calls this yet in Phase 1 (nodes are never revoked), it exists as
-     * the reversal API a future respec system (Task 13) will call.
+     * Needs the node's actual ability list (not just its id), unlike a blind attribute-registry
+     * sweep would - callers: {@code RespecService#reverseAll} (full respec) and {@code
+     * CurseContextService} (a single contextual curse's inner effect, on a node-unowned or
+     * context-ending transition).
      */
     public static void removeNode(ServerPlayerEntity p, List<AbilityDef> abilities, String nodeId) {
         for (AbilityDef ability : abilities) {
@@ -220,8 +195,9 @@ public final class AbilityApplier {
     // --- Shared attribute-id scheme (also used by CurseService) ---------------------------------
 
     /** {@code kindreds:node/<nodeId>/<attrPath>} - the id every persistent attribute modifier this
-     * class (or {@link CurseService}) installs is tagged with, so it can be found again later by
-     * {@link #removeAll} knowing only the node id. */
+     * class (or {@link CurseService}) installs is tagged with, so {@link #removeAttributeMod}/
+     * {@link CurseService#remove} can find and remove exactly that modifier again later, knowing
+     * only the node id and the attribute. */
     static Identifier attributeModifierId(String nodeId, String attrPath) {
         return Identifier.of(Kindreds.MOD_ID, "node/" + nodeId + "/" + attrPath);
     }

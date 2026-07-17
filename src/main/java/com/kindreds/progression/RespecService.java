@@ -25,9 +25,9 @@ public final class RespecService {
 
     /**
      * Reverses every node {@code target} has unlocked - via {@link AbilityApplier#removeNode}, which
-     * (unlike {@link AbilityApplier#removeAll}) is given each node's actual ability list, so it fully
-     * reverses status effects too, not just attribute modifiers - then clears
-     * {@link KindredData#unlockedNodes()}. Does <b>not</b> send {@code SyncKindredDataS2C} itself;
+     * is given each node's actual ability list, so it fully reverses status effects too, not just
+     * attribute modifiers - then clears {@link KindredData#unlockedNodes()}. Does <b>not</b> send
+     * {@code SyncKindredDataS2C} itself;
      * callers are expected to re-sync afterward (both current callers do).
      *
      * @return the number of unlocked nodes that were found in a registered tree and reversed (nodes
