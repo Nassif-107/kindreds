@@ -61,7 +61,9 @@ import java.util.UUID;
  *
  * <p>Not persisted - {@link #ACTIVE} resets on server restart, which is harmless: the very next
  * tick re-evaluates every online player's context from scratch and re-applies whatever should be
- * active.
+ * active. It is also cleared per-player on a real death via {@link #resetActive} - see that
+ * method's javadoc for why a death (unlike a disconnect or dimension change) needs an explicit
+ * clear rather than relying on the tick loop alone.
  */
 public final class CurseContextService {
     private CurseContextService() {
@@ -82,6 +84,37 @@ public final class CurseContextService {
     public static void register() {
         ServerTickEvents.END_SERVER_TICK.register(CurseContextService::onEndServerTick);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ACTIVE.remove(handler.player.getUuid()));
+    }
+
+    /**
+     * Clears {@code uuid}'s {@link #ACTIVE} bookkeeping without touching any in-world attribute
+     * modifier/status effect - called by {@code DeathHandler}'s real-death branch, where vanilla
+     * has already dropped every persistent modifier this mod installed (see that class's javadoc's
+     * "Attribute re-apply on respawn" section) but {@link #ACTIVE} would otherwise keep claiming a
+     * contextual curse is still applied. Left stale, the next {@link #tickPlayer} would see {@code
+     * wasActive=true} for a still-owned, still-in-context curse and {@link #decideTransition} would
+     * return {@link Transition#NONE} - never re-applying the (actually absent) effect. Forcing
+     * {@code wasActive=false} here makes that same tick take {@link Transition#APPLY} instead,
+     * matching reality. Not needed on a plain dimension change: vanilla keeps the persistent
+     * modifiers there, so {@link #ACTIVE} is already correct and clearing it would just cause a
+     * redundant, harmless-but-wasteful re-apply next tick.
+     */
+    public static void resetActive(UUID uuid) {
+        ACTIVE.remove(uuid);
+    }
+
+    /** Test seam: reports whether {@code nodeId} is currently tracked as active for {@code uuid} -
+     * lets {@code CurseContextServiceTest} verify {@link #resetActive} without a live {@code
+     * ServerPlayerEntity}/{@code tickPlayer} call. */
+    static boolean isActiveForTest(UUID uuid, String nodeId) {
+        return ACTIVE.getOrDefault(uuid, Set.of()).contains(nodeId);
+    }
+
+    /** Test seam: marks {@code nodeId} active for {@code uuid} directly, bypassing {@link
+     * #tickPlayer}/{@link AbilityApplier}, so {@code CurseContextServiceTest} can set up a
+     * "currently active" state for {@link #resetActive} to clear. */
+    static void markActiveForTest(UUID uuid, String nodeId) {
+        ACTIVE.computeIfAbsent(uuid, id -> new HashSet<>()).add(nodeId);
     }
 
     private static void onEndServerTick(MinecraftServer server) {

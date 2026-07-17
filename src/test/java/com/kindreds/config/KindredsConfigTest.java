@@ -13,11 +13,4 @@ class KindredsConfigTest {
     c.save(f);
     assertEquals(DeathPenalty.LOSE_PERCENT, KindredsConfig.load(f).deathPenalty);
   }
-  @Test void deathMath() {
-    KindredsConfig c = new KindredsConfig();
-    c.deathPenalty = DeathPenalty.LOSE_UNSPENT;
-    assertEquals(5, c.pointsLostOnDeath(5, 100.0));
-    c.deathPenalty = DeathPenalty.KEEP;
-    assertEquals(0, c.pointsLostOnDeath(5, 100.0));
-  }
 }

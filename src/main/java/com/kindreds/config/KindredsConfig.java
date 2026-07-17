@@ -114,23 +114,6 @@ public class KindredsConfig {
         }
     }
 
-    /**
-     * Computes how many Kindred points are lost on death given the current
-     * {@link #deathPenalty} setting.
-     *
-     * @param unspent       unspent (unallocated) points currently banked
-     * @param totalProgress total accumulated progress (spent + unspent)
-     * @return points lost; {@link Integer#MAX_VALUE} is a sentinel meaning "full wipe"
-     */
-    public int pointsLostOnDeath(int unspent, double totalProgress) {
-        return switch (deathPenalty) {
-            case KEEP -> 0;
-            case LOSE_UNSPENT -> unspent;
-            case LOSE_PERCENT -> (int) Math.round(totalProgress * deathPercent);
-            case HARDCORE -> Integer.MAX_VALUE;
-        };
-    }
-
     /** Guards against partially-populated JSON (e.g. an older config missing new fields). */
     private void fillMissingWithDefaults() {
         if (deathPenalty == null) {

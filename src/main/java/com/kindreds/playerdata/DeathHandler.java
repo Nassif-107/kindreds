@@ -2,6 +2,7 @@ package com.kindreds.playerdata;
 
 import com.kindreds.Kindreds;
 import com.kindreds.ability.AbilityApplier;
+import com.kindreds.ability.CurseContextService;
 import com.kindreds.config.DeathPenalty;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
@@ -105,16 +106,31 @@ public final class DeathHandler {
             return;
         }
 
+        DeathPenalty penalty = Kindreds.CONFIG.deathPenalty;
+        if (penalty == DeathPenalty.HARDCORE) {
+            // Short-circuit ahead of the registry/tree lookup below: HARDCORE discards every
+            // unlocked node (see applyDeathPenalty), so there is nothing for a SkillTree lookup or
+            // reapplyAbilities to do with it - skip both rather than wastefully resolving a tree
+            // that will never be consulted.
+            KindredAttachment.set(newPlayer, applyDeathPenalty(penalty, Kindreds.CONFIG.deathPercent, oldData, Optional.empty()));
+            CurseContextService.resetActive(newPlayer.getUuid());
+            SyncKindredDataS2C.sendTo(newPlayer);
+            return;
+        }
+
         Registry<SkillTree> trees = newPlayer.getServer().getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
         Optional<SkillTree> tree = resolveTree(newPlayer, trees);
 
-        DeathPenalty penalty = Kindreds.CONFIG.deathPenalty;
         KindredData newData = applyDeathPenalty(penalty, Kindreds.CONFIG.deathPercent, oldData, tree);
         KindredAttachment.set(newPlayer, newData);
+        reapplyAbilities(newPlayer, newData, trees, tree);
 
-        if (penalty != DeathPenalty.HARDCORE) {
-            reapplyAbilities(newPlayer, newData, trees, tree);
-        }
+        // Forces the next CurseContextService tick to re-derive wasActive=false for this player,
+        // so a contextual curse the player still owns and is still in-context for gets genuinely
+        // re-applied rather than assumed-still-active (vanilla dropped the real modifier on this
+        // branch - see the class javadoc's "Attribute re-apply on respawn" section - but ACTIVE
+        // wouldn't otherwise know that). See CurseContextService#resetActive's javadoc.
+        CurseContextService.resetActive(newPlayer.getUuid());
 
         SyncKindredDataS2C.sendTo(newPlayer);
     }
@@ -153,9 +169,13 @@ public final class DeathHandler {
         }
     }
 
-    /** Multiplies every discipline's xp by {@code (1 - deathPercent)}, rounded. */
+    /** Multiplies every discipline's xp by {@code (1 - deathPercent)}, rounded. {@code
+     * deathPercent} is clamped to {@code [0.0, 1.0]} first so a misconfigured value above 1.0
+     * (or negative) can never drive xp negative or otherwise out of range - a config-file typo
+     * shouldn't be able to corrupt a player's banked xp. */
     private static void applyLosePercent(KindredData data, double deathPercent) {
-        double keepFraction = 1.0 - deathPercent;
+        double clamped = Math.max(0.0, Math.min(1.0, deathPercent));
+        double keepFraction = 1.0 - clamped;
         for (Identifier discipline : List.copyOf(data.disciplineXp().keySet())) {
             long xp = data.disciplineXp().getLong(discipline);
             data.disciplineXp().put(discipline, Math.round(xp * keepFraction));

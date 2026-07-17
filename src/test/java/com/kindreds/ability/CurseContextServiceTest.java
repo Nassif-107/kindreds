@@ -2,11 +2,18 @@ package com.kindreds.ability;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static com.kindreds.ability.CurseContextService.Transition.APPLY;
 import static com.kindreds.ability.CurseContextService.Transition.NONE;
 import static com.kindreds.ability.CurseContextService.Transition.REMOVE;
 import static com.kindreds.ability.CurseContextService.decideTransition;
+import static com.kindreds.ability.CurseContextService.isActiveForTest;
+import static com.kindreds.ability.CurseContextService.markActiveForTest;
+import static com.kindreds.ability.CurseContextService.resetActive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Pure-logic test for {@link CurseContextService#decideTransition}, the apply/remove decision
@@ -58,5 +65,33 @@ class CurseContextServiceTest {
         // No spurious remove call for a node that was never active in the first place.
         assertEquals(NONE, decideTransition(false, false, false));
         assertEquals(NONE, decideTransition(false, true, false));
+    }
+
+    // --- Fix 1: resetActive (post-death re-apply) ------------------------------------------------
+
+    @Test
+    void resetActiveClearsBookkeepingSoNextTickReapplies() {
+        // Regression for the death-branch staleness bug: DeathHandler's !alive branch preserves
+        // unlockedNodes() across death, but vanilla still drops the real persistent modifier a
+        // contextual curse installed. Before Fix 1, ACTIVE kept claiming the curse was still
+        // applied, so the next tick saw wasActive=true and decideTransition returned NONE instead
+        // of re-applying the (actually absent) effect.
+        UUID uuid = UUID.randomUUID();
+        markActiveForTest(uuid, "deep_dark_unease");
+        assertTrue(isActiveForTest(uuid, "deep_dark_unease"));
+
+        resetActive(uuid);
+
+        assertFalse(isActiveForTest(uuid, "deep_dark_unease"));
+        // With ACTIVE cleared, wasActive is correctly re-derived as false on the next tick, so a
+        // still-owned, still-in-context curse takes the APPLY transition rather than NONE.
+        assertEquals(APPLY, decideTransition(true, true, false));
+    }
+
+    @Test
+    void resetActiveOnUnknownUuid_isANoOp() {
+        // No entry for this uuid yet - resetActive must not throw, matching the death branch's
+        // unconditional call even for a player with no contextual curses tracked.
+        resetActive(UUID.randomUUID());
     }
 }

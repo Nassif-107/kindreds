@@ -125,6 +125,18 @@ class DeathHandlerTest {
         assertTrue(penalized.hasNode("archer_1"));
     }
 
+    @Test
+    void losePercentClampsDeathPercentAboveOneToFullLoss() {
+        // A misconfigured deathPercent > 1.0 must never drive xp negative - clamp to full loss.
+        KindredData data = new KindredData();
+        data.addXp(ARCHERY, 100L);
+
+        KindredData penalized = DeathHandler.applyDeathPenalty(
+                DeathPenalty.LOSE_PERCENT, 1.5, data, Optional.empty());
+
+        assertEquals(0L, penalized.xpIn(ARCHERY));
+    }
+
     // --- HARDCORE -------------------------------------------------------------------------------
 
     @Test
