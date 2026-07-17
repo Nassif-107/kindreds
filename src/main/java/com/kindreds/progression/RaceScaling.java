@@ -1,5 +1,7 @@
 package com.kindreds.progression;
 
+import com.kindreds.data.RaceScalingEntry;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -8,11 +10,13 @@ import java.util.Map;
 /**
  * Per-race, per-discipline xp gain multipliers (e.g. Elves are naturally better at Archery).
  *
- * <p>Backed by a mutable in-memory table, defaulting to a hardcoded P1 table. {@link #setTable}
- * is the override hook a future data-pack loader (reading {@code data/kindreds/race_scaling/*.json})
- * can call on reload to replace it wholesale; no JSON loading is wired up yet in this task, but the
- * table shape ({@code Map<race, Map<discipline, multiplier>>}) is exactly what such a loader would
- * produce.
+ * <p>Backed by a mutable in-memory table, defaulting to a hardcoded P1 table until {@link
+ * #loadFrom} runs at least once. Task 12 Stage C wired up the data-pack loader this class's
+ * original javadoc anticipated: {@code data/kindreds/race_scaling/*.json} decodes into {@link
+ * RaceScalingEntry} entries in the {@code kindreds:race_scaling} dynamic registry, and {@link
+ * #loadFrom} materializes that registry into this class's plain table on server start and every
+ * datapack reload (see {@code Kindreds#onInitialize()}) - {@link #multiplier} itself is unchanged,
+ * so nothing downstream needed to change when the data source did.
  */
 public final class RaceScaling {
     private static final Identifier ELF = Identifier.of("middle-earth", "elf");
@@ -63,5 +67,18 @@ public final class RaceScaling {
     /** Restores the hardcoded P1 default table, discarding any override installed via {@link #setTable}. */
     public static void resetToDefaults() {
         table = new HashMap<>(DEFAULT_TABLE);
+    }
+
+    /** Rebuilds the table wholesale from every {@link RaceScalingEntry} currently in {@code
+     * registry} (keyed by each entry's own {@link RaceScalingEntry#race()}, not its registry id) -
+     * called on server start and datapack reload. An empty registry (e.g. a datapack that ships no
+     * {@code race_scaling} JSON at all) leaves every race at the {@link #DEFAULT_MULTIPLIER}
+     * fallback, same as any race/discipline combination the loaded data doesn't mention. */
+    public static void loadFrom(Registry<RaceScalingEntry> registry) {
+        Map<Identifier, Map<Identifier, Double>> newTable = new HashMap<>();
+        for (RaceScalingEntry entry : registry) {
+            newTable.put(entry.race(), new HashMap<>(entry.multipliers()));
+        }
+        setTable(newTable);
     }
 }

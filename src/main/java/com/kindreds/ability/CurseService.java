@@ -10,19 +10,26 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 /**
- * Applies the drawback a {@link CurseDef} names.
+ * Applies the drawback a {@link CurseDef} names, for the <b>unconditional</b> case ({@code
+ * when=""}) only - a nonblank {@code when} (contextual curse) is instead applied/removed
+ * dynamically by {@code CurseContextService}'s server tick, and this class's {@link #apply}/
+ * {@link #remove} are no-ops for it (see {@link CurseDef#when()}'s javadoc for the split).
  *
- * <p>As authored in Task 3, {@link CurseDef} only carries a {@code curseId} (naming which curse
- * implementation to run) and a {@code severity} (scaling its magnitude) - there is no separate
- * "buff" payload and no situational {@code when} field. This is a P1 simplification versus the
- * originally-envisioned "buff now + contextual drawback later" design: every curse here
- * <b>is</b> the drawback, and it applies unconditionally at unlock time (equivalent to "when"
- * always being empty). A future task that wants a real buff+situational-drawback split would
- * extend {@link CurseDef} with those fields and branch on them here; this class is where that
- * branch would go.
+ * <h2>Two dispatch paths (Task 12 Stage A firmed up the schema)</h2>
+ * <ul>
+ *     <li><b>{@link CurseDef#effect()} present</b> (new content): the drawback is a plain
+ *     {@code AbilityDef} (typically an attribute modifier or status effect) applied/reversed via
+ *     {@link AbilityApplier#apply}/{@link AbilityApplier#removeNode} exactly like any other node
+ *     ability - {@code curseId} is then just a descriptive label, not consulted for dispatch.</li>
+ *     <li><b>{@link CurseDef#effect()} absent</b> (pre-Task-12 JSON, kept for backward
+ *     compatibility): falls back to the original hardcoded {@code curseId} dispatch below
+ *     ({@code frailty}/{@code clumsiness}/{@code sluggishness}).</li>
+ * </ul>
  *
- * <p>Each known {@code curseId} is implemented as a persistent attribute modifier, reusing
+ * <p>Each known legacy {@code curseId} is implemented as a persistent attribute modifier, reusing
  * {@link AbilityApplier}'s node-tagged id scheme ({@code kindreds:node/<nodeId>/<attrPath>}) so
  * it is automatically found and removed by {@link AbilityApplier#removeAll} (or, for a full
  * per-ability respec, {@link AbilityApplier#removeNode} via {@link #remove}) without any curse-
@@ -39,10 +46,23 @@ public final class CurseService {
     private CurseService() {
     }
 
-    /** Applies {@code curse}'s drawback to {@code player}, tagged with {@code nodeId}. Unknown
-     * curse ids are logged and otherwise ignored (fail safe, not fail loud - a bad datapack entry
+    /** Applies {@code curse}'s drawback to {@code player}, tagged with {@code nodeId} - unless
+     * {@code curse.when()} is nonblank, in which case this is a no-op (see the class javadoc):
+     * that curse's lifecycle belongs to {@code CurseContextService} instead. Unknown legacy curse
+     * ids are logged and otherwise ignored (fail safe, not fail loud - a bad datapack entry
      * shouldn't break the rest of the unlock). */
     public static void apply(ServerPlayerEntity player, CurseDef curse, String nodeId) {
+        if (!curse.when().isEmpty()) {
+            return;
+        }
+        if (curse.effect().isPresent()) {
+            AbilityApplier.apply(player, curse.effect().get(), nodeId);
+            return;
+        }
+        applyLegacy(player, curse, nodeId);
+    }
+
+    private static void applyLegacy(ServerPlayerEntity player, CurseDef curse, String nodeId) {
         switch (curse.curseId()) {
             case "frailty" -> attributeDrawback(player, EntityAttributes.MAX_HEALTH,
                     -2.0 * curse.severity(), EntityAttributeModifier.Operation.ADD_VALUE, nodeId, curse.curseId());
@@ -71,11 +91,24 @@ public final class CurseService {
         instance.addPersistentModifier(new EntityAttributeModifier(id, amount, op));
     }
 
-    /** Reverses {@code curse}'s drawback on {@code player} - mirrors {@link #apply}'s dispatch on
-     * {@code curseId} but removes the node-tagged modifier instead of adding it. Used by {@link
-     * AbilityApplier#removeNode} for a full per-ability respec; unknown curse ids are logged and
-     * otherwise ignored, same as {@link #apply}. */
+    /** Reverses {@code curse}'s drawback on {@code player} - mirrors {@link #apply}'s dispatch
+     * (effect-payload vs. legacy {@code curseId}) but removes rather than adds. Used by {@link
+     * AbilityApplier#removeNode} for a full per-ability respec; a no-op when {@code curse.when()}
+     * is nonblank (contextual curses aren't tracked as "always applied" here - see the class
+     * javadoc), and unknown legacy curse ids are logged and otherwise ignored, same as
+     * {@link #apply}. */
     public static void remove(ServerPlayerEntity player, CurseDef curse, String nodeId) {
+        if (!curse.when().isEmpty()) {
+            return;
+        }
+        if (curse.effect().isPresent()) {
+            AbilityApplier.removeNode(player, List.of(curse.effect().get()), nodeId);
+            return;
+        }
+        removeLegacy(player, curse, nodeId);
+    }
+
+    private static void removeLegacy(ServerPlayerEntity player, CurseDef curse, String nodeId) {
         switch (curse.curseId()) {
             case "frailty" -> attributeDrawbackRemoval(player, EntityAttributes.MAX_HEALTH, nodeId);
             case "clumsiness" -> attributeDrawbackRemoval(player, EntityAttributes.ATTACK_DAMAGE, nodeId);

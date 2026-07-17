@@ -5,6 +5,7 @@ import com.kindreds.ability.AbilityApplier;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
+import com.kindreds.data.SkillTreeResolver;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
@@ -38,8 +39,12 @@ import java.util.Optional;
  * <h2>Resolving the player's tree</h2>
  * {@link #resolveTree} first asks {@link RaceAccess#getRace} for the requesting player's base-mod
  * race, then looks up the {@link SkillTree} in the {@code SKILL_TREE} dynamic registry whose
- * {@link SkillTree#race()} matches it. This is the primary path: it's correct even if two trees
- * ever authored a colliding node id, since the player's race pins down exactly one tree.
+ * {@link SkillTree#race()} matches it (via {@link SkillTreeResolver#byRace}). This is the primary
+ * path: it's correct even if two trees ever authored a colliding node id, since the player's race
+ * pins down exactly one tree - unless <b>two trees share the same race</b>, a duplicate-race
+ * authoring slip {@link SkillTreeResolver} itself can't prevent (that's an authoring error, not a
+ * lookup ambiguity); Task 12 Stage B added exactly this guard: {@link #resolveTree} rejects with
+ * {@code "ambiguous_race"} rather than silently picking one of the colliding trees.
  *
  * <p>If {@code RaceAccess.getRace} comes back empty - the base Middle-earth mod isn't loaded, or
  * the player hasn't picked a race yet (e.g. standalone testing, or mid-onboarding) - {@link
@@ -127,15 +132,23 @@ public record RequestUnlockC2S(String nodeId) implements CustomPayload {
 
         Optional<Identifier> race = RaceAccess.getRace(player);
         if (race.isPresent()) {
-            for (SkillTree tree : trees) {
-                if (tree.race().equals(race.get())) {
-                    return TreeResolution.found(tree);
-                }
+            SkillTreeResolver.Resolution resolution = SkillTreeResolver.byRace(trees, race.get());
+            if (resolution.matchCount() == 0) {
+                Kindreds.LOGGER.warn(
+                        "[Kindreds] player {}'s race {} has no matching skill tree in the SKILL_TREE registry",
+                        player.getGameProfile().getName(), race.get());
+                return TreeResolution.failure("no_tree_for_race");
             }
-            Kindreds.LOGGER.warn(
-                    "[Kindreds] player {}'s race {} has no matching skill tree in the SKILL_TREE registry",
-                    player.getGameProfile().getName(), race.get());
-            return TreeResolution.failure("no_tree_for_race");
+            if (resolution.matchCount() > 1) {
+                // Task 12 Stage B guard: mirrors resolveTreeByNodeScan's "ambiguous_node" below -
+                // a duplicate-race authoring slip must reject loudly, not silently pick one tree
+                // (which could validate - and apply abilities from - the wrong race's tree).
+                Kindreds.LOGGER.warn(
+                        "[Kindreds] race {} matches {} different skill trees; rejecting unlock as ambiguous "
+                                + "(fix the duplicate race authoring)", race.get(), resolution.matchCount());
+                return TreeResolution.failure("ambiguous_race");
+            }
+            return TreeResolution.found(resolution.tree().get());
         }
 
         return resolveTreeByNodeScan(trees, nodeId);

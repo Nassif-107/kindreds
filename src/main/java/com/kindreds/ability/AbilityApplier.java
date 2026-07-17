@@ -11,7 +11,6 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -199,23 +198,23 @@ public final class AbilityApplier {
         }, () -> Kindreds.LOGGER.warn("[Kindreds] unknown status effect id '{}'", def.effect()));
     }
 
-    // --- ActiveAbilityDef (Task 9) ---------------------------------------------------------------
+    // --- ActiveAbilityDef (Task 9 / firmed up in Task 12 Stage A) -----------------------------
 
     /**
-     * P1 placeholder effect for {@link ActiveAbilityDef} activation, called by
+     * Applies {@link ActiveAbilityDef#effects()} to the caster, called by
      * {@code ActiveAbilityService#activate} once it has resolved an unlocked, off-cooldown active
-     * ability. {@link ActiveAbilityDef} only carries {@code abilityId} + {@code cooldownTicks} -
-     * no effect payload of its own yet - so every active ability currently grants the same short
-     * self-buff (Speed II for 5s) when triggered, regardless of {@code def.abilityId()}. A later
-     * task that authors real, differentiated active abilities will need to extend
-     * {@link ActiveAbilityDef}'s schema with an actual effect definition and branch on
-     * {@code def.abilityId()} here (mirroring {@link CurseService}'s curse-id dispatch); until
-     * then this keeps the activation framework - unlock gating, cooldown tracking, network
-     * round-trip - real and end-to-end testable even though no two active abilities differ in
-     * effect yet.
+     * ability. Each authored {@link StatusEffectDef} is applied the same way {@link
+     * #applyStatusEffect} applies a passive node's status effect (same infinite-duration-if-{@code
+     * -1} convention) - a real, per-race differentiated payload as of Task 12, replacing the
+     * earlier P1 placeholder (a hardcoded Speed II every active ability shared regardless of
+     * {@code abilityId}). An ability authored with no {@code effects} (the pre-Task-12 shape, or a
+     * deliberately effect-less trigger) is a no-op here rather than falling back to any default
+     * buff.
      */
     public static void applyActiveEffect(ServerPlayerEntity p, ActiveAbilityDef def) {
-        p.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100, 1, false, true, true));
+        for (StatusEffectDef effect : def.effects()) {
+            applyStatusEffect(p, effect);
+        }
     }
 
     // --- Shared attribute-id scheme (also used by CurseService) ---------------------------------

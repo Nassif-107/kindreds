@@ -1,5 +1,6 @@
 package com.kindreds;
 
+import com.kindreds.ability.CurseContextService;
 import com.kindreds.command.KindredsCommand;
 import com.kindreds.config.KindredsConfig;
 import com.kindreds.data.KindredsRegistries;
@@ -11,6 +12,7 @@ import com.kindreds.network.SetVisionLensC2S;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.network.UnlockResultS2C;
 import com.kindreds.progression.ActivityHooks;
+import com.kindreds.progression.RaceScaling;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -49,7 +51,19 @@ public class Kindreds implements ModInitializer {
                     CONFIG.xpRateGlobal, CONFIG.deathPenalty);
         });
 
+        // Materialize data/kindreds/race_scaling/*.json into RaceScaling's plain lookup table -
+        // both on server start (registries are fully loaded by SERVER_STARTED) and after every
+        // datapack /reload, so an authored change is picked up without a server restart.
+        ServerLifecycleEvents.SERVER_STARTED.register(server ->
+                RaceScaling.loadFrom(server.getRegistryManager().getOrThrow(KindredsRegistries.RACE_SCALING)));
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, registries, success) -> {
+            if (success) {
+                RaceScaling.loadFrom(server.getRegistryManager().getOrThrow(KindredsRegistries.RACE_SCALING));
+            }
+        });
+
         ActivityHooks.register();
+        CurseContextService.register();
 
         // Push each player's server-authoritative skill data to their own client as soon as their
         // play session is ready, so client-side UI/HUD has real data from the very first tick

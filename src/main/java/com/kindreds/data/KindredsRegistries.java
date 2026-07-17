@@ -34,10 +34,20 @@ public final class KindredsRegistries {
     public static final RegistryKey<Registry<Theme>> THEME =
             RegistryKey.ofRegistry(Identifier.of(Kindreds.MOD_ID, "theme"));
 
+    /**
+     * Backs {@code com.kindreds.progression.RaceScaling}'s per-race, per-discipline xp multiplier
+     * table: entries are loaded from {@code data/<namespace>/race_scaling/<path>.json} the same way
+     * the other three registries are, and materialized into {@code RaceScaling}'s plain lookup
+     * table on server start / datapack reload (see {@code Kindreds#onInitialize()}).
+     */
+    public static final RegistryKey<Registry<RaceScalingEntry>> RACE_SCALING =
+            RegistryKey.ofRegistry(Identifier.of(Kindreds.MOD_ID, "race_scaling"));
+
     /** Registers all Kindreds dynamic registries. Must be called from {@link Kindreds#onInitialize()}. */
     public static void register() {
         DynamicRegistries.registerSynced(DISCIPLINE, Discipline.CODEC);
         DynamicRegistries.registerSynced(SKILL_TREE, SkillTree.CODEC);
         DynamicRegistries.registerSynced(THEME, Theme.CODEC);
+        DynamicRegistries.registerSynced(RACE_SCALING, RaceScalingEntry.CODEC);
     }
 }
