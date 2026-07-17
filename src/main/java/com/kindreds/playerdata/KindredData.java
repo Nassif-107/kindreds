@@ -115,18 +115,25 @@ public final class KindredData {
         return HashSet::new;
     }
 
+    /** Shared JSON codec for the {@code Set<String>} fields ({@code unlockedNodes}, {@code titles}).
+     * Factored out so both fields go through the exact same codec instance, rather than two
+     * independently-written (and independently-swappable) call sites. */
+    private static final Codec<Set<String>> STRING_SET_CODEC =
+            Codec.STRING.listOf().xmap(toStringSet(), ArrayList::new);
+
+    /** Shared wire codec for the {@code Set<String>} fields ({@code unlockedNodes}, {@code titles}).
+     * Same rationale as {@link #STRING_SET_CODEC}. */
+    private static final PacketCodec<RegistryByteBuf, Set<String>> STRING_SET_PACKET_CODEC =
+            PacketCodecs.collection((IntFunction<Set<String>>) HashSet::new, PacketCodecs.STRING);
+
     public static final Codec<KindredData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(Identifier.CODEC, Codec.LONG)
                     .xmap(KindredData.<Identifier>toObject2LongMap(), m -> m)
                     .fieldOf("discipline_xp").forGetter(KindredData::disciplineXp),
-            Codec.STRING.listOf()
-                    .xmap(toStringSet(), ArrayList::new)
-                    .fieldOf("unlocked_nodes").forGetter(KindredData::unlockedNodes),
+            STRING_SET_CODEC.fieldOf("unlocked_nodes").forGetter(KindredData::unlockedNodes),
             Identifier.CODEC.optionalFieldOf("active_vision_lens")
                     .forGetter(d -> Optional.ofNullable(d.activeVisionLens)),
-            Codec.STRING.listOf()
-                    .xmap(toStringSet(), ArrayList::new)
-                    .fieldOf("titles").forGetter(KindredData::titles),
+            STRING_SET_CODEC.fieldOf("titles").forGetter(KindredData::titles),
             Codec.INT.fieldOf("corruption").forGetter(KindredData::corruption),
             Codec.unboundedMap(Codec.STRING, Codec.LONG)
                     .xmap(KindredData.<String>toObject2LongMap(), m -> m)
@@ -140,12 +147,12 @@ public final class KindredData {
             PacketCodecs.map((IntFunction<Object2LongMap<Identifier>>) Object2LongOpenHashMap::new,
                     Identifier.PACKET_CODEC, PacketCodecs.VAR_LONG),
             KindredData::disciplineXp,
-            PacketCodecs.collection((IntFunction<Set<String>>) HashSet::new, PacketCodecs.STRING),
+            STRING_SET_PACKET_CODEC,
             KindredData::unlockedNodes,
             PacketCodecs.optional(Identifier.PACKET_CODEC)
                     .xmap(opt -> opt.orElse(null), Optional::ofNullable),
             KindredData::activeVisionLens,
-            PacketCodecs.collection((IntFunction<Set<String>>) HashSet::new, PacketCodecs.STRING),
+            STRING_SET_PACKET_CODEC,
             KindredData::titles,
             PacketCodecs.VAR_INT,
             KindredData::corruption,

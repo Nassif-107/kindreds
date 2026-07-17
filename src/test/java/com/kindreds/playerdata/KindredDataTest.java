@@ -2,8 +2,13 @@ package com.kindreds.playerdata;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,6 +57,39 @@ class KindredDataTest {
         assertEquals(42L, back.xpIn(archery));
         assertTrue(back.hasNode("keen_eyes"));
         assertEquals(lens, back.activeVisionLens());
+        assertEquals(12345L, back.cooldowns().getLong("shout_of_valor"));
+    }
+
+    @Test
+    void packetCodecRoundTripsPopulatedDataWithoutSwappingSets() {
+        Identifier archery = Identifier.of("kindreds", "archery");
+        Identifier mining = Identifier.of("kindreds", "mining");
+        Identifier lens = Identifier.of("kindreds", "stone_sense");
+
+        KindredData data = new KindredData();
+        data.addXp(archery, 42L);
+        data.addXp(mining, 7L);
+        // Deliberately distinct contents in unlockedNodes vs. titles, and distinct in shape
+        // (different sizes/values) so a positional swap between the two PACKET_CODEC entries
+        // would be caught by asserting each set independently below.
+        data.unlockedNodes().add("elf.keen_sight");
+        data.unlockedNodes().add("elf.silent_step");
+        data.titles().add("elf_friend");
+        data.setActiveVisionLens(lens);
+        data.setCorruption(3);
+        data.cooldowns().put("shout_of_valor", 12345L);
+
+        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), DynamicRegistryManager.EMPTY);
+        KindredData.PACKET_CODEC.encode(buf, data);
+        KindredData back = KindredData.PACKET_CODEC.decode(buf);
+
+        assertEquals(42L, back.xpIn(archery));
+        assertEquals(7L, back.xpIn(mining));
+        assertEquals(Set.of("elf.keen_sight", "elf.silent_step"), back.unlockedNodes());
+        assertEquals(Set.of("elf_friend"), back.titles());
+        assertNotEquals(back.unlockedNodes(), back.titles());
+        assertEquals(lens, back.activeVisionLens());
+        assertEquals(3, back.corruption());
         assertEquals(12345L, back.cooldowns().getLong("shout_of_valor"));
     }
 }
