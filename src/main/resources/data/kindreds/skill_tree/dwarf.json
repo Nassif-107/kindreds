@@ -1,0 +1,23 @@
+{
+  "race": "middle-earth:dwarf",
+  "theme": "kindreds:dwarf",
+  "nodes": [
+    {
+      "id": "stonesense",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "vision_unlock",
+          "vision_id": "ore_highlight",
+          "radius": 16
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package com.kindreds;
 
+import com.kindreds.data.KindredsRegistries;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ public class Kindreds implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        KindredsRegistries.register();
         LOGGER.info("[Kindreds] initialized");
     }
 }

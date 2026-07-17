@@ -1,0 +1,24 @@
+{
+  "race": "middle-earth:elf",
+  "theme": "kindreds:elf",
+  "nodes": [
+    {
+      "id": "keen_eyes",
+      "tier": 1,
+      "pos": [0, 0],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:generic.max_health",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    }
+  ]
+}
