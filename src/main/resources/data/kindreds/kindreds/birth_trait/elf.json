@@ -5,6 +5,10 @@
     { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
     { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 8.0 },
     { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "contextual_boon", "when": "starlight",
+      "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } },
+    { "type": "contextual_boon", "when": "starlight",
+      "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.20 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
   ],
@@ -12,7 +16,8 @@
     "Star-sight — the Eldar see through the dark of night",
     "Elven-swift — fleet and graceful of foot",
     "Light-footed — the ground scarce bruises the Firstborn",
-    "Unwearied — needs neither sleep nor much food"
+    "Unwearied — needs neither sleep nor much food",
+    "Starlit Grace — heals swiftly and quickens beneath the open night sky"
   ],
   "minuses": [
     "Slender of frame — far less brute force behind the blow",

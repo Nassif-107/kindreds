@@ -4,6 +4,7 @@ import com.kindreds.Kindreds;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.ActiveAbilityDef;
 import com.kindreds.data.ability.AttributeMod;
+import com.kindreds.data.ability.ContextualBoon;
 import com.kindreds.data.ability.CurseDef;
 import com.kindreds.data.ability.StatusEffectDef;
 import com.kindreds.data.ability.VisionUnlock;
@@ -73,6 +74,9 @@ public final class AbilityApplier {
             case ActiveAbilityDef active -> {
                 // No side effect here; the active-ability service reads unlockedNodes() directly.
             }
+            case ContextualBoon boon -> {
+                // No side effect here; CurseContextService applies/removes the inner effect by context.
+            }
         }
     }
 
@@ -111,6 +115,9 @@ public final class AbilityApplier {
                 }
                 case ActiveAbilityDef active -> {
                     // No side effect to reverse; see the class javadoc.
+                }
+                case ContextualBoon boon -> {
+                    // No side effect to reverse here; CurseContextService owns its lifecycle.
                 }
             }
         }

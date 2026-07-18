@@ -6,6 +6,7 @@ import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.data.SkillTreeResolver;
 import com.kindreds.data.ability.AbilityDef;
+import com.kindreds.data.ability.ContextualBoon;
 import com.kindreds.data.ability.CurseDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
@@ -137,42 +138,53 @@ public final class CurseContextService {
         Set<String> active = ACTIVE.computeIfAbsent(player.getUuid(), id -> new HashSet<>());
 
         for (SkillNode node : treeOpt.get().nodes()) {
-            // Re-derived every tick (not cached) rather than short-circuited away when unowned: the
-            // invariant is "effect present iff owned AND in-context", so losing ownership (a respec)
-            // must go through the very same off-transition below that context-ending does, or the
-            // applied effect (e.g. Elf's persistent delvers_fear_strength modifier) would be orphaned
-            // - it doesn't self-expire and nothing else would ever strip it.
+            // Ownership re-derived every tick (not cached): losing a node to a respec must drive the
+            // same off-transition that a context ending does, or a persistent contextual effect would
+            // be orphaned (it doesn't self-expire).
             boolean owned = data.hasNode(node.id());
-            for (AbilityDef ability : node.abilities()) {
-                if (!(ability instanceof CurseDef curse) || curse.when().isEmpty()) {
-                    continue;
-                }
-                boolean wasActive = active.contains(node.id());
-                // Short-circuits before matchesContext() when unowned, same as the old early-continue
-                // did - no spurious "unknown when" log noise for nodes the player doesn't even have.
-                // Also short-circuits when enableCurses is disabled server-side: treating that as
-                // "never in context" (rather than skipping the tick entirely) routes an already-
-                // active contextual curse through decideTransition's REMOVE branch below, so
-                // flipping the config off doesn't strand a persistent modifier that was applied
-                // while curses were still enabled.
-                boolean contextMatches = owned && Kindreds.CONFIG.enableCurses && matchesContext(curse.when(), player);
-                switch (decideTransition(owned, contextMatches, wasActive)) {
-                    case APPLY -> {
-                        applyContextualCurse(player, curse, node.id());
-                        active.add(node.id());
-                    }
-                    case REMOVE -> {
-                        removeContextualCurse(player, curse, node.id());
-                        active.remove(node.id());
-                    }
-                    case NONE -> {
-                        // No transition this tick - already in the right state.
-                    }
+            List<AbilityDef> abilities = node.abilities();
+            for (int i = 0; i < abilities.size(); i++) {
+                AbilityDef ability = abilities.get(i);
+                // Unique per (node, ability index) so a node can carry more than one contextual
+                // effect (e.g. a boon and a bane) without their bookkeeping colliding.
+                String key = "ctx/" + node.id() + "/" + i;
+                if (ability instanceof CurseDef curse && !curse.when().isEmpty() && curse.effect().isPresent()) {
+                    // enableCurses gate: treating "off" as never-in-context routes an already-applied
+                    // contextual curse through REMOVE, so flipping the flag can't strand a modifier.
+                    processContextual(player, curse.when(), curse.effect().get(), key, owned,
+                            Kindreds.CONFIG.enableCurses, active);
+                } else if (ability instanceof ContextualBoon boon) {
+                    processContextual(player, boon.when(), boon.effect(), key, owned, true, active);
                 }
             }
         }
 
-        tickBirthCurses(server, player, active);
+        tickBirthContextual(server, player, active);
+    }
+
+    /**
+     * Applies or removes one contextual effect (a contextual {@link CurseDef}'s inner effect, or a
+     * {@link ContextualBoon}) for {@code key}, per the standard "present iff owned && in-context"
+     * transition. {@code gate} is an extra config switch ({@code enableCurses} for curses; always
+     * true for boons) - when false, an already-active effect transitions out.
+     */
+    private static void processContextual(ServerPlayerEntity player, String when, AbilityDef effect,
+                                          String key, boolean owned, boolean gate, Set<String> active) {
+        boolean wasActive = active.contains(key);
+        boolean contextMatches = owned && gate && matchesContext(when, player);
+        switch (decideTransition(owned, contextMatches, wasActive)) {
+            case APPLY -> {
+                AbilityApplier.apply(player, effect, key);
+                active.add(key);
+            }
+            case REMOVE -> {
+                AbilityApplier.removeNode(player, List.of(effect), key);
+                active.remove(key);
+            }
+            case NONE -> {
+                // Already in the right state.
+            }
+        }
     }
 
     /**
@@ -183,43 +195,29 @@ public final class CurseContextService {
      * on {@code enableBirthTraits}. Birth traits are always "owned" for the player's current race,
      * so ownership is fixed true and only the context (and the config flag) drives the transition.
      */
-    private static void tickBirthCurses(MinecraftServer server, ServerPlayerEntity player, Set<String> active) {
-        if (!Kindreds.CONFIG.enableBirthTraits) {
-            // Config off: transition any active birth curse out (context treated as never-matching).
-            Optional<Identifier> race = RaceAccess.getRace(player);
-            race.flatMap(r -> birthTraitFor(server, r)).ifPresent(bt ->
-                    reconcileBirthCurses(player, bt.traits(), race.get(), active, false));
-            return;
-        }
+    private static void tickBirthContextual(MinecraftServer server, ServerPlayerEntity player, Set<String> active) {
         Optional<Identifier> race = RaceAccess.getRace(player);
         if (race.isEmpty()) {
-            return;
+            return; // race unknown - leave any applied birth effect as-is until it resolves
         }
+        boolean enabled = Kindreds.CONFIG.enableBirthTraits;
         birthTraitFor(server, race.get()).ifPresent(bt ->
-                reconcileBirthCurses(player, bt.traits(), race.get(), active, true));
+                reconcileBirthContextual(player, bt.traits(), race.get(), active, enabled));
     }
 
-    private static void reconcileBirthCurses(ServerPlayerEntity player, List<AbilityDef> traits, Identifier race,
-                                              Set<String> active, boolean enabled) {
+    /** Drives a race's innate contextual traits - both contextual curses (Dread of the Sun) and
+     * {@link ContextualBoon}s (Starlit Grace, Deep-Delver, Children of the Dark). Birth traits are
+     * always "owned" for the current race, so the config flag ({@code enableBirthTraits}) is the only
+     * extra gate; flipping it off transitions any active effect out. */
+    private static void reconcileBirthContextual(ServerPlayerEntity player, List<AbilityDef> traits, Identifier race,
+                                                  Set<String> active, boolean enabled) {
         for (int i = 0; i < traits.size(); i++) {
-            if (!(traits.get(i) instanceof CurseDef curse) || curse.when().isEmpty()) {
-                continue;
-            }
-            String key = "birthcurse/" + race.getPath() + "/" + i;
-            boolean wasActive = active.contains(key);
-            boolean contextMatches = enabled && matchesContext(curse.when(), player);
-            switch (decideTransition(true, contextMatches, wasActive)) {
-                case APPLY -> {
-                    applyContextualCurse(player, curse, key);
-                    active.add(key);
-                }
-                case REMOVE -> {
-                    removeContextualCurse(player, curse, key);
-                    active.remove(key);
-                }
-                case NONE -> {
-                    // Already in the right state.
-                }
+            AbilityDef ability = traits.get(i);
+            String key = "birthctx/" + race.getPath() + "/" + i;
+            if (ability instanceof CurseDef curse && !curse.when().isEmpty() && curse.effect().isPresent()) {
+                processContextual(player, curse.when(), curse.effect().get(), key, true, enabled, active);
+            } else if (ability instanceof ContextualBoon boon) {
+                processContextual(player, boon.when(), boon.effect(), key, true, enabled, active);
             }
         }
     }
@@ -265,31 +263,47 @@ public final class CurseContextService {
         return Transition.NONE;
     }
 
-    private static void applyContextualCurse(ServerPlayerEntity player, CurseDef curse, String nodeId) {
-        curse.effect().ifPresentOrElse(
-                effect -> AbilityApplier.apply(player, effect, nodeId),
-                () -> Kindreds.LOGGER.warn(
-                        "[Kindreds] contextual curse on node {} has no effect payload; nothing to apply", nodeId));
-    }
-
-    private static void removeContextualCurse(ServerPlayerEntity player, CurseDef curse, String nodeId) {
-        curse.effect().ifPresent(effect -> AbilityApplier.removeNode(player, List.of(effect), nodeId));
-    }
-
     // --- Context evaluation ------------------------------------------------------------------------
 
     private static boolean matchesContext(String when, ServerPlayerEntity player) {
         return switch (when) {
             case "deep_dark" -> isDeepDark(player);
             case "daylight" -> isDaylight(player);
+            case "starlight" -> isStarlight(player);
+            case "underground" -> isUnderground(player);
+            case "darkness" -> isDarkness(player);
+            case "dawn_dusk" -> isDawnOrDusk(player);
             default -> {
                 if (LOGGED_UNKNOWN_WHEN.add(when)) {
                     Kindreds.LOGGER.warn(
-                            "[Kindreds] curse context '{}' isn't implemented yet; treating it as never active", when);
+                            "[Kindreds] context '{}' isn't implemented yet; treating it as never active", when);
                 }
                 yield false;
             }
         };
+    }
+
+    /** Night, beneath open sky - the Eldar's starlit hours (Elf "Starlit Grace"). */
+    private static boolean isStarlight(ServerPlayerEntity player) {
+        World world = player.getWorld();
+        return !world.isDay() && world.isSkyVisible(player.getBlockPos());
+    }
+
+    /** No open sky overhead - below ground, in the deep places (Dwarf "Deep-Delver"). */
+    private static boolean isUnderground(ServerPlayerEntity player) {
+        return !player.getWorld().isSkyVisible(player.getBlockPos());
+    }
+
+    /** Night or underground - the hours and haunts of dark things (Orc-kin "Children of the Dark"). */
+    private static boolean isDarkness(ServerPlayerEntity player) {
+        World world = player.getWorld();
+        return !world.isDay() || !world.isSkyVisible(player.getBlockPos());
+    }
+
+    /** The dawn and dusk twilight windows (Men "Kings of the Dawn"). */
+    private static boolean isDawnOrDusk(ServerPlayerEntity player) {
+        long t = player.getWorld().getTimeOfDay() % 24000L;
+        return t >= 22000L || t <= 1000L || (t >= 11000L && t <= 13500L);
     }
 
     /** Below open sky, in near-total darkness - backs Elf's "Deep-Dark Unease". */

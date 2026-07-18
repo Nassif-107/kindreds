@@ -8,13 +8,16 @@
       "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": -1 } },
     { "type": "curse", "curse_id": "sun_sluggishness", "severity": 1, "when": "daylight",
       "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 0, "duration_ticks": -1 } },
+    { "type": "contextual_boon", "when": "darkness",
+      "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.20 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
   ],
   "pluses": [
     "Night-eyed — sees in the pitch dark",
     "Fleet-footed and lash-driven — swiftest of the Orc-kind",
-    "Beneath notice — the overlooked go unseen"
+    "Beneath notice — the overlooked go unseen",
+    "Children of the Dark — grows stronger by night and in the deep places"
   ],
   "minuses": [
     "Dread of the Sun — weak and slow under open daylight",
