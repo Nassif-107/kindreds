@@ -18,6 +18,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
@@ -293,9 +294,25 @@ public final class CurseContextService {
         return !world.isDay() && world.isSkyVisible(player.getBlockPos());
     }
 
-    /** No open sky overhead - below ground, in the deep places (Dwarf "Deep-Delver"). */
+    /** Genuinely below the solid ground surface - in the deep places (Dwarf "Deep-Delver"). */
     private static boolean isUnderground(ServerPlayerEntity player) {
-        return !player.getWorld().isSkyVisible(player.getBlockPos());
+        return isBelowSurface(player);
+    }
+
+    /**
+     * True only when there is solid <b>terrain</b> (rock/earth, or a built roof) overhead - i.e. the
+     * player is genuinely beneath the surface, not merely standing in shade. Uses the
+     * {@code MOTION_BLOCKING_NO_LEAVES} heightmap so a forest canopy (or any leaves) does NOT count:
+     * under a tree, the no-leaves surface is the ground you stand on, so you read as above-surface, as
+     * you should. In a cave the surface is the rock far above, so you read as below it. This replaces a
+     * bare {@code !isSkyVisible} check, which treated tree-shadow as "underground" and wrongly triggered
+     * the Elf's Deep-Dark unease (and the Dwarf's Deep-Delver boon) out in the woods.
+     */
+    private static boolean isBelowSurface(ServerPlayerEntity player) {
+        World world = player.getWorld();
+        BlockPos pos = player.getBlockPos();
+        int surface = world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ());
+        return pos.getY() < surface;
     }
 
     /** Night or underground - the hours and haunts of dark things (Orc-kin "Children of the Dark"). */
@@ -315,14 +332,12 @@ public final class CurseContextService {
         return player.getHealth() <= player.getMaxHealth() * 0.35f;
     }
 
-    /** Below open sky, in near-total darkness - backs Elf's "Deep-Dark Unease". */
+    /** Genuinely underground (solid terrain overhead, not just tree-shade) AND in near-total darkness -
+     * backs Elf's "Deep-Dark Unease". The below-surface gate is what keeps a shadowed forest floor at
+     * night from counting as "the deep dark". */
     private static boolean isDeepDark(ServerPlayerEntity player) {
-        World world = player.getWorld();
-        BlockPos pos = player.getBlockPos();
-        if (world.isSkyVisible(pos)) {
-            return false;
-        }
-        return world.getLightLevel(LightType.BLOCK, pos) <= MIN_DARK_LIGHT;
+        return isBelowSurface(player)
+                && player.getWorld().getLightLevel(LightType.BLOCK, player.getBlockPos()) <= MIN_DARK_LIGHT;
     }
 
     /** Direct, unobstructed skylight during the day - backs Orc/Goblin/Snaga's "Dread of the Sun". */
