@@ -101,10 +101,33 @@ public final class TreeRenderer {
         if (data.hasNode(node.id())) {
             return NodeState.OWNED;
         }
+        // A specialization whose mutually-exclusive rival is already owned is closed off - the player
+        // chose the other path. Shown LOCKED (matching the server's exclusive_conflict rule) so the
+        // road not taken visibly shuts, which is the point of a dynamic tree of choices.
+        if (isExclusiveClosed(node, data, tree)) {
+            return NodeState.LOCKED;
+        }
         if (!prereqsAndPointsMet(node, data, tree)) {
             return NodeState.LOCKED;
         }
         return node.deedAdvancement().isPresent() ? NodeState.SEALED : NodeState.AVAILABLE;
+    }
+
+    /** Whether {@code node} shares an {@code exclusive_group} with an already-owned node (mirrors
+     * {@code UnlockService}'s {@code exclusive_conflict}). */
+    private static boolean isExclusiveClosed(SkillNode node, KindredData data, SkillTree tree) {
+        if (node.exclusiveGroup().isEmpty()) {
+            return false;
+        }
+        String group = node.exclusiveGroup().get();
+        for (SkillNode other : tree.nodes()) {
+            if (!other.id().equals(node.id())
+                    && other.exclusiveGroup().filter(group::equals).isPresent()
+                    && data.hasNode(other.id())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // --- Background / frame ---------------------------------------------------------------------

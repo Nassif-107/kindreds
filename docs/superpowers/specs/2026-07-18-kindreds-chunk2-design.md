@@ -410,14 +410,24 @@ The trees should expose join points for the separate Fellowship system:
 
 ---
 
-## 8. Open decisions for the human partner
+## 8. Decisions — LOCKED (2026-07-18)
 
-- Loadout: bring Attunement slots forward into this chunk (recommended — the trees add many actives),
-  or keep "first active" until Chunk 3.
-- Shadow/Corruption discipline: include now (opt-in dark path) or hold for the Phase-3 Corruption
-  system it feeds.
-- Scale of first delivery: Elf + Dwarf fully (trees + signature abilities + new VFX) as the vertical
-  slice, then fan out — vs. all-8 trees data-first then abilities.
+- **Delivery: all-8 trees DATA-FIRST**, then signature actives + Attunement loadout, then the visual
+  overhaul. (Phase A = every race's big tree playable; Phase B = actives + loadout; Phase C = VFX.)
+- **Attunement loadout: build it in Chunk 2** (unlock 1→3 slots, assign equipped actives).
+- **Shadow/Corruption discipline: INCLUDE NOW** as an opt-in dark path (a lighter preview that later
+  feeds the full Phase-3 Corruption system).
+
+### Binding constraints (user, 2026-07-18)
+- **Visions/VFX must be SUBSTANTIAL & USABLE, never cheats.** Each vision is a real, race-unique
+  gameplay advantage (Dwarf ore-sense actually helps you mine; Elf keen-sight helps you hunt/fight),
+  but BALANCED — cooldowns/limited windows/one-at-a-time, not a permanent free x-ray. Eye-candy alone
+  is not enough; every effect must earn its place with utility.
+- **Deeply REPLAYABLE — not a one-night clear.** Long trees, meaningful gated progression, and hard
+  choices so a single character can't have everything.
+- **FULLY DYNAMIC tree of CHOICES.** Lean hard on mutually-exclusive specializations
+  (`exclusive_group`) and convergent hybrids so builds genuinely diverge and reward replay with
+  different races AND different paths within a race.
 
 ### Sources
 Phial of Galadriel / Light of Eärendil (Tolkien Gateway, Wikipedia); Khuzdul, Moon-letters, Cirith/

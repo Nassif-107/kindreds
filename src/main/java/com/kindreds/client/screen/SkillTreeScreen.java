@@ -846,6 +846,7 @@ public class SkillTreeScreen extends Screen {
         return switch (reason) {
             case "insufficient_points" -> "Not enough points in that discipline.";
             case "missing_prereq" -> "Unlock its prerequisite first.";
+            case "exclusive_conflict" -> "You've committed to a different path — this one is closed.";
             case "already_owned" -> "You already know this.";
             case "deed_not_earned" -> "Earn its deed first to break the seal.";
             case "no_tree_for_race", "no_such_node", "ambiguous_node" -> "This skill isn't available.";
