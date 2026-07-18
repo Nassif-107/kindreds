@@ -2,6 +2,7 @@ package com.kindreds;
 
 import com.kindreds.ability.BirthTraitService;
 import com.kindreds.ability.CurseContextService;
+import com.kindreds.ability.PerkEventHandlers;
 import com.kindreds.ability.PerkService;
 import com.kindreds.ability.RacialNatureService;
 import com.kindreds.command.KindredsCommand;
@@ -80,6 +81,7 @@ public class Kindreds implements ModInitializer {
         BirthTraitService.register();
         RacialNatureService.register();
         PerkService.register();
+        PerkEventHandlers.register();
         DeathHandler.register();
 
         // Push each player's server-authoritative skill data to their own client as soon as their
