@@ -133,6 +133,9 @@ public class KindredsClient implements ClientModInitializer {
         // Add a "Kindred Traits" button onto the base mod's race-selection screen (opens the Codex).
         com.kindreds.client.OnboardingCodexButton.register();
 
+        // "Wayfarer" - Men keep their footing on ice (no sliding).
+        com.kindreds.client.WayfarerIceGrip.register();
+
         // FIX (gamma stranded on disconnect): the lenses' own render()-driven gamma restore can't
         // fire once MinecraftClient.world goes null, since WorldRenderEvents.AFTER_TRANSLUCENT stops
         // firing entirely at that point (an ordinary Disconnect/Leave, no crash needed) - see
