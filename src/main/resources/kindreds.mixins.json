@@ -6,6 +6,7 @@
     "CraftingResultSlotMixin",
     "HungerManagerAccessor",
     "ItemMixin",
+    "LivingEntityDamageMixin",
     "PersistentProjectileEntityMixin",
     "PlayerAdvancementTrackerMixin"
   ],
