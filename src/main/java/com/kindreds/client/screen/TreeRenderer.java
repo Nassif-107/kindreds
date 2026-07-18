@@ -113,17 +113,30 @@ public final class TreeRenderer {
      * accent-tinted overlay so the same flat texture still reads as "this race's colors" even with
      * placeholder art. Falls back to a flat secondary-tone fill if there's no theme/texture. */
     public static void drawBackground(DrawContext ctx, Theme theme, int x, int y, int w, int h) {
-        Identifier texture = ThemeAssets.background(theme);
-        if (texture != null) {
-            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, texture, x, y, 0f, 0f, w, h, 64, 64, 0xFFFFFFFF);
-        } else {
-            ctx.fill(x, y, x + w, y + h, ThemeAssets.secondary(theme));
+        // Fully procedural (no texture) so there is never a missing-texture fallback: a deep stone/
+        // leather base darkened from the race's muted tone, a soft warm accent glow toward the centre,
+        // and an edge vignette on all four sides so nodes and text read clearly against it.
+        int accent = ThemeAssets.accent(theme);
+        int base = ThemeAssets.mix(ThemeAssets.secondary(theme), 0xFF0B0A08, 0.62f);
+        ctx.fill(x, y, x + w, y + h, base);
+
+        int glow = ThemeAssets.withAlpha(ThemeAssets.mix(accent, ThemeAssets.secondary(theme), 0.5f), 38);
+        ctx.fillGradient(x, y, x + w, y + h / 2, 0x00000000, glow);
+        ctx.fillGradient(x, y + h / 2, x + w, y + h, glow, 0x00000000);
+
+        int vy = Math.min(30, h / 4);
+        ctx.fillGradient(x, y, x + w, y + vy, 0x99000000, 0x00000000);
+        ctx.fillGradient(x, y + h - vy, x + w, y + h, 0x00000000, 0x99000000);
+
+        // Left/right vignette: fillGradient is vertical-only, so emulate the horizontal fade with a
+        // few thin translucent strips of decreasing alpha (cheap - a couple dozen fills per side).
+        int vx = Math.min(26, w / 4);
+        for (int i = 0; i < vx; i++) {
+            int a = (int) (0x88 * (1f - (float) i / vx));
+            int col = a << 24;
+            ctx.fill(x + i, y, x + i + 1, y + h, col);
+            ctx.fill(x + w - i - 1, y, x + w - i, y + h, col);
         }
-        // Accent wash + vignette-ish darkening toward the edges so nodes/text stay readable
-        // regardless of the underlying texture's own contrast.
-        ctx.fill(x, y, x + w, y + h, ThemeAssets.withAlpha(ThemeAssets.accent(theme), 26));
-        ctx.fillGradient(x, y, x + w, y + 24, 0x80000000, 0x00000000);
-        ctx.fillGradient(x, y + h - 24, x + w, y + h, 0x00000000, 0x80000000);
     }
 
     /** A simple carved/ornate-reading border: an outer accent line, an inner highlight line, and
