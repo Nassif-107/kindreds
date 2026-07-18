@@ -22,7 +22,7 @@ public final class KindredLoadoutScreen extends Screen {
     private List<String> options = List.of("");
 
     public KindredLoadoutScreen() {
-        super(Text.literal("Ability Loadout"));
+        super(Text.translatable("kindreds.loadout.title"));
     }
 
     @Override
@@ -40,14 +40,14 @@ public final class KindredLoadoutScreen extends Screen {
                 button.setMessage(slotLabel(slot));
             }).dimensions(cx - 110, top + i * 26, 220, 20).build());
         }
-        addDrawableChild(ButtonWidget.builder(Text.literal("Done"), button -> close())
+        addDrawableChild(ButtonWidget.builder(Text.translatable("kindreds.loadout.done"), button -> close())
                 .dimensions(cx - 60, top + ClientLoadout.SLOTS * 26 + 14, 120, 20).build());
     }
 
     private Text slotLabel(int slot) {
         String id = ClientLoadout.slot(slot);
         Formatting colour = id.isEmpty() ? Formatting.DARK_GRAY : Formatting.GOLD;
-        return Text.literal("Slot " + (slot + 1) + ":  " + ClientLoadout.displayName(id)).formatted(colour);
+        return Text.translatable("kindreds.loadout.slot", slot + 1, ClientLoadout.displayName(id)).formatted(colour);
     }
 
     private void cycleSlot(int slot) {
@@ -72,18 +72,13 @@ public final class KindredLoadoutScreen extends Screen {
         int cx = this.width / 2;
         int top = this.height / 2 - (ClientLoadout.SLOTS * 26) / 2;
         ctx.drawCenteredTextWithShadow(this.textRenderer,
-                Text.literal("Ability Loadout").formatted(Formatting.GOLD, Formatting.BOLD), cx, top - 40, 0xFFFFD780);
-        if (options.size() <= 1) {
-            ctx.drawCenteredTextWithShadow(this.textRenderer,
-                    Text.literal("Unlock active abilities in your skill tree to fill these slots.")
-                            .formatted(Formatting.GRAY), cx, top - 22, 0xFFAAAAAA);
-        } else {
-            ctx.drawCenteredTextWithShadow(this.textRenderer,
-                    Text.literal("Click a slot to cycle through your unlocked actives.")
-                            .formatted(Formatting.GRAY), cx, top - 22, 0xFFAAAAAA);
-        }
+                Text.translatable("kindreds.loadout.title").formatted(Formatting.GOLD, Formatting.BOLD),
+                cx, top - 40, 0xFFFFD780);
         ctx.drawCenteredTextWithShadow(this.textRenderer,
-                Text.literal("In-world: cycle-slot key selects, use-ability key fires the selected slot.")
-                        .formatted(Formatting.DARK_GRAY), cx, top + ClientLoadout.SLOTS * 26 + 40, 0xFF888888);
+                Text.translatable(options.size() <= 1 ? "kindreds.loadout.hint.empty" : "kindreds.loadout.hint.cycle")
+                        .formatted(Formatting.GRAY), cx, top - 22, 0xFFAAAAAA);
+        ctx.drawCenteredTextWithShadow(this.textRenderer,
+                Text.translatable("kindreds.loadout.hint.keys").formatted(Formatting.DARK_GRAY),
+                cx, top + ClientLoadout.SLOTS * 26 + 40, 0xFF888888);
     }
 }

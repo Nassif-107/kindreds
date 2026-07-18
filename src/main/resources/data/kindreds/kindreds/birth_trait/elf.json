@@ -1,36 +1,104 @@
 {
   "race": "middle-earth:elf",
   "traits": [
-    { "type": "perk", "perk": "bane", "foe": "spider", "params": { "bonus": 0.5 } },
-    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.20 },
-    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.25 },
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.4 },
-    { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 8.0 },
-    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
-    { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "contextual_boon", "when": "starlight",
-      "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } },
-    { "type": "contextual_boon", "when": "starlight",
-      "effect": { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.25 } },
-    { "type": "curse", "curse_id": "unease_in_the_deep", "severity": 1, "when": "deep_dark",
-      "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 0, "duration_ticks": -1 } }
+    {
+      "type": "perk",
+      "perk": "bane",
+      "foe": "spider",
+      "params": {
+        "bonus": 0.5
+      }
+    },
+    {
+      "type": "status_effect",
+      "effect": "minecraft:night_vision",
+      "amplifier": 0,
+      "duration_ticks": -1
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:movement_speed",
+      "operation": "add_multiplied_base",
+      "amount": 0.2
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:attack_speed",
+      "operation": "add_multiplied_base",
+      "amount": 0.25
+    },
+    {
+      "type": "attribute",
+      "attribute": "middle-earth:detection_range",
+      "operation": "add_value",
+      "amount": -0.4
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:safe_fall_distance",
+      "operation": "add_value",
+      "amount": 8.0
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:max_health",
+      "operation": "add_value",
+      "amount": 2.0
+    },
+    {
+      "type": "status_effect",
+      "effect": "minecraft:saturation",
+      "amplifier": 0,
+      "duration_ticks": -1
+    },
+    {
+      "type": "contextual_boon",
+      "when": "starlight",
+      "effect": {
+        "type": "status_effect",
+        "effect": "minecraft:regeneration",
+        "amplifier": 0,
+        "duration_ticks": -1
+      }
+    },
+    {
+      "type": "contextual_boon",
+      "when": "starlight",
+      "effect": {
+        "type": "attribute",
+        "attribute": "minecraft:movement_speed",
+        "operation": "add_multiplied_base",
+        "amount": 0.25
+      }
+    },
+    {
+      "type": "curse",
+      "curse_id": "unease_in_the_deep",
+      "severity": 1,
+      "when": "deep_dark",
+      "effect": {
+        "type": "status_effect",
+        "effect": "minecraft:weakness",
+        "amplifier": 0,
+        "duration_ticks": -1
+      }
+    }
   ],
   "pluses": [
-    "Star-sight — the Eldar see through the dark of night",
-    "Foe of the Spiders — hews the brood of Ungoliant with deadly ease (+50% damage vs spiders)",
-    "Elven-swift — fleet and graceful of foot",
-    "Deft and quick — strikes faster than mortal eye can follow",
-    "Silent in the wild — moves unheard and unseen; foes notice the Firstborn late",
-    "Light-footed — the ground scarce bruises the Firstborn",
-    "Hard and resistant to hurt — hale of body (11 hearts)",
-    "Tall and far-reaching — strikes and works from a little farther (base Elf), and treads soft ground unhindered",
-    "Unwearied — needs no sleep and little food",
-    "Starlit Grace — heals (Regeneration) and quickens (+15% move speed, stacking) beneath the open night sky",
-    "Never sickens — immune to hunger's gnaw and to nausea; cold and powder-snow cannot freeze the Firstborn (base Elf + Kindred)",
-    "Unstained by the Shadow — curses and poisons wear off swiftly"
+    "kindreds.trait.elf.plus.0",
+    "kindreds.trait.elf.plus.1",
+    "kindreds.trait.elf.plus.2",
+    "kindreds.trait.elf.plus.3",
+    "kindreds.trait.elf.plus.4",
+    "kindreds.trait.elf.plus.5",
+    "kindreds.trait.elf.plus.6",
+    "kindreds.trait.elf.plus.7",
+    "kindreds.trait.elf.plus.8",
+    "kindreds.trait.elf.plus.9",
+    "kindreds.trait.elf.plus.10",
+    "kindreds.trait.elf.plus.11"
   ],
   "minuses": [
-    "Unease in the deep dark — creatures of light, the Firstborn are unsettled and weakened in lightless underground places (where a Dwarf is most at home)"
+    "kindreds.trait.elf.minus.0"
   ]
 }

@@ -172,7 +172,7 @@ public final class ClientLoadout {
      * "Durin's Wrath"). */
     public static String displayName(String abilityId) {
         if (abilityId == null || abilityId.isEmpty()) {
-            return "(empty)";
+            return net.minecraft.client.resource.language.I18n.translate("kindreds.loadout.empty");
         }
         String path = abilityId.contains(":") ? abilityId.substring(abilityId.indexOf(':') + 1) : abilityId;
         String[] words = path.split("_");

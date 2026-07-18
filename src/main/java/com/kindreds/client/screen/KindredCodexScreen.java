@@ -12,6 +12,7 @@ import com.kindreds.progression.ProgressionService;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -57,7 +58,7 @@ public class KindredCodexScreen extends Screen {
     private int contentHeight;
 
     public KindredCodexScreen(KindredData data, Screen parent) {
-        super(Text.literal("Kindred Codex"));
+        super(Text.translatable("kindreds.codex.title"));
         this.data = data != null ? data : new KindredData();
         this.parent = parent;
     }
@@ -133,7 +134,8 @@ public class KindredCodexScreen extends Screen {
         int cx = px + PAGE_W / 2;
 
         // Title.
-        String raceName = titleCase(browseRace().getPath()) + (isOwn ? "  —  your people" : "");
+        String raceName = I18n.translate("kindreds.race." + browseRace().getPath())
+                + (isOwn ? "  —  " + I18n.translate("kindreds.codex.your_people") : "");
         int tw = textRenderer.getWidth(raceName);
         ctx.drawText(textRenderer, Text.literal(raceName).formatted(Formatting.BOLD, Formatting.UNDERLINE),
                 cx - tw / 2, py + 14, INK_HEADER, false);
@@ -146,35 +148,36 @@ public class KindredCodexScreen extends Screen {
         int y = viewTop + (int) scrollY;
         int wrap = PAGE_W - 52;
 
-        y = section(ctx, x, y, "The Ways of the Kindreds");
-        y = ink(ctx, x, y, wrap, "Open your skill tree with [K], then spend discipline points earned through your deeds.");
-        y = ink(ctx, x, y, wrap, "Earn points by living your people's life — fight, mine, sneak, craft, explore.");
-        y = ink(ctx, x, y, wrap, "Passive skills are always on. Active skills fire with [G]. Vision toggles with [V], or Equip it in the tree.");
-        y = ink(ctx, x, y, wrap, "The birth-gifts below are innate. Some wake with place and hour — starlight, the deep places, the open Sun.");
+        y = section(ctx, x, y, I18n.translate("kindreds.codex.section.ways"));
+        y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.guide.tree"));
+        y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.guide.earn"));
+        y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.guide.skills"));
+        y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.guide.gifts"));
         y += 8;
 
-        y = section(ctx, x, y, "Birth-gifts of this people");
+        y = section(ctx, x, y, I18n.translate("kindreds.codex.section.gifts"));
         if (birth != null) {
             for (String plus : birth.pluses()) {
-                y = bullet(ctx, x, y, wrap, "✦", BOON, plus);
+                y = bullet(ctx, x, y, wrap, "✦", BOON, I18n.translate(plus));
             }
             for (String minus : birth.minuses()) {
-                y = bullet(ctx, x, y, wrap, "✖", BANE, minus);
+                y = bullet(ctx, x, y, wrap, "✖", BANE, I18n.translate(minus));
             }
         } else {
-            y = ink(ctx, x, y, wrap, "(no birth-gifts recorded for this people)");
+            y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.gifts.none"));
         }
         y += 8;
 
         if (isOwn) {
-            y = section(ctx, x, y, "Your disciplines");
+            y = section(ctx, x, y, I18n.translate("kindreds.codex.section.disciplines"));
             for (String disc : Disciplines.ALL) {
                 Identifier discId = Identifier.of("kindreds", disc);
                 int level = ProgressionService.pointsForLevel(data.xpIn(discId));
                 int spent = tree != null ? ProgressionService.pointsSpent(data, tree, discId) : 0;
                 int avail = level - spent;
-                String head = String.format("%-10s  Lv %-2d   %d spent%s", titleCase(disc), level, spent,
-                        avail > 0 ? "   (+" + avail + " to spend)" : "");
+                String availText = avail > 0 ? "   " + I18n.translate("kindreds.codex.disc.to_spend", avail) : "";
+                String head = String.format("%-12s %s", I18n.translate("kindreds.discipline." + disc),
+                        I18n.translate("kindreds.codex.disc.line", level, spent) + availText);
                 ctx.drawText(textRenderer, Text.literal(head), x, y, avail > 0 ? BOON : INK, false);
                 y += LINE;
                 long xp = data.xpIn(discId);
@@ -187,14 +190,16 @@ public class KindredCodexScreen extends Screen {
             }
             y += 8;
 
-            y = section(ctx, x, y, "Vision & titles");
-            String lens = data.activeVisionLens() != null ? titleCase(data.activeVisionLens().getPath()) : "None equipped";
-            y = ink(ctx, x, y, wrap, "Vision: " + lens);
-            String titles = data.titles().isEmpty() ? "None earned yet" : String.join(", ", data.titles());
-            y = ink(ctx, x, y, wrap, "Titles: " + titles);
-            y = ink(ctx, x, y, wrap, "Skills learned: " + data.unlockedNodes().size());
+            y = section(ctx, x, y, I18n.translate("kindreds.codex.section.vision_titles"));
+            String lens = data.activeVisionLens() != null
+                    ? titleCase(data.activeVisionLens().getPath()) : I18n.translate("kindreds.codex.vision.none");
+            y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.vision", lens));
+            String titles = data.titles().isEmpty()
+                    ? I18n.translate("kindreds.codex.titles.none") : String.join(", ", data.titles());
+            y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.titles", titles));
+            y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.skills_learned", data.unlockedNodes().size()));
         } else {
-            y = ink(ctx, x, y, wrap, "Choose this people in the Player's Book to walk their path and earn their skills.");
+            y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.choose"));
         }
 
         contentHeight = (y - (int) scrollY) - viewTop;
@@ -203,8 +208,8 @@ public class KindredCodexScreen extends Screen {
         // Page-turn corners + hint.
         prevBtn = new int[]{px + 14, py + ph - 20, 58, 15};
         nextBtn = new int[]{px + PAGE_W - 72, py + ph - 20, 58, 15};
-        drawTurn(ctx, prevBtn, "◄ Prev", within(prevBtn, mouseX, mouseY));
-        drawTurn(ctx, nextBtn, "Next ►", within(nextBtn, mouseX, mouseY));
+        drawTurn(ctx, prevBtn, "◄ " + I18n.translate("kindreds.codex.prev"), within(prevBtn, mouseX, mouseY));
+        drawTurn(ctx, nextBtn, I18n.translate("kindreds.codex.next") + " ►", within(nextBtn, mouseX, mouseY));
         String pageNo = (browseIndex + 1) + " / " + ALL_RACES.size();
         int pw = textRenderer.getWidth(pageNo);
         ctx.drawText(textRenderer, Text.literal(pageNo), cx - pw / 2, py + ph - 17, INK_MUTE, false);

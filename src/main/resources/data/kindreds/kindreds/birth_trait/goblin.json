@@ -1,28 +1,71 @@
 {
   "race": "middle-earth:goblin",
   "traits": [
-    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 900.0 },
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.4 },
-    { "type": "curse", "curse_id": "dread_of_the_sun", "severity": 1, "when": "daylight",
-      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": -0.25 } },
-    { "type": "curse", "curse_id": "sun_sluggishness", "severity": 1, "when": "daylight",
-      "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 0, "duration_ticks": -1 } },
-    { "type": "contextual_boon", "when": "darkness",
-      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.45 } }
+    {
+      "type": "status_effect",
+      "effect": "minecraft:night_vision",
+      "amplifier": 0,
+      "duration_ticks": -1
+    },
+    {
+      "type": "attribute",
+      "attribute": "middle-earth:climbing_strength",
+      "operation": "add_value",
+      "amount": 900.0
+    },
+    {
+      "type": "attribute",
+      "attribute": "middle-earth:detection_range",
+      "operation": "add_value",
+      "amount": -0.4
+    },
+    {
+      "type": "curse",
+      "curse_id": "dread_of_the_sun",
+      "severity": 1,
+      "when": "daylight",
+      "effect": {
+        "type": "attribute",
+        "attribute": "minecraft:attack_damage",
+        "operation": "add_multiplied_total",
+        "amount": -0.25
+      }
+    },
+    {
+      "type": "curse",
+      "curse_id": "sun_sluggishness",
+      "severity": 1,
+      "when": "daylight",
+      "effect": {
+        "type": "status_effect",
+        "effect": "minecraft:slowness",
+        "amplifier": 0,
+        "duration_ticks": -1
+      }
+    },
+    {
+      "type": "contextual_boon",
+      "when": "darkness",
+      "effect": {
+        "type": "attribute",
+        "attribute": "minecraft:attack_damage",
+        "operation": "add_multiplied_total",
+        "amount": 0.45
+      }
+    }
   ],
   "pluses": [
-    "Cave-eyes that pierce the black — Night Vision, always",
-    "Wall-crawler — scales sheer stone tirelessly, climbing far up any wall in one clamber (climbing far beyond any other kindred)",
-    "Skulking and swift through the tunnels — nimble and quick afoot (base Goblin)",
-    "Children of the Dark — by night and in the deep places, a heavier blow (+45% melee damage, stacks with Strength)",
-    "Iron-gutted — devours foul carrion (rotten flesh) without sickening",
-    "Deft delver — quicker at hewing stone than most (base Goblin)"
+    "kindreds.trait.goblin.plus.0",
+    "kindreds.trait.goblin.plus.1",
+    "kindreds.trait.goblin.plus.2",
+    "kindreds.trait.goblin.plus.3",
+    "kindreds.trait.goblin.plus.4",
+    "kindreds.trait.goblin.plus.5"
   ],
   "minuses": [
-    "Wretched and frail of body — only 7 hearts (base Goblin)",
-    "Weak-armed — strikes for less even at rest (−10%, base Goblin)",
-    "Dread of the Sun — under open daylight strikes for far less (a further −25%) and is slowed (Slowness I)",
-    "Tires without rest — wearies after long without sleep"
+    "kindreds.trait.goblin.minus.0",
+    "kindreds.trait.goblin.minus.1",
+    "kindreds.trait.goblin.minus.2",
+    "kindreds.trait.goblin.minus.3"
   ]
 }

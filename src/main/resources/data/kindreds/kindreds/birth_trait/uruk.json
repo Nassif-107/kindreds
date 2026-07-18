@@ -1,27 +1,66 @@
 {
   "race": "middle-earth:uruk",
   "traits": [
-    { "type": "perk", "perk": "heal_on_kill", "params": { "health": 3 } },
-    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 6.0 },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.30 },
-    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.3 },
-    { "type": "contextual_boon", "when": "daylight",
-      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.45 } },
-    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": -0.15 }
+    {
+      "type": "perk",
+      "perk": "heal_on_kill",
+      "params": {
+        "health": 3
+      }
+    },
+    {
+      "type": "status_effect",
+      "effect": "minecraft:night_vision",
+      "amplifier": 0,
+      "duration_ticks": -1
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:max_health",
+      "operation": "add_value",
+      "amount": 6.0
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:attack_damage",
+      "operation": "add_multiplied_total",
+      "amount": 0.3
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:knockback_resistance",
+      "operation": "add_value",
+      "amount": 0.3
+    },
+    {
+      "type": "contextual_boon",
+      "when": "daylight",
+      "effect": {
+        "type": "attribute",
+        "attribute": "minecraft:attack_damage",
+        "operation": "add_multiplied_total",
+        "amount": 0.45
+      }
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:attack_speed",
+      "operation": "add_multiplied_base",
+      "amount": -0.15
+    }
   ],
   "pluses": [
-    "Fighting-Uruk — great of frame and stout (12 hearts)",
-    "Eyes bred for the dark — Night Vision, always",
-    "A crushing, brutal blow — strongest of the Orc-kind (+30%)",
-    "Bloodlust — feeds on slaughter, mending swiftly with each kill (heal on kill)",
-    "Braced and unyielding against the shove of battle (knockback resistance)",
-    "Fire-toughened — burns briefer than most folk (base Uruk)",
-    "Sun-defiant — where lesser Orcs cower, the fighting-Uruk grows bold in the open day (+45% melee damage, stacks with Strength)",
-    "Tireless — barely spends food from toil or wounds, and marches far past other folk before weariness sets in",
-    "Iron-gutted — devours foul carrion (rotten flesh) without sickening"
+    "kindreds.trait.uruk.plus.0",
+    "kindreds.trait.uruk.plus.1",
+    "kindreds.trait.uruk.plus.2",
+    "kindreds.trait.uruk.plus.3",
+    "kindreds.trait.uruk.plus.4",
+    "kindreds.trait.uruk.plus.5",
+    "kindreds.trait.uruk.plus.6",
+    "kindreds.trait.uruk.plus.7",
+    "kindreds.trait.uruk.plus.8"
   ],
   "minuses": [
-    "Heavy-handed — slower to strike"
+    "kindreds.trait.uruk.minus.0"
   ]
 }

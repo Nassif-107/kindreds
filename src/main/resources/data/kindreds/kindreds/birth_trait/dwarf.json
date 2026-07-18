@@ -1,27 +1,70 @@
 {
   "race": "middle-earth:dwarf",
   "traits": [
-    { "type": "perk", "perk": "mining_fortune", "params": { "chance": 0.25, "amount": 1 } },
-    { "type": "attribute", "attribute": "minecraft:burning_time", "operation": "add_multiplied_base", "amount": -0.6 },
-    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
-    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.5 },
-    { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.5 },
-    { "type": "contextual_boon", "when": "underground",
-      "effect": { "type": "status_effect", "effect": "minecraft:haste", "amplifier": 0, "duration_ticks": -1 } },
-    { "type": "contextual_boon", "when": "underground",
-      "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": -1 } }
+    {
+      "type": "perk",
+      "perk": "mining_fortune",
+      "params": {
+        "chance": 0.25,
+        "amount": 1
+      }
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:burning_time",
+      "operation": "add_multiplied_base",
+      "amount": -0.6
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:max_health",
+      "operation": "add_value",
+      "amount": 4.0
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:knockback_resistance",
+      "operation": "add_value",
+      "amount": 0.5
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:mining_efficiency",
+      "operation": "add_value",
+      "amount": 0.5
+    },
+    {
+      "type": "contextual_boon",
+      "when": "underground",
+      "effect": {
+        "type": "status_effect",
+        "effect": "minecraft:haste",
+        "amplifier": 0,
+        "duration_ticks": -1
+      }
+    },
+    {
+      "type": "contextual_boon",
+      "when": "underground",
+      "effect": {
+        "type": "status_effect",
+        "effect": "minecraft:resistance",
+        "amplifier": 0,
+        "duration_ticks": -1
+      }
+    }
   ],
   "pluses": [
-    "Fire-hardy — Durin's folk burn far briefer than other peoples (the flame that felled dragons scarcely marks them)",
-    "Stone-hardy — endures wounds as no other kindred can (toughest of all peoples, ~13 hearts)",
-    "Unmovable as the roots of the mountains",
-    "Delver born — tears through stone with ease",
-    "Delver's Fortune — a practiced eye wins extra ore from the rock (25% chance of a double drop)",
-    "Deep-Delver — hastens and hardens in the deep places, out of the sky's sight",
-    "Unbowed by the Shadow — the most resistant of all peoples to curse and corruption; poisons and hexes fade swiftly",
-    "Hardy of body — endures hunger and toil far past other folk"
+    "kindreds.trait.dwarf.plus.0",
+    "kindreds.trait.dwarf.plus.1",
+    "kindreds.trait.dwarf.plus.2",
+    "kindreds.trait.dwarf.plus.3",
+    "kindreds.trait.dwarf.plus.4",
+    "kindreds.trait.dwarf.plus.5",
+    "kindreds.trait.dwarf.plus.6",
+    "kindreds.trait.dwarf.plus.7"
   ],
   "minuses": [
-    "Short-legged — markedly slower afoot"
+    "kindreds.trait.dwarf.minus.0"
   ]
 }

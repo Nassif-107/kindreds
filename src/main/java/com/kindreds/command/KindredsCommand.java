@@ -128,10 +128,10 @@ public final class KindredsCommand {
             source.sendFeedback(() -> Text.literal("Birth traits (applied: "
                     + (data.appliedBirthRace() != null) + "):"), false);
             for (String plus : bt.pluses()) {
-                source.sendFeedback(() -> Text.literal("  + " + plus), false);
+                source.sendFeedback(() -> Text.literal("  + ").append(Text.translatable(plus)), false);
             }
             for (String minus : bt.minuses()) {
-                source.sendFeedback(() -> Text.literal("  - " + minus), false);
+                source.sendFeedback(() -> Text.literal("  - ").append(Text.translatable(minus)), false);
             }
         });
 

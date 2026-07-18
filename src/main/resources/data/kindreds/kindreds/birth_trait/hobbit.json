@@ -1,21 +1,41 @@
 {
   "race": "middle-earth:hobbit",
   "traits": [
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.3 },
-    { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": 3.0 },
-    { "type": "attribute", "attribute": "minecraft:sneaking_speed", "operation": "add_value", "amount": 0.5 },
-    { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 3.0 }
+    {
+      "type": "attribute",
+      "attribute": "middle-earth:detection_range",
+      "operation": "add_value",
+      "amount": -0.3
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:luck",
+      "operation": "add_value",
+      "amount": 3.0
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:sneaking_speed",
+      "operation": "add_value",
+      "amount": 0.5
+    },
+    {
+      "type": "attribute",
+      "attribute": "minecraft:safe_fall_distance",
+      "operation": "add_value",
+      "amount": 3.0
+    }
   ],
   "pluses": [
-    "Unheard and unseen — the Little Folk slip past notice like shadows",
-    "The uncommon good-luck of the Shire",
-    "Nimble — swift and quiet even while creeping",
-    "Resilient of heart — evil struggles to grip the Little Folk; curses and poisons wear off swiftly (the Ring itself found them hard to master)",
-    "Well-fed — while their belly is full, the Little Folk mend quietly (they thrive on good food and plain plenty)"
+    "kindreds.trait.hobbit.plus.0",
+    "kindreds.trait.hobbit.plus.1",
+    "kindreds.trait.hobbit.plus.2",
+    "kindreds.trait.hobbit.plus.3",
+    "kindreds.trait.hobbit.plus.4"
   ],
   "minuses": [
-    "Little folk — a slighter frame than the big folk (7 hearts)",
-    "No warrior's arm in open battle — strikes for less (−20%)",
-    "Tires without rest — wearies after long without sleep"
+    "kindreds.trait.hobbit.minus.0",
+    "kindreds.trait.hobbit.minus.1",
+    "kindreds.trait.hobbit.minus.2"
   ]
 }

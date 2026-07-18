@@ -1,30 +1,79 @@
 {
   "race": "middle-earth:snaga",
   "traits": [
-    { "type": "perk", "perk": "strike_effect", "params": { "chance": 0.3 },
-      "effect": { "type": "status_effect", "effect": "minecraft:poison", "amplifier": 0, "duration_ticks": 80 } },
-    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.4 },
-    { "type": "curse", "curse_id": "dread_of_the_sun", "severity": 2, "when": "daylight",
-      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": -0.40 } },
-    { "type": "curse", "curse_id": "sun_sluggishness", "severity": 2, "when": "daylight",
-      "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 1, "duration_ticks": -1 } },
-    { "type": "contextual_boon", "when": "darkness",
-      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.45 } }
+    {
+      "type": "perk",
+      "perk": "strike_effect",
+      "params": {
+        "chance": 0.3
+      },
+      "effect": {
+        "type": "status_effect",
+        "effect": "minecraft:poison",
+        "amplifier": 0,
+        "duration_ticks": 80
+      }
+    },
+    {
+      "type": "status_effect",
+      "effect": "minecraft:night_vision",
+      "amplifier": 0,
+      "duration_ticks": -1
+    },
+    {
+      "type": "attribute",
+      "attribute": "middle-earth:detection_range",
+      "operation": "add_value",
+      "amount": -0.4
+    },
+    {
+      "type": "curse",
+      "curse_id": "dread_of_the_sun",
+      "severity": 2,
+      "when": "daylight",
+      "effect": {
+        "type": "attribute",
+        "attribute": "minecraft:attack_damage",
+        "operation": "add_multiplied_total",
+        "amount": -0.4
+      }
+    },
+    {
+      "type": "curse",
+      "curse_id": "sun_sluggishness",
+      "severity": 2,
+      "when": "daylight",
+      "effect": {
+        "type": "status_effect",
+        "effect": "minecraft:slowness",
+        "amplifier": 1,
+        "duration_ticks": -1
+      }
+    },
+    {
+      "type": "contextual_boon",
+      "when": "darkness",
+      "effect": {
+        "type": "attribute",
+        "attribute": "minecraft:attack_damage",
+        "operation": "add_multiplied_total",
+        "amount": 0.45
+      }
+    }
   ],
   "pluses": [
-    "Night-eyed — Night Vision, always",
-    "Fleet-footed and lash-driven — quick afoot (base Snaga)",
-    "Beneath notice — the overlooked slip past unseen",
-    "Foul blades — crude weapons smeared with filth (30% chance to Poison the struck foe)",
-    "Long-armed — reaches and places a little farther than most (base Snaga)",
-    "Children of the Dark — by night and in the deep places, a heavier blow (+45% melee damage, stacks with Strength)",
-    "Iron-gutted — devours foul carrion (rotten flesh) without sickening"
+    "kindreds.trait.snaga.plus.0",
+    "kindreds.trait.snaga.plus.1",
+    "kindreds.trait.snaga.plus.2",
+    "kindreds.trait.snaga.plus.3",
+    "kindreds.trait.snaga.plus.4",
+    "kindreds.trait.snaga.plus.5",
+    "kindreds.trait.snaga.plus.6"
   ],
   "minuses": [
-    "Least and weakest of the Orc-kind — only 6 hearts, frailest of all the kindreds (base Snaga)",
-    "Feeble arm — strikes for less even at rest (−20%, base Snaga)",
-    "Dread of the Sun — under open daylight strikes for far less (a further −40%) and is badly slowed (Slowness II)",
-    "Tires without rest — wearies after long without sleep"
+    "kindreds.trait.snaga.minus.0",
+    "kindreds.trait.snaga.minus.1",
+    "kindreds.trait.snaga.minus.2",
+    "kindreds.trait.snaga.minus.3"
   ]
 }
