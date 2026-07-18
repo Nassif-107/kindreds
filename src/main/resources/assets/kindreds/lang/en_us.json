@@ -1,7 +1,9 @@
 {
   "kindreds.name": "Kindreds of Middle-earth",
   "key.category.kindreds": "Kindreds of Middle-earth",
-  "key.kindreds.use_ability": "Use ability",
+  "key.kindreds.use_ability": "Use selected ability",
+  "key.kindreds.cycle_ability": "Cycle ability slot",
+  "key.kindreds.open_loadout": "Open ability loadout",
   "key.kindreds.cycle_vision": "Cycle vision",
   "key.kindreds.open_tree": "Open skill tree",
   "key.kindreds.open_codex": "Open Kindred Codex",

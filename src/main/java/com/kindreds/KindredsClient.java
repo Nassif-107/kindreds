@@ -76,6 +76,21 @@ public class KindredsClient implements ClientModInitializer {
             GLFW.GLFW_KEY_J,
             "key.category.kindreds"));
 
+    /** "Cycle ability slot" - advances which loadout slot the use-ability key fires (defaults to
+     * {@code R}). The selected slot is highlighted in the HUD ability bar. */
+    private static final KeyBinding CYCLE_ABILITY_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.kindreds.cycle_ability",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_R,
+            "key.category.kindreds"));
+
+    /** "Open ability loadout" - the slot-assignment screen (defaults to {@code L}). */
+    private static final KeyBinding OPEN_LOADOUT_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.kindreds.open_loadout",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_L,
+            "key.category.kindreds"));
+
     @Override
     public void onInitializeClient() {
         // Store the latest server-authoritative skill data for client-side UI/HUD to read; hop
@@ -99,7 +114,23 @@ public class KindredsClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (USE_ABILITY_KEY.wasPressed()) {
                 if (client.player != null) {
-                    ClientPlayNetworking.send(new ActivateAbilityC2S(""));
+                    // Fire the selected loadout slot's ability (blank if empty - the server treats a
+                    // blank id as "my first unlocked active", a sensible fallback before any assignment).
+                    ClientPlayNetworking.send(new ActivateAbilityC2S(
+                            com.kindreds.client.loadout.ClientLoadout.selectedAbilityId()));
+                }
+            }
+            while (CYCLE_ABILITY_KEY.wasPressed()) {
+                if (client.player != null) {
+                    int slot = com.kindreds.client.loadout.ClientLoadout.cycleSelected();
+                    String id = com.kindreds.client.loadout.ClientLoadout.slot(slot);
+                    client.player.sendMessage(net.minecraft.text.Text.literal("Ability slot " + (slot + 1)
+                            + ": " + com.kindreds.client.loadout.ClientLoadout.displayName(id)), true);
+                }
+            }
+            while (OPEN_LOADOUT_KEY.wasPressed()) {
+                if (client.player != null) {
+                    client.setScreen(new com.kindreds.client.loadout.KindredLoadoutScreen());
                 }
             }
             while (CYCLE_VISION_KEY.wasPressed()) {
@@ -129,6 +160,10 @@ public class KindredsClient implements ClientModInitializer {
         StoneSenseLens.register();
         KeenSightLens.register();
         HudTintOverlay.register();
+
+        // Ability loadout: the always-on HUD slot bar. ClientLoadout lazy-loads its saved slots on
+        // first access, so no explicit load() call is needed here.
+        com.kindreds.client.loadout.LoadoutHud.register();
 
         // Add a "Kindred Traits" button onto the base mod's race-selection screen (opens the Codex).
         com.kindreds.client.OnboardingCodexButton.register();
