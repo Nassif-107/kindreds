@@ -418,6 +418,27 @@ The trees should expose join points for the separate Fellowship system:
 - **Shadow/Corruption discipline: INCLUDE NOW** as an opt-in dark path (a lighter preview that later
   feeds the full Phase-3 Corruption system).
 
+### Attunement loadout — UX/UI requirements (user, 2026-07-18)
+- **Always-on HUD:** the equipped active-ability slots show on the HUD at all times — each slot's
+  icon/name, whether it's empty or filled, and cooldown state. Like a small ability bar.
+- **Assignment screen:** a dedicated screen to swap abilities in/out of slots.
+- **Assign by dragging/scrolling** unlocked abilities into slots (inventory-style), AND/OR
+  **activate by keybind** (a key per slot, or scroll+use). Both flows supported.
+- **Fully configurable:** keybinds, slot count source, HUD position/visibility — all config.
+- **Best-possible UX/UI** — polished, discoverable, unobtrusive.
+
+### All disciplines get the full treatment (user, 2026-07-18)
+The 7 CURRENT disciplines (combat/archery/mining/stealth/smithing/survival/lore) are ALSO to be
+rebuilt into the big branching trees — real choices, consequences, boons — not just the 5 new ones.
+Every discipline a race trains gets a deep, forking branch. (NOTE: with 12 disciplines the tree
+tab-rail will need scrolling / grouping — UI polish item.)
+
+### Skill-tree screen overhaul (user, 2026-07-18)
+The tree page itself must be improved: **more lore-like/thematic** (parchment/carved-stone/starlit
+per race, ornate framing — the Codex parchment is a good direction), **readable** (clear node labels,
+legible tooltips, good contrast, sensible spacing at scale), and **bug-free** (no overlap/clipping,
+correct hit-testing, smooth pan/zoom/scroll, tab-rail scrolling for 12 disciplines). Clarity first.
+
 ### Binding constraints (user, 2026-07-18)
 - **Visions/VFX must be SUBSTANTIAL & USABLE, never cheats.** Each vision is a real, race-unique
   gameplay advantage (Dwarf ore-sense actually helps you mine; Elf keen-sight helps you hunt/fight),

@@ -16,7 +16,9 @@ public final class Disciplines {
     private Disciplines() {
     }
 
-    /** The 7 built-in discipline ids, in display order. */
+    /** All discipline ids, in display order (7 core + Chunk 2's Song/Beast-lore/Runecraft/
+     * Leadership/Shadow). A race that can't train one simply has no branch for it. */
     public static final List<String> ALL = List.of(
-            "combat", "archery", "mining", "stealth", "smithing", "survival", "lore");
+            "combat", "archery", "mining", "stealth", "smithing", "survival", "lore",
+            "song", "beast_lore", "runecraft", "leadership", "shadow");
 }
