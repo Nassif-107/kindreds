@@ -2,38 +2,53 @@ package com.kindreds.client;
 
 import com.kindreds.client.screen.KindredCodexScreen;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.client.screen.v1.Screens;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.text.Text;
 
 import java.util.Locale;
 
 /**
- * Adds a "Kindred Traits" button onto the base Middle-earth mod's onboarding / race-selection
- * screens, opening the {@link KindredCodexScreen} almanac so a player can read every race's innate
- * boons and banes <b>before</b> they commit to a people.
+ * Overlays a "Kindred Traits" button on the base Middle-earth mod's onboarding / race-selection
+ * screens, opening the {@link KindredCodexScreen} almanac so a player can read every race's boons and
+ * banes before committing.
  *
- * <p>Deliberately decoupled from the base mod: the target screen is matched by its class name
- * containing {@code "onboarding"} (no compile-time reference to a base-mod screen class, no reflection
- * into its private selection state), and the button is added through Fabric's public
- * {@link Screens#getButtons} API. If the base mod renames or restructures its onboarding screens, the
- * worst case is the button simply stops appearing - it can never crash their screen.
+ * <p>Decoupled from the base mod: the target screen is matched by its class name containing
+ * {@code "onboarding"} (no compile-time reference, no reflection into its state). The button is drawn
+ * via {@link ScreenEvents#afterRender} (so it renders on top of the base screen's own widgets, which
+ * may not render buttons we add through the widget list) and its click handled via
+ * {@link ScreenMouseEvents#afterMouseClick}. Worst case on a base-mod change: the button stops
+ * appearing - it can never crash their screen.
  */
 public final class OnboardingCodexButton {
     private OnboardingCodexButton() {
     }
+
+    private static final int BW = 118;
+    private static final int BH = 18;
+    private static final int MARGIN = 6;
 
     public static void register() {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (!screen.getClass().getName().toLowerCase(Locale.ROOT).contains("onboarding")) {
                 return;
             }
-            ButtonWidget button = ButtonWidget.builder(
-                            Text.literal("⚔ Kindred Traits"),
-                            btn -> KindredCodexScreen.open(client))
-                    .dimensions(scaledWidth / 2 - 70, scaledHeight - 26, 140, 20)
-                    .build();
-            Screens.getButtons(screen).add(button);
+            int bx = scaledWidth - BW - MARGIN;
+            int by = MARGIN;
+
+            ScreenEvents.afterRender(screen).register((scr, ctx, mouseX, mouseY, delta) -> {
+                boolean hover = mouseX >= bx && mouseX <= bx + BW && mouseY >= by && mouseY <= by + BH;
+                ctx.fill(bx, by, bx + BW, by + BH, hover ? 0xFF4A3A1A : 0xE01E1710);
+                ctx.drawBorder(bx, by, BW, BH, 0xFFC8A24A);
+                Text label = Text.literal("⚔ Kindred Traits");
+                int lw = client.textRenderer.getWidth(label);
+                ctx.drawText(client.textRenderer, label, bx + (BW - lw) / 2, by + 5, 0xFFF0E0B0, false);
+            });
+
+            ScreenMouseEvents.afterMouseClick(screen).register((scr, mouseX, mouseY, button) -> {
+                if (button == 0 && mouseX >= bx && mouseX <= bx + BW && mouseY >= by && mouseY <= by + BH) {
+                    KindredCodexScreen.open(client);
+                }
+            });
         });
     }
 }
