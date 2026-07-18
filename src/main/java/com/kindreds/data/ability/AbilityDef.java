@@ -13,7 +13,7 @@ import com.mojang.serialization.MapCodec;
  * this package needs to change since consumers only ever see {@link #CODEC}.
  */
 public sealed interface AbilityDef
-        permits AttributeMod, StatusEffectDef, VisionUnlock, ActiveAbilityDef, CurseDef, ContextualBoon {
+        permits AttributeMod, StatusEffectDef, VisionUnlock, ActiveAbilityDef, CurseDef, ContextualBoon, BaneDef {
 
     /** The discriminator string written to/read from the {@code "type"} field. */
     String type();
@@ -28,6 +28,7 @@ public sealed interface AbilityDef
             case "active" -> ActiveAbilityDef.CODEC;
             case "curse" -> CurseDef.CODEC;
             case "contextual_boon" -> ContextualBoon.CODEC;
+            case "bane" -> BaneDef.CODEC;
             default -> throw new IllegalArgumentException("Unknown ability type: " + type);
         };
     }

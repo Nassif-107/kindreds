@@ -4,6 +4,7 @@ import com.kindreds.Kindreds;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.ActiveAbilityDef;
 import com.kindreds.data.ability.AttributeMod;
+import com.kindreds.data.ability.BaneDef;
 import com.kindreds.data.ability.ContextualBoon;
 import com.kindreds.data.ability.CurseDef;
 import com.kindreds.data.ability.StatusEffectDef;
@@ -77,6 +78,9 @@ public final class AbilityApplier {
             case ContextualBoon boon -> {
                 // No side effect here; CurseContextService applies/removes the inner effect by context.
             }
+            case BaneDef bane -> {
+                // No side effect here; PerkService reads owned banes on the attack event.
+            }
         }
     }
 
@@ -118,6 +122,9 @@ public final class AbilityApplier {
                 }
                 case ContextualBoon boon -> {
                     // No side effect to reverse here; CurseContextService owns its lifecycle.
+                }
+                case BaneDef bane -> {
+                    // No side effect to reverse; PerkService reads owned banes live.
                 }
             }
         }

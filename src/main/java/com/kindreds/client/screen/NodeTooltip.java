@@ -8,6 +8,7 @@ import com.kindreds.data.Theme;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.ActiveAbilityDef;
 import com.kindreds.data.ability.AttributeMod;
+import com.kindreds.data.ability.BaneDef;
 import com.kindreds.data.ability.ContextualBoon;
 import com.kindreds.data.ability.CurseDef;
 import com.kindreds.data.ability.StatusEffectDef;
@@ -157,6 +158,7 @@ public final class NodeTooltip {
             case ActiveAbilityDef act -> "A trick worth calling on, when the moment demands it.";
             case CurseDef c -> "Power with a price attached.";
             case ContextualBoon c -> "Power that wakes with the place and the hour.";
+            case BaneDef b -> "A bane to a hated foe.";
         };
     }
 
@@ -173,6 +175,7 @@ public final class NodeTooltip {
                     + " (cooldown " + (act.cooldownTicks() / 20) + "s)";
             case CurseDef c -> "§6Curse: " + titleCase(c.curseId()) + " (severity " + c.severity() + ")";
             case ContextualBoon c -> "§aIn " + titleCase(c.when()) + ": " + describe(c.effect());
+            case BaneDef b -> String.format(Locale.ROOT, "§cBane: +%d%% damage vs %s", Math.round(b.bonus() * 100), titleCase(b.foe()));
         };
     }
 
