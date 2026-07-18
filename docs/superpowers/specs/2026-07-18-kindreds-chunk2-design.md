@@ -433,6 +433,13 @@ rebuilt into the big branching trees — real choices, consequences, boons — n
 Every discipline a race trains gets a deep, forking branch. (NOTE: with 12 disciplines the tree
 tab-rail will need scrolling / grouping — UI polish item.)
 
+### SCALE — much bigger (user, 2026-07-18)
+Each DISCIPLINE is its own big branching journey (~**12–20 nodes** with internal forks), not a short
+chain. A race therefore has **~60–120+ nodes** total across its disciplines — a long progression, not
+a one-night clear. Every discipline branch itself forks (early common → sub-branches → mutually-
+exclusive tips), so there is depth WITHIN a discipline as well as across the race. Two screen views
+support this: MAP (whole constellation, pan/zoom) and BRANCH (one discipline, focused). Both shipped.
+
 ### Skill-tree screen overhaul (user, 2026-07-18)
 The tree page itself must be improved: **more lore-like/thematic** (parchment/carved-stone/starlit
 per race, ornate framing — the Codex parchment is a good direction), **readable** (clear node labels,
