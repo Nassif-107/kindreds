@@ -89,6 +89,13 @@ public final class BirthTraitService {
         // travel instead of silently vanishing until the next relog.
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             KindredAttachment.get(player).setAppliedBirthRace(null);
+            // Also clear the contextual-effect bookkeeping: the base mod's clearModifiers() on a
+            // dimension change strips our TEMPORARY contextual attribute modifiers (sun-dread, the
+            // dark-hours damage boon, Last Stand, ...) too, but ACTIVE would still claim they're applied
+            // and never re-add them until the context toggled. Resetting forces a clean re-derive next
+            // tick. (The deferred refreshIfChanged skips its own resetActive here because appliedBirthRace
+            // was just nulled, so it must happen explicitly.)
+            CurseContextService.resetActive(player.getUuid());
             PENDING.put(player.getUuid(), APPLY_DELAY_TICKS);
         });
 
