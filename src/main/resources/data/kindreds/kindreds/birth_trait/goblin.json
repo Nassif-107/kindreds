@@ -6,7 +6,9 @@
     { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -4.0 },
     { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.06 },
     { "type": "curse", "curse_id": "dread_of_the_sun", "severity": 1, "when": "daylight",
-      "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 0, "duration_ticks": -1 } },
+      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": -0.25 } },
+    { "type": "curse", "curse_id": "sun_sluggishness", "severity": 1, "when": "daylight",
+      "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "contextual_boon", "when": "darkness",
       "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
@@ -19,7 +21,7 @@
     "Iron-gutted — devours foul carrion without sickening"
   ],
   "minuses": [
-    "Dread of the Sun — weakened under open daylight",
+    "Dread of the Sun — under open daylight strikes for less (−25%) and is slowed (Slowness I)",
     "Wretched and frail of body (−1 heart)",
     "Tires without rest — wearies after long without sleep"
   ]

@@ -66,7 +66,7 @@ public final class AbilityApplier {
     /** Applies {@code def}'s effect to {@code p}. Exhaustive over every {@link AbilityDef} subtype. */
     public static void apply(ServerPlayerEntity p, AbilityDef def, String nodeId) {
         switch (def) {
-            case AttributeMod mod -> applyAttributeMod(p, mod, nodeId);
+            case AttributeMod mod -> applyAttributeMod(p, mod, nodeId, true);
             case StatusEffectDef status -> applyStatusEffect(p, status, false);
             case CurseDef curse -> CurseService.apply(p, curse, nodeId);
             case VisionUnlock vision -> {
@@ -94,10 +94,15 @@ public final class AbilityApplier {
      * is unchanged: {@link #removeNode} strips a status effect by type regardless of how it was shown.
      */
     public static void applyContextual(ServerPlayerEntity p, AbilityDef def, String key) {
-        if (def instanceof StatusEffectDef status) {
-            applyStatusEffect(p, status, true);
-        } else {
-            apply(p, def, key);
+        switch (def) {
+            case StatusEffectDef status -> applyStatusEffect(p, status, true);
+            // Temporary (not persistent): a context-driven attribute penalty/boon must NOT be saved to
+            // the player's NBT - otherwise it survives relog, and on next login CurseContextService's
+            // ACTIVE bookkeeping (which resets on relog) no longer knows it's applied: it would either
+            // linger forever out of context, or throw on a duplicate-id re-apply. A temporary modifier
+            // vanishes on relog, so the tick loop re-derives a clean, correct state every session.
+            case AttributeMod mod -> applyAttributeMod(p, mod, key, false);
+            default -> apply(p, def, key);
         }
     }
 
@@ -159,7 +164,14 @@ public final class AbilityApplier {
 
     // --- AttributeMod ---------------------------------------------------------------------------
 
-    private static void applyAttributeMod(ServerPlayerEntity p, AttributeMod mod, String nodeId) {
+    /**
+     * Installs {@code mod}'s attribute modifier on {@code p}. {@code persistent} chooses the storage:
+     * a permanent trait (birth attribute, unlocked node) uses a <b>persistent</b> modifier that
+     * survives relog; a context-driven trait uses a <b>temporary</b> one that vanishes on relog (see
+     * {@link #applyContextual}). Idempotent either way - the node-tagged id is removed first, so a
+     * re-apply (e.g. a reconcile pass, or re-entering a context) can never throw on a duplicate id.
+     */
+    private static void applyAttributeMod(ServerPlayerEntity p, AttributeMod mod, String nodeId, boolean persistent) {
         Registries.ATTRIBUTE.getEntry(mod.attribute()).ifPresentOrElse(attribute -> {
             EntityAttributeInstance instance = p.getAttributeInstance(attribute);
             if (instance == null) {
@@ -172,7 +184,13 @@ public final class AbilityApplier {
                 return;
             }
             Identifier id = attributeModifierId(nodeId, mod.attribute().getPath());
-            instance.addPersistentModifier(new EntityAttributeModifier(id, mod.amount(), operation));
+            instance.removeModifier(id); // idempotent guard: adding a duplicate id throws
+            EntityAttributeModifier modifier = new EntityAttributeModifier(id, mod.amount(), operation);
+            if (persistent) {
+                instance.addPersistentModifier(modifier);
+            } else {
+                instance.addTemporaryModifier(modifier);
+            }
         }, () -> Kindreds.LOGGER.warn("[Kindreds] node {} references unknown attribute id '{}'", nodeId, mod.attribute()));
     }
 
