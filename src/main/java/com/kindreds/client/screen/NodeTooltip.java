@@ -8,9 +8,9 @@ import com.kindreds.data.Theme;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.ActiveAbilityDef;
 import com.kindreds.data.ability.AttributeMod;
-import com.kindreds.data.ability.BaneDef;
 import com.kindreds.data.ability.ContextualBoon;
 import com.kindreds.data.ability.CurseDef;
+import com.kindreds.data.ability.PerkDef;
 import com.kindreds.data.ability.StatusEffectDef;
 import com.kindreds.data.ability.VisionUnlock;
 import net.minecraft.client.MinecraftClient;
@@ -158,7 +158,7 @@ public final class NodeTooltip {
             case ActiveAbilityDef act -> "A trick worth calling on, when the moment demands it.";
             case CurseDef c -> "Power with a price attached.";
             case ContextualBoon c -> "Power that wakes with the place and the hour.";
-            case BaneDef b -> "A bane to a hated foe.";
+            case PerkDef p -> "A deed of the blood - called upon in the doing, not the having.";
         };
     }
 
@@ -175,7 +175,46 @@ public final class NodeTooltip {
                     + " (cooldown " + (act.cooldownTicks() / 20) + "s)";
             case CurseDef c -> "§6Curse: " + titleCase(c.curseId()) + " (severity " + c.severity() + ")";
             case ContextualBoon c -> "§aIn " + titleCase(c.when()) + ": " + describe(c.effect());
-            case BaneDef b -> String.format(Locale.ROOT, "§cBane: +%d%% damage vs %s", Math.round(b.bonus() * 100), titleCase(b.foe()));
+            case PerkDef p -> describePerk(p);
+        };
+    }
+
+    /** Human-readable one-liner for a {@link PerkDef}, keyed on its perk id. Known perks get bespoke,
+     * lore-flavored text; anything else falls back to a generic (but still informative) line listing
+     * the perk name and its authored params, so a newly-added perk always reads as <i>something</i>
+     * before this switch is taught its wording. */
+    static String describePerk(PerkDef p) {
+        String foe = titleCase(p.foe().orElse("any"));
+        return switch (p.perk()) {
+            case "bane" -> String.format(Locale.ROOT, "§cBane: +%d%% damage vs %s",
+                    Math.round(p.param("bonus", 0f) * 100), foe);
+            case "arrow_slaying" -> String.format(Locale.ROOT, "§cBlack Arrow: +%d%% bow damage vs %s",
+                    Math.round(p.param("bonus", 0f) * 100), foe);
+            case "mining_fortune" -> String.format(Locale.ROOT, "§eDelver's Fortune: %d%% chance of +%d ore drop",
+                    Math.round(p.param("chance", 0f) * 100), Math.round(p.param("amount", 1f)));
+            case "heal_on_kill" -> String.format(Locale.ROOT, "§aBloodlust: restore %.1f health on a kill",
+                    p.param("health", 0f));
+            case "strike_effect" -> "§cCruel blade: inflicts an affliction on a struck foe"
+                    + (p.effect().isPresent() ? " (" + titleCase(p.effect().get().effect().getPath()) + ")" : "");
+            case "ally_aura" -> String.format(Locale.ROOT, "§bLeadership: allies within %d blocks are heartened",
+                    Math.round(p.param("radius", 8f)));
+            case "light_ward" -> "§eStar-glass: light wards off the creatures of the dark";
+            default -> {
+                StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));
+                if (!p.params().isEmpty()) {
+                    sb.append(" (");
+                    boolean first = true;
+                    for (var e : p.params().entrySet()) {
+                        if (!first) {
+                            sb.append(", ");
+                        }
+                        sb.append(e.getKey()).append('=').append(e.getValue());
+                        first = false;
+                    }
+                    sb.append(')');
+                }
+                yield sb.toString();
+            }
         };
     }
 

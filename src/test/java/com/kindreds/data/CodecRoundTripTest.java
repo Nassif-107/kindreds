@@ -1,8 +1,10 @@
 package com.kindreds.data;
 
+import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.ActiveAbilityDef;
 import com.kindreds.data.ability.AttributeMod;
 import com.kindreds.data.ability.CurseDef;
+import com.kindreds.data.ability.PerkDef;
 import com.kindreds.data.ability.StatusEffectDef;
 import com.mojang.serialization.JsonOps;
 import com.google.gson.*;
@@ -10,6 +12,7 @@ import net.minecraft.util.Identifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,6 +104,46 @@ class CodecRoundTripTest {
 
         assertEquals("deep_dark", back.when());
         assertEquals(effect, back.effect().orElseThrow());
+    }
+
+    @Test
+    void perkDefFullRoundTrips() {
+        StatusEffectDef payload = new StatusEffectDef(Identifier.of("minecraft", "poison"), 0, 60);
+        PerkDef perk = new PerkDef("strike_effect", Map.of("chance", 0.25f), Optional.of("undead"), Optional.of(payload));
+
+        JsonElement j = PerkDef.CODEC.codec().encodeStart(JsonOps.INSTANCE, perk).result().orElseThrow();
+        PerkDef back = PerkDef.CODEC.codec().parse(JsonOps.INSTANCE, j).result().orElseThrow();
+
+        assertEquals(perk, back);
+        assertEquals("undead", back.foe().orElseThrow());
+        assertEquals(payload, back.effect().orElseThrow());
+        assertEquals(0.25f, back.param("chance", 0f));
+        assertEquals(7f, back.param("missing", 7f)); // fallback for an unauthored param
+    }
+
+    @Test
+    void perkDefMinimalDefaultsToEmptyParamsAndNoFoeOrEffect() {
+        // Minimal authored shape: just the perk id.
+        JsonObject json = new JsonObject();
+        json.addProperty("perk", "mining_fortune");
+
+        PerkDef back = PerkDef.CODEC.codec().parse(JsonOps.INSTANCE, json).result().orElseThrow();
+        assertEquals("mining_fortune", back.perk());
+        assertTrue(back.params().isEmpty());
+        assertTrue(back.foe().isEmpty());
+        assertTrue(back.effect().isEmpty());
+    }
+
+    @Test
+    void perkDefDispatchesThroughAbilityDefTypeDiscriminator() {
+        PerkDef perk = new PerkDef("bane", Map.of("bonus", 0.5f), Optional.of("spider"), Optional.empty());
+
+        JsonElement j = AbilityDef.CODEC.encodeStart(JsonOps.INSTANCE, perk).result().orElseThrow();
+        assertEquals("perk", j.getAsJsonObject().get("type").getAsString());
+
+        AbilityDef back = AbilityDef.CODEC.parse(JsonOps.INSTANCE, j).result().orElseThrow();
+        assertInstanceOf(PerkDef.class, back);
+        assertEquals(perk, back);
     }
 
     @Test
