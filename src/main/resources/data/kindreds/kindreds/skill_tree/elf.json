@@ -2,121 +2,85 @@
   "race": "middle-earth:elf",
   "theme": "kindreds:elf",
   "nodes": [
-    {
-      "id": "elf.eyes_of_the_eldar",
-      "tier": 1,
-      "pos": [-30, 0],
-      "cost": { "discipline": "kindreds:archery", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "vision_unlock", "vision_id": "keen_sight", "radius": 32 }
-      ]
-    },
-    {
-      "id": "elf.light_step",
-      "tier": 1,
-      "pos": [30, 0],
-      "cost": { "discipline": "kindreds:survival", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:movement_efficiency", "operation": "add_value", "amount": 1.0 }
-      ]
-    },
-    {
-      "id": "elf.deep_dark_unease",
-      "tier": 1,
-      "pos": [0, 0],
-      "cost": { "discipline": "kindreds:lore", "points": 1 },
-      "prereqs": ["elf.eyes_of_the_eldar"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
-        {
-          "type": "curse",
-          "curse_id": "deep_dark_unease",
-          "severity": 1,
-          "when": "deep_dark",
-          "effect": { "type": "attribute", "attribute": "middle-earth:delvers_fear_strength", "operation": "add_value", "amount": 20.0 }
-        }
-      ]
-    },
+    { "id": "elf.eyes_of_the_eldar", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:archery", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "vision_unlock", "vision_id": "keen_sight", "radius": 32 } ] },
+    { "id": "elf.marksman.elven_fletching", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:archery", "points": 2 }, "prereqs": ["elf.eyes_of_the_eldar"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "elf.marksman.sure_aim", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:archery", "points": 2 }, "prereqs": ["elf.eyes_of_the_eldar"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "elf.marksman.piercing_shaft", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:archery", "points": 3 }, "prereqs": ["elf.marksman.elven_fletching"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.15 } ] },
+    { "id": "elf.marksman.wind_reader", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:archery", "points": 3 }, "prereqs": ["elf.marksman.sure_aim"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.12 } ] },
+    { "id": "elf.marksman.eagle_eye", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:archery", "points": 4 }, "prereqs": ["elf.marksman.wind_reader"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:entity_interaction_range", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "elf.marksman.starlit_aim", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:archery", "points": 6 }, "prereqs": ["elf.marksman.wind_reader"],
+      "deed_advancement": "kindreds:deed/elf_starlit_aim", "exclusive_group": "elf.archery.spec",
+      "abilities": [ { "type": "active", "ability_id": "kindreds:starlit_aim", "cooldown_ticks": 2400, "effects": [ { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 60 } ] } ] },
+    { "id": "elf.marksman.the_last_arrow", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:archery", "points": 6 }, "prereqs": ["elf.marksman.eagle_eye"],
+      "exclusive_group": "elf.archery.spec",
+      "abilities": [ { "type": "contextual_boon", "when": "low_health", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": -1 } } ] },
 
-    {
-      "id": "elf.marksman.elven_marksman",
-      "tier": 2,
-      "pos": [-30, 30],
-      "cost": { "discipline": "kindreds:archery", "points": 3 },
-      "prereqs": ["elf.eyes_of_the_eldar"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.2 }
-      ]
-    },
-    {
-      "id": "elf.marksman.unwearied_draw",
-      "tier": 2,
-      "pos": [-30, 60],
-      "cost": { "discipline": "kindreds:archery", "points": 4 },
-      "prereqs": ["elf.marksman.elven_marksman"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.15 }
-      ]
-    },
-    {
-      "id": "elf.marksman.starlit_aim",
-      "tier": 3,
-      "pos": [-30, 90],
-      "cost": { "discipline": "kindreds:archery", "points": 6 },
-      "prereqs": ["elf.marksman.unwearied_draw"],
-      "deed_advancement": "kindreds:deed/elf_starlit_aim",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:starlit_aim",
-          "cooldown_ticks": 2400,
-          "effects": [
-            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 60 }
-          ]
-        }
-      ]
-    },
+    { "id": "elf.light_step", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:survival", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_efficiency", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "elf.warden.leaf_veil", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:survival", "points": 2 }, "prereqs": ["elf.light_step"],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -3.0 } ] },
+    { "id": "elf.warden.tireless", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:survival", "points": 2 }, "prereqs": ["elf.light_step"],
+      "abilities": [ { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 } ] },
+    { "id": "elf.warden.evasion", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:survival", "points": 3 }, "prereqs": ["elf.warden.leaf_veil"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 4.0 } ] },
+    { "id": "elf.warden.woodland_grace", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:survival", "points": 3 }, "prereqs": ["elf.warden.tireless"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "elf.warden.pathfinder", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:survival", "points": 4 }, "prereqs": ["elf.warden.woodland_grace"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.05 } ] },
+    { "id": "elf.warden.mirkwood_hunter", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:survival", "points": 6 }, "prereqs": ["elf.warden.evasion"],
+      "exclusive_group": "elf.survival.spec",
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -5.0 },
+                     { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.08 } ] },
+    { "id": "elf.warden.song_of_rest", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:survival", "points": 6 }, "prereqs": ["elf.warden.woodland_grace"],
+      "deed_advancement": "kindreds:deed/elf_song_of_rest", "exclusive_group": "elf.survival.spec",
+      "abilities": [ { "type": "active", "ability_id": "kindreds:song_of_rest", "cooldown_ticks": 2400, "effects": [ { "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 200 }, { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 200 } ] } ] },
 
-    {
-      "id": "elf.warden.tireless",
-      "tier": 2,
-      "pos": [30, 30],
-      "cost": { "discipline": "kindreds:survival", "points": 2 },
-      "prereqs": ["elf.light_step"],
-      "abilities": [
-        { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 }
-      ]
-    },
-    {
-      "id": "elf.warden.woodland_grace",
-      "tier": 2,
-      "pos": [30, 60],
-      "cost": { "discipline": "kindreds:survival", "points": 3 },
-      "prereqs": ["elf.warden.tireless"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_total", "amount": 0.1 }
-      ]
-    },
-    {
-      "id": "elf.warden.song_of_rest",
-      "tier": 3,
-      "pos": [30, 90],
-      "cost": { "discipline": "kindreds:survival", "points": 5 },
-      "prereqs": ["elf.warden.woodland_grace"],
-      "deed_advancement": "kindreds:deed/elf_song_of_rest",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:song_of_rest",
-          "cooldown_ticks": 2400,
-          "effects": [
-            { "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 200 },
-            { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 200 }
-          ]
-        }
-      ]
-    }
+    { "id": "elf.loremaster.elven_tongue", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:lore", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "elf.loremaster.moon_letters", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:lore", "points": 2 }, "prereqs": ["elf.loremaster.elven_tongue"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:block_interaction_range", "operation": "add_value", "amount": 0.5 } ] },
+    { "id": "elf.loremaster.star_lore", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:lore", "points": 2 }, "prereqs": ["elf.loremaster.elven_tongue"],
+      "abilities": [ { "type": "contextual_boon", "when": "starlight", "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "elf.loremaster.foresight", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:lore", "points": 3 }, "prereqs": ["elf.loremaster.moon_letters"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "elf.loremaster.ring_lore", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:lore", "points": 3 }, "prereqs": ["elf.loremaster.star_lore"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 } ] },
+    { "id": "elf.loremaster.ancient_wisdom", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:lore", "points": 4 }, "prereqs": ["elf.loremaster.ring_lore"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
+    { "id": "elf.loremaster.light_of_the_phial", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:lore", "points": 6 }, "prereqs": ["elf.loremaster.ring_lore"],
+      "exclusive_group": "elf.lore.spec",
+      "abilities": [ { "type": "active", "ability_id": "kindreds:light_of_the_phial", "cooldown_ticks": 3600, "effects": [ { "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": 100 }, { "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": 100 } ] } ] },
+    { "id": "elf.loremaster.shadow_ward", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:lore", "points": 6 }, "prereqs": ["elf.loremaster.ancient_wisdom"],
+      "exclusive_group": "elf.lore.spec",
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 2.0 },
+                     { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 } ] },
+
+    { "id": "elf.song.kindler", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:song", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.03 } ] },
+    { "id": "elf.song.minstrel", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:song", "points": 2 }, "prereqs": ["elf.song.kindler"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "elf.song.song_of_power", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:song", "points": 3 }, "prereqs": ["elf.song.minstrel"],
+      "abilities": [ { "type": "active", "ability_id": "kindreds:song_of_power", "cooldown_ticks": 1200, "effects": [ { "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": 120 } ] } ] },
+    { "id": "elf.song.lay_of_leithian", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:song", "points": 4 }, "prereqs": ["elf.song.song_of_power"],
+      "abilities": [ { "type": "contextual_boon", "when": "starlight", "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "elf.song.songs_of_valinor", "tier": 5, "pos": [0, 120], "cost": { "discipline": "kindreds:song", "points": 6 }, "prereqs": ["elf.song.lay_of_leithian"],
+      "abilities": [ { "type": "active", "ability_id": "kindreds:songs_of_valinor", "cooldown_ticks": 3600, "effects": [ { "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 200 }, { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 200 } ] } ] },
+
+    { "id": "elf.beast.speaker", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:beast_lore", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -2.0 } ] },
+    { "id": "elf.beast.mearas_friend", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:beast_lore", "points": 2 }, "prereqs": ["elf.beast.speaker"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.05 } ] },
+    { "id": "elf.beast.eagle_friend", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:beast_lore", "points": 3 }, "prereqs": ["elf.beast.mearas_friend"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 4.0 } ] },
+
+    { "id": "elf.grace_of_the_eldar", "tier": 6, "pos": [0, 150], "cost": { "discipline": "kindreds:lore", "points": 8 }, "prereqs": ["elf.loremaster.light_of_the_phial", "elf.warden.song_of_rest"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
+                     { "type": "contextual_boon", "when": "starlight", "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": -1 } } ] }
   ]
 }
