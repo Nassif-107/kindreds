@@ -3,8 +3,8 @@
   "traits": [
     { "type": "perk", "perk": "bane", "foe": "spider", "params": { "bonus": 0.5 } },
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
-    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.15 },
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.20 },
+    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.25 },
     { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.4 },
     { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 8.0 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
@@ -12,7 +12,7 @@
     { "type": "contextual_boon", "when": "starlight",
       "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "contextual_boon", "when": "starlight",
-      "effect": { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.15 } },
+      "effect": { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.25 } },
     { "type": "curse", "curse_id": "unease_in_the_deep", "severity": 1, "when": "deep_dark",
       "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 0, "duration_ticks": -1 } }
   ],

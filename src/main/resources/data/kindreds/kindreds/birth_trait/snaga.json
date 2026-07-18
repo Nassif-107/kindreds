@@ -10,7 +10,7 @@
     { "type": "curse", "curse_id": "sun_sluggishness", "severity": 2, "when": "daylight",
       "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 1, "duration_ticks": -1 } },
     { "type": "contextual_boon", "when": "darkness",
-      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.3 } }
+      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.45 } }
   ],
   "pluses": [
     "Night-eyed — Night Vision, always",
@@ -18,7 +18,7 @@
     "Beneath notice — the overlooked slip past unseen",
     "Foul blades — crude weapons smeared with filth (30% chance to Poison the struck foe)",
     "Long-armed — reaches and places a little farther than most (base Snaga)",
-    "Children of the Dark — by night and in the deep places, a heavier blow (+30% melee damage, stacks with Strength)",
+    "Children of the Dark — by night and in the deep places, a heavier blow (+45% melee damage, stacks with Strength)",
     "Iron-gutted — devours foul carrion (rotten flesh) without sickening"
   ],
   "minuses": [
