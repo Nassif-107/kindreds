@@ -2,6 +2,7 @@ package com.kindreds.command;
 
 import com.kindreds.Kindreds;
 import com.kindreds.config.KindredsConfig;
+import com.kindreds.data.BirthTrait;
 import com.kindreds.data.Disciplines;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillTree;
@@ -107,6 +108,17 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("=== Kindreds inspect: " + targetName + " ==="), false);
         source.sendFeedback(() -> Text.literal("Race: " + race.map(Identifier::toString).orElse("none")), false);
 
+        race.flatMap(r -> findBirthTrait(source.getServer(), r)).ifPresent(bt -> {
+            source.sendFeedback(() -> Text.literal("Birth traits (applied: "
+                    + (data.appliedBirthRace() != null) + "):"), false);
+            for (String plus : bt.pluses()) {
+                source.sendFeedback(() -> Text.literal("  + " + plus), false);
+            }
+            for (String minus : bt.minuses()) {
+                source.sendFeedback(() -> Text.literal("  - " + minus), false);
+            }
+        });
+
         for (String disciplinePath : Disciplines.ALL) {
             Identifier disciplineId = Identifier.of(Kindreds.MOD_ID, disciplinePath);
             long xp = data.xpIn(disciplineId);
@@ -178,6 +190,16 @@ public final class KindredsCommand {
         for (SkillTree tree : trees) {
             if (tree.race().equals(race)) {
                 return Optional.of(tree);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static Optional<BirthTrait> findBirthTrait(MinecraftServer server, Identifier race) {
+        Registry<BirthTrait> traits = server.getRegistryManager().getOrThrow(KindredsRegistries.BIRTH_TRAIT);
+        for (BirthTrait trait : traits) {
+            if (trait.race().equals(race)) {
+                return Optional.of(trait);
             }
         }
         return Optional.empty();

@@ -29,6 +29,7 @@ public class KindredsConfig {
     public int respecCost = 1;
     public boolean enableVision = true;
     public boolean enableCurses = true;
+    public boolean enableBirthTraits = true;
     public boolean allowCrossTraining = true;
     public boolean enableEnemyScaling = false;
 

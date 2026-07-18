@@ -1,0 +1,17 @@
+{
+  "race": "middle-earth:elf",
+  "traits": [
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.06 },
+    { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 4.0 },
+    { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.10 }
+  ],
+  "pluses": [
+    "Elven-swift and light of foot",
+    "Sure-footed — the ground scarce bruises the Eldar",
+    "Tireless — the Firstborn need no sleep"
+  ],
+  "minuses": [
+    "Slender of frame — less brute force behind the blow"
+  ]
+}

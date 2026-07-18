@@ -1,0 +1,17 @@
+{
+  "race": "middle-earth:uruk",
+  "traits": [
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 },
+    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.10 },
+    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": -0.10 }
+  ],
+  "pluses": [
+    "Fighting-Uruk — stout of frame (+2 hearts)",
+    "A heavy, brutal blow",
+    "Braced and unyielding — and unafraid of the Sun"
+  ],
+  "minuses": [
+    "Heavy-handed — slower to strike"
+  ]
+}

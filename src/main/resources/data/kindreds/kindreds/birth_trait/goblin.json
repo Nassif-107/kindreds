@@ -1,0 +1,17 @@
+{
+  "race": "middle-earth:goblin",
+  "traits": [
+    { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 },
+    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -3.0 },
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
+  ],
+  "pluses": [
+    "Wall-clinging climber of the deep tunnels",
+    "Cave-eyes that pierce the black",
+    "Skulks unseen through the dark"
+  ],
+  "minuses": [
+    "Wretched and frail of body (−1 heart)"
+  ]
+}

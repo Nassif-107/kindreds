@@ -43,11 +43,21 @@ public final class KindredsRegistries {
     public static final RegistryKey<Registry<RaceScalingEntry>> RACE_SCALING =
             RegistryKey.ofRegistry(Identifier.of(Kindreds.MOD_ID, "race_scaling"));
 
+    /**
+     * Backs innate racial birth traits: entries load from
+     * {@code data/<namespace>/kindreds/birth_trait/<path>.json} and are applied by
+     * {@code com.kindreds.ability.BirthTraitService} the moment a player's race is known, and read
+     * by the client-side Lore Codex for each race's boons/banes.
+     */
+    public static final RegistryKey<Registry<BirthTrait>> BIRTH_TRAIT =
+            RegistryKey.ofRegistry(Identifier.of(Kindreds.MOD_ID, "birth_trait"));
+
     /** Registers all Kindreds dynamic registries. Must be called from {@link Kindreds#onInitialize()}. */
     public static void register() {
         DynamicRegistries.registerSynced(DISCIPLINE, Discipline.CODEC);
         DynamicRegistries.registerSynced(SKILL_TREE, SkillTree.CODEC);
         DynamicRegistries.registerSynced(THEME, Theme.CODEC);
         DynamicRegistries.registerSynced(RACE_SCALING, RaceScalingEntry.CODEC);
+        DynamicRegistries.registerSynced(BIRTH_TRAIT, BirthTrait.CODEC);
     }
 }

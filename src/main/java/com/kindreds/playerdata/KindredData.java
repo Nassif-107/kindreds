@@ -57,6 +57,16 @@ public final class KindredData {
      */
     private Identifier race;
 
+    /**
+     * The race whose innate birth traits are currently applied to this player, or {@code null} if
+     * none yet. Like {@link #race}, this is transient server-side state (NOT persisted): birth-trait
+     * attribute modifiers themselves ARE persisted on the player, so {@code BirthTraitService}
+     * intentionally reconciles once per session (this resets to {@code null} on relog) - clearing
+     * any leftover modifiers for the current race before re-applying, which avoids duplicate-id
+     * stacking without needing this field on disk.
+     */
+    private Identifier appliedBirthRace;
+
     public KindredData() {
         this(new Object2LongOpenHashMap<>(), new HashSet<>(), null, new HashSet<>(), 0, new Object2LongOpenHashMap<>(),
                 new HashSet<>());
@@ -137,6 +147,15 @@ public final class KindredData {
 
     public void setRace(Identifier race) {
         this.race = race;
+    }
+
+    /** The race whose birth traits are currently applied (see {@link #appliedBirthRace} field). */
+    public Identifier appliedBirthRace() {
+        return appliedBirthRace;
+    }
+
+    public void setAppliedBirthRace(Identifier appliedBirthRace) {
+        this.appliedBirthRace = appliedBirthRace;
     }
 
     /** Accumulates {@code amount} xp into {@code discipline} (creating the entry if absent). */

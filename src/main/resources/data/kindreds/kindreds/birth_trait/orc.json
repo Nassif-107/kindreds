@@ -1,0 +1,17 @@
+{
+  "race": "middle-earth:orc",
+  "traits": [
+    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 },
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 },
+    { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": -1.0 }
+  ],
+  "pluses": [
+    "Eyes bred for the dark",
+    "Made for war — a crueler blow"
+  ],
+  "minuses": [
+    "Cannon-fodder flesh — frailer of body (−1 heart)",
+    "Ill-starred and fractious"
+  ]
+}

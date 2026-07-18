@@ -1,0 +1,17 @@
+{
+  "race": "middle-earth:snaga",
+  "traits": [
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.08 },
+    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -5.0 },
+    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.15 }
+  ],
+  "pluses": [
+    "Fleet-footed and driven",
+    "Beneath notice — the overlooked slip past",
+    "Night-eyed"
+  ],
+  "minuses": [
+    "Least and weakest of the Orc-kind"
+  ]
+}

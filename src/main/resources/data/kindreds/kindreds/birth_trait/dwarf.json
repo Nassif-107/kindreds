@@ -1,0 +1,17 @@
+{
+  "race": "middle-earth:dwarf",
+  "traits": [
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
+    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.15 },
+    { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.25 },
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": -0.06 }
+  ],
+  "pluses": [
+    "Stone-hardy — the deep-delved vigour of Durin's folk (+2 hearts)",
+    "Unmovable as the roots of the mountains",
+    "Born to the stone — swifter at pick and delving"
+  ],
+  "minuses": [
+    "Short of leg — slower afoot than the tall folk"
+  ]
+}
