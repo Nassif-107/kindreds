@@ -78,6 +78,8 @@ public class SkillTreeScreen extends Screen {
 
     private float scrollY;
     private float contentHeight;
+    private float railScroll;
+    private int railContentHeight;
 
     // Layout rects (x, y, w, h), recomputed in init().
     private int[] rail = new int[4];
@@ -339,12 +341,19 @@ public class SkillTreeScreen extends Screen {
         TreeRenderer.drawFrame(ctx, theme, rail[0], rail[1], rail[2], rail[3]);
         int accent = ThemeAssets.accent(theme);
         int x = rail[0] + 10;
-        int y = rail[1] + 10;
-        ctx.drawText(textRenderer, Text.literal("Disciplines").formatted(Formatting.BOLD), x, y, accent, false);
-        y += 16;
+        ctx.drawText(textRenderer, Text.literal("Disciplines").formatted(Formatting.BOLD), x, rail[1] + 10, accent, false);
+
+        int rowH = 34;
+        int listTop = rail[1] + 26;
+        int listBottom = rail[1] + rail[3] - 4;
+        railContentHeight = tabDisciplines.size() * rowH;
+        // Clamp scroll (needed since there can now be up to 12 disciplines - more than fit on a tall
+        // GUI scale) then clip the list so rows never spill past the rail frame.
+        railScroll = Math.max(Math.min(0, (listBottom - listTop) - railContentHeight), Math.min(0, railScroll));
+        ctx.enableScissor(rail[0] + 1, listTop, rail[0] + rail[2] - 1, listBottom);
 
         tabRects.clear();
-        int rowH = 34;
+        int y = listTop + (int) railScroll;
         for (String disc : tabDisciplines) {
             int[] r = {rail[0] + 6, y, rail[2] - 12, rowH - 4};
             tabRects.add(r);
@@ -375,6 +384,7 @@ public class SkillTreeScreen extends Screen {
             }
             y += rowH;
         }
+        ctx.disableScissor();
     }
 
     // --- Canvas (focused discipline branch) ------------------------------------------------------
@@ -784,6 +794,10 @@ public class SkillTreeScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (tree != null && within(rail, mouseX, mouseY)) {
+            railScroll += (float) verticalAmount * 18;   // clamped in renderTabRail
+            return true;
+        }
         if (tree != null && within(canvas, mouseX, mouseY)) {
             float viewH = canvas[3] - CANVAS_TOP_PAD - CANVAS_BOTTOM_PAD;
             float minScroll = Math.min(0, viewH - contentHeight);
