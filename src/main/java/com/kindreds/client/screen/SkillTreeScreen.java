@@ -469,7 +469,14 @@ public class SkillTreeScreen extends Screen {
                     case SEALED -> ThemeAssets.WARNING_COLOR;
                     case LOCKED -> 0xFF8A8478;
                 };
-                ctx.drawText(textRenderer, Text.literal(name), (int) p.x() - nw / 2, (int) (p.y() + p.r() + 3), nameColor, true);
+                int nx = (int) p.x() - nw / 2;
+                int ny = (int) (p.y() + p.r() + 3);
+                // A dark backing pill so a long name stays legible where it overlaps a neighbouring
+                // node or edge (they used to blur together). Drawn only for the selected/hovered node
+                // at full opacity, lighter for the rest, so the focused node's name always reads clearly.
+                boolean focus = hover || selected;
+                ctx.fill(nx - 3, ny - 2, nx + nw + 3, ny + 10, focus ? 0xF0141018 : 0xB0101014);
+                ctx.drawText(textRenderer, Text.literal(name), nx, ny, nameColor, true);
             }
         }
         ctx.disableScissor();
