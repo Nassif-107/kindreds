@@ -120,6 +120,7 @@ public record RequestUnlockC2S(String nodeId) implements CustomPayload {
                     nodeId, player.getGameProfile().getName(), e);
         }
 
+        com.kindreds.ability.PerkService.invalidate(player.getUuid());
         SyncKindredDataS2C.sendTo(player);
         UnlockResultS2C.sendTo(player, true, "ok");
     }

@@ -52,6 +52,7 @@ public final class RespecService {
             }
         }
         data.unlockedNodes().clear();
+        com.kindreds.ability.PerkService.invalidate(target.getUuid());
         return reversedCount;
     }
 

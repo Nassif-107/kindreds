@@ -170,6 +170,9 @@ public final class BirthTraitService {
             }
         });
         data.setAppliedBirthRace(current);
+        // Owned perks are partly race-derived (birth-trait perks + which tree's nodes count), so a race
+        // change must drop the cached perk list too.
+        PerkService.invalidate(player.getUuid());
         return true;
     }
 
