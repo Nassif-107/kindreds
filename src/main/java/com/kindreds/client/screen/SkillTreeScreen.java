@@ -106,6 +106,8 @@ public class SkillTreeScreen extends Screen {
     private int[] panel = new int[4];
     private int[] unlockButton = new int[4];  // only valid while an unlockable node is selected
     private int[] visionButton = new int[4];  // only valid while an owned vision node is selected
+    // Assign-to-slot buttons, only valid while an owned active-ability node is selected.
+    private final int[][] slotButtons = new int[com.kindreds.client.loadout.ClientLoadout.SLOTS][4];
     private int[] codexButton = new int[4];
     private int[] respecButton = new int[4];
 
@@ -623,6 +625,9 @@ public class SkillTreeScreen extends Screen {
 
         unlockButton = new int[]{0, 0, 0, 0};
         visionButton = new int[]{0, 0, 0, 0};
+        for (int[] sb : slotButtons) {
+            sb[0] = sb[1] = sb[2] = sb[3] = 0;
+        }
         if (selectedNode != null) {
             y = renderNodeDetail(ctx, data, x, y);
         } else {
@@ -696,6 +701,17 @@ public class SkillTreeScreen extends Screen {
         ctx.drawText(textRenderer, Text.literal("Click a node to inspect it.").formatted(Formatting.ITALIC),
                 x, y, 0xFF9A9484, false);
         return y + 16;
+    }
+
+    /** The id of the first active ability on {@code node}, or {@code null} if it has none - used to
+     * offer (and target) loadout-slot assignment from the tree panel. */
+    private static String activeAbilityId(SkillNode node) {
+        for (var ability : node.abilities()) {
+            if (ability instanceof ActiveAbilityDef active) {
+                return active.abilityId().toString();
+            }
+        }
+        return null;
     }
 
     private int renderNodeDetail(DrawContext ctx, KindredData data, int x, int y) {
@@ -791,6 +807,34 @@ public class SkillTreeScreen extends Screen {
             y += 24;
         }
 
+        // Assign-to-slot row for an owned active ability - equip it straight from the tree.
+        if (state == TreeRenderer.NodeState.OWNED && kind == NodeKind.ACTIVE) {
+            String abilityId = activeAbilityId(node);
+            if (abilityId != null) {
+                y += 4;
+                ctx.drawText(textRenderer, Text.literal("Equip to ability slot:").formatted(Formatting.BOLD),
+                        x, y, accent, false);
+                y += 12;
+                int n = com.kindreds.client.loadout.ClientLoadout.SLOTS;
+                int bw = (wrap - (n - 1) * 4) / n;
+                for (int i = 0; i < n; i++) {
+                    int bx = x + i * (bw + 4);
+                    slotButtons[i] = new int[]{bx, y, bw, 20};
+                    boolean holds = abilityId.equals(com.kindreds.client.loadout.ClientLoadout.slot(i));
+                    boolean hover = within(slotButtons[i], lastMouseX, lastMouseY);
+                    ctx.fill(bx, y, bx + bw, y + 20, holds ? 0xC03A2E10 : (hover ? 0xC0104834 : 0x80183028));
+                    ctx.drawBorder(bx, y, bw, 20, holds ? 0xFFF0C000 : 0xFF7CE0C0);
+                    String lbl = String.valueOf(i + 1);
+                    ctx.drawText(textRenderer, Text.literal(lbl), bx + (bw - textRenderer.getWidth(lbl)) / 2,
+                            y + 6, holds ? 0xFFF0C000 : 0xFFFFFFFF, true);
+                }
+                y += 24;
+                ctx.drawText(textRenderer, Text.literal("(gold = equipped; click again to clear)").formatted(Formatting.DARK_GRAY),
+                        x, y, 0xFF8A8478, false);
+                y += 11;
+            }
+        }
+
         // Unlock action for an unlockable node.
         if (state == TreeRenderer.NodeState.AVAILABLE || state == TreeRenderer.NodeState.SEALED) {
             y += 6;
@@ -864,6 +908,19 @@ public class SkillTreeScreen extends Screen {
                     }
                 }
                 return true;
+            }
+        }
+        // Equip an owned active ability into a loadout slot, straight from the tree panel.
+        if (selectedNode != null) {
+            String abilityId = activeAbilityId(selectedNode);
+            if (abilityId != null) {
+                for (int i = 0; i < slotButtons.length; i++) {
+                    if (within(slotButtons[i], mouseX, mouseY)) {
+                        boolean holds = abilityId.equals(com.kindreds.client.loadout.ClientLoadout.slot(i));
+                        com.kindreds.client.loadout.ClientLoadout.setSlot(i, holds ? "" : abilityId);
+                        return true;
+                    }
+                }
             }
         }
         // Canvas nodes.
