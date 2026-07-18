@@ -9,17 +9,17 @@
     { "type": "curse", "curse_id": "sun_sluggishness", "severity": 1, "when": "daylight",
       "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "contextual_boon", "when": "darkness",
-      "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } },
-    { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": -1.0 }
+      "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } }
   ],
   "pluses": [
     "Eyes bred for the black — sees through the dark",
     "Made for slaughter — a crueler, stronger blow",
     "Soldier's hide — tougher of body than Men (+1 heart)",
-    "Children of the Dark — grows stronger by night and in the deep places"
+    "Children of the Dark — grows stronger by night and in the deep places",
+    "Iron-gutted — devours foul carrion without sickening"
   ],
   "minuses": [
     "Dread of the Sun — weak and sluggish under open daylight",
-    "Ill-starred and fractious"
+    "Tires without rest — wearies after long without sleep"
   ]
 }

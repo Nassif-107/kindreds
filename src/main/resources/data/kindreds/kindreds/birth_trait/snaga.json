@@ -17,10 +17,12 @@
     "Night-eyed — sees in the pitch dark",
     "Fleet-footed and lash-driven — swiftest of the Orc-kind",
     "Beneath notice — the overlooked go unseen",
-    "Children of the Dark — grows stronger by night and in the deep places"
+    "Children of the Dark — grows stronger by night and in the deep places",
+    "Iron-gutted — devours foul carrion without sickening"
   ],
   "minuses": [
     "Dread of the Sun — weak and slow under open daylight",
-    "Least and weakest of the Orc-kind — feeble and frail (−1 heart)"
+    "Least and weakest of the Orc-kind — feeble and frail (−1 heart)",
+    "Tires without rest — wearies after long without sleep"
   ]
 }

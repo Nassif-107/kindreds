@@ -3,24 +3,28 @@
   "traits": [
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
     { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
+    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.15 },
+    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -4.0 },
     { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 8.0 },
     { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 },
     { "type": "contextual_boon", "when": "starlight",
       "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "contextual_boon", "when": "starlight",
       "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": -1 } },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.20 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
   ],
   "pluses": [
     "Star-sight — the Eldar see through the dark of night",
     "Elven-swift — fleet and graceful of foot",
+    "Deft and quick — strikes faster than mortal eye can follow",
+    "Silent in the wild — moves unheard and unseen; foes notice the Firstborn late",
     "Light-footed — the ground scarce bruises the Firstborn",
-    "Unwearied — needs neither sleep nor much food",
-    "Starlit Grace — heals swiftly and quickens beneath the open night sky"
+    "Unwearied — needs no sleep and little food",
+    "Starlit Grace — heals swiftly and quickens beneath the open night sky",
+    "Never sickens — immune to hunger's gnaw and to nausea; cold cannot freeze the Firstborn",
+    "Unstained by the Shadow — curses and poisons wear off swiftly"
   ],
   "minuses": [
-    "Slender of frame — far less brute force behind the blow",
-    "Fair but slight — a lesser store of body (−1 heart)"
+    "Fair but slight of frame — a lesser store of body (−1 heart); no match for a Dwarf or Man in raw bulk"
   ]
 }

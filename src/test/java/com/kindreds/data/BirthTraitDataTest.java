@@ -56,7 +56,7 @@ class BirthTraitDataTest {
 
     /** Contexts {@code CurseContextService.matchesContext} actually implements. */
     private static final Set<String> VALID_CONTEXTS = Set.of(
-            "deep_dark", "daylight", "starlight", "underground", "darkness", "dawn_dusk");
+            "deep_dark", "daylight", "starlight", "underground", "darkness", "dawn_dusk", "low_health");
 
     @Test
     void everyBirthTraitIdIsRealAndEveryContextIsImplemented() {

@@ -15,10 +15,12 @@
     "Cave-eyes that pierce the black",
     "Wall-crawler — climbs the sheer stone of the deep places",
     "Skulking and swift through the tunnels",
-    "Children of the Dark — grows stronger by night and in the deep places"
+    "Children of the Dark — grows stronger by night and in the deep places",
+    "Iron-gutted — devours foul carrion without sickening"
   ],
   "minuses": [
     "Dread of the Sun — weakened under open daylight",
-    "Wretched and frail of body (−1 heart)"
+    "Wretched and frail of body (−1 heart)",
+    "Tires without rest — wearies after long without sleep"
   ]
 }

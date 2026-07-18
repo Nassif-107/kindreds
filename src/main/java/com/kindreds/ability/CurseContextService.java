@@ -273,6 +273,7 @@ public final class CurseContextService {
             case "underground" -> isUnderground(player);
             case "darkness" -> isDarkness(player);
             case "dawn_dusk" -> isDawnOrDusk(player);
+            case "low_health" -> isLowHealth(player);
             default -> {
                 if (LOGGED_UNKNOWN_WHEN.add(when)) {
                     Kindreds.LOGGER.warn(
@@ -304,6 +305,11 @@ public final class CurseContextService {
     private static boolean isDawnOrDusk(ServerPlayerEntity player) {
         long t = player.getWorld().getTimeOfDay() % 24000L;
         return t >= 22000L || t <= 1000L || (t >= 11000L && t <= 13500L);
+    }
+
+    /** At or below ~35% health - backs Men's "Last Stand" (valour rises in extremity). */
+    private static boolean isLowHealth(ServerPlayerEntity player) {
+        return player.getHealth() <= player.getMaxHealth() * 0.35f;
     }
 
     /** Below open sky, in near-total darkness - backs Elf's "Deep-Dark Unease". */
