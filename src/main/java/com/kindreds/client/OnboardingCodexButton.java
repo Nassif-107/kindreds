@@ -39,7 +39,7 @@ public final class OnboardingCodexButton {
                 boolean hover = mouseX >= bx && mouseX <= bx + BW && mouseY >= by && mouseY <= by + BH;
                 ctx.fill(bx, by, bx + BW, by + BH, hover ? 0xFF4A3A1A : 0xE01E1710);
                 ctx.drawBorder(bx, by, BW, BH, 0xFFC8A24A);
-                Text label = Text.literal("⚔ Kindred Traits");
+                Text label = Text.translatable("kindreds.onboarding.traits_button");
                 int lw = client.textRenderer.getWidth(label);
                 ctx.drawText(client.textRenderer, label, bx + (BW - lw) / 2, by + 5, 0xFFF0E0B0, false);
             });

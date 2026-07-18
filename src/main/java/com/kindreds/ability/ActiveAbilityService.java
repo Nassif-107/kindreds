@@ -11,12 +11,18 @@ import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.playerdata.RaceAccess;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -80,7 +86,41 @@ public final class ActiveAbilityService {
 
         AbilityApplier.applyActiveEffect(player, def);
         data.cooldowns().put(def.abilityId().toString(), now + def.cooldownTicks());
+        castFeedback(player, def);
         SyncKindredDataS2C.sendTo(player);
+    }
+
+    /** Unmistakable "you fired an ability" feedback: a burst of enchant/end-rod particles, a beacon
+     * chime, and the ability's name on the action bar. Without this an active reads as "nothing
+     * happened" - the buff it grants is otherwise silent. */
+    private static void castFeedback(ServerPlayerEntity player, ActiveAbilityDef def) {
+        if (player.getWorld() instanceof ServerWorld world) {
+            double x = player.getX(), y = player.getBodyY(0.6), z = player.getZ();
+            world.spawnParticles(ParticleTypes.ENCHANT, x, y, z, 60, 0.6, 0.9, 0.6, 0.6);
+            world.spawnParticles(ParticleTypes.END_ROD, x, player.getBodyY(1.0), z, 16, 0.35, 0.5, 0.35, 0.06);
+            world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, x, y, z, 12, 0.5, 0.6, 0.5, 0.15);
+            world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 0.7f, 1.5f);
+            world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_TRIDENT_RETURN, SoundCategory.PLAYERS, 0.5f, 1.2f);
+        }
+        String name = titleCase(def.abilityId().getPath());
+        player.sendMessage(Text.literal("✦ ").formatted(Formatting.AQUA)
+                .append(Text.literal(name).formatted(Formatting.AQUA, Formatting.BOLD))
+                .append(Text.literal(" ✦").formatted(Formatting.AQUA)), true);
+    }
+
+    private static String titleCase(String path) {
+        String[] words = path.replace('_', ' ').split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String w : words) {
+            if (w.isEmpty()) {
+                continue;
+            }
+            if (!sb.isEmpty()) {
+                sb.append(' ');
+            }
+            sb.append(Character.toUpperCase(w.charAt(0))).append(w.substring(1).toLowerCase(Locale.ROOT));
+        }
+        return sb.toString();
     }
 
     /** Mirrors {@code RequestUnlockC2S}'s race-based tree resolution (including its Task 12 Stage

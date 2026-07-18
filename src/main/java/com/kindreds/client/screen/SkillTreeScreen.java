@@ -126,7 +126,7 @@ public class SkillTreeScreen extends Screen {
     }
 
     public SkillTreeScreen(KindredData data) {
-        super(Text.literal("Skill Tree"));
+        super(Text.translatable("kindreds.tree.title"));
         this.initialData = data;
     }
 
@@ -345,7 +345,7 @@ public class SkillTreeScreen extends Screen {
     }
 
     private void renderNoRacePrompt(DrawContext ctx) {
-        Text msg = Text.literal("Choose your people first (use the Player's Book).");
+        Text msg = Text.translatable("kindreds.tree.choose_people");
         int w = textRenderer.getWidth(msg);
         ctx.drawText(textRenderer, msg, (width - w) / 2, height / 2, 0xFFDDDDDD, true);
     }
@@ -357,7 +357,7 @@ public class SkillTreeScreen extends Screen {
         TreeRenderer.drawFrame(ctx, theme, rail[0], rail[1], rail[2], rail[3]);
         int accent = ThemeAssets.accent(theme);
         int x = rail[0] + 10;
-        ctx.drawText(textRenderer, Text.literal("Disciplines").formatted(Formatting.BOLD), x, rail[1] + 10, accent, false);
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.disciplines").formatted(Formatting.BOLD), x, rail[1] + 10, accent, false);
 
         int rowH = 34;
         int listTop = rail[1] + 26;
@@ -489,7 +489,7 @@ public class SkillTreeScreen extends Screen {
                 th ? ThemeAssets.withAlpha(accent, 90) : 0x80000000);
         ctx.drawBorder(viewToggleButton[0], viewToggleButton[1], tw, 14, accent);
         ctx.drawText(textRenderer, Text.literal(toggle), viewToggleButton[0] + 6, viewToggleButton[1] + 3, 0xFFFFFFFF, false);
-        ctx.drawText(textRenderer, Text.literal("drag to move · scroll to zoom").formatted(Formatting.DARK_GRAY),
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.pan_hint").formatted(Formatting.DARK_GRAY),
                 canvas[0] + 8, canvas[1] + canvas[3] - 11, 0xFF6E6A60, false);
     }
 
@@ -638,11 +638,11 @@ public class SkillTreeScreen extends Screen {
 
         // Vision + titles, anchored lower.
         int vy = panel[1] + panel[3] - 96;
-        ctx.drawText(textRenderer, Text.literal("Vision").formatted(Formatting.BOLD), x, vy, accent, false);
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.section.vision").formatted(Formatting.BOLD), x, vy, accent, false);
         Identifier lensId = data.activeVisionLens();
         String lens = lensId != null ? titleCase(lensId.getPath()) : "None equipped";
         ctx.drawText(textRenderer, Text.literal(lens), x, vy + 12, 0xFFD8D2C0, false);
-        ctx.drawText(textRenderer, Text.literal("Titles").formatted(Formatting.BOLD), x, vy + 30, accent, false);
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.section.titles").formatted(Formatting.BOLD), x, vy + 30, accent, false);
         String titles = data.titles().isEmpty() ? "None earned yet" : String.join(", ", data.titles());
         for (var line : textRenderer.wrapLines(Text.literal(titles), panel[2] - 20)) {
             ctx.drawText(textRenderer, line, x, vy + 42, 0xFFD8D2C0, false);
@@ -655,7 +655,7 @@ public class SkillTreeScreen extends Screen {
         ctx.fill(codexButton[0], codexButton[1], codexButton[0] + codexButton[2], codexButton[1] + codexButton[3],
                 cHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
         ctx.drawBorder(codexButton[0], codexButton[1], codexButton[2], codexButton[3], accent);
-        Text ct = Text.literal("Open Codex");
+        Text ct = Text.translatable("kindreds.tree.open_codex");
         int ctw = textRenderer.getWidth(ct);
         ctx.drawText(textRenderer, ct, codexButton[0] + (codexButton[2] - ctw) / 2, codexButton[1] + 6, 0xFFFFFFFF, true);
 
@@ -665,14 +665,14 @@ public class SkillTreeScreen extends Screen {
         ctx.fill(respecButton[0], respecButton[1], respecButton[0] + respecButton[2], respecButton[1] + respecButton[3],
                 rHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
         ctx.drawBorder(respecButton[0], respecButton[1], respecButton[2], respecButton[3], accent);
-        Text rt = Text.literal("Unlearn the old ways");
+        Text rt = Text.translatable("kindreds.tree.respec");
         int rtw = textRenderer.getWidth(rt);
         ctx.drawText(textRenderer, rt, respecButton[0] + (respecButton[2] - rtw) / 2, respecButton[1] + 7, 0xFFFFFFFF, true);
     }
 
     private int renderDisciplineSummary(DrawContext ctx, KindredData data, int x, int y) {
         if (selectedDiscipline == null) {
-            ctx.drawText(textRenderer, Text.literal("Select a discipline.").formatted(Formatting.GRAY), x, y, 0xFFB0AAA0, false);
+            ctx.drawText(textRenderer, Text.translatable("kindreds.tree.select_discipline").formatted(Formatting.GRAY), x, y, 0xFFB0AAA0, false);
             return y + 16;
         }
         int accent = ThemeAssets.accent(theme);
@@ -681,7 +681,7 @@ public class SkillTreeScreen extends Screen {
         int av = available(data, selectedDiscipline);
         ctx.drawText(textRenderer, Text.literal(titleCase(selectedDiscipline)).formatted(Formatting.BOLD), x, y, accent, false);
         y += 14;
-        ctx.drawText(textRenderer, Text.literal("Level " + lvl + "  ·  " + sp + " spent  ·  "), x, y, 0xFFD8D2C0, false);
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.level_line", lvl, sp), x, y, 0xFFD8D2C0, false);
         y += 12;
         ctx.drawText(textRenderer, Text.literal(av + " point(s) to spend").formatted(av > 0 ? Formatting.GREEN : Formatting.GRAY),
                 x, y, av > 0 ? 0xFF66DD66 : 0xFF9A9484, false);
@@ -698,9 +698,9 @@ public class SkillTreeScreen extends Screen {
         ctx.fill(x, y, x + (int) (barW * frac), y + 6, ThemeAssets.ownedColor(theme));
         ctx.drawBorder(x, y, barW, 6, ThemeAssets.withAlpha(accent, 160));
         y += 12;
-        ctx.drawText(textRenderer, Text.literal("XP " + xp + " / " + next).formatted(Formatting.DARK_GRAY), x, y, 0xFF9A9484, false);
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.xp_line", xp, next).formatted(Formatting.DARK_GRAY), x, y, 0xFF9A9484, false);
         y += 18;
-        ctx.drawText(textRenderer, Text.literal("Click a node to inspect it.").formatted(Formatting.ITALIC),
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.click_node").formatted(Formatting.ITALIC),
                 x, y, 0xFF9A9484, false);
         return y + 16;
     }
@@ -1002,8 +1002,8 @@ public class SkillTreeScreen extends Screen {
                 ClientPlayNetworking.send(new RespecC2S());
             }
             client.setScreen(this);
-        }, Text.literal("Unlearn the old ways?"),
-                Text.literal("This removes every unlocked node and refunds none of your discipline points.")));
+        }, Text.translatable("kindreds.tree.respec_confirm_title"),
+                Text.translatable("kindreds.tree.respec_confirm_body")));
     }
 
     // --- Unlock feedback -------------------------------------------------------------------------

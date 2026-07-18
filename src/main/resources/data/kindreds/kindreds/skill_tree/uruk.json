@@ -2,63 +2,734 @@
   "race": "middle-earth:uruk",
   "theme": "kindreds:uruk",
   "nodes": [
-    { "id": "uruk.combat.fighting_bred", "tier": 1, "pos": [0, 30], "cost": { "discipline": "kindreds:combat", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 } ] },
-    { "id": "uruk.combat.brutal_blows", "tier": 2, "pos": [-30, 60], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["uruk.combat.fighting_bred"],
-      "abilities": [ { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.12 } ] },
-    { "id": "uruk.combat.cleaving_stroke", "tier": 2, "pos": [30, 60], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["uruk.combat.fighting_bred"],
-      "abilities": [ { "type": "attribute", "attribute": "sweeping_damage_ratio", "operation": "add_value", "amount": 0.75 } ] },
-    { "id": "uruk.combat.crushing_blows", "tier": 3, "pos": [-30, 90], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["uruk.combat.brutal_blows"],
-      "abilities": [ { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.15 } ] },
-    { "id": "uruk.combat.no_quarter", "tier": 3, "pos": [0, 90], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["uruk.combat.fighting_bred"],
-      "abilities": [ { "type": "perk", "perk": "bane", "foe": "any", "params": { "bonus": 0.3 } } ] },
-    { "id": "uruk.combat.bloodlust_unleashed", "tier": 3, "pos": [30, 90], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["uruk.combat.cleaving_stroke"],
-      "abilities": [ { "type": "perk", "perk": "heal_on_kill", "params": { "health": 4 } } ] },
-    { "id": "uruk.combat.blood_frenzy", "tier": 4, "pos": [0, 120], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["uruk.combat.crushing_blows", "uruk.combat.no_quarter", "uruk.combat.bloodlust_unleashed"],
-      "abilities": [ { "type": "active", "ability_id": "kindreds:blood_frenzy", "cooldown_ticks": 1500, "effects": [ { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 200 }, { "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": 200 } ] } ] },
-    { "id": "uruk.combat.berserker_uruk", "tier": 5, "pos": [-30, 150], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["uruk.combat.blood_frenzy"], "exclusive_group": "uruk.combat.spec",
-      "abilities": [ { "type": "perk", "perk": "war_pack", "params": { "radius": 14, "per_ally": 0.08, "max": 8 } }, { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.10 } ] },
-    { "id": "uruk.combat.black_guard", "tier": 5, "pos": [30, 150], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["uruk.combat.blood_frenzy"], "exclusive_group": "uruk.combat.spec",
-      "abilities": [ { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": 3.0 }, { "type": "attribute", "attribute": "knockback_resistance", "operation": "add_value", "amount": 0.3 } ] },
-
-    { "id": "uruk.leadership.white_hand", "tier": 1, "pos": [0, 30], "cost": { "discipline": "kindreds:leadership", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.10 } ] },
-    { "id": "uruk.leadership.drill_master", "tier": 2, "pos": [-30, 60], "cost": { "discipline": "kindreds:leadership", "points": 2 }, "prereqs": ["uruk.leadership.white_hand"],
-      "abilities": [ { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 } ] },
-    { "id": "uruk.leadership.isengard_drill", "tier": 2, "pos": [30, 60], "cost": { "discipline": "kindreds:leadership", "points": 2 }, "prereqs": ["uruk.leadership.white_hand"],
-      "abilities": [ { "type": "perk", "perk": "war_pack", "params": { "radius": 12, "per_ally": 0.06, "max": 6 } } ] },
-    { "id": "uruk.leadership.fear_of_the_white_hand", "tier": 3, "pos": [-30, 90], "cost": { "discipline": "kindreds:leadership", "points": 2 }, "prereqs": ["uruk.leadership.drill_master"],
-      "abilities": [ { "type": "perk", "perk": "strike_effect", "params": { "chance": 0.3 }, "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 0, "duration_ticks": 80 } } ] },
-    { "id": "uruk.leadership.orc_kin_rally", "tier": 3, "pos": [30, 90], "cost": { "discipline": "kindreds:leadership", "points": 2 }, "prereqs": ["uruk.leadership.isengard_drill"],
-      "abilities": [ { "type": "perk", "perk": "ally_aura", "params": { "radius": 8 }, "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": 80 } } ] },
-    { "id": "uruk.leadership.warlord_of_isengard", "tier": 4, "pos": [0, 120], "cost": { "discipline": "kindreds:leadership", "points": 3 }, "prereqs": ["uruk.leadership.fear_of_the_white_hand", "uruk.leadership.orc_kin_rally"],
-      "abilities": [ { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 3.0 }, { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.08 } ] },
-
-    { "id": "uruk.smithing.isengard_steel", "tier": 1, "pos": [0, 30], "cost": { "discipline": "kindreds:smithing", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "uruk.smithing.tempered_plate", "tier": 2, "pos": [-30, 60], "cost": { "discipline": "kindreds:smithing", "points": 2 }, "prereqs": ["uruk.smithing.isengard_steel"],
-      "abilities": [ { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "uruk.smithing.black_iron", "tier": 2, "pos": [30, 60], "cost": { "discipline": "kindreds:smithing", "points": 2 }, "prereqs": ["uruk.smithing.isengard_steel"],
-      "abilities": [ { "type": "attribute", "attribute": "armor_toughness", "operation": "add_value", "amount": 1.5 } ] },
-    { "id": "uruk.smithing.war_smith_of_orthanc", "tier": 3, "pos": [0, 90], "cost": { "discipline": "kindreds:smithing", "points": 2 }, "prereqs": ["uruk.smithing.tempered_plate", "uruk.smithing.black_iron"],
-      "abilities": [ { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": 2.0 }, { "type": "attribute", "attribute": "armor_toughness", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "uruk.smithing.forge_of_orthanc", "tier": 4, "pos": [0, 120], "cost": { "discipline": "kindreds:smithing", "points": 3 }, "prereqs": ["uruk.smithing.war_smith_of_orthanc"],
-      "abilities": [ { "type": "attribute", "attribute": "max_absorption", "operation": "add_value", "amount": 4.0 } ] },
-
-    { "id": "uruk.shadow.made_not_born", "tier": 1, "pos": [0, 30], "cost": { "discipline": "kindreds:shadow", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "burning_time", "operation": "add_multiplied_base", "amount": -0.4 } ] },
-    { "id": "uruk.shadow.sun_marcher", "tier": 2, "pos": [-30, 60], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["uruk.shadow.made_not_born"],
-      "abilities": [ { "type": "contextual_boon", "when": "daylight", "effect": { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.15 } } ] },
-    { "id": "uruk.shadow.cruelty", "tier": 2, "pos": [30, 60], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["uruk.shadow.made_not_born"],
-      "abilities": [ { "type": "perk", "perk": "strike_effect", "params": { "chance": 0.3 }, "effect": { "type": "status_effect", "effect": "minecraft:wither", "amplifier": 0, "duration_ticks": 80 } } ] },
-    { "id": "uruk.shadow.unshaken", "tier": 3, "pos": [-30, 90], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["uruk.shadow.sun_marcher"],
-      "abilities": [ { "type": "contextual_boon", "when": "low_health", "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 1, "duration_ticks": -1 } } ] },
-    { "id": "uruk.shadow.reckless_fury", "tier": 3, "pos": [30, 90], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["uruk.shadow.cruelty"],
-      "abilities": [ { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.20 }, { "type": "curse", "curse_id": "reckless_abandon", "severity": 2, "when": "", "effect": { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": -2.0 } } ] },
-    { "id": "uruk.shadow.undying_hatred", "tier": 4, "pos": [0, 120], "cost": { "discipline": "kindreds:shadow", "points": 3 }, "prereqs": ["uruk.shadow.unshaken", "uruk.shadow.reckless_fury"],
-      "abilities": [ { "type": "perk", "perk": "heal_on_kill", "params": { "health": 3 } }, { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 2.0 } ] },
-
-    { "id": "uruk.grand.fighting_uruk_hai", "tier": 5, "pos": [0, 150], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["uruk.combat.blood_frenzy", "uruk.leadership.warlord_of_isengard"],
-      "abilities": [ { "type": "perk", "perk": "war_pack", "params": { "radius": 18, "per_ally": 0.10, "max": 10 } }, { "type": "perk", "perk": "heal_on_kill", "params": { "health": 6 } }, { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": -1 } ] }
+    {
+      "id": "uruk.combat.fighting_bred",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.brutal_blows",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.combat.fighting_bred"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.cleaving_stroke",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.combat.fighting_bred"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "sweeping_damage_ratio",
+          "operation": "add_value",
+          "amount": 0.75
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.crushing_blows",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.combat.brutal_blows"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.no_quarter",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.combat.fighting_bred"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.3
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.bloodlust_unleashed",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.combat.cleaving_stroke"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.blood_frenzy",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.combat.crushing_blows",
+        "uruk.combat.no_quarter",
+        "uruk.combat.bloodlust_unleashed"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:blood_frenzy",
+          "cooldown_ticks": 1500,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.berserker_uruk",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.combat.blood_frenzy"
+      ],
+      "exclusive_group": "uruk.combat.spec",
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "radius": 14,
+            "per_ally": 0.08,
+            "max": 8
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "attack_speed",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "uruk.combat.black_guard",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.combat.blood_frenzy"
+      ],
+      "exclusive_group": "uruk.combat.spec",
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.3
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.white_hand",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "movement_speed",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.drill_master",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.white_hand"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.isengard_drill",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.white_hand"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "radius": 12,
+            "per_ally": 0.06,
+            "max": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.fear_of_the_white_hand",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.drill_master"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.orc_kin_rally",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.isengard_drill"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 8
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.warlord_of_isengard",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.leadership.fear_of_the_white_hand",
+        "uruk.leadership.orc_kin_rally"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.isengard_steel",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.tempered_plate",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.isengard_steel"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.black_iron",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.isengard_steel"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor_toughness",
+          "operation": "add_value",
+          "amount": 1.5
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.war_smith_of_orthanc",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.tempered_plate",
+        "uruk.smithing.black_iron"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "armor_toughness",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.forge_of_orthanc",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.smithing.war_smith_of_orthanc"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.made_not_born",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.4
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.sun_marcher",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.made_not_born"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "daylight",
+          "effect": {
+            "type": "attribute",
+            "attribute": "movement_speed",
+            "operation": "add_multiplied_total",
+            "amount": 0.15
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.cruelty",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.made_not_born"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.unshaken",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.sun_marcher"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.reckless_fury",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.cruelty"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.2
+        },
+        {
+          "type": "curse",
+          "curse_id": "reckless_abandon",
+          "severity": 2,
+          "when": "",
+          "effect": {
+            "type": "attribute",
+            "attribute": "armor",
+            "operation": "add_value",
+            "amount": -2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.undying_hatred",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.shadow.unshaken",
+        "uruk.shadow.reckless_fury"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.grand.fighting_uruk_hai",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.combat.blood_frenzy",
+        "uruk.leadership.warlord_of_isengard"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "radius": 18,
+            "per_ally": 0.1,
+            "max": 10
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 6
+          }
+        },
+        {
+          "type": "status_effect",
+          "effect": "minecraft:strength",
+          "amplifier": 1,
+          "duration_ticks": -1
+        }
+      ]
+    }
   ]
 }

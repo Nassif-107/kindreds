@@ -273,7 +273,9 @@ public final class AbilityApplier {
      */
     public static void applyActiveEffect(ServerPlayerEntity p, ActiveAbilityDef def) {
         for (StatusEffectDef effect : def.effects()) {
-            applyStatusEffect(p, effect, false);
+            // showParticles=true: an active ability is a deliberate, cooldown-gated cast - the player
+            // pressed a key and must SEE the buff land, unlike a silent always-on passive.
+            applyStatusEffect(p, effect, true);
         }
     }
 

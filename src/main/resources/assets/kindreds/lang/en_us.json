@@ -673,5 +673,20 @@
   "kindreds.tooltip.cost": "Cost: %d %s pt(s)",
   "kindreds.tooltip.requires": "Requires: %s",
   "kindreds.tooltip.sealed_deed": "Sealed - Deed: %s",
-  "kindreds.tooltip.deed_earned": "Deed earned: %s"
+  "kindreds.tooltip.deed_earned": "Deed earned: %s",
+  "kindreds.tree.title": "Skill Tree",
+  "kindreds.tree.choose_people": "Choose your people first (use the Player's Book).",
+  "kindreds.tree.disciplines": "Disciplines",
+  "kindreds.tree.pan_hint": "drag to move · scroll to zoom",
+  "kindreds.tree.section.vision": "Vision",
+  "kindreds.tree.section.titles": "Titles",
+  "kindreds.tree.open_codex": "Open Codex",
+  "kindreds.tree.respec": "Unlearn the old ways",
+  "kindreds.tree.select_discipline": "Select a discipline.",
+  "kindreds.tree.level_line": "Level %d  ·  %d spent  ·  ",
+  "kindreds.tree.xp_line": "XP %d / %d",
+  "kindreds.tree.click_node": "Click a node to inspect it.",
+  "kindreds.tree.respec_confirm_title": "Unlearn the old ways?",
+  "kindreds.tree.respec_confirm_body": "This removes every unlocked node and refunds none of your discipline points.",
+  "kindreds.onboarding.traits_button": "⚔ Kindred Traits"
 }

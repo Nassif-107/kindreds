@@ -191,8 +191,13 @@ public class KindredCodexScreen extends Screen {
             y += 8;
 
             y = section(ctx, x, y, I18n.translate("kindreds.codex.section.vision_titles"));
-            String lens = data.activeVisionLens() != null
-                    ? titleCase(data.activeVisionLens().getPath()) : I18n.translate("kindreds.codex.vision.none");
+            String lens;
+            if (data.activeVisionLens() != null) {
+                String vp = data.activeVisionLens().getPath();
+                lens = I18n.hasTranslation("kindreds.vision." + vp) ? I18n.translate("kindreds.vision." + vp) : titleCase(vp);
+            } else {
+                lens = I18n.translate("kindreds.codex.vision.none");
+            }
             y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.vision", lens));
             String titles = data.titles().isEmpty()
                     ? I18n.translate("kindreds.codex.titles.none") : String.join(", ", data.titles());

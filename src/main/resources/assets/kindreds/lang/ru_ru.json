@@ -673,5 +673,20 @@
   "kindreds.tooltip.cost": "Стоимость: %d очк. %s",
   "kindreds.tooltip.requires": "Требуется: %s",
   "kindreds.tooltip.sealed_deed": "Запечатано — деяние: %s",
-  "kindreds.tooltip.deed_earned": "Деяние совершено: %s"
+  "kindreds.tooltip.deed_earned": "Деяние совершено: %s",
+  "kindreds.tree.title": "Древо навыков",
+  "kindreds.tree.choose_people": "Сначала выберите народ (используйте Книгу игрока).",
+  "kindreds.tree.disciplines": "Дисциплины",
+  "kindreds.tree.pan_hint": "тащите — двигать · колесо — масштаб",
+  "kindreds.tree.section.vision": "Зрение",
+  "kindreds.tree.section.titles": "Титулы",
+  "kindreds.tree.open_codex": "Открыть Кодекс",
+  "kindreds.tree.respec": "Забыть былые пути",
+  "kindreds.tree.select_discipline": "Выберите дисциплину.",
+  "kindreds.tree.level_line": "Уровень %d  ·  потрачено %d  ·  ",
+  "kindreds.tree.xp_line": "Опыт %d / %d",
+  "kindreds.tree.click_node": "Нажмите на узел, чтобы осмотреть его.",
+  "kindreds.tree.respec_confirm_title": "Забыть былые пути?",
+  "kindreds.tree.respec_confirm_body": "Это снимет все изученные узлы и не вернёт очки дисциплин.",
+  "kindreds.onboarding.traits_button": "⚔ Черты народов"
 }
