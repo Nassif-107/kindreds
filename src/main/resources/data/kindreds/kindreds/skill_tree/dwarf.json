@@ -41,7 +41,7 @@
           "type": "perk",
           "perk": "mining_fortune",
           "params": {
-            "chance": 0.2,
+            "chance": 0.3,
             "amount": 1
           }
         }
@@ -66,7 +66,7 @@
           "type": "attribute",
           "attribute": "mining_efficiency",
           "operation": "add_value",
-          "amount": 0.35
+          "amount": 0.5
         },
         {
           "type": "attribute",
@@ -95,7 +95,7 @@
           "type": "perk",
           "perk": "mining_fortune",
           "params": {
-            "chance": 0.15,
+            "chance": 0.25,
             "amount": 1
           }
         },
@@ -103,7 +103,7 @@
           "type": "attribute",
           "attribute": "mining_efficiency",
           "operation": "add_value",
-          "amount": 0.3
+          "amount": 0.5
         }
       ]
     },
@@ -153,7 +153,7 @@
           "type": "attribute",
           "attribute": "mining_efficiency",
           "operation": "add_value",
-          "amount": 0.3
+          "amount": 0.5
         }
       ]
     },
@@ -241,7 +241,7 @@
           "type": "attribute",
           "attribute": "mining_efficiency",
           "operation": "add_value",
-          "amount": 0.3
+          "amount": 0.5
         }
       ]
     },
@@ -262,7 +262,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         }
       ]
     },
@@ -286,7 +286,7 @@
           "perk": "bane",
           "foe": "orc",
           "params": {
-            "bonus": 0.5
+            "bonus": 0.65
           }
         }
       ]
@@ -310,7 +310,7 @@
           "type": "attribute",
           "attribute": "knockback_resistance",
           "operation": "add_value",
-          "amount": 0.15
+          "amount": 0.2
         }
       ]
     },
@@ -334,7 +334,7 @@
           "perk": "bane",
           "foe": "troll",
           "params": {
-            "bonus": 0.6
+            "bonus": 0.75
           }
         }
       ]
@@ -358,7 +358,7 @@
           "type": "attribute",
           "attribute": "knockback_resistance",
           "operation": "add_value",
-          "amount": 0.15
+          "amount": 0.2
         },
         {
           "type": "attribute",
@@ -414,13 +414,13 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 1.0
+          "amount": 3
         },
         {
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 1.0
+          "amount": 2
         }
       ]
     },
@@ -454,7 +454,7 @@
           "type": "perk",
           "perk": "heal_on_kill",
           "params": {
-            "health": 3.0
+            "health": 4.5
           }
         }
       ]
@@ -479,13 +479,13 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 4.5
         },
         {
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 1.0
+          "amount": 2
         },
         {
           "type": "contextual_boon",
@@ -516,7 +516,7 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3
         }
       ]
     },
@@ -539,7 +539,7 @@
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 1.0
+          "amount": 2
         }
       ]
     },
@@ -585,7 +585,7 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3
         }
       ]
     },
@@ -608,13 +608,13 @@
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 1.0
+          "amount": 2
         },
         {
           "type": "attribute",
           "attribute": "knockback_resistance",
           "operation": "add_value",
-          "amount": 0.1
+          "amount": 0.2
         }
       ]
     },
@@ -638,13 +638,13 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3
         },
         {
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 1.0
+          "amount": 2
         }
       ],
       "deed_advancement": "kindreds:deed/dwarf_khazad_craft"
@@ -669,13 +669,13 @@
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3.0
         },
         {
           "type": "attribute",
           "attribute": "knockback_resistance",
           "operation": "add_value",
-          "amount": 0.2
+          "amount": 0.26
         }
       ]
     },
@@ -699,7 +699,7 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 4.5
         },
         {
           "type": "attribute",
@@ -772,7 +772,7 @@
           "type": "attribute",
           "attribute": "max_absorption",
           "operation": "add_value",
-          "amount": 4.0
+          "amount": 6.0
         }
       ]
     },
@@ -822,7 +822,7 @@
           "type": "attribute",
           "attribute": "max_health",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 4.0
         }
       ]
     },

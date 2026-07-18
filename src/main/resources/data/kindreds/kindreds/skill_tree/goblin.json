@@ -2,74 +2,751 @@
   "race": "middle-earth:goblin",
   "theme": "kindreds:goblin",
   "nodes": [
-    { "id": "goblin.skulk.tunnel_born", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:stealth", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.1 } ] },
-    { "id": "goblin.skulk.ceiling_lurker", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["goblin.skulk.tunnel_born"],
-      "abilities": [ { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 300.0 } ] },
-    { "id": "goblin.skulk.skitter", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["goblin.skulk.tunnel_born"],
-      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.1 },
-                     { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_total", "amount": 0.08 } ] },
-    { "id": "goblin.skulk.towns_rafters", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["goblin.skulk.ceiling_lurker"],
-      "abilities": [ { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 300.0 } ] },
-    { "id": "goblin.skulk.silent_paws", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["goblin.skulk.skitter"],
-      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.15 },
-                     { "type": "attribute", "attribute": "minecraft:sneaking_speed", "operation": "add_value", "amount": 0.3 } ] },
-    { "id": "goblin.skulk.ambush_from_shadow", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["goblin.skulk.towns_rafters", "goblin.skulk.silent_paws"],
-      "abilities": [ { "type": "perk", "perk": "bane", "foe": "any", "params": { "bonus": 0.3 } } ] },
-    { "id": "goblin.skulk.wall_runner", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["goblin.skulk.ambush_from_shadow"], "exclusive_group": "goblin.stealth.spec",
-      "abilities": [ { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 600.0 },
-                     { "type": "attribute", "attribute": "minecraft:step_height", "operation": "add_value", "amount": 0.5 } ] },
-    { "id": "goblin.skulk.backstabber", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["goblin.skulk.ambush_from_shadow"], "exclusive_group": "goblin.stealth.spec",
-      "abilities": [ { "type": "perk", "perk": "strike_effect", "params": { "chance": 0.35 },
-                       "effect": { "type": "status_effect", "effect": "minecraft:poison", "amplifier": 0, "duration_ticks": 80 } },
-                     { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.10 } ] },
-
-    { "id": "goblin.delve.tunnel_rat", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:mining", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.3 } ] },
-    { "id": "goblin.delve.warren_digger", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["goblin.delve.tunnel_rat"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.35 } ] },
-    { "id": "goblin.delve.dark_delver", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["goblin.delve.tunnel_rat"],
-      "abilities": [ { "type": "contextual_boon", "when": "underground", "effect": { "type": "status_effect", "effect": "minecraft:haste", "amplifier": 0, "duration_ticks": -1 } } ] },
-    { "id": "goblin.delve.gundabad_miner", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["goblin.delve.warren_digger"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.35 } ] },
-    { "id": "goblin.delve.black_pit_delver", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["goblin.delve.dark_delver"],
-      "abilities": [ { "type": "contextual_boon", "when": "deep_dark", "effect": { "type": "status_effect", "effect": "minecraft:haste", "amplifier": 1, "duration_ticks": -1 } } ] },
-    { "id": "goblin.delve.cave_fortune", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:mining", "points": 3 }, "prereqs": ["goblin.delve.gundabad_miner", "goblin.delve.black_pit_delver"],
-      "abilities": [ { "type": "perk", "perk": "mining_fortune", "params": { "chance": 0.2, "amount": 1 } } ] },
-
-    { "id": "goblin.shadow.gloom_child", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:shadow", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": -1 } } ] },
-    { "id": "goblin.shadow.deep_dark_strength", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["goblin.shadow.gloom_child"],
-      "abilities": [ { "type": "contextual_boon", "when": "deep_dark", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } } ] },
-    { "id": "goblin.shadow.cowardly_cunning", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["goblin.shadow.gloom_child"],
-      "abilities": [ { "type": "perk", "perk": "evasion", "params": { "chance": 0.15, "reduction": 0.5 } } ] },
-    { "id": "goblin.shadow.black_pit_dread", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["goblin.shadow.deep_dark_strength"],
-      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } } ] },
-    { "id": "goblin.shadow.wretched_resilience", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["goblin.shadow.cowardly_cunning"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "goblin.shadow.spider_kinship", "tier": 4, "pos": [-30, 90], "cost": { "discipline": "kindreds:shadow", "points": 3 }, "prereqs": ["goblin.shadow.black_pit_dread"], "exclusive_group": "goblin.shadow.spec",
-      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": -1 } } ] },
-    { "id": "goblin.shadow.deep_king", "tier": 4, "pos": [30, 90], "cost": { "discipline": "kindreds:shadow", "points": 3 }, "prereqs": ["goblin.shadow.wretched_resilience"], "exclusive_group": "goblin.shadow.spec",
-      "abilities": [ { "type": "contextual_boon", "when": "underground", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } },
-                     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
-
-    { "id": "goblin.war.tooth_and_claw", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:combat", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.10 } ] },
-    { "id": "goblin.war.swarming_horde", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["goblin.war.tooth_and_claw"],
-      "abilities": [ { "type": "perk", "perk": "war_pack", "params": { "radius": 12, "per_ally": 0.05, "max": 8 } } ] },
-    { "id": "goblin.war.rusty_fangs", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["goblin.war.tooth_and_claw"],
-      "abilities": [ { "type": "perk", "perk": "strike_effect", "params": { "chance": 0.35 },
-                       "effect": { "type": "status_effect", "effect": "minecraft:poison", "amplifier": 0, "duration_ticks": 80 } } ] },
-    { "id": "goblin.war.frenzied_pack", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["goblin.war.swarming_horde"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.12 } ] },
-    { "id": "goblin.war.envenomed_blade", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["goblin.war.rusty_fangs"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.10 } ] },
-    { "id": "goblin.war.cornered_savagery", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["goblin.war.frenzied_pack", "goblin.war.envenomed_blade"],
-      "abilities": [ { "type": "contextual_boon", "when": "low_health", "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": -1 } } ] },
-
-    { "id": "goblin.stealth.goblintown_horde", "tier": 5, "pos": [0, 120], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["goblin.skulk.ambush_from_shadow", "goblin.war.cornered_savagery"],
-      "abilities": [ { "type": "perk", "perk": "war_pack", "params": { "radius": 12, "per_ally": 0.05, "max": 8 } },
-                     { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 300.0 },
-                     { "type": "perk", "perk": "evasion", "params": { "chance": 0.15, "reduction": 0.5 } } ] }
+    {
+      "id": "goblin.skulk.tunnel_born",
+      "tier": 1,
+      "pos": [
+        0,
+        0
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.1
+        }
+      ]
+    },
+    {
+      "id": "goblin.skulk.ceiling_lurker",
+      "tier": 2,
+      "pos": [
+        -30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.skulk.tunnel_born"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 300.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.skulk.skitter",
+      "tier": 2,
+      "pos": [
+        30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.skulk.tunnel_born"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.1
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "goblin.skulk.towns_rafters",
+      "tier": 3,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.skulk.ceiling_lurker"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 300.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.skulk.silent_paws",
+      "tier": 3,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.skulk.skitter"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_value",
+          "amount": 0.3
+        }
+      ]
+    },
+    {
+      "id": "goblin.skulk.ambush_from_shadow",
+      "tier": 4,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.skulk.towns_rafters",
+        "goblin.skulk.silent_paws"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.45
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.skulk.wall_runner",
+      "tier": 5,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.skulk.ambush_from_shadow"
+      ],
+      "exclusive_group": "goblin.stealth.spec",
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 600.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:step_height",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "goblin.skulk.backstabber",
+      "tier": 5,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.skulk.ambush_from_shadow"
+      ],
+      "exclusive_group": "goblin.stealth.spec",
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "goblin.delve.tunnel_rat",
+      "tier": 1,
+      "pos": [
+        0,
+        0
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:mining_efficiency",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "goblin.delve.warren_digger",
+      "tier": 2,
+      "pos": [
+        -30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.delve.tunnel_rat"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:mining_efficiency",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "goblin.delve.dark_delver",
+      "tier": 2,
+      "pos": [
+        30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.delve.tunnel_rat"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:haste",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.delve.gundabad_miner",
+      "tier": 3,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.delve.warren_digger"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:mining_efficiency",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "goblin.delve.black_pit_delver",
+      "tier": 3,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.delve.dark_delver"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:haste",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.delve.cave_fortune",
+      "tier": 4,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.delve.gundabad_miner",
+        "goblin.delve.black_pit_delver"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "mining_fortune",
+          "params": {
+            "chance": 0.3,
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.shadow.gloom_child",
+      "tier": 1,
+      "pos": [
+        0,
+        0
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.shadow.deep_dark_strength",
+      "tier": 2,
+      "pos": [
+        -30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.shadow.gloom_child"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.shadow.cowardly_cunning",
+      "tier": 2,
+      "pos": [
+        30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.shadow.gloom_child"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.23,
+            "reduction": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.shadow.black_pit_dread",
+      "tier": 3,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.shadow.deep_dark_strength"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.shadow.wretched_resilience",
+      "tier": 3,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.shadow.cowardly_cunning"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.shadow.spider_kinship",
+      "tier": 4,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.shadow.black_pit_dread"
+      ],
+      "exclusive_group": "goblin.shadow.spec",
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.shadow.deep_king",
+      "tier": 4,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.shadow.wretched_resilience"
+      ],
+      "exclusive_group": "goblin.shadow.spec",
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.war.tooth_and_claw",
+      "tier": 1,
+      "pos": [
+        0,
+        0
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.135
+        }
+      ]
+    },
+    {
+      "id": "goblin.war.swarming_horde",
+      "tier": 2,
+      "pos": [
+        -30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.war.tooth_and_claw"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "radius": 12,
+            "per_ally": 0.07,
+            "max": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.war.rusty_fangs",
+      "tier": 2,
+      "pos": [
+        30,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.war.tooth_and_claw"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.war.frenzied_pack",
+      "tier": 3,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.war.swarming_horde"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.162
+        }
+      ]
+    },
+    {
+      "id": "goblin.war.envenomed_blade",
+      "tier": 3,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.war.rusty_fangs"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "goblin.war.cornered_savagery",
+      "tier": 4,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.war.frenzied_pack",
+        "goblin.war.envenomed_blade"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.stealth.goblintown_horde",
+      "tier": 5,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.skulk.ambush_from_shadow",
+        "goblin.war.cornered_savagery"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "radius": 12,
+            "per_ally": 0.07,
+            "max": 8
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 300.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.23,
+            "reduction": 0.5
+          }
+        }
+      ]
+    }
   ]
 }

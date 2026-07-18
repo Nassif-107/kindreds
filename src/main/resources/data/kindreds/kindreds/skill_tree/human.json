@@ -193,7 +193,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         }
       ]
     },
@@ -245,7 +245,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         }
       ]
     },
@@ -268,13 +268,13 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3
         },
         {
           "type": "attribute",
           "attribute": "knockback_resistance",
           "operation": "add_value",
-          "amount": 0.1
+          "amount": 0.2
         }
       ]
     },
@@ -322,7 +322,7 @@
           "perk": "bane",
           "foe": "orc",
           "params": {
-            "bonus": 0.4
+            "bonus": 0.55
           }
         }
       ]
@@ -414,7 +414,7 @@
           "type": "perk",
           "perk": "heal_on_kill",
           "params": {
-            "health": 1
+            "health": 1.5
           }
         }
       ]
@@ -436,7 +436,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         }
       ]
     },
@@ -506,7 +506,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.12
+          "amount": 0.168
         }
       ]
     },
@@ -531,7 +531,7 @@
           "perk": "arrow_slaying",
           "foe": "dragon",
           "params": {
-            "bonus": 0.6
+            "bonus": 0.75
           }
         },
         {
@@ -539,7 +539,7 @@
           "perk": "arrow_slaying",
           "foe": "troll",
           "params": {
-            "bonus": 0.6
+            "bonus": 0.75
           }
         }
       ],
@@ -586,7 +586,7 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3
         }
       ]
     },
@@ -609,7 +609,7 @@
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3.0
         }
       ]
     },
@@ -632,13 +632,13 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3
         },
         {
           "type": "attribute",
           "attribute": "knockback_resistance",
           "operation": "add_value",
-          "amount": 0.1
+          "amount": 0.2
         }
       ]
     },
@@ -661,7 +661,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         }
       ]
     },
@@ -685,13 +685,13 @@
           "type": "attribute",
           "attribute": "armor_toughness",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3.0
         },
         {
           "type": "attribute",
           "attribute": "max_health",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3.0
         }
       ]
     },
@@ -849,7 +849,7 @@
           "perk": "bane",
           "foe": "orc",
           "params": {
-            "bonus": 0.3
+            "bonus": 0.45
           }
         }
       ]
@@ -970,7 +970,7 @@
           "type": "attribute",
           "attribute": "max_health",
           "operation": "add_value",
-          "amount": 4.0
+          "amount": 5.0
         }
       ]
     }

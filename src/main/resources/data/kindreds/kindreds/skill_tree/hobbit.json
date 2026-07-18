@@ -88,7 +88,7 @@
           "type": "perk",
           "perk": "evasion",
           "params": {
-            "chance": 0.15,
+            "chance": 0.23,
             "reduction": 1.0
           }
         }
@@ -171,7 +171,7 @@
           "type": "perk",
           "perk": "evasion",
           "params": {
-            "chance": 0.15,
+            "chance": 0.23,
             "reduction": 1.0
           }
         }
@@ -224,7 +224,7 @@
           "type": "attribute",
           "attribute": "max_health",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3.0
         }
       ]
     },
@@ -247,7 +247,7 @@
           "type": "attribute",
           "attribute": "max_health",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3.0
         }
       ]
     },
@@ -320,7 +320,7 @@
           "type": "attribute",
           "attribute": "armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3
         }
       ]
     },
@@ -365,7 +365,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.08
+          "amount": 0.15
         }
       ]
     },
@@ -412,7 +412,7 @@
           "perk": "arrow_slaying",
           "foe": "any",
           "params": {
-            "bonus": 0.3
+            "bonus": 0.45
           }
         }
       ]
@@ -437,7 +437,7 @@
           "type": "attribute",
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         }
       ]
     },
@@ -460,7 +460,7 @@
           "type": "perk",
           "perk": "heal_on_kill",
           "params": {
-            "health": 1
+            "health": 1.5
           }
         }
       ]
@@ -684,7 +684,7 @@
           "type": "perk",
           "perk": "evasion",
           "params": {
-            "chance": 0.15,
+            "chance": 0.23,
             "reduction": 1.0
           }
         },

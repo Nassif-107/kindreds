@@ -42,13 +42,13 @@
           "type": "attribute",
           "attribute": "minecraft:movement_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.1
+          "amount": 0.135
         },
         {
           "type": "perk",
           "perk": "evasion",
           "params": {
-            "chance": 0.2,
+            "chance": 0.28,
             "reduction": 1.0
           }
         }
@@ -103,7 +103,7 @@
           "perk": "bane",
           "foe": "any",
           "params": {
-            "bonus": 0.3
+            "bonus": 0.45
           }
         }
       ]
@@ -127,7 +127,7 @@
           "type": "attribute",
           "attribute": "minecraft:attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.12
+          "amount": 0.168
         }
       ]
     },
@@ -181,7 +181,7 @@
           "type": "perk",
           "perk": "evasion",
           "params": {
-            "chance": 0.2,
+            "chance": 0.28,
             "reduction": 1.0
           }
         },
@@ -234,7 +234,7 @@
           "perk": "bane",
           "foe": "any",
           "params": {
-            "bonus": 0.3
+            "bonus": 0.45
           }
         }
       ]
@@ -286,14 +286,14 @@
             "type": "attribute",
             "attribute": "minecraft:attack_damage",
             "operation": "add_multiplied_total",
-            "amount": 0.15
+            "amount": 0.21
           }
         },
         {
           "type": "perk",
           "perk": "heal_on_kill",
           "params": {
-            "health": 1,
+            "health": 1.5,
             "food": 1
           }
         }
@@ -318,7 +318,7 @@
           "type": "attribute",
           "attribute": "minecraft:attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         },
         {
           "type": "curse",
@@ -384,7 +384,7 @@
             "type": "attribute",
             "attribute": "minecraft:attack_speed",
             "operation": "add_multiplied_base",
-            "amount": 0.15
+            "amount": 0.203
           }
         }
       ]
@@ -406,7 +406,7 @@
           "type": "attribute",
           "attribute": "minecraft:attack_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.08
+          "amount": 0.108
         }
       ]
     },
@@ -429,7 +429,7 @@
           "type": "attribute",
           "attribute": "minecraft:attack_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.1
+          "amount": 0.135
         }
       ]
     },
@@ -488,7 +488,7 @@
           "type": "attribute",
           "attribute": "minecraft:attack_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.08
+          "amount": 0.108
         }
       ]
     },
@@ -524,7 +524,7 @@
           "type": "attribute",
           "attribute": "minecraft:attack_damage",
           "operation": "add_multiplied_total",
-          "amount": 0.1
+          "amount": 0.15
         }
       ]
     },
@@ -548,13 +548,13 @@
           "type": "attribute",
           "attribute": "minecraft:attack_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.15
+          "amount": 0.203
         },
         {
           "type": "attribute",
           "attribute": "minecraft:movement_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.08
+          "amount": 0.108
         }
       ]
     },
@@ -575,7 +575,7 @@
           "type": "perk",
           "perk": "heal_on_kill",
           "params": {
-            "health": 1,
+            "health": 1.5,
             "food": 1
           }
         }
@@ -627,7 +627,7 @@
           "type": "attribute",
           "attribute": "minecraft:movement_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.08
+          "amount": 0.108
         }
       ]
     },
@@ -650,7 +650,7 @@
           "type": "attribute",
           "attribute": "minecraft:max_health",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 3.0
         }
       ]
     },
@@ -707,7 +707,7 @@
           "type": "attribute",
           "attribute": "minecraft:movement_speed",
           "operation": "add_multiplied_base",
-          "amount": 0.1
+          "amount": 0.135
         }
       ]
     },
@@ -744,7 +744,7 @@
           "type": "perk",
           "perk": "evasion",
           "params": {
-            "chance": 0.2,
+            "chance": 0.28,
             "reduction": 1.0
           }
         },
@@ -755,7 +755,7 @@
             "type": "attribute",
             "attribute": "minecraft:attack_damage",
             "operation": "add_multiplied_total",
-            "amount": 0.2
+            "amount": 0.28
           }
         }
       ]
