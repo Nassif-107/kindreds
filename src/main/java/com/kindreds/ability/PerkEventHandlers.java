@@ -5,6 +5,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.minecraft.entity.Entity;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
@@ -120,6 +123,38 @@ public final class PerkEventHandlers {
                 flash((ServerWorld) world, target.getX(), target.getBodyY(0.6), target.getZ(), ParticleTypes.WITCH, 8, 0.3);
             }
             return ActionResult.PASS;
+        });
+
+        // After-damage perks: lifesteal (heal the striking player) and thorns (reflect to attacker).
+        ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamage, damageTaken, blocked) -> {
+            if (damageTaken <= 0f) {
+                return;
+            }
+            // Lifesteal: the player who dealt this melee blow heals a fraction of it.
+            if (source.getAttacker() instanceof ServerPlayerEntity attacker && !source.isIn(DamageTypeTags.IS_PROJECTILE)) {
+                float pct = 0f;
+                for (PerkDef perk : PerkService.perksOfType(attacker, "lifesteal")) {
+                    pct += perk.param("percent", 0.1f);
+                }
+                if (pct > 0f) {
+                    attacker.heal(damageTaken * pct);
+                    if (attacker.getWorld() instanceof ServerWorld w) {
+                        flash(w, attacker.getX(), attacker.getBodyY(0.6), attacker.getZ(), ParticleTypes.HEART, 3, 0.3);
+                    }
+                }
+            }
+            // Thorns: a struck player reflects a fraction of the blow back onto a living attacker.
+            if (entity instanceof ServerPlayerEntity victim && source.getAttacker() instanceof LivingEntity foe
+                    && foe != victim) {
+                float pct = 0f;
+                for (PerkDef perk : PerkService.perksOfType(victim, "thorns")) {
+                    pct += perk.param("percent", 0.25f);
+                }
+                if (pct > 0f && victim.getWorld() instanceof ServerWorld w) {
+                    foe.damage(w, victim.getDamageSources().thorns(victim), damageTaken * pct);
+                    flash(w, foe.getX(), foe.getBodyY(0.6), foe.getZ(), ParticleTypes.CRIT, 6, 0.3);
+                }
+            }
         });
 
         // Tick-driven perks (ally auras, war-pack scaling). A 10-tick cadence is plenty for a buff

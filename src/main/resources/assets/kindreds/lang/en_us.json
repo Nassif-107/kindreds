@@ -688,5 +688,7 @@
   "kindreds.tree.click_node": "Click a node to inspect it.",
   "kindreds.tree.respec_confirm_title": "Unlearn the old ways?",
   "kindreds.tree.respec_confirm_body": "This removes every unlocked node and refunds none of your discipline points.",
-  "kindreds.onboarding.traits_button": "⚔ Kindred Traits"
+  "kindreds.onboarding.traits_button": "⚔ Kindred Traits",
+  "kindreds.perk.lifesteal": "Lifesteal: heal %d%% of melee damage dealt",
+  "kindreds.perk.thorns": "Thorns: reflect %d%% of a blow back at the attacker"
 }

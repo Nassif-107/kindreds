@@ -688,5 +688,7 @@
   "kindreds.tree.click_node": "Нажмите на узел, чтобы осмотреть его.",
   "kindreds.tree.respec_confirm_title": "Забыть былые пути?",
   "kindreds.tree.respec_confirm_body": "Это снимет все изученные узлы и не вернёт очки дисциплин.",
-  "kindreds.onboarding.traits_button": "⚔ Черты народов"
+  "kindreds.onboarding.traits_button": "⚔ Черты народов",
+  "kindreds.perk.lifesteal": "Вампиризм: +%d%% здоровья от урона в ближнем бою",
+  "kindreds.perk.thorns": "Шипы: отражает %d%% удара обратно в нападающего"
 }
