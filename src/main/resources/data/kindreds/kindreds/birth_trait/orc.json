@@ -2,21 +2,21 @@
   "race": "middle-earth:orc",
   "traits": [
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.15 },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.15 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
     { "type": "curse", "curse_id": "dread_of_the_sun", "severity": 2, "when": "daylight",
       "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": -0.30 } },
     { "type": "curse", "curse_id": "sun_sluggishness", "severity": 1, "when": "daylight",
       "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "contextual_boon", "when": "darkness",
-      "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } }
+      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.3 } }
   ],
   "pluses": [
-    "Eyes bred for the black — sees through the dark",
-    "Made for slaughter — a crueler, stronger blow",
-    "Soldier's hide — tougher of body than Men (+1 heart)",
-    "Children of the Dark — grows stronger by night and in the deep places",
-    "Iron-gutted — devours foul carrion without sickening"
+    "Eyes bred for the black — Night Vision, always",
+    "Made for slaughter — a crueler, stronger blow (+15%)",
+    "Soldier's hide — hardened for war (9 hearts)",
+    "Children of the Dark — by night and in the deep places, a heavier blow (+30% melee damage, stacks with Strength)",
+    "Iron-gutted — devours foul carrion (rotten flesh) without sickening"
   ],
   "minuses": [
     "Dread of the Sun — under open daylight strikes for less (−30%) and is slowed (Slowness I)",

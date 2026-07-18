@@ -2,27 +2,26 @@
   "race": "middle-earth:snaga",
   "traits": [
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -6.0 },
+    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.4 },
     { "type": "curse", "curse_id": "dread_of_the_sun", "severity": 2, "when": "daylight",
       "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": -0.40 } },
     { "type": "curse", "curse_id": "sun_sluggishness", "severity": 2, "when": "daylight",
       "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 1, "duration_ticks": -1 } },
     { "type": "contextual_boon", "when": "darkness",
-      "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.20 },
-    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
+      "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.3 } }
   ],
   "pluses": [
-    "Night-eyed — sees in the pitch dark",
-    "Fleet-footed and lash-driven — swiftest of the Orc-kind",
-    "Beneath notice — the overlooked go unseen",
-    "Children of the Dark — grows stronger by night and in the deep places",
-    "Iron-gutted — devours foul carrion without sickening"
+    "Night-eyed — Night Vision, always",
+    "Fleet-footed and lash-driven — quick afoot (base Snaga)",
+    "Beneath notice — the overlooked slip past unseen",
+    "Long-armed — reaches and places a little farther than most (base Snaga)",
+    "Children of the Dark — by night and in the deep places, a heavier blow (+30% melee damage, stacks with Strength)",
+    "Iron-gutted — devours foul carrion (rotten flesh) without sickening"
   ],
   "minuses": [
-    "Dread of the Sun — under open daylight strikes for far less (−40%) and is badly slowed (Slowness II)",
-    "Least and weakest of the Orc-kind — feeble and frail (−1 heart)",
+    "Least and weakest of the Orc-kind — only 6 hearts, frailest of all the kindreds (base Snaga)",
+    "Feeble arm — strikes for less even at rest (−20%, base Snaga)",
+    "Dread of the Sun — under open daylight strikes for far less (a further −40%) and is badly slowed (Slowness II)",
     "Tires without rest — wearies after long without sleep"
   ]
 }

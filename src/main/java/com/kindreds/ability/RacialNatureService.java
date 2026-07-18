@@ -6,7 +6,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import com.kindreds.mixin.HungerManagerAccessor;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.HungerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -133,11 +135,19 @@ public final class RacialNatureService {
         }
     }
 
-    /** Dwarves and Uruks drain hunger slower - endure toil and hunger more hardily than all others.
-     * Subtracting a little accumulated exhaustion each second delays the next hunger tick without
-     * ever stopping hunger entirely. */
+    /** Dwarves and Uruks "suffer toil and hunger more hardily than all other speaking peoples" - so
+     * their food drains far slower, and (critically) that includes the exhaustion spent by sprinting,
+     * fighting, and natural regeneration healing. Vanilla charges every point of healing as ~6.0
+     * exhaustion, which quickly eats a full hunger bar in a drawn-out fight; a race that "rarely needs
+     * food" whose food still evaporates the moment it heals is a hollow buff. Bleeding off ~90% of the
+     * accumulated exhaustion each second makes hunger drain roughly an order of magnitude slower across
+     * ALL sources, without ever hard-stopping it. */
     private static void endureHunger(ServerPlayerEntity player) {
-        player.addExhaustion(-0.12f);
+        HungerManager hunger = player.getHungerManager();
+        float exhaustion = ((HungerManagerAccessor) hunger).kindreds$getExhaustion();
+        if (exhaustion > 0.0f) {
+            hunger.addExhaustion(-exhaustion * 0.9f);
+        }
     }
 
     /** Weariness: Elves never tire; others gain a mild Mining Fatigue after long without sleep.
