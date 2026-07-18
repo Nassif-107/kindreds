@@ -32,6 +32,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -59,11 +60,16 @@ public class SkillTreeScreen extends Screen {
     private static final int MARGIN = 8;
     private static final int GAP = 8;
 
-    private static final int COL_SPACING = 132;
-    private static final int ROW_SPACING = 86;
+    // World-space spacing for the whole-tree constellation map (screen size = these * zoom).
+    private static final float COL_SPACING = 78f;
+    private static final float ROW_SPACING = 74f;
+    private static final float LANE_GAP = 70f;      // gap between discipline regions
     private static final int NODE_R = 15;
-    private static final int CANVAS_TOP_PAD = 44;   // room for the discipline title band
-    private static final int CANVAS_BOTTOM_PAD = 20;
+    private static final int CANVAS_TOP_PAD = 20;
+    private static final float MIN_ZOOM = 0.30f;
+    private static final float MAX_ZOOM = 1.60f;
+    /** Below this zoom, node labels/badges are hidden to keep the overview clean. */
+    private static final float LABEL_ZOOM = 0.62f;
 
     // Not final: resolved lazily from the live client-synced race (see refreshTreeForRace()).
     private SkillTree tree;
@@ -76,10 +82,23 @@ public class SkillTreeScreen extends Screen {
     private String selectedDiscipline;                 // e.g. "combat"
     private SkillNode selectedNode;
 
-    private float scrollY;
-    private float contentHeight;
+    /** Two ways to read the tree: MAP = whole constellation (all disciplines at once, pan/zoom);
+     * BRANCH = one discipline, focused and readable (pick via the tabs). Both share the camera. */
+    private enum ViewMode { MAP, BRANCH }
+    private ViewMode viewMode = ViewMode.MAP;
+    private int[] viewToggleButton = new int[4];
+
+    // Whole-tree map camera.
+    private float panX, panY, zoom = 1f;
+    private float worldCenterX, worldCenterY;
+    private boolean fitted;
+    private boolean dragging;
+    private double dragPrevX, dragPrevY;
     private float railScroll;
     private int railContentHeight;
+
+    private final Map<SkillNode, float[]> nodeWorld = new java.util.HashMap<>();   // node -> world x,y
+    private final Map<String, float[]> laneBounds = new java.util.HashMap<>();      // discipline -> world x0,x1
 
     // Layout rects (x, y, w, h), recomputed in init().
     private int[] rail = new int[4];
@@ -174,38 +193,31 @@ public class SkillTreeScreen extends Screen {
     /** Builds the discipline tab list from the disciplines that actually have nodes in this tree,
      * in the canonical {@link Disciplines#ALL} order, and picks a sensible default focus. */
     private void buildTabs() {
-        // All 7 disciplines are always shown, so the player sees the full spread even before any
-        // race has content for one; disciplinesWithNodes marks which actually have a path here.
+        // Only show disciplines this race actually trains (in canonical order) - no dead "no path" tabs.
         java.util.Set<String> withNodes = new java.util.HashSet<>();
         for (SkillNode node : tree.nodes()) {
             withNodes.add(node.cost().disciplineId().getPath());
         }
-        tabDisciplines = Disciplines.ALL;
-        disciplinesWithNodes = withNodes;
-
-        // Default focus: the first discipline (with content) that already has points to spend, else
-        // the first discipline that has any content, else the first tab.
-        KindredData data = currentData();
-        selectedDiscipline = Disciplines.ALL.get(0);
-        String firstWithContent = null;
+        List<String> present = new ArrayList<>();
         for (String disc : Disciplines.ALL) {
             if (withNodes.contains(disc)) {
-                if (firstWithContent == null) {
-                    firstWithContent = disc;
-                }
-                if (available(data, disc) > 0) {
-                    selectedDiscipline = disc;
-                    scrollY = 0;
-                    selectedNode = null;
-                    return;
-                }
+                present.add(disc);
             }
         }
-        if (firstWithContent != null) {
-            selectedDiscipline = firstWithContent;
+        tabDisciplines = present;
+        disciplinesWithNodes = withNodes;
+
+        // Default focus: first discipline with points to spend, else the first present one.
+        KindredData data = currentData();
+        selectedDiscipline = present.isEmpty() ? null : present.get(0);
+        for (String disc : present) {
+            if (available(data, disc) > 0) {
+                selectedDiscipline = disc;
+                break;
+            }
         }
-        scrollY = 0;
         selectedNode = null;
+        fitted = false;
     }
 
     /** Short human label + color for a node's primary kind, so passive/active/vision/curse skills
@@ -392,20 +404,30 @@ public class SkillTreeScreen extends Screen {
     private void renderCanvas(DrawContext ctx, KindredData data, int mouseX, int mouseY) {
         TreeRenderer.drawBackground(ctx, theme, canvas[0], canvas[1], canvas[2], canvas[3]);
         TreeRenderer.drawFrame(ctx, theme, canvas[0], canvas[1], canvas[2], canvas[3]);
-
         int accent = ThemeAssets.accent(theme);
-        String title = selectedDiscipline == null ? "" : titleCase(selectedDiscipline) + " Path";
-        int tw = textRenderer.getWidth(title);
-        ctx.drawText(textRenderer, Text.literal(title).formatted(Formatting.BOLD),
-                canvas[0] + (canvas[2] - tw) / 2, canvas[1] + 14, accent, true);
 
         layout(data);
 
-        int top = canvas[1] + 1;
-        int bottom = canvas[1] + canvas[3] - 1;
-        ctx.enableScissor(canvas[0] + 1, top + CANVAS_TOP_PAD - 12, canvas[0] + canvas[2] - 1, bottom);
+        int left = canvas[0] + 1, right = canvas[0] + canvas[2] - 1;
+        int top = canvas[1] + 1, bottom = canvas[1] + canvas[3] - 1;
+        ctx.enableScissor(left, top, right, bottom);
 
-        // Edges first (only within this discipline's placed set).
+        float cx = canvas[0] + canvas[2] / 2f;
+        // Discipline regions: a faint colored band + a label at the top.
+        for (Map.Entry<String, float[]> e : laneBounds.entrySet()) {
+            String disc = e.getKey();
+            int dc = disciplineColor(disc);
+            float x0 = cx + panX + (e.getValue()[0] - worldCenterX) * zoom - COL_SPACING * zoom * 0.5f;
+            float x1 = cx + panX + (e.getValue()[1] - worldCenterX) * zoom + COL_SPACING * zoom * 0.5f;
+            boolean sel = disc.equals(selectedDiscipline);
+            ctx.fill((int) x0, top, (int) x1, bottom, ThemeAssets.withAlpha(dc, sel ? 30 : 12));
+            String label = titleCase(disc);
+            int lw = textRenderer.getWidth(label);
+            ctx.drawText(textRenderer, Text.literal(label).formatted(Formatting.BOLD),
+                    (int) ((x0 + x1) / 2 - lw / 2f), canvas[1] + 5, dc, true);
+        }
+
+        // Edges (all prereqs, including cross-discipline convergences shown in MAP view).
         for (Placed p : placed) {
             for (String prereqId : p.node().prereqs()) {
                 findPlaced(prereqId).ifPresent(pre ->
@@ -413,57 +435,58 @@ public class SkillTreeScreen extends Screen {
             }
         }
 
+        boolean showLabels = zoom >= LABEL_ZOOM;
         hovered = null;
         for (Placed p : placed) {
-            boolean hover = dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 4
-                    && mouseY >= top + CANVAS_TOP_PAD - 12 && mouseY <= bottom;
+            boolean hover = within(canvas, mouseX, mouseY) && dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 3;
             if (hover) {
                 hovered = p;
             }
             boolean selected = selectedNode != null && selectedNode.id().equals(p.node().id());
             if (flashNodeId != null && flashNodeId.equals(p.node().id()) && flashTimer > 0) {
-                float g = (8f - flashTimer) / 8f;               // 0 -> 1 as it settles
+                float g = (8f - flashTimer) / 8f;
                 int ring = (int) (p.r() + 6 + g * 14);
-                int alpha = (int) (200 * (1 - g));
                 ctx.drawBorder((int) p.x() - ring, (int) p.y() - ring, ring * 2, ring * 2,
-                        ThemeAssets.withAlpha(0xFFFFE070, Math.max(0, alpha)));
+                        ThemeAssets.withAlpha(0xFFFFE070, Math.max(0, (int) (200 * (1 - g)))));
             }
             TreeRenderer.drawNode(ctx, p.node(), p.state(), theme, p.x(), p.y(), p.r(), hover || selected);
 
-            // Small type badge (P/A/V/!) at the node's upper-right, so passive vs active vs vision
-            // vs curse reads at a glance without opening the detail panel.
-            NodeKind kind = kindOf(p.node());
-            int bx = (int) (p.x() + p.r() - 3);
-            int by = (int) (p.y() - p.r() - 7);
-            ctx.fill(bx - 2, by - 1, bx + 9, by + 9, 0xD0101014);
-            ctx.drawBorder(bx - 2, by - 1, 11, 10, ThemeAssets.withAlpha(kind.color, 200));
-            ctx.drawText(textRenderer, Text.literal(kind.badge), bx, by, kind.color, false);
-
-            // Inline node name so the branch is readable at a glance.
-            String name = NodeTooltip.displayName(p.node().id());
-            int nw = textRenderer.getWidth(name);
-            int nameColor = switch (p.state()) {
-                case OWNED -> 0xFFB9F2B0;
-                case AVAILABLE -> 0xFFFFF3C0;
-                case SEALED -> ThemeAssets.WARNING_COLOR;
-                case LOCKED -> 0xFF8A8478;
-            };
-            ctx.drawText(textRenderer, Text.literal(name), (int) p.x() - nw / 2, (int) (p.y() + p.r() + 4),
-                    nameColor, true);
-            String costTag = p.state() == TreeRenderer.NodeState.OWNED ? "✔"
-                    : p.node().cost().points() + " pt";
-            int cw = textRenderer.getWidth(costTag);
-            ctx.drawText(textRenderer, Text.literal(costTag), (int) p.x() - cw / 2, (int) (p.y() + p.r() + 15),
-                    0xFF9A9484, true);
+            if (showLabels) {
+                NodeKind kind = kindOf(p.node());
+                int bx = (int) (p.x() + p.r() - 3);
+                int by = (int) (p.y() - p.r() - 7);
+                ctx.fill(bx - 2, by - 1, bx + 9, by + 9, 0xD0101014);
+                ctx.drawText(textRenderer, Text.literal(kind.badge), bx, by, kind.color, false);
+                String name = NodeTooltip.displayName(p.node().id());
+                int nw = textRenderer.getWidth(name);
+                int nameColor = switch (p.state()) {
+                    case OWNED -> 0xFFB9F2B0;
+                    case AVAILABLE -> 0xFFFFF3C0;
+                    case SEALED -> ThemeAssets.WARNING_COLOR;
+                    case LOCKED -> 0xFF8A8478;
+                };
+                ctx.drawText(textRenderer, Text.literal(name), (int) p.x() - nw / 2, (int) (p.y() + p.r() + 3), nameColor, true);
+            }
         }
         ctx.disableScissor();
 
         if (placed.isEmpty()) {
             String none = "No path here yet.";
             int w = textRenderer.getWidth(none);
-            ctx.drawText(textRenderer, Text.literal(none), canvas[0] + (canvas[2] - w) / 2,
-                    canvas[1] + canvas[3] / 2, 0xFF9A9484, true);
+            ctx.drawText(textRenderer, Text.literal(none), canvas[0] + (canvas[2] - w) / 2, canvas[1] + canvas[3] / 2, 0xFF9A9484, true);
         }
+
+        // View toggle (top-right) + control hint (bottom-left).
+        String toggle = viewMode == ViewMode.MAP ? "◇ Whole map" : "▤ One branch";
+        int tw = textRenderer.getWidth(toggle) + 12;
+        viewToggleButton = new int[]{canvas[0] + canvas[2] - tw - 6, canvas[1] + 4, tw, 14};
+        boolean th = within(viewToggleButton, mouseX, mouseY);
+        ctx.fill(viewToggleButton[0], viewToggleButton[1], viewToggleButton[0] + tw, viewToggleButton[1] + 14,
+                th ? ThemeAssets.withAlpha(accent, 90) : 0x80000000);
+        ctx.drawBorder(viewToggleButton[0], viewToggleButton[1], tw, 14, accent);
+        ctx.drawText(textRenderer, Text.literal(toggle), viewToggleButton[0] + 6, viewToggleButton[1] + 3, 0xFFFFFFFF, false);
+        ctx.drawText(textRenderer, Text.literal("drag to move · scroll to zoom").formatted(Formatting.DARK_GRAY),
+                canvas[0] + 8, canvas[1] + canvas[3] - 11, 0xFF6E6A60, false);
     }
 
     /** Places the focused discipline's nodes at fixed, readable spacing, centered horizontally, so
@@ -471,38 +494,86 @@ public class SkillTreeScreen extends Screen {
      * order comes from distinct x values, row order from distinct y values. */
     private void layout(KindredData data) {
         placed.clear();
-        if (selectedDiscipline == null) {
-            contentHeight = 0;
+        nodeWorld.clear();
+        laneBounds.clear();
+        if (tree == null) {
             return;
         }
-        List<SkillNode> nodes = new ArrayList<>();
-        TreeMap<Integer, Integer> xIndex = new TreeMap<>();
-        TreeMap<Integer, Integer> yIndex = new TreeMap<>();
-        for (SkillNode node : tree.nodes()) {
-            if (node.cost().disciplineId().getPath().equals(selectedDiscipline)) {
-                nodes.add(node);
-                xIndex.put(node.pos()[0], 0);
-                yIndex.put(node.pos()[1], 0);
+        // Each discipline is a vertical region; MAP lays out every region side by side, BRANCH lays
+        // out only the selected discipline's region. Same world->screen transform for both.
+        float laneX = 0f;
+        float maxRowY = 0f;
+        for (String disc : tabDisciplines) {
+            if (viewMode == ViewMode.BRANCH && !disc.equals(selectedDiscipline)) {
+                continue;
             }
+            List<SkillNode> lane = new ArrayList<>();
+            TreeMap<Integer, Integer> xs = new TreeMap<>();
+            TreeMap<Integer, Integer> ys = new TreeMap<>();
+            for (SkillNode node : tree.nodes()) {
+                if (node.cost().disciplineId().getPath().equals(disc)) {
+                    lane.add(node);
+                    xs.put(node.pos()[0], 0);
+                    ys.put(node.pos()[1], 0);
+                }
+            }
+            if (lane.isEmpty()) {
+                continue;
+            }
+            indexKeys(xs);
+            indexKeys(ys);
+            for (SkillNode node : lane) {
+                float wx = laneX + xs.get(node.pos()[0]) * COL_SPACING;
+                float wy = ys.get(node.pos()[1]) * ROW_SPACING;
+                nodeWorld.put(node, new float[]{wx, wy});
+                maxRowY = Math.max(maxRowY, wy);
+            }
+            float laneW = (xs.size() - 1) * COL_SPACING;
+            laneBounds.put(disc, new float[]{laneX, laneX + laneW});
+            laneX += laneW + LANE_GAP;
         }
-        indexKeys(xIndex);
-        indexKeys(yIndex);
-
-        int cols = xIndex.size();
-        int rows = yIndex.size();
-        contentHeight = Math.max(0, (rows - 1) * ROW_SPACING) + NODE_R * 2 + 40;
-
-        float startX = canvas[0] + canvas[2] / 2f - (cols - 1) * COL_SPACING / 2f;
-        float startY = canvas[1] + CANVAS_TOP_PAD + NODE_R + scrollY;
-
-        for (SkillNode node : nodes) {
-            int col = xIndex.get(node.pos()[0]);
-            int row = yIndex.get(node.pos()[1]);
-            float sx = startX + col * COL_SPACING;
-            float sy = startY + row * ROW_SPACING;
-            float r = node.deedAdvancement().isPresent() ? NODE_R * 1.4f : NODE_R;
+        float totalW = Math.max(1f, laneX - LANE_GAP);
+        worldCenterX = totalW / 2f;
+        worldCenterY = maxRowY / 2f;
+        if (!fitted && !nodeWorld.isEmpty()) {
+            autoFit(totalW, maxRowY);
+            fitted = true;
+        }
+        float cx = canvas[0] + canvas[2] / 2f;
+        float cy = canvas[1] + CANVAS_TOP_PAD + (canvas[3] - CANVAS_TOP_PAD) / 2f;
+        for (Map.Entry<SkillNode, float[]> e : nodeWorld.entrySet()) {
+            SkillNode node = e.getKey();
+            float sx = cx + panX + (e.getValue()[0] - worldCenterX) * zoom;
+            float sy = cy + panY + (e.getValue()[1] - worldCenterY) * zoom;
+            float r = (node.deedAdvancement().isPresent() ? NODE_R * 1.4f : NODE_R) * zoom;
             placed.add(new Placed(node, sx, sy, r, TreeRenderer.stateOf(node, data, tree)));
         }
+    }
+
+    /** Fit the current world extent into the canvas with padding. */
+    private void autoFit(float worldW, float worldH) {
+        float availW = canvas[2] - 44f;
+        float availH = canvas[3] - CANVAS_TOP_PAD - 44f;
+        float z = Math.min(availW / (worldW + 2 * NODE_R), availH / (worldH + 2 * NODE_R));
+        zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z));
+        panX = 0f;
+        panY = 0f;
+    }
+
+    private int disciplineColor(String disc) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world != null) {
+            try {
+                var reg = client.world.getRegistryManager().getOrThrow(KindredsRegistries.DISCIPLINE);
+                var d = reg.get(Identifier.of("kindreds", disc));
+                if (d != null) {
+                    return 0xFF000000 | d.colorInt();
+                }
+            } catch (RuntimeException ignored) {
+                // registry not ready
+            }
+        }
+        return ThemeAssets.accent(theme);
     }
 
     /** Replaces each key's placeholder value with its rank (0-based) among the sorted keys. */
@@ -773,23 +844,65 @@ public class SkillTreeScreen extends Screen {
             }
             return true;
         }
+        // View toggle (whole map <-> one branch).
+        if (within(viewToggleButton, mouseX, mouseY)) {
+            viewMode = viewMode == ViewMode.MAP ? ViewMode.BRANCH : ViewMode.MAP;
+            fitted = false;
+            return true;
+        }
         // Discipline tabs.
         for (int i = 0; i < tabRects.size(); i++) {
             if (within(tabRects.get(i), mouseX, mouseY)) {
                 selectedDiscipline = tabDisciplines.get(i);
                 selectedNode = null;
-                scrollY = 0;
+                if (viewMode == ViewMode.BRANCH) {
+                    fitted = false; // re-fit to the newly focused discipline
+                } else {
+                    float[] lb = laneBounds.get(selectedDiscipline);
+                    if (lb != null) {
+                        panX = -((lb[0] + lb[1]) / 2f - worldCenterX) * zoom; // pan the map to that region
+                    }
+                }
                 return true;
             }
         }
         // Canvas nodes.
         for (Placed p : placed) {
-            if (dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 4) {
+            if (dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 3) {
                 selectedNode = p.node();
                 return true;
             }
         }
+        // Empty canvas: begin dragging the map.
+        if (within(canvas, mouseX, mouseY)) {
+            dragging = true;
+            dragPrevX = mouseX;
+            dragPrevY = mouseY;
+            return true;
+        }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (dragging && button == 0) {
+            panX += (float) (mouseX - dragPrevX);
+            panY += (float) (mouseY - dragPrevY);
+            dragPrevX = mouseX;
+            dragPrevY = mouseY;
+            fitted = true;
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (dragging) {
+            dragging = false;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -799,9 +912,16 @@ public class SkillTreeScreen extends Screen {
             return true;
         }
         if (tree != null && within(canvas, mouseX, mouseY)) {
-            float viewH = canvas[3] - CANVAS_TOP_PAD - CANVAS_BOTTOM_PAD;
-            float minScroll = Math.min(0, viewH - contentHeight);
-            scrollY = Math.max(minScroll, Math.min(0, scrollY + (float) verticalAmount * 24));
+            float old = zoom;
+            zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom * (verticalAmount > 0 ? 1.12f : 0.89f)));
+            float cx = canvas[0] + canvas[2] / 2f;
+            float cy = canvas[1] + CANVAS_TOP_PAD + (canvas[3] - CANVAS_TOP_PAD) / 2f;
+            // Keep the world point under the cursor fixed while zooming.
+            float wx = (float) ((mouseX - cx - panX) / old) + worldCenterX;
+            float wy = (float) ((mouseY - cy - panY) / old) + worldCenterY;
+            panX = (float) mouseX - cx - (wx - worldCenterX) * zoom;
+            panY = (float) mouseY - cy - (wy - worldCenterY) * zoom;
+            fitted = true;
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
