@@ -69,6 +69,13 @@ public class KindredsClient implements ClientModInitializer {
             GLFW.GLFW_KEY_K,
             "key.category.kindreds"));
 
+    /** "Open Kindred Codex" - the browsable character/traits menu (defaults to {@code J}). */
+    private static final KeyBinding OPEN_CODEX_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.kindreds.open_codex",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_J,
+            "key.category.kindreds"));
+
     @Override
     public void onInitializeClient() {
         // Store the latest server-authoritative skill data for client-side UI/HUD to read; hop
@@ -107,6 +114,12 @@ public class KindredsClient implements ClientModInitializer {
                     ClientPlayNetworking.send(new OpenTreeC2S());
                 }
             }
+            while (OPEN_CODEX_KEY.wasPressed()) {
+                if (client.player != null) {
+                    com.kindreds.client.screen.KindredCodexScreen.open(client);
+                    ClientPlayNetworking.send(new OpenTreeC2S()); // refresh the client's data mirror
+                }
+            }
         });
 
         // Vision framework: world-render outline lenses + Iris-safe HUD tint. Each lens registers
@@ -116,6 +129,9 @@ public class KindredsClient implements ClientModInitializer {
         StoneSenseLens.register();
         KeenSightLens.register();
         HudTintOverlay.register();
+
+        // Add a "Kindred Traits" button onto the base mod's race-selection screen (opens the Codex).
+        com.kindreds.client.OnboardingCodexButton.register();
 
         // FIX (gamma stranded on disconnect): the lenses' own render()-driven gamma restore can't
         // fire once MinecraftClient.world goes null, since WorldRenderEvents.AFTER_TRANSLUCENT stops

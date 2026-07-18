@@ -85,6 +85,7 @@ public class SkillTreeScreen extends Screen {
     private int[] panel = new int[4];
     private int[] unlockButton = new int[4];  // only valid while an unlockable node is selected
     private int[] visionButton = new int[4];  // only valid while an owned vision node is selected
+    private int[] codexButton = new int[4];
     private int[] respecButton = new int[4];
 
     private final List<int[]> tabRects = new ArrayList<>();   // parallel to tabDisciplines: x,y,w,h
@@ -560,6 +561,16 @@ public class SkillTreeScreen extends Screen {
             break;
         }
 
+        // Codex button (opens the full character/traits menu).
+        codexButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 56, panel[2] - 20, 20};
+        boolean cHover = within(codexButton, mouseX, mouseY);
+        ctx.fill(codexButton[0], codexButton[1], codexButton[0] + codexButton[2], codexButton[1] + codexButton[3],
+                cHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
+        ctx.drawBorder(codexButton[0], codexButton[1], codexButton[2], codexButton[3], accent);
+        Text ct = Text.literal("Open Codex");
+        int ctw = textRenderer.getWidth(ct);
+        ctx.drawText(textRenderer, ct, codexButton[0] + (codexButton[2] - ctw) / 2, codexButton[1] + 6, 0xFFFFFFFF, true);
+
         // Respec button.
         respecButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 30, panel[2] - 20, 22};
         boolean rHover = within(respecButton, mouseX, mouseY);
@@ -727,6 +738,11 @@ public class SkillTreeScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (tree == null || button != 0) {
             return super.mouseClicked(mouseX, mouseY, button);
+        }
+        // Codex.
+        if (within(codexButton, mouseX, mouseY)) {
+            KindredCodexScreen.open(MinecraftClient.getInstance());
+            return true;
         }
         // Respec.
         if (within(respecButton, mouseX, mouseY)) {

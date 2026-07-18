@@ -4,6 +4,9 @@
   "key.kindreds.use_ability": "Use ability",
   "key.kindreds.cycle_vision": "Cycle vision",
   "key.kindreds.open_tree": "Open skill tree",
+  "key.kindreds.open_codex": "Open Kindred Codex",
+
+  "item.kindreds.codex": "Kindred Codex",
 
   "kindreds.node.elf.eyes_of_the_eldar.name": "Eyes of the Eldar",
   "kindreds.node.elf.eyes_of_the_eldar.flavor": "The Eldar see further and truer than any other people under the stars.",

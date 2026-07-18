@@ -5,6 +5,7 @@ import com.kindreds.ability.CurseContextService;
 import com.kindreds.command.KindredsCommand;
 import com.kindreds.config.KindredsConfig;
 import com.kindreds.data.KindredsRegistries;
+import com.kindreds.item.KindredsItems;
 import com.kindreds.network.ActivateAbilityC2S;
 import com.kindreds.network.OpenTreeC2S;
 import com.kindreds.network.RequestUnlockC2S;
@@ -41,6 +42,7 @@ public class Kindreds implements ModInitializer {
         // already loaded player NBT and dropped the unknown "kindreds:player" attachment, wiping
         // saved progress. Forcing the class to load here registers it before any world loads.
         KindredAttachment.init();
+        KindredsItems.register();
 
         KindredsRegistries.register();
 
@@ -79,9 +81,22 @@ public class Kindreds implements ModInitializer {
         // Push each player's server-authoritative skill data to their own client as soon as their
         // play session is ready, so client-side UI/HUD has real data from the very first tick
         // rather than the empty default.
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-                SyncKindredDataS2C.sendTo(handler.player));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            SyncKindredDataS2C.sendTo(handler.player);
+            giveCodexIfFirstTime(handler.player);
+        });
 
         LOGGER.info("[Kindreds] initialized");
+    }
+
+    /** Hands every player a Kindred Codex the first time they join (tracked by a persistent command
+     * tag, so it isn't re-given after they use up, drop, or store it). */
+    private static void giveCodexIfFirstTime(net.minecraft.server.network.ServerPlayerEntity player) {
+        if (player.addCommandTag("kindreds_codex_given")) {
+            net.minecraft.item.ItemStack stack = new net.minecraft.item.ItemStack(KindredsItems.CODEX);
+            if (!player.getInventory().insertStack(stack)) {
+                player.dropItem(stack, false);
+            }
+        }
     }
 }
