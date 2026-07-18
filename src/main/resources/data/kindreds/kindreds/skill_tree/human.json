@@ -3,825 +3,388 @@
   "theme": "kindreds:human",
   "nodes": [
     {
-      "id": "human.combat.soldier_of_gondor",
+      "id": "human.leadership.captains_rally",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:leadership", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.08
-        }
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": 80 } }
       ]
     },
     {
-      "id": "human.combat.tower_guard",
+      "id": "human.leadership.banner_of_the_west",
       "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "human.combat.soldier_of_gondor"
-      ],
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:leadership", "points": 2 },
+      "prereqs": ["human.leadership.captains_rally"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 80 } }
       ]
     },
     {
-      "id": "human.combat.swordsman",
+      "id": "human.leadership.war_horn_of_the_mark",
       "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "human.combat.soldier_of_gondor"
-      ],
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:leadership", "points": 2 },
+      "prereqs": ["human.leadership.captains_rally"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.08
-        }
-      ]
-    },
-    {
-      "id": "human.combat.citadel_shield",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "human.combat.tower_guard"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
-      "id": "human.combat.blade_of_westernesse",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "human.combat.swordsman"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.12
-        }
-      ]
-    },
-    {
-      "id": "human.combat.valour",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 4
-      },
-      "prereqs": [
-        "human.combat.citadel_shield",
-        "human.combat.blade_of_westernesse"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "human.combat.anduril",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 6
-      },
-      "prereqs": [
-        "human.combat.valour"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:anduril",
-          "cooldown_ticks": 2400,
+        { "type": "active", "ability_id": "kindreds:war_horn", "cooldown_ticks": 1200,
           "effects": [
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 2,
-              "duration_ticks": 120
-            }
-          ]
-        }
-      ],
-      "exclusive_group": "human.combat.spec"
-    },
-    {
-      "id": "human.combat.shieldmaiden",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 6
-      },
-      "prereqs": [
-        "human.combat.valour"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ],
-      "exclusive_group": "human.combat.spec"
-    },
-    {
-      "id": "human.leadership.captains_word",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 2.0
-        }
+            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 200 },
+            { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 200 }
+          ] }
       ]
     },
     {
-      "id": "human.leadership.banner_bearer",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "human.leadership.captains_word"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "human.leadership.rally",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "human.leadership.captains_word"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.06
-        }
-      ]
-    },
-    {
-      "id": "human.leadership.steward_of_gondor",
+      "id": "human.leadership.muster_of_the_free_peoples",
       "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 3
-      },
-      "prereqs": [
-        "human.leadership.banner_bearer"
-      ],
+      "pos": [0, 90],
+      "cost": { "discipline": "kindreds:leadership", "points": 2 },
+      "prereqs": ["human.leadership.banner_of_the_west", "human.leadership.war_horn_of_the_mark"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": 80 } }
       ]
     },
     {
       "id": "human.leadership.hands_of_the_king",
       "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 4
-      },
-      "prereqs": [
-        "human.leadership.steward_of_gondor",
-        "human.leadership.rally"
-      ],
+      "pos": [0, 120],
+      "cost": { "discipline": "kindreds:leadership", "points": 3 },
+      "prereqs": ["human.leadership.muster_of_the_free_peoples"],
       "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:hands_of_the_king",
-          "cooldown_ticks": 3000,
+        { "type": "active", "ability_id": "kindreds:hands_of_the_king", "cooldown_ticks": 3000,
           "effects": [
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 1,
-              "duration_ticks": 200
-            },
-            {
-              "effect": "minecraft:absorption",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
-          ]
-        }
+            { "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 200 },
+            { "effect": "minecraft:absorption", "amplifier": 1, "duration_ticks": 300 }
+          ] }
       ],
       "deed_advancement": "kindreds:deed/human_gondor_hands_of_the_king"
     },
     {
-      "id": "human.leadership.the_white_tree",
+      "id": "human.leadership.warlord_of_the_west",
       "tier": 5,
-      "pos": [
-        0,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 6
-      },
-      "prereqs": [
-        "human.leadership.hands_of_the_king"
-      ],
+      "pos": [-30, 150],
+      "cost": { "discipline": "kindreds:leadership", "points": 3 },
+      "prereqs": ["human.leadership.hands_of_the_king"],
+      "exclusive_group": "human.leadership.spec",
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        }
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 80 } },
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     },
     {
-      "id": "human.archery.dale_bowman",
+      "id": "human.leadership.standard_bearer_of_arnor",
+      "tier": 5,
+      "pos": [30, 150],
+      "cost": { "discipline": "kindreds:leadership", "points": 3 },
+      "prereqs": ["human.leadership.hands_of_the_king"],
+      "exclusive_group": "human.leadership.spec",
+      "abilities": [
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 18 },
+          "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": 80 } }
+      ]
+    },
+    {
+      "id": "human.combat.swordsman_of_gondor",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:combat", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.1
-        }
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 }
+      ]
+    },
+    {
+      "id": "human.combat.shieldwall",
+      "tier": 2,
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:combat", "points": 2 },
+      "prereqs": ["human.combat.swordsman_of_gondor"],
+      "abilities": [
+        { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "knockback_resistance", "operation": "add_value", "amount": 0.1 }
+      ]
+    },
+    {
+      "id": "human.combat.swift_blade",
+      "tier": 2,
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:combat", "points": 2 },
+      "prereqs": ["human.combat.swordsman_of_gondor"],
+      "abilities": [
+        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.10 }
+      ]
+    },
+    {
+      "id": "human.combat.sons_of_numenor",
+      "tier": 3,
+      "pos": [0, 90],
+      "cost": { "discipline": "kindreds:combat", "points": 2 },
+      "prereqs": ["human.combat.shieldwall", "human.combat.swift_blade"],
+      "abilities": [
+        { "type": "perk", "perk": "bane", "foe": "orc", "params": { "bonus": 0.4 } }
+      ]
+    },
+    {
+      "id": "human.combat.desperate_valour",
+      "tier": 4,
+      "pos": [0, 120],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["human.combat.sons_of_numenor"],
+      "abilities": [
+        { "type": "contextual_boon", "when": "low_health",
+          "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": -1 } }
+      ]
+    },
+    {
+      "id": "human.combat.anduril_reforged",
+      "tier": 5,
+      "pos": [-30, 150],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["human.combat.desperate_valour"],
+      "exclusive_group": "human.combat.spec",
+      "abilities": [
+        { "type": "active", "ability_id": "kindreds:anduril", "cooldown_ticks": 2400,
+          "effects": [ { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 120 } ] }
+      ]
+    },
+    {
+      "id": "human.combat.shieldmaidens_stand",
+      "tier": 5,
+      "pos": [30, 150],
+      "cost": { "discipline": "kindreds:combat", "points": 3 },
+      "prereqs": ["human.combat.desperate_valour"],
+      "exclusive_group": "human.combat.spec",
+      "abilities": [
+        { "type": "contextual_boon", "when": "low_health",
+          "effect": { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.20 } },
+        { "type": "perk", "perk": "heal_on_kill", "params": { "health": 1 } }
+      ]
+    },
+    {
+      "id": "human.archery.bowman_of_dale",
+      "tier": 1,
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:archery", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     },
     {
       "id": "human.archery.keen_shaft",
       "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "human.archery.dale_bowman"
-      ],
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:archery", "points": 2 },
+      "prereqs": ["human.archery.bowman_of_dale"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.08
-        }
+        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     },
     {
-      "id": "human.archery.windlass",
+      "id": "human.archery.long_sight_of_the_bowmen",
       "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "human.archery.dale_bowman"
-      ],
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:archery", "points": 2 },
+      "prereqs": ["human.archery.bowman_of_dale"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "entity_interaction_range",
-          "operation": "add_value",
-          "amount": 0.5
-        }
+        { "type": "attribute", "attribute": "entity_interaction_range", "operation": "add_value", "amount": 1.5 }
       ]
     },
     {
-      "id": "human.archery.bard_aim",
+      "id": "human.archery.aim_of_the_bardings",
       "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "human.archery.keen_shaft",
-        "human.archery.windlass"
-      ],
+      "pos": [0, 90],
+      "cost": { "discipline": "kindreds:archery", "points": 2 },
+      "prereqs": ["human.archery.keen_shaft", "human.archery.long_sight_of_the_bowmen"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.12
-        }
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.12 }
       ]
     },
     {
-      "id": "human.archery.black_arrow",
+      "id": "human.archery.black_arrow_of_dale",
       "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 6
-      },
-      "prereqs": [
-        "human.archery.bard_aim"
-      ],
+      "pos": [-30, 150],
+      "cost": { "discipline": "kindreds:archery", "points": 3 },
+      "prereqs": ["human.archery.aim_of_the_bardings"],
+      "exclusive_group": "human.archery.spec",
       "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:black_arrow",
-          "cooldown_ticks": 3000,
-          "effects": [
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 3,
-              "duration_ticks": 60
-            }
-          ]
-        }
+        { "type": "perk", "perk": "arrow_slaying", "foe": "dragon", "params": { "bonus": 0.6 } },
+        { "type": "perk", "perk": "arrow_slaying", "foe": "troll", "params": { "bonus": 0.6 } }
       ],
-      "deed_advancement": "kindreds:deed/human_dale_last_arrow",
-      "exclusive_group": "human.archery.spec"
+      "deed_advancement": "kindreds:deed/human_dale_last_arrow"
     },
     {
-      "id": "human.archery.master_of_the_long_lake",
+      "id": "human.archery.master_bowman_of_esgaroth",
       "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 6
-      },
-      "prereqs": [
-        "human.archery.bard_aim"
-      ],
+      "pos": [30, 150],
+      "cost": { "discipline": "kindreds:archery", "points": 3 },
+      "prereqs": ["human.archery.aim_of_the_bardings"],
+      "exclusive_group": "human.archery.spec",
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.15
-        }
-      ],
-      "exclusive_group": "human.archery.spec"
+        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.18 }
+      ]
     },
     {
       "id": "human.smithing.smith_of_dale",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:smithing", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": 2.0 }
       ]
     },
     {
-      "id": "human.smithing.toy_maker",
+      "id": "human.smithing.master_smiths_temper",
       "tier": 2,
-      "pos": [
-        0,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "human.smithing.smith_of_dale"
-      ],
+      "pos": [0, 60],
+      "cost": { "discipline": "kindreds:smithing", "points": 2 },
+      "prereqs": ["human.smithing.smith_of_dale"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "attribute", "attribute": "armor_toughness", "operation": "add_value", "amount": 2.0 }
       ]
     },
     {
-      "id": "human.smithing.bell_founder",
+      "id": "human.smithing.ward_forged_mail",
       "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "human.smithing.toy_maker"
-      ],
+      "pos": [-30, 90],
+      "cost": { "discipline": "kindreds:smithing", "points": 2 },
+      "prereqs": ["human.smithing.master_smiths_temper"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "attribute", "attribute": "armor", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "knockback_resistance", "operation": "add_value", "amount": 0.1 }
       ]
     },
     {
-      "id": "human.smithing.black_arrow_smith",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 4
-      },
-      "prereqs": [
-        "human.smithing.bell_founder"
-      ],
+      "id": "human.smithing.reforged_steel",
+      "tier": 3,
+      "pos": [30, 90],
+      "cost": { "discipline": "kindreds:smithing", "points": 2 },
+      "prereqs": ["human.smithing.master_smiths_temper"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 2.0
-        }
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     },
     {
-      "id": "human.beast_lore.horse_lord",
+      "id": "human.smithing.heirloom_of_the_forge_kings",
+      "tier": 5,
+      "pos": [0, 150],
+      "cost": { "discipline": "kindreds:smithing", "points": 3 },
+      "prereqs": ["human.smithing.ward_forged_mail", "human.smithing.reforged_steel"],
+      "abilities": [
+        { "type": "attribute", "attribute": "armor_toughness", "operation": "add_value", "amount": 2.0 },
+        { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 2.0 }
+      ]
+    },
+    {
+      "id": "human.beast_lore.horse_lord_of_the_mark",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.05
-        }
+        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.08 }
       ]
     },
     {
-      "id": "human.beast_lore.eorlingas",
+      "id": "human.beast_lore.eored_riding",
       "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "human.beast_lore.horse_lord"
-      ],
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 2 },
+      "prereqs": ["human.beast_lore.horse_lord_of_the_mark"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.05
-        }
+        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.06 }
       ]
     },
     {
-      "id": "human.beast_lore.horse_master",
+      "id": "human.beast_lore.horse_masters_grace",
       "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "human.beast_lore.horse_lord"
-      ],
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 2 },
+      "prereqs": ["human.beast_lore.horse_lord_of_the_mark"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "human.beast_lore.mearas_blood",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "human.beast_lore.eorlingas",
-        "human.beast_lore.horse_master"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.06
-        }
+        { "type": "attribute", "attribute": "safe_fall_distance", "operation": "add_value", "amount": 4.0 },
+        { "type": "attribute", "attribute": "jump_strength", "operation": "add_value", "amount": 0.1 }
       ]
     },
     {
       "id": "human.beast_lore.ride_of_the_rohirrim",
       "tier": 5,
-      "pos": [
-        0,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 6
-      },
-      "prereqs": [
-        "human.beast_lore.mearas_blood"
-      ],
+      "pos": [0, 150],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 3 },
+      "prereqs": ["human.beast_lore.eored_riding", "human.beast_lore.horse_masters_grace"],
       "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:ride_of_the_rohirrim",
-          "cooldown_ticks": 2400,
+        { "type": "active", "ability_id": "kindreds:ride_of_the_rohirrim", "cooldown_ticks": 2400,
           "effects": [
-            {
-              "effect": "minecraft:speed",
-              "amplifier": 2,
-              "duration_ticks": 120
-            },
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 1,
-              "duration_ticks": 120
-            }
-          ]
-        }
+            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 120 },
+            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 120 }
+          ] }
       ],
       "deed_advancement": "kindreds:deed/human_rohan_ride_of_the_rohirrim"
     },
     {
       "id": "human.song.song_of_the_mark",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:song", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "dawn_dusk",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
+        { "type": "contextual_boon", "when": "dawn_dusk",
+          "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } }
       ]
     },
     {
-      "id": "human.song.horn_of_helm",
+      "id": "human.song.war_cry_of_the_rohirrim",
       "tier": 2,
-      "pos": [
-        0,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "human.song.song_of_the_mark"
-      ],
+      "pos": [0, 60],
+      "cost": { "discipline": "kindreds:song", "points": 2 },
+      "prereqs": ["human.song.song_of_the_mark"],
       "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
+        { "type": "perk", "perk": "bane", "foe": "orc", "params": { "bonus": 0.3 } }
       ]
     },
     {
-      "id": "human.song.lament_of_the_rohirrim",
+      "id": "human.song.battle_hymn_of_the_west",
       "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 3
-      },
-      "prereqs": [
-        "human.song.horn_of_helm"
-      ],
+      "pos": [0, 90],
+      "cost": { "discipline": "kindreds:song", "points": 2 },
+      "prereqs": ["human.song.war_cry_of_the_rohirrim"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 2.0
-        }
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": 80 } }
       ]
     },
     {
-      "id": "human.grand.kingship_of_the_west",
-      "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 8
-      },
-      "prereqs": [
-        "human.leadership.hands_of_the_king",
-        "human.beast_lore.ride_of_the_rohirrim",
-        "human.combat.anduril"
-      ],
+      "id": "human.song.song_of_the_return_of_the_king",
+      "tier": 5,
+      "pos": [0, 150],
+      "cost": { "discipline": "kindreds:song", "points": 3 },
+      "prereqs": ["human.song.battle_hymn_of_the_west"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 6.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.12
-        },
-        {
-          "type": "attribute",
-          "attribute": "block_interaction_range",
-          "operation": "add_value",
-          "amount": 0.5
-        }
+        { "type": "contextual_boon", "when": "dawn_dusk",
+          "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": -1 } }
+      ]
+    },
+    {
+      "id": "human.grand.kingship_of_the_reunited_kingdom",
+      "tier": 5,
+      "pos": [0, 150],
+      "cost": { "discipline": "kindreds:leadership", "points": 3 },
+      "prereqs": ["human.leadership.hands_of_the_king", "human.combat.desperate_valour"],
+      "abilities": [
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 80 } },
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 1, "duration_ticks": 80 } },
+        { "type": "perk", "perk": "ally_aura", "params": { "radius": 10 },
+          "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": 80 } },
+        { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 4.0 }
       ]
     }
   ]

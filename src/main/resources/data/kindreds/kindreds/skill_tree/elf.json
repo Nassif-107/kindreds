@@ -5,985 +5,422 @@
     {
       "id": "elf.archery.eyes_of_the_eldar",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:archery", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "vision_unlock",
-          "vision_id": "keen_sight",
-          "radius": 32
-        }
+        { "type": "vision_unlock", "vision_id": "keen_sight", "radius": 32 }
       ]
     },
     {
-      "id": "elf.archery.galadhrim_bow",
+      "id": "elf.archery.keen_draw",
       "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.archery.eyes_of_the_eldar"
-      ],
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:archery", "points": 2 },
+      "prereqs": ["elf.archery.eyes_of_the_eldar"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.1
-        }
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     },
     {
-      "id": "elf.archery.swift_draw",
+      "id": "elf.archery.swift_nock",
       "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.archery.eyes_of_the_eldar"
-      ],
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:archery", "points": 2 },
+      "prereqs": ["elf.archery.eyes_of_the_eldar"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.1
-        }
+        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     },
     {
-      "id": "elf.archery.lorien_string",
+      "id": "elf.archery.piercing_shaft",
       "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.archery.galadhrim_bow"
-      ],
+      "pos": [-30, 90],
+      "cost": { "discipline": "kindreds:archery", "points": 2 },
+      "prereqs": ["elf.archery.keen_draw"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.12
-        }
+        { "type": "perk", "perk": "arrow_slaying", "foe": "any", "params": { "bonus": 0.5 } }
       ]
     },
     {
-      "id": "elf.archery.elven_fletching",
+      "id": "elf.archery.unerring_aim",
       "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.archery.galadhrim_bow",
-        "elf.archery.swift_draw"
-      ],
+      "pos": [30, 90],
+      "cost": { "discipline": "kindreds:archery", "points": 2 },
+      "prereqs": ["elf.archery.swift_nock"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "entity_interaction_range",
-          "operation": "add_value",
-          "amount": 0.5
-        }
+        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.08 },
+        { "type": "attribute", "attribute": "entity_interaction_range", "operation": "add_value", "amount": 1.5 }
       ]
     },
     {
-      "id": "elf.archery.wind_reader",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.archery.swift_draw"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.12
-        }
-      ]
-    },
-    {
-      "id": "elf.archery.eagle_eye",
+      "id": "elf.archery.keen_eyed_shot",
       "tier": 4,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.archery.lorien_string"
-      ],
+      "pos": [-30, 120],
+      "cost": { "discipline": "kindreds:archery", "points": 3 },
+      "prereqs": ["elf.archery.piercing_shaft"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "entity_interaction_range",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.12 }
       ]
     },
     {
       "id": "elf.archery.unwearied_draw",
       "tier": 4,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.archery.wind_reader"
-      ],
+      "pos": [30, 120],
+      "cost": { "discipline": "kindreds:archery", "points": 3 },
+      "prereqs": ["elf.archery.unerring_aim"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.1
-        }
+        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     },
     {
-      "id": "elf.archery.starlit_aim",
+      "id": "elf.archery.galadhrim_volley",
       "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 6
-      },
-      "prereqs": [
-        "elf.archery.eagle_eye"
-      ],
+      "pos": [-30, 150],
+      "cost": { "discipline": "kindreds:archery", "points": 3 },
+      "prereqs": ["elf.archery.keen_eyed_shot"],
+      "exclusive_group": "elf.archery.spec",
       "abilities": [
         {
           "type": "active",
-          "ability_id": "kindreds:starlit_aim",
+          "ability_id": "kindreds:galadhrim_volley",
           "cooldown_ticks": 2400,
           "effects": [
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 2,
-              "duration_ticks": 60
-            }
+            { "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": 200 },
+            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 200 }
           ]
         }
-      ],
-      "deed_advancement": "kindreds:deed/elf_starlit_aim",
-      "exclusive_group": "elf.archery.spec"
+      ]
     },
     {
-      "id": "elf.archery.the_last_arrow",
+      "id": "elf.archery.black_fletched",
       "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 6
-      },
-      "prereqs": [
-        "elf.archery.unwearied_draw"
-      ],
+      "pos": [30, 150],
+      "cost": { "discipline": "kindreds:archery", "points": 3 },
+      "prereqs": ["elf.archery.unwearied_draw"],
+      "exclusive_group": "elf.archery.spec",
       "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ],
-      "exclusive_group": "elf.archery.spec"
-    },
-    {
-      "id": "elf.survival.light_step",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_efficiency",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "perk", "perk": "arrow_slaying", "foe": "orc", "params": { "bonus": 0.5 } },
+        { "type": "perk", "perk": "arrow_slaying", "foe": "troll", "params": { "bonus": 0.5 } }
       ]
-    },
-    {
-      "id": "elf.survival.leaf_veil",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.survival.light_step"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -3.0
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.tireless",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.survival.light_step"
-      ],
-      "abilities": [
-        {
-          "type": "status_effect",
-          "effect": "minecraft:saturation",
-          "amplifier": 0,
-          "duration_ticks": -1
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.evasion",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.survival.leaf_veil"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 4.0
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.woodland_grace",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.survival.tireless"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.snowmelt_tread",
-      "tier": 4,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.survival.evasion"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "water_movement_efficiency",
-          "operation": "add_value",
-          "amount": 0.5
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.pathfinder",
-      "tier": 4,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.survival.woodland_grace"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.06
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.mirkwood_hunter",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 6
-      },
-      "prereqs": [
-        "elf.survival.snowmelt_tread"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -5.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.08
-        }
-      ],
-      "exclusive_group": "elf.survival.spec"
-    },
-    {
-      "id": "elf.survival.song_of_rest",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 6
-      },
-      "prereqs": [
-        "elf.survival.pathfinder"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:song_of_rest",
-          "cooldown_ticks": 2400,
-          "effects": [
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 1,
-              "duration_ticks": 200
-            },
-            {
-              "effect": "minecraft:resistance",
-              "amplifier": 0,
-              "duration_ticks": 200
-            }
-          ]
-        }
-      ],
-      "deed_advancement": "kindreds:deed/elf_song_of_rest",
-      "exclusive_group": "elf.survival.spec"
     },
     {
       "id": "elf.lore.elven_tongue",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:lore", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 2.0 }
       ]
     },
     {
       "id": "elf.lore.moon_letters",
       "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.lore.elven_tongue"
-      ],
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:lore", "points": 2 },
+      "prereqs": ["elf.lore.elven_tongue"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "block_interaction_range",
-          "operation": "add_value",
-          "amount": 0.5
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.star_lore",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.lore.elven_tongue"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.foresight",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.lore.moon_letters"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "attribute", "attribute": "block_interaction_range", "operation": "add_value", "amount": 1.0 },
+        { "type": "attribute", "attribute": "entity_interaction_range", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
       "id": "elf.lore.ring_lore",
+      "tier": 2,
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:lore", "points": 2 },
+      "prereqs": ["elf.lore.elven_tongue"],
+      "abilities": [
+        { "type": "attribute", "attribute": "knockback_resistance", "operation": "add_value", "amount": 0.15 }
+      ]
+    },
+    {
+      "id": "elf.lore.star_glass",
       "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.lore.star_lore"
-      ],
+      "pos": [-30, 90],
+      "cost": { "discipline": "kindreds:lore", "points": 2 },
+      "prereqs": ["elf.lore.moon_letters"],
       "abilities": [
         {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.1
+          "type": "active",
+          "ability_id": "kindreds:star_glass",
+          "cooldown_ticks": 2400,
+          "effects": [
+            { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 200 },
+            { "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": 100 }
+          ]
         }
       ]
     },
     {
-      "id": "elf.lore.ancient_wisdom",
-      "tier": 4,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.lore.ring_lore"
-      ],
+      "id": "elf.lore.ancient_grace",
+      "tier": 3,
+      "pos": [30, 90],
+      "cost": { "discipline": "kindreds:lore", "points": 2 },
+      "prereqs": ["elf.lore.ring_lore"],
       "abilities": [
         {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 2.0
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": { "type": "attribute", "attribute": "max_absorption", "operation": "add_value", "amount": 4.0 }
         }
       ]
     },
     {
       "id": "elf.lore.light_of_the_phial",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 6
-      },
-      "prereqs": [
-        "elf.lore.foresight",
-        "elf.lore.ring_lore"
-      ],
+      "tier": 4,
+      "pos": [-30, 120],
+      "cost": { "discipline": "kindreds:lore", "points": 3 },
+      "prereqs": ["elf.lore.star_glass"],
+      "exclusive_group": "elf.lore.spec",
       "abilities": [
         {
           "type": "active",
           "ability_id": "kindreds:light_of_the_phial",
           "cooldown_ticks": 3600,
           "effects": [
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 0,
-              "duration_ticks": 100
-            },
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 0,
-              "duration_ticks": 100
-            }
+            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 100 },
+            { "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 100 }
           ]
         }
-      ],
-      "exclusive_group": "elf.lore.spec"
+      ]
     },
     {
       "id": "elf.lore.shadow_ward",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 6
-      },
-      "prereqs": [
-        "elf.lore.ancient_wisdom"
-      ],
+      "tier": 4,
+      "pos": [30, 120],
+      "cost": { "discipline": "kindreds:lore", "points": 3 },
+      "prereqs": ["elf.lore.ancient_grace"],
+      "exclusive_group": "elf.lore.spec",
       "abilities": [
         {
           "type": "contextual_boon",
           "when": "deep_dark",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ],
-      "exclusive_group": "elf.lore.spec"
+          "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": -1 }
+        },
+        { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 2.0 }
+      ]
     },
     {
       "id": "elf.song.first_song",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:song", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:speed",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
+        { "type": "attribute", "attribute": "max_absorption", "operation": "add_value", "amount": 4.0 }
       ]
     },
     {
       "id": "elf.song.lay_of_leithian",
       "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.song.first_song"
-      ],
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:song", "points": 2 },
+      "prereqs": ["elf.song.first_song"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "perk", "perk": "heal_on_kill", "params": { "health": 2, "food": 0 } }
       ]
     },
     {
       "id": "elf.song.marching_song",
       "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.song.first_song"
-      ],
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:song", "points": 2 },
+      "prereqs": ["elf.song.first_song"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.05
-        }
+        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.08 }
       ]
     },
     {
       "id": "elf.song.song_of_healing",
       "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.song.lay_of_leithian"
-      ],
+      "pos": [-30, 90],
+      "cost": { "discipline": "kindreds:song", "points": 2 },
+      "prereqs": ["elf.song.lay_of_leithian"],
       "abilities": [
         {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.song.song_of_valour",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.song.marching_song"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": { "radius": 8 },
+          "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": 80 }
         }
       ]
     },
     {
       "id": "elf.song.voice_of_luthien",
       "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.song.song_of_healing",
-        "elf.song.song_of_valour"
-      ],
+      "pos": [0, 120],
+      "cost": { "discipline": "kindreds:song", "points": 3 },
+      "prereqs": ["elf.song.song_of_healing"],
       "abilities": [
         {
           "type": "active",
           "ability_id": "kindreds:song_of_luthien",
           "cooldown_ticks": 3000,
           "effects": [
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 1,
-              "duration_ticks": 160
-            },
-            {
-              "effect": "minecraft:absorption",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
+            { "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 160 },
+            { "effect": "minecraft:absorption", "amplifier": 1, "duration_ticks": 300 }
           ]
         }
       ]
     },
     {
-      "id": "elf.beast_lore.animal_friend",
+      "id": "elf.survival.light_step",
       "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 1
-      },
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:survival", "points": 1 },
       "prereqs": [],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 1.0
-        }
+        { "type": "attribute", "attribute": "movement_efficiency", "operation": "add_value", "amount": 1.0 }
       ]
     },
     {
-      "id": "elf.beast_lore.horse_whisper",
+      "id": "elf.survival.featherfall",
       "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.beast_lore.animal_friend"
-      ],
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 2 },
+      "prereqs": ["elf.survival.light_step"],
       "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.04
-        }
+        { "type": "attribute", "attribute": "safe_fall_distance", "operation": "add_value", "amount": 6.0 },
+        { "type": "attribute", "attribute": "fall_damage_multiplier", "operation": "add_value", "amount": -0.3 }
       ]
     },
     {
-      "id": "elf.beast_lore.bird_speech",
+      "id": "elf.survival.fleet_of_foot",
       "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.beast_lore.animal_friend"
-      ],
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:survival", "points": 2 },
+      "prereqs": ["elf.survival.light_step"],
       "abilities": [
+        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.08 }
+      ]
+    },
+    {
+      "id": "elf.survival.cliff_walker",
+      "tier": 3,
+      "pos": [-30, 90],
+      "cost": { "discipline": "kindreds:survival", "points": 2 },
+      "prereqs": ["elf.survival.featherfall"],
+      "abilities": [
+        { "type": "attribute", "attribute": "step_height", "operation": "add_value", "amount": 0.6 },
+        { "type": "attribute", "attribute": "fall_damage_multiplier", "operation": "add_value", "amount": -0.2 }
+      ]
+    },
+    {
+      "id": "elf.survival.woodland_grace",
+      "tier": 3,
+      "pos": [30, 90],
+      "cost": { "discipline": "kindreds:survival", "points": 2 },
+      "prereqs": ["elf.survival.fleet_of_foot"],
+      "abilities": [
+        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.08 },
+        { "type": "attribute", "attribute": "water_movement_efficiency", "operation": "add_value", "amount": 0.5 }
+      ]
+    },
+    {
+      "id": "elf.survival.paths_of_the_wandering_folk",
+      "tier": 4,
+      "pos": [0, 120],
+      "cost": { "discipline": "kindreds:survival", "points": 3 },
+      "prereqs": ["elf.survival.cliff_walker", "elf.survival.woodland_grace"],
+      "abilities": [
+        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.10 },
         {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -2.0
+          "type": "contextual_boon",
+          "when": "dawn_dusk",
+          "effect": { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_total", "amount": 0.10 }
         }
       ]
     },
     {
-      "id": "elf.beast_lore.nine_pointed_stag",
+      "id": "elf.beast_lore.wood_friend",
+      "tier": 1,
+      "pos": [0, 30],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 1 },
+      "prereqs": [],
+      "abilities": [
+        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.1 }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.spider_hunter",
+      "tier": 2,
+      "pos": [-30, 60],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 2 },
+      "prereqs": ["elf.beast_lore.wood_friend"],
+      "abilities": [
+        { "type": "perk", "perk": "bane", "foe": "spider", "params": { "bonus": 0.5 } }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.silent_tread",
+      "tier": 2,
+      "pos": [30, 60],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 2 },
+      "prereqs": ["elf.beast_lore.wood_friend"],
+      "abilities": [
+        { "type": "attribute", "attribute": "sneaking_speed", "operation": "add_value", "amount": 0.3 },
+        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.1 }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.thranduils_hunt",
       "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.beast_lore.horse_whisper"
-      ],
+      "pos": [-30, 90],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 2 },
+      "prereqs": ["elf.beast_lore.spider_hunter"],
       "abilities": [
         {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 3.0
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": { "chance": 0.3 },
+          "effect": { "type": "status_effect", "effect": "minecraft:poison", "amplifier": 0, "duration_ticks": 80 }
         }
       ]
     },
     {
-      "id": "elf.beast_lore.wolf_ward",
+      "id": "elf.beast_lore.starlit_stalker",
       "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.beast_lore.bird_speech"
-      ],
+      "pos": [30, 90],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 2 },
+      "prereqs": ["elf.beast_lore.silent_tread"],
       "abilities": [
         {
           "type": "contextual_boon",
           "when": "darkness",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:night_vision",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
+          "effect": { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 }
         }
       ]
     },
     {
-      "id": "elf.grand.grace_of_the_eldar",
+      "id": "elf.beast_lore.lord_of_beasts",
+      "tier": 4,
+      "pos": [0, 120],
+      "cost": { "discipline": "kindreds:beast_lore", "points": 3 },
+      "prereqs": ["elf.beast_lore.thranduils_hunt", "elf.beast_lore.starlit_stalker"],
+      "abilities": [
+        { "type": "attribute", "attribute": "safe_fall_distance", "operation": "add_value", "amount": 3.0 },
+        { "type": "attribute", "attribute": "jump_strength", "operation": "add_multiplied_total", "amount": 0.15 }
+      ]
+    },
+    {
+      "id": "elf.grand.arrow_of_the_eldar",
       "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 8
-      },
-      "prereqs": [
-        "elf.lore.light_of_the_phial",
-        "elf.survival.song_of_rest",
-        "elf.archery.starlit_aim"
-      ],
+      "pos": [0, 180],
+      "cost": { "discipline": "kindreds:archery", "points": 5 },
+      "prereqs": ["elf.archery.keen_eyed_shot", "elf.lore.star_glass"],
       "abilities": [
         {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
+          "type": "active",
+          "ability_id": "kindreds:arrow_of_the_eldar",
+          "cooldown_ticks": 3600,
+          "effects": [
+            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 100 }
+          ]
         },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_base",
-          "amount": 0.1
-        },
-        {
-          "type": "status_effect",
-          "effect": "minecraft:regeneration",
-          "amplifier": 0,
-          "duration_ticks": -1
-        }
+        { "type": "perk", "perk": "arrow_slaying", "foe": "any", "params": { "bonus": 0.5 } },
+        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.10 }
       ]
     }
   ]
