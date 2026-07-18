@@ -65,7 +65,11 @@ public class KindredCodexScreen extends Screen {
     @Override
     protected void init() {
         playerRace = data.race();
-        browseIndex = Math.max(0, ALL_RACES.indexOf(playerRace));
+        // Guard null: an immutable List.of(...).indexOf(null) throws NPE, and playerRace is null
+        // whenever the client's race mirror isn't populated yet (e.g. opening from the onboarding
+        // screen before a race is chosen). Default to the first people in that case.
+        int idx = playerRace == null ? -1 : ALL_RACES.indexOf(playerRace);
+        browseIndex = idx < 0 ? 0 : idx;
         resolveBrowse();
     }
 
