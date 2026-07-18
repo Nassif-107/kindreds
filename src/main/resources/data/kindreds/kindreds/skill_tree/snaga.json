@@ -84,6 +84,37 @@
       ]
     },
     {
+      "id": "snaga.stealth.rag_cloak",
+      "tier": 2,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.stealth.beneath_notice"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
       "id": "snaga.stealth.cutpurse",
       "tier": 3,
       "pos": [
@@ -128,6 +159,37 @@
           "attribute": "minecraft:attack_damage",
           "operation": "add_multiplied_total",
           "amount": 0.168
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.midden_lurker",
+      "tier": 3,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.stealth.rag_cloak"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 1.0,
+            "food": 1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.3
         }
       ]
     },
@@ -240,6 +302,81 @@
       ]
     },
     {
+      "id": "snaga.stealth.shadow_of_lugburz",
+      "tier": 6,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.stealth.ghost_of_the_pits"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.35,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_value",
+          "amount": 0.6
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.3
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.gutting_the_watch",
+      "tier": 6,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.stealth.knife_in_the_dark"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.45
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 160
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.5
+          }
+        }
+      ]
+    },
+    {
       "id": "snaga.shadow.cringing_dark",
       "tier": 1,
       "pos": [
@@ -335,6 +472,71 @@
       ]
     },
     {
+      "id": "snaga.shadow.flinching_malice",
+      "tier": 3,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.shadow.lash_driven"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.2
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.foul_reek",
+      "tier": 3,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.shadow.spite_of_the_whip"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.3
+          }
+        }
+      ]
+    },
+    {
       "id": "snaga.shadow.lugburz_hate",
       "tier": 3,
       "pos": [
@@ -385,6 +587,116 @@
             "attribute": "minecraft:attack_speed",
             "operation": "add_multiplied_base",
             "amount": 0.203
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.night_terror",
+      "tier": 5,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.shadow.drivers_wrath"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 2,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0,
+            "food": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.despair_monger",
+      "tier": 6,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.shadow.night_terror"
+      ],
+      "exclusive_group": "snaga.shadow.spec",
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.4
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 1,
+            "duration_ticks": 140
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.4
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.black_breath_echo",
+      "tier": 6,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.shadow.night_terror"
+      ],
+      "exclusive_group": "snaga.shadow.spec",
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.3
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.3,
+            "reduction": 1.0
           }
         }
       ]
@@ -459,6 +771,37 @@
             "effect": "minecraft:poison",
             "amplifier": 0,
             "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.parting_shot",
+      "tier": 2,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.archery.crooked_bow"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
           }
         }
       ]
@@ -559,6 +902,145 @@
       ]
     },
     {
+      "id": "snaga.archery.eye_for_weakness",
+      "tier": 5,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.loosed_in_flight"
+      ],
+      "exclusive_group": "snaga.archery.spec",
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.4
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "true_flight",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.black_venom_arrows",
+      "tier": 5,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.loosed_in_flight"
+      ],
+      "exclusive_group": "snaga.archery.spec",
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.4
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 140
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "foe": "any",
+          "params": {
+            "bonus": 0.35
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.lugburz_marksman",
+      "tier": 6,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.archery.eye_for_weakness"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.25
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.viper_quiver",
+      "tier": 6,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.archery.black_venom_arrows"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.45
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 180
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 1.0,
+            "food": 1
+          }
+        }
+      ]
+    },
+    {
       "id": "snaga.survival.scrounger",
       "tier": 1,
       "pos": [
@@ -628,6 +1110,37 @@
           "attribute": "minecraft:movement_speed",
           "operation": "add_multiplied_base",
           "amount": 0.108
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.carrion_gorge",
+      "tier": 2,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.survival.scrounger"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0,
+            "food": 1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
         }
       ]
     },
@@ -712,6 +1225,130 @@
       ]
     },
     {
+      "id": "snaga.survival.rat_of_the_tunnels",
+      "tier": 5,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.orc_draught"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.2
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.3,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.gutter_glutton",
+      "tier": 5,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.orc_draught"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0,
+            "food": 1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.deep_burrow_rat",
+      "tier": 6,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.survival.rat_of_the_tunnels"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.never_say_die",
+      "tier": 6,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.survival.gutter_glutton"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
       "id": "snaga.capstone.slave_orcs_spite",
       "tier": 5,
       "pos": [
@@ -757,6 +1394,101 @@
             "operation": "add_multiplied_total",
             "amount": 0.28
           }
+        }
+      ]
+    },
+    {
+      "id": "snaga.capstone.desperate_ambush",
+      "tier": 6,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.archery.loosed_in_flight",
+        "snaga.survival.orc_draught"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "foe": "any",
+          "params": {
+            "bonus": 0.4
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0,
+            "food": 1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "snaga.capstone.the_last_snaga",
+      "tier": 7,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.capstone.slave_orcs_spite",
+        "snaga.capstone.desperate_ambush"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.45
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 160
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.35,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.35
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
         }
       ]
     }

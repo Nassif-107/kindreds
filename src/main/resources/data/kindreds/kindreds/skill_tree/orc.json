@@ -71,6 +71,29 @@
       ]
     },
     {
+      "id": "orc.combat.gorgoroth_drill",
+      "tier": 2,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.combat.savage_blows"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.18
+        }
+      ]
+    },
+    {
       "id": "orc.combat.war_numbers",
       "tier": 3,
       "pos": [
@@ -206,6 +229,64 @@
       ]
     },
     {
+      "id": "orc.combat.gorgoroth_rampage",
+      "tier": 6,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.combat.reaver"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:blood_frenzy",
+          "cooldown_ticks": 1500,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orc.combat.rampage_undying",
+      "tier": 7,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.combat.gorgoroth_rampage"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "lifesteal",
+          "params": {
+            "percent": 0.15
+          }
+        }
+      ]
+    },
+    {
       "id": "orc.combat.brute",
       "tier": 5,
       "pos": [
@@ -236,6 +317,64 @@
       ]
     },
     {
+      "id": "orc.combat.unbreakable",
+      "tier": 6,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.combat.brute"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 5
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "orc.combat.iron_bulwark",
+      "tier": 7,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.combat.unbreakable"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 6.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 4
+        }
+      ]
+    },
+    {
       "id": "orc.shadow.unseen_prowler",
       "tier": 1,
       "pos": [
@@ -253,6 +392,31 @@
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
           "amount": -2.0
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.shadow_step",
+      "tier": 2,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.shadow.unseen_prowler"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 0.3
+          }
         }
       ]
     },
@@ -409,6 +573,140 @@
       ]
     },
     {
+      "id": "orc.shadow.venom_kiss",
+      "tier": 5,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.black_breath"
+      ],
+      "exclusive_group": "orc.shadow.spec",
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 120
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.4
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.grishnakh_terror",
+      "tier": 5,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.black_breath"
+      ],
+      "exclusive_group": "orc.shadow.spec",
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 1,
+            "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.moria_dark",
+      "tier": 6,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.shadow.venom_kiss"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.28
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.unmaking_dread",
+      "tier": 6,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.shadow.grishnakh_terror"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 2,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
       "id": "orc.survival.thick_hide",
       "tier": 1,
       "pos": [
@@ -426,6 +724,29 @@
           "attribute": "minecraft:armor",
           "operation": "add_value",
           "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.hardened_scars",
+      "tier": 2,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.survival.thick_hide"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.15
         }
       ]
     },
@@ -553,6 +874,88 @@
       ]
     },
     {
+      "id": "orc.survival.carrion_gorge",
+      "tier": 5,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.pit_endurance"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4.0,
+            "food": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.gorgoroth_endurance",
+      "tier": 5,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.pit_endurance"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 6.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.iron_stomach",
+      "tier": 6,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.survival.carrion_gorge",
+        "orc.survival.gorgoroth_endurance"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
       "id": "orc.beast_lore.warg_kin",
       "tier": 1,
       "pos": [
@@ -570,6 +973,31 @@
           "attribute": "minecraft:movement_speed",
           "operation": "add_multiplied_base",
           "amount": 0.108
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.blood_scent",
+      "tier": 2,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.beast_lore.warg_kin"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "foe": "any",
+          "params": {
+            "bonus": 0.35
+          }
         }
       ]
     },
@@ -699,6 +1127,91 @@
       ]
     },
     {
+      "id": "orc.beast_lore.gundabad_alpha",
+      "tier": 5,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.warg_lord"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "radius": 12,
+            "per_ally": 0.08,
+            "max": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.warg_charge",
+      "tier": 5,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.warg_lord"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.moria_wolf_pact",
+      "tier": 6,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.beast_lore.gundabad_alpha",
+        "orc.beast_lore.warg_charge"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.2
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
       "id": "orc.capstone.spawn_of_mordor",
       "tier": 5,
       "pos": [
@@ -729,6 +1242,49 @@
           "params": {
             "health": 3.0
           }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.capstone.horde_of_gorgoroth",
+      "tier": 7,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.beast_lore.moria_wolf_pact",
+        "orc.survival.iron_stomach"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "radius": 14,
+            "per_ally": 0.08,
+            "max": 8
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 5.0
         },
         {
           "type": "contextual_boon",
