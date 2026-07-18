@@ -174,7 +174,10 @@ public final class CurseContextService {
         boolean contextMatches = owned && gate && matchesContext(when, player);
         switch (decideTransition(owned, contextMatches, wasActive)) {
             case APPLY -> {
-                AbilityApplier.apply(player, effect, key);
+                // applyContextual (not apply) so a status-effect trait shows its particle swirl -
+                // context-driven racial traits should visibly announce themselves, not slip in as a
+                // silent HUD icon that's easy to miss (esp. Deep-Dark Unease under Elf night-vision).
+                AbilityApplier.applyContextual(player, effect, key);
                 active.add(key);
             }
             case REMOVE -> {

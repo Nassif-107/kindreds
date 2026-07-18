@@ -1,38 +1,39 @@
 package com.kindreds.vision.lens;
 
 import com.kindreds.Kindreds;
-import com.kindreds.vision.SeeThroughLayer;
 import com.kindreds.vision.VisionManager;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexRendering;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.Monster;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Elf's "keen-sight" lens: while active, outlines nearby living entities (see-through, via {@link
- * SeeThroughLayer}) within a radius of the player - hostile mobs tinted red, everything else
- * (players, passive/neutral mobs) tinted blue-green - plus a gentle starlight gamma lift at night.
+ * Elf's "keen-sight" lens. While active, nearby living creatures are lit with vanilla's glowing
+ * entity outline (the same see-through silhouette a spectral arrow paints) so the Eldar sense the
+ * living around them even through stone - plus a gentle starlight gamma lift at night.
  *
- * <p>P1 threat tint is deliberately coarse: {@code entity instanceof} {@link Monster} (vanilla's own
- * "is a hostile mob" marker interface) is the only signal. True faction/diplomacy-aware tinting
- * (reading the base mod's reputation system through {@code RaceAccess}) is a later phase per the
- * task brief - the scan/render framework here doesn't need to change for that, only the color
- * lookup in {@link #drawOutlines}.
+ * <h2>Why glow, not boxes</h2>
+ * The earlier P1 version drew an axis-aligned wireframe {@code VertexRendering.drawBox} per entity -
+ * a literal cube that read as programmer-art, not sight. This replaces it with {@link
+ * Entity#setGlowing(boolean)}: the client sets the local glow flag on each in-range creature every
+ * frame, and vanilla's outline post-pass renders a clean, creature-shaped silhouette that composites
+ * over terrain (visible through walls, exactly the intent). We track which entities we forced on so
+ * we can switch them back off the instant they leave range or the lens is dropped - never leaving a
+ * creature stuck glowing.
+ *
+ * <p>Threat-colour tinting (hostiles red, friends teal) needs a scoreboard team colour, which is
+ * server-owned; the white silhouette is the honest client-only result for now. Faction-aware colour
+ * is a later phase and only changes the team lookup, not this scan/toggle framework.
  */
 public final class KeenSightLens {
     private KeenSightLens() {
@@ -41,14 +42,14 @@ public final class KeenSightLens {
     public static final Identifier ID = Identifier.of(Kindreds.MOD_ID, "keen_sight");
 
     private static final int DEFAULT_RADIUS = 32;
-    private static final int MAX_OUTLINES = 48;
-    private static final float FADE_NEAR = 4f;
-    private static final float FADE_FAR = 40f;
+    private static final int MAX_GLOWING = 48;
     private static final double BOOST_GAMMA = 1.0;
     private static final long NIGHT_START_TICKS = 13000L;
     private static final long NIGHT_END_TICKS = 23000L;
 
     private static Double savedGamma = null;
+    /** Entity ids this lens currently holds the glow flag on, so it can release exactly those again. */
+    private static final Set<Integer> GLOWING = new HashSet<>();
 
     public static void register() {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(KeenSightLens::render);
@@ -63,9 +64,10 @@ public final class KeenSightLens {
         applyNightGammaBoost(mc, live && isNight(mc));
 
         if (!live) {
+            releaseAll(mc);
             return;
         }
-        drawOutlines(ctx, mc);
+        updateGlow(mc);
     }
 
     private static boolean isNight(MinecraftClient mc) {
@@ -73,11 +75,9 @@ public final class KeenSightLens {
         return time >= NIGHT_START_TICKS && time <= NIGHT_END_TICKS;
     }
 
-    /** Nudges {@code mc.options}'s gamma toward {@link #BOOST_GAMMA} while {@code shouldBoost}, and
-     * restores the value it saved once {@code shouldBoost} goes false again - but only if the
-     * option still holds the boosted value, so a manual brightness change made mid-boost by the
-     * player isn't silently clobbered on restore. Same pattern as {@code StoneSenseLens}'s
-     * underground boost. */
+    /** Nudges gamma toward {@link #BOOST_GAMMA} while boosting and restores the saved value after -
+     * but only if the option still holds the boosted value, so a manual brightness change made
+     * mid-boost isn't clobbered on restore. Same pattern as {@code StoneSenseLens}. */
     private static void applyNightGammaBoost(MinecraftClient mc, boolean shouldBoost) {
         SimpleOption<Double> gamma = mc.options.getGamma();
         if (shouldBoost) {
@@ -93,24 +93,17 @@ public final class KeenSightLens {
         }
     }
 
-    /** Force-restores gamma to the value saved before this lens boosted it, regardless of whether
-     * the option still holds the boosted value, and clears the saved state - a no-op if this lens
-     * never boosted gamma. Unlike {@link #applyNightGammaBoost}, this doesn't depend on {@code
-     * render()} running again to fire: it exists specifically for paths where it can't (e.g. {@code
-     * MinecraftClient.world} has already gone {@code null} on disconnect, so {@link
-     * WorldRenderEvents#AFTER_TRANSLUCENT} stops firing entirely). See {@code
-     * VisionManager#onWorldLeave()}. */
+    /** Force-restores gamma and drops every forced glow - for paths where {@code render()} can't run
+     * again to clean up (e.g. {@code MinecraftClient.world} already went null on disconnect). See
+     * {@code VisionManager#onWorldLeave()}. */
     public static void resetGamma(MinecraftClient mc) {
         if (savedGamma != null) {
             mc.options.getGamma().setValue(savedGamma);
             savedGamma = null;
         }
+        releaseAll(mc);
     }
 
-    /** Cached {@link VisionManager#radiusFor(Identifier, int)} result, recomputed at most once per
-     * game tick rather than every render frame - matches {@code StoneSenseLens}'s scan throttle in
-     * spirit (registry lookup + unlocked-node walk is comparatively expensive and this lens, unlike
-     * stone-sense, isn't otherwise throttled since its entity scan runs every frame). */
     private static int cachedRadius = DEFAULT_RADIUS;
     private static long lastRadiusTick = Long.MIN_VALUE;
 
@@ -123,11 +116,9 @@ public final class KeenSightLens {
         return cachedRadius;
     }
 
-    private static void drawOutlines(WorldRenderContext ctx, MinecraftClient mc) {
-        MatrixStack matrices = ctx.matrixStack();
-        if (matrices == null) {
-            return;
-        }
+    /** Sets the glow flag on the nearest living creatures within range and clears it on any entity
+     * that has since left the set - so the outline tracks the lens exactly. */
+    private static void updateGlow(MinecraftClient mc) {
         int radius = radius(mc);
         ClientWorld world = mc.world;
         Vec3d eye = mc.player.getEyePos();
@@ -136,35 +127,47 @@ public final class KeenSightLens {
 
         List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, searchBox,
                 e -> e != mc.player && e.isAlive() && e.squaredDistanceTo(eye) <= radiusSq);
-        if (nearby.isEmpty()) {
+        nearby.sort((a, b) -> Double.compare(a.squaredDistanceTo(eye), b.squaredDistanceTo(eye)));
+
+        Set<Integer> next = new HashSet<>();
+        int count = 0;
+        for (LivingEntity entity : nearby) {
+            if (count >= MAX_GLOWING) {
+                break;
+            }
+            entity.setGlowing(true);
+            next.add(entity.getId());
+            count++;
+        }
+
+        // Release anyone we were glowing last frame who isn't in range now.
+        for (int id : GLOWING) {
+            if (!next.contains(id)) {
+                Entity e = world.getEntityById(id);
+                if (e != null) {
+                    e.setGlowing(false);
+                }
+            }
+        }
+        GLOWING.clear();
+        GLOWING.addAll(next);
+    }
+
+    /** Clears the glow flag on every entity this lens forced on. Safe to call when the world is
+     * present; ids that no longer resolve are simply dropped. */
+    private static void releaseAll(MinecraftClient mc) {
+        if (GLOWING.isEmpty()) {
             return;
         }
-        nearby.sort(Comparator.comparingDouble(e -> e.squaredDistanceTo(eye)));
-        if (nearby.size() > MAX_OUTLINES) {
-            nearby = nearby.subList(0, MAX_OUTLINES);
-        }
-
-        Vec3d cam = ctx.camera().getPos();
-        VertexConsumerProvider.Immediate vcp = mc.getBufferBuilders().getEntityVertexConsumers();
-        RenderLayer layer = SeeThroughLayer.getSeeThroughLines();
-        VertexConsumer lines = vcp.getBuffer(layer);
-
-        matrices.push();
-        matrices.translate(-cam.x, -cam.y, -cam.z);
-        for (LivingEntity entity : nearby) {
-            Box box = entity.getBoundingBox().expand(0.05);
-            if (ctx.frustum() != null && !ctx.frustum().isVisible(box)) {
-                continue; // frustum cull: skip boxes behind/outside the camera view
-            }
-            double dist = Math.sqrt(entity.squaredDistanceTo(eye));
-            float alpha = MathHelper.clamp((float) (1.0 - (dist - FADE_NEAR) / (FADE_FAR - FADE_NEAR)), 0.15f, 1.0f);
-            if (entity instanceof Monster) {
-                VertexRendering.drawBox(matrices, lines, box, 0.95f, 0.2f, 0.2f, alpha); // hostile: red
-            } else {
-                VertexRendering.drawBox(matrices, lines, box, 0.25f, 0.9f, 0.7f, alpha); // friend/neutral: blue-green
+        ClientWorld world = mc.world;
+        if (world != null) {
+            for (int id : GLOWING) {
+                Entity e = world.getEntityById(id);
+                if (e != null) {
+                    e.setGlowing(false);
+                }
             }
         }
-        matrices.pop();
-        vcp.draw(layer);
+        GLOWING.clear();
     }
 }

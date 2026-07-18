@@ -67,7 +67,7 @@ public final class AbilityApplier {
     public static void apply(ServerPlayerEntity p, AbilityDef def, String nodeId) {
         switch (def) {
             case AttributeMod mod -> applyAttributeMod(p, mod, nodeId);
-            case StatusEffectDef status -> applyStatusEffect(p, status);
+            case StatusEffectDef status -> applyStatusEffect(p, status, false);
             case CurseDef curse -> CurseService.apply(p, curse, nodeId);
             case VisionUnlock vision -> {
                 // No side effect here; the vision framework reads unlockedNodes()/visionId directly.
@@ -81,6 +81,23 @@ public final class AbilityApplier {
             case BaneDef bane -> {
                 // No side effect here; PerkService reads owned banes on the attack event.
             }
+        }
+    }
+
+    /**
+     * Applies a <b>context-driven</b> effect (a {@link ContextualBoon}, or a contextual {@link
+     * CurseDef}'s inner effect) - identical to {@link #apply} except that a {@link StatusEffectDef}
+     * is granted with its particle swirl <b>visible</b>. A racial trait that switches on with the
+     * time of day or the depth of the stone (Starlit Grace, Dread of the Sun, Deep-Dark Unease,
+     * Children of the Dark) should read as an event the player can see happening, not a silent icon
+     * that is easy to miss - so {@link CurseContextService} routes its APPLY transitions here. Removal
+     * is unchanged: {@link #removeNode} strips a status effect by type regardless of how it was shown.
+     */
+    public static void applyContextual(ServerPlayerEntity p, AbilityDef def, String key) {
+        if (def instanceof StatusEffectDef status) {
+            applyStatusEffect(p, status, true);
+        } else {
+            apply(p, def, key);
         }
     }
 
@@ -178,12 +195,13 @@ public final class AbilityApplier {
 
     // --- StatusEffectDef -------------------------------------------------------------------------
 
-    private static void applyStatusEffect(ServerPlayerEntity p, StatusEffectDef def) {
+    private static void applyStatusEffect(ServerPlayerEntity p, StatusEffectDef def, boolean showParticles) {
         Registries.STATUS_EFFECT.getEntry(def.effect()).ifPresentOrElse(effect -> {
             int duration = def.durationTicks() < 0 ? StatusEffectInstance.INFINITE : def.durationTicks();
-            // ambient=false (not a beacon-style effect), showParticles=false (avoid permanent
-            // particle clutter on a long-lived racial buff), showIcon=true (still visible in HUD).
-            p.addStatusEffect(new StatusEffectInstance(effect, duration, def.amplifier(), false, false, true));
+            // ambient=false (not a beacon-style effect); showParticles is caller's choice - false for a
+            // permanent racial buff (avoid endless clutter), true for a context-driven trait that should
+            // visibly announce itself; showIcon=true always (still listed in the HUD).
+            p.addStatusEffect(new StatusEffectInstance(effect, duration, def.amplifier(), false, showParticles, true));
         }, () -> Kindreds.LOGGER.warn("[Kindreds] unknown status effect id '{}'", def.effect()));
     }
 
@@ -202,7 +220,7 @@ public final class AbilityApplier {
      */
     public static void applyActiveEffect(ServerPlayerEntity p, ActiveAbilityDef def) {
         for (StatusEffectDef effect : def.effects()) {
-            applyStatusEffect(p, effect);
+            applyStatusEffect(p, effect, false);
         }
     }
 
