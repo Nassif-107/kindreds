@@ -1,6 +1,7 @@
 package com.kindreds.command;
 
 import com.kindreds.Kindreds;
+import com.kindreds.config.DeathPenalty;
 import com.kindreds.config.KindredsConfig;
 import com.kindreds.data.BirthTrait;
 import com.kindreds.data.Disciplines;
@@ -28,6 +29,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -94,7 +97,16 @@ public final class KindredsCommand {
                         .requires(source -> source.hasPermissionLevel(2))
                         .executes(ctx -> respec(ctx.getSource(), ctx.getSource().getPlayerOrThrow()))
                         .then(CommandManager.argument("player", EntityArgumentType.player())
-                                .executes(ctx -> respec(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player"))))));
+                                .executes(ctx -> respec(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))))
+                .then(CommandManager.literal("config")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .executes(ctx -> configList(ctx.getSource()))
+                        .then(CommandManager.argument("key", StringArgumentType.word())
+                                .suggests(CONFIG_KEY_SUGGESTIONS)
+                                .then(CommandManager.argument("value", StringArgumentType.greedyString())
+                                        .executes(ctx -> configSet(ctx.getSource(),
+                                                StringArgumentType.getString(ctx, "key"),
+                                                StringArgumentType.getString(ctx, "value")))))));
     }
 
     // --- inspect -----------------------------------------------------------------------------
@@ -166,6 +178,76 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("Kindreds config reloaded (xpRateGlobal=" + config.xpRateGlobal
                 + ", deathPenalty=" + config.deathPenalty + ")"), true);
         return 1;
+    }
+
+    // --- config ------------------------------------------------------------------------------
+
+    private static final List<String> CONFIG_KEYS = List.of(
+            "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining", "enableEnemyScaling",
+            "xpRateGlobal", "deathPenalty", "deathPercent", "pointSoftCap", "respecItem", "respecCost");
+
+    private static final SuggestionProvider<ServerCommandSource> CONFIG_KEY_SUGGESTIONS =
+            (context, builder) -> CommandSource.suggestMatching(CONFIG_KEYS, builder);
+
+    /** {@code /kindreds config} - prints every current server-config value. */
+    private static int configList(ServerCommandSource source) {
+        KindredsConfig c = Kindreds.CONFIG;
+        source.sendFeedback(() -> Text.literal("=== Kindreds server config ==="), false);
+        source.sendFeedback(() -> Text.literal("  enableBirthTraits = " + c.enableBirthTraits), false);
+        source.sendFeedback(() -> Text.literal("  enableCurses = " + c.enableCurses), false);
+        source.sendFeedback(() -> Text.literal("  enableVision = " + c.enableVision), false);
+        source.sendFeedback(() -> Text.literal("  allowCrossTraining = " + c.allowCrossTraining), false);
+        source.sendFeedback(() -> Text.literal("  enableEnemyScaling = " + c.enableEnemyScaling), false);
+        source.sendFeedback(() -> Text.literal("  xpRateGlobal = " + c.xpRateGlobal), false);
+        source.sendFeedback(() -> Text.literal("  deathPenalty = " + c.deathPenalty), false);
+        source.sendFeedback(() -> Text.literal("  deathPercent = " + c.deathPercent), false);
+        source.sendFeedback(() -> Text.literal("  pointSoftCap = " + c.pointSoftCap), false);
+        source.sendFeedback(() -> Text.literal("  respecItem = " + c.respecItem), false);
+        source.sendFeedback(() -> Text.literal("  respecCost = " + c.respecCost), false);
+        source.sendFeedback(() -> Text.literal("Change with: /kindreds config <key> <value>  (saved to kindreds-server.json)"), false);
+        return 1;
+    }
+
+    /** {@code /kindreds config <key> <value>} - sets one config value, persists it, and it takes
+     * effect immediately (birth traits/curses reconcile within a couple seconds; rates on next award). */
+    private static int configSet(ServerCommandSource source, String key, String value) {
+        KindredsConfig c = Kindreds.CONFIG;
+        try {
+            switch (key) {
+                case "enableBirthTraits" -> c.enableBirthTraits = parseBool(value);
+                case "enableCurses" -> c.enableCurses = parseBool(value);
+                case "enableVision" -> c.enableVision = parseBool(value);
+                case "allowCrossTraining" -> c.allowCrossTraining = parseBool(value);
+                case "enableEnemyScaling" -> c.enableEnemyScaling = parseBool(value);
+                case "xpRateGlobal" -> c.xpRateGlobal = Double.parseDouble(value);
+                case "deathPercent" -> c.deathPercent = Double.parseDouble(value);
+                case "pointSoftCap" -> c.pointSoftCap = Integer.parseInt(value);
+                case "respecCost" -> c.respecCost = Integer.parseInt(value);
+                case "respecItem" -> c.respecItem = value;
+                case "deathPenalty" -> c.deathPenalty = DeathPenalty.valueOf(value.toUpperCase(Locale.ROOT));
+                default -> {
+                    source.sendError(Text.literal("Unknown key '" + key + "'. Valid: " + String.join(", ", CONFIG_KEYS)));
+                    return 0;
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            source.sendError(Text.literal("Bad value '" + value + "' for " + key
+                    + (key.equals("deathPenalty") ? " (expected KEEP/LOSE_UNSPENT/LOSE_PERCENT/HARDCORE)" : "")));
+            return 0;
+        }
+        c.save(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));
+        source.sendFeedback(() -> Text.literal("Set " + key + " = " + value + " (saved)"), true);
+        return 1;
+    }
+
+    private static boolean parseBool(String v) {
+        if (v.equalsIgnoreCase("true") || v.equals("1")) {
+            return true;
+        }
+        if (v.equalsIgnoreCase("false") || v.equals("0")) {
+            return false;
+        }
+        throw new IllegalArgumentException("expected true/false");
     }
 
     // --- respec ------------------------------------------------------------------------------

@@ -7,6 +7,7 @@ import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.playerdata.RaceAccess;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.registry.Registry;
@@ -40,9 +41,23 @@ public final class BirthTraitService {
 
     private static int tickCounter;
 
-    /** Wire up: apply on join, and re-check every ~2s (only acts on an actual race/config change). */
+    /** Wire up: apply on join, re-apply on respawn-after-death, and re-check every ~2s (only acts on
+     * an actual race/config change). */
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> refreshIfChanged(handler.player));
+
+        // On a REAL death (alive == false), vanilla drops every persistent attribute modifier and
+        // clears status effects - including this mod's birth-trait ones. The periodic sweep won't
+        // notice (appliedBirthRace still equals the current race), so force a clean re-apply on the
+        // freshly respawned player. A dimension-change respawn (alive == true) keeps the modifiers,
+        // so it needs nothing.
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (!alive) {
+                KindredAttachment.get(newPlayer).setAppliedBirthRace(null);
+                refreshIfChanged(newPlayer);
+            }
+        });
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (++tickCounter % 40 != 0) {
                 return;
