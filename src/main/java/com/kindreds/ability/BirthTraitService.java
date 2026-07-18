@@ -7,6 +7,7 @@ import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.playerdata.RaceAccess;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -54,7 +55,7 @@ public final class BirthTraitService {
      * can therefore be wiped by it, load-order-dependently. Applying a couple ticks LATER guarantees
      * our persistent modifiers are the last writer regardless of which mod's JOIN handler ran first.
      */
-    private static final int APPLY_DELAY_TICKS = 2;
+    private static final int APPLY_DELAY_TICKS = 3;
 
     /** Players awaiting a deferred (post-base-mod) birth-trait apply, with ticks remaining. */
     private static final Map<UUID, Integer> PENDING = new HashMap<>();
@@ -79,6 +80,16 @@ public final class BirthTraitService {
                 KindredAttachment.get(newPlayer).setAppliedBirthRace(null);
                 PENDING.put(newPlayer.getUuid(), APPLY_DELAY_TICKS);
             }
+        });
+
+        // The base mod re-applies race base values on a DIMENSION change too (its ModDimensions logic
+        // calls the same clearModifiers()+setBaseValue() routine), which strips our persistent modifiers
+        // - and the periodic sweep won't notice, since the race hasn't changed. Reset our bookkeeping and
+        // schedule a deferred re-apply so an Elf's movement/attack modifiers (etc.) survive Nether/End
+        // travel instead of silently vanishing until the next relog.
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+            KindredAttachment.get(player).setAppliedBirthRace(null);
+            PENDING.put(player.getUuid(), APPLY_DELAY_TICKS);
         });
 
         ServerTickEvents.END_SERVER_TICK.register(BirthTraitService::onEndTick);

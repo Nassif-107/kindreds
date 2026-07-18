@@ -21,6 +21,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -133,6 +135,18 @@ public final class KindredsCommand {
             }
         });
 
+        // Live attribute readout - the ground truth. Attribute modifiers (speed, attack, etc.) never
+        // show in the effects HUD (only status effects do), so this is how to verify they're applied:
+        // 'current' already includes the base mod's base value AND our modifiers stacked on top.
+        source.sendFeedback(() -> Text.literal("Live attributes (base -> current, incl. base mod + Kindred):"), false);
+        printAttr(source, target, "minecraft:max_health", "max_health");
+        printAttr(source, target, "minecraft:movement_speed", "movement_speed");
+        printAttr(source, target, "minecraft:attack_damage", "attack_damage");
+        printAttr(source, target, "minecraft:attack_speed", "attack_speed");
+        printAttr(source, target, "minecraft:knockback_resistance", "knockback_resist");
+        printAttr(source, target, "middle-earth:climbing_strength", "climbing_strength");
+        printAttr(source, target, "middle-earth:detection_range", "detection_range");
+
         for (String disciplinePath : Disciplines.ALL) {
             Identifier disciplineId = Identifier.of(Kindreds.MOD_ID, disciplinePath);
             long xp = data.xpIn(disciplineId);
@@ -149,6 +163,26 @@ public final class KindredsCommand {
                 : "  " + String.join(", ", data.unlockedNodes());
         source.sendFeedback(() -> Text.literal(nodesLine), false);
         return 1;
+    }
+
+    /** Prints one attribute's base value, current (post-modifier) value, and modifier count - lets a
+     * player verify that a Kindred/base-mod attribute (which never appears in the effects HUD) is
+     * actually applied. Silently notes attributes the player's entity doesn't carry. */
+    private static void printAttr(ServerCommandSource source, ServerPlayerEntity target, String attrId, String label) {
+        int colon = attrId.indexOf(':');
+        Identifier id = Identifier.of(attrId.substring(0, colon), attrId.substring(colon + 1));
+        Registries.ATTRIBUTE.getEntry(id).ifPresentOrElse(entry -> {
+            EntityAttributeInstance instance = target.getAttributeInstance(entry);
+            if (instance == null) {
+                source.sendFeedback(() -> Text.literal(String.format("  %-18s (not on this entity)", label)), false);
+                return;
+            }
+            double base = instance.getBaseValue();
+            double current = instance.getValue();
+            int mods = instance.getModifiers().size();
+            source.sendFeedback(() -> Text.literal(String.format(
+                    "  %-18s %.3f -> %.3f  (%d modifier%s)", label, base, current, mods, mods == 1 ? "" : "s")), false);
+        }, () -> source.sendFeedback(() -> Text.literal(String.format("  %-18s (attribute not registered)", label)), false));
     }
 
     // --- grantxp -----------------------------------------------------------------------------
