@@ -15,10 +15,15 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
@@ -66,6 +71,10 @@ public final class PerkEventHandlers {
                         Block.dropStack(serverWorld, pos, drop.copy());
                     }
                 }
+                // Delver's Fortune proc: a green sparkle + a chime so the bonus is unmistakable.
+                double bx = pos.getX() + 0.5, by = pos.getY() + 0.5, bz = pos.getZ() + 0.5;
+                flash(serverWorld, bx, by, bz, ParticleTypes.HAPPY_VILLAGER, 8, 0.45);
+                sound(serverWorld, bx, by, bz, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.7f, 1.4f);
             }
         });
 
@@ -73,15 +82,23 @@ public final class PerkEventHandlers {
             if (!(entity instanceof ServerPlayerEntity sp)) {
                 return;
             }
-            for (PerkDef perk : PerkService.perksOfType(sp, "heal_on_kill")) {
+            List<PerkDef> perks = PerkService.perksOfType(sp, "heal_on_kill");
+            boolean procced = false;
+            for (PerkDef perk : perks) {
                 float heal = perk.param("health", 2f);
                 if (heal > 0f) {
                     sp.heal(heal);
+                    procced = true;
                 }
                 int food = Math.round(perk.param("food", 0f));
                 if (food > 0) {
                     sp.getHungerManager().add(food, 0.2f);
+                    procced = true;
                 }
+            }
+            if (procced) {
+                // Bloodlust: heart particles well up as the kill mends the slayer.
+                flash(world, sp.getX(), sp.getBodyY(0.6), sp.getZ(), ParticleTypes.HEART, 5, 0.4);
             }
         });
 
@@ -99,6 +116,8 @@ public final class PerkEventHandlers {
                 perk.effect().ifPresent(eff -> Registries.STATUS_EFFECT.getEntry(eff.effect()).ifPresent(registered ->
                         target.addStatusEffect(new StatusEffectInstance(registered,
                                 eff.durationTicks() < 0 ? 200 : eff.durationTicks(), eff.amplifier()))));
+                // Cruel/poisoned blade lands: a puff of foul particles marks the affliction.
+                flash((ServerWorld) world, target.getX(), target.getBodyY(0.6), target.getZ(), ParticleTypes.WITCH, 8, 0.3);
             }
             return ActionResult.PASS;
         });
@@ -184,6 +203,11 @@ public final class PerkEventHandlers {
                 multiplier *= (1.0f - Math.min(1.0f, perk.param("reduction", 1f)));
             }
         }
+        if (multiplier < 1.0f && victim.getWorld() instanceof ServerWorld world) {
+            // Dodge: a puff of dust and a whoosh mark the shrugged-off blow.
+            flash(world, victim.getX(), victim.getBodyY(0.6), victim.getZ(), ParticleTypes.CLOUD, 12, 0.3);
+            sound(world, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 0.8f, 1.6f);
+        }
         return multiplier;
     }
 
@@ -208,7 +232,27 @@ public final class PerkEventHandlers {
                 multiplier += perk.param("bonus", 0f);
             }
         }
+        if (multiplier > 1.0f && attacker.getWorld() instanceof ServerWorld world) {
+            // Bane/arrow-slaying lands: an enchanted-hit spark and a sharp crack, so the bonus reads.
+            flash(world, target.getX(), target.getBodyY(0.7), target.getZ(), ParticleTypes.ENCHANTED_HIT, 12, 0.3);
+            sound(world, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, 0.7f, 1.2f);
+        }
         return multiplier;
+    }
+
+    // --- Feedback helpers ------------------------------------------------------------------------
+
+    /** A short burst of {@code count} particles centred at (x,y,z) with a small random spread - the
+     * visible "this perk fired" cue. */
+    private static void flash(ServerWorld world, double x, double y, double z, ParticleEffect particle,
+                              int count, double spread) {
+        world.spawnParticles(particle, x, y, z, count, spread, spread, spread, 0.02);
+    }
+
+    /** A one-shot sound at (x,y,z) in the players category - the audible half of a perk's feedback. */
+    private static void sound(ServerWorld world, double x, double y, double z, SoundEvent event,
+                              float volume, float pitch) {
+        world.playSound(null, x, y, z, event, SoundCategory.PLAYERS, volume, pitch);
     }
 
     /** Whether {@code target} belongs to a named foe category. Uses vanilla's own smite/bane-of-
