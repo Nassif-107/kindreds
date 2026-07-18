@@ -46,4 +46,14 @@ public abstract class PersistentProjectileEntityMixin {
             ActivityHooks.onArrowHitBlock(player);
         }
     }
+
+    /** Keen-eye aim-assist: nudge an in-flight arrow toward a nearby foe if its owner has the
+     * {@code true_flight} perk (a no-op otherwise). See {@link com.kindreds.ability.ArcheryAssist}. */
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void kindreds$aimAssist(CallbackInfo ci) {
+        Entity owner = ((ProjectileEntity) (Object) this).getOwner();
+        if (owner instanceof ServerPlayerEntity player) {
+            com.kindreds.ability.ArcheryAssist.steer((net.minecraft.entity.projectile.PersistentProjectileEntity) (Object) this, player);
+        }
+    }
 }

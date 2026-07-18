@@ -230,6 +230,7 @@ public final class NodeTooltip {
                     Math.round(p.param("chance", 0f) * 100), Math.round(p.param("reduction", 1f) * 100));
             case "lifesteal" -> "§a" + I18n.translate("kindreds.perk.lifesteal", Math.round(p.param("percent", 0.1f) * 100));
             case "thorns" -> "§c" + I18n.translate("kindreds.perk.thorns", Math.round(p.param("percent", 0.25f) * 100));
+            case "true_flight" -> "§b" + I18n.translate("kindreds.perk.true_flight");
             case "light_ward" -> "§e" + I18n.translate("kindreds.perk.light_ward");
             default -> {
                 StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));
