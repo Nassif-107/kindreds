@@ -82,6 +82,9 @@ public final class BirthTraitService {
         // Reverse the previously-applied race's traits (a race change).
         if (applied != null) {
             lookup(player, applied).ifPresent(bt -> AbilityApplier.removeNode(player, bt.traits(), birthId(applied)));
+            // Clear contextual-curse bookkeeping (e.g. a Dread-of-the-Sun that was active for the old
+            // race) so the context engine re-derives from scratch for the new race next tick.
+            CurseContextService.resetActive(player.getUuid());
         }
         // Apply the current race's traits, first clearing any leftover (persisted-from-last-session)
         // modifiers for this same race so identical modifier ids never double-add.

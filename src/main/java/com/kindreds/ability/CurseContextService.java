@@ -171,6 +171,68 @@ public final class CurseContextService {
                 }
             }
         }
+
+        tickBirthCurses(server, player, active);
+    }
+
+    /**
+     * Drives the <b>innate</b> contextual curses a player has from their race's {@link
+     * com.kindreds.data.BirthTrait} (e.g. Orc/Goblin/Snaga "Dread of the Sun" - Weakness/Slowness
+     * under open daylight, which the Uruk-hai alone do not suffer). Same apply/remove-on-transition
+     * discipline as the node-curse loop above, keyed by {@code birthcurse/<race>/<index>}, and gated
+     * on {@code enableBirthTraits}. Birth traits are always "owned" for the player's current race,
+     * so ownership is fixed true and only the context (and the config flag) drives the transition.
+     */
+    private static void tickBirthCurses(MinecraftServer server, ServerPlayerEntity player, Set<String> active) {
+        if (!Kindreds.CONFIG.enableBirthTraits) {
+            // Config off: transition any active birth curse out (context treated as never-matching).
+            Optional<Identifier> race = RaceAccess.getRace(player);
+            race.flatMap(r -> birthTraitFor(server, r)).ifPresent(bt ->
+                    reconcileBirthCurses(player, bt.traits(), race.get(), active, false));
+            return;
+        }
+        Optional<Identifier> race = RaceAccess.getRace(player);
+        if (race.isEmpty()) {
+            return;
+        }
+        birthTraitFor(server, race.get()).ifPresent(bt ->
+                reconcileBirthCurses(player, bt.traits(), race.get(), active, true));
+    }
+
+    private static void reconcileBirthCurses(ServerPlayerEntity player, List<AbilityDef> traits, Identifier race,
+                                              Set<String> active, boolean enabled) {
+        for (int i = 0; i < traits.size(); i++) {
+            if (!(traits.get(i) instanceof CurseDef curse) || curse.when().isEmpty()) {
+                continue;
+            }
+            String key = "birthcurse/" + race.getPath() + "/" + i;
+            boolean wasActive = active.contains(key);
+            boolean contextMatches = enabled && matchesContext(curse.when(), player);
+            switch (decideTransition(true, contextMatches, wasActive)) {
+                case APPLY -> {
+                    applyContextualCurse(player, curse, key);
+                    active.add(key);
+                }
+                case REMOVE -> {
+                    removeContextualCurse(player, curse, key);
+                    active.remove(key);
+                }
+                case NONE -> {
+                    // Already in the right state.
+                }
+            }
+        }
+    }
+
+    private static Optional<com.kindreds.data.BirthTrait> birthTraitFor(MinecraftServer server, Identifier race) {
+        Registry<com.kindreds.data.BirthTrait> registry =
+                server.getRegistryManager().getOrThrow(KindredsRegistries.BIRTH_TRAIT);
+        for (com.kindreds.data.BirthTrait trait : registry) {
+            if (trait.race().equals(race)) {
+                return Optional.of(trait);
+            }
+        }
+        return Optional.empty();
     }
 
     /** The three outcomes {@link #decideTransition} can produce for a single contextual curse on a

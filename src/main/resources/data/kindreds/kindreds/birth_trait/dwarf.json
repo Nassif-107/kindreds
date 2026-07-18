@@ -1,17 +1,21 @@
 {
   "race": "middle-earth:dwarf",
   "traits": [
-    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
-    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.15 },
-    { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.25 },
-    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": -0.06 }
+    { "type": "status_effect", "effect": "minecraft:fire_resistance", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 6.0 },
+    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.5 },
+    { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.5 },
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": -0.10 },
+    { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": -1.0 }
   ],
   "pluses": [
-    "Stone-hardy — the deep-delved vigour of Durin's folk (+2 hearts)",
+    "Fire-hardy — the flame that felled dragons cannot burn Durin's folk",
+    "Stone-hardy — endures wounds as no other people can (+3 hearts)",
     "Unmovable as the roots of the mountains",
-    "Born to the stone — swifter at pick and delving"
+    "Delver born — tears through stone with ease"
   ],
   "minuses": [
-    "Short of leg — slower afoot than the tall folk"
+    "Short-legged — markedly slower afoot",
+    "Gold-touched — greed clouds a dwarf's fortune"
   ]
 }

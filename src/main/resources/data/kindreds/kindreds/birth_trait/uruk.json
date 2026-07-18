@@ -1,17 +1,23 @@
 {
   "race": "middle-earth:uruk",
   "traits": [
-    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 },
-    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.10 },
-    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": -0.10 }
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 6.0 },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.20 },
+    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.3 },
+    { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.05 },
+    { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": -0.15 },
+    { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": -1.0 }
   ],
   "pluses": [
-    "Fighting-Uruk — stout of frame (+2 hearts)",
-    "A heavy, brutal blow",
-    "Braced and unyielding — and unafraid of the Sun"
+    "Fighting-Uruk — great of frame and stout (+3 hearts)",
+    "A crushing, brutal blow — strongest of the Orc-kind",
+    "Braced and unyielding against the shove of battle",
+    "Tireless — marches days on end without rest",
+    "Sun-defiant — endures the daylight that lesser Orcs cannot"
   ],
   "minuses": [
-    "Heavy-handed — slower to strike"
+    "Heavy-handed — slower to strike",
+    "Bred, not born — coarse and ill-fortuned"
   ]
 }

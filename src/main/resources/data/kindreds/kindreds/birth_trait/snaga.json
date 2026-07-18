@@ -1,17 +1,23 @@
 {
   "race": "middle-earth:snaga",
   "traits": [
-    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.08 },
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -5.0 },
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.15 }
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
+    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -6.0 },
+    { "type": "curse", "curse_id": "dread_of_the_sun", "severity": 2, "when": "daylight",
+      "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": -1 } },
+    { "type": "curse", "curse_id": "sun_sluggishness", "severity": 1, "when": "daylight",
+      "effect": { "type": "status_effect", "effect": "minecraft:slowness", "amplifier": 0, "duration_ticks": -1 } },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.20 },
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
   ],
   "pluses": [
-    "Fleet-footed and driven",
-    "Beneath notice — the overlooked slip past",
-    "Night-eyed"
+    "Night-eyed — sees in the pitch dark",
+    "Fleet-footed and lash-driven — swiftest of the Orc-kind",
+    "Beneath notice — the overlooked go unseen"
   ],
   "minuses": [
-    "Least and weakest of the Orc-kind"
+    "Dread of the Sun — weak and slow under open daylight",
+    "Least and weakest of the Orc-kind — feeble and frail (−1 heart)"
   ]
 }

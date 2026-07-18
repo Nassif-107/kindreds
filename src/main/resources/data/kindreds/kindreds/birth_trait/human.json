@@ -1,17 +1,18 @@
 {
   "race": "middle-earth:human",
   "traits": [
-    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
-    { "type": "attribute", "attribute": "minecraft:movement_efficiency", "operation": "add_value", "amount": 0.5 },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.05 },
-    { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": -0.05 }
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 },
+    { "type": "attribute", "attribute": "minecraft:movement_efficiency", "operation": "add_value", "amount": 1.0 },
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.04 }
   ],
   "pluses": [
-    "Hardy and adaptable — the vigour of the Secondborn (+1 heart)",
-    "At home on any road",
-    "Valour of Men — a steadier blow"
+    "Vigour of the Edain — hardy and hale (+2 hearts)",
+    "Valour of Men — a stronger, steadier blow",
+    "Wayfarer — unhindered on any ground, and quick upon the road",
+    "Ambition of the Secondborn — learns every craft the swifter"
   ],
   "minuses": [
-    "The Doom of Men — no ancient resistances shield you"
+    "The Doom of Men — no ancient gift shields you from fire, dark, or dread"
   ]
 }

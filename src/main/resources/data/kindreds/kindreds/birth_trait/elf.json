@@ -1,17 +1,21 @@
 {
   "race": "middle-earth:elf",
   "traits": [
-    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.06 },
-    { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 4.0 },
+    { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
+    { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 8.0 },
     { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.10 }
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.20 },
+    { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
   ],
   "pluses": [
-    "Elven-swift and light of foot",
-    "Sure-footed — the ground scarce bruises the Eldar",
-    "Tireless — the Firstborn need no sleep"
+    "Star-sight — the Eldar see through the dark of night",
+    "Elven-swift — fleet and graceful of foot",
+    "Light-footed — the ground scarce bruises the Firstborn",
+    "Unwearied — needs neither sleep nor much food"
   ],
   "minuses": [
-    "Slender of frame — less brute force behind the blow"
+    "Slender of frame — far less brute force behind the blow",
+    "Fair but slight — a lesser store of body (−1 heart)"
   ]
 }

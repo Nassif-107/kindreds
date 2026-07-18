@@ -1,19 +1,22 @@
 {
   "race": "middle-earth:hobbit",
   "traits": [
-    { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": 2.0 },
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -4.0 },
+    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -8.0 },
+    { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": 3.0 },
+    { "type": "attribute", "attribute": "minecraft:sneaking_speed", "operation": "add_value", "amount": 0.5 },
+    { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 },
     { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 3.0 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 },
-    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.15 }
+    { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": -0.20 }
   ],
   "pluses": [
+    "Unheard and unseen — the Little Folk slip past notice like shadows",
     "The uncommon good-luck of the Shire",
-    "Quiet folk — slip by unheard and unseen",
-    "Nimble and sure-footed"
+    "Nimble — swift and quiet even while creeping",
+    "Never hungry long — hardy on the plainest fare"
   ],
   "minuses": [
-    "Little folk — a smaller store of vigour (−1 heart)",
+    "Little folk — a smaller store of body (−1 heart)",
     "No warrior's arm in open battle"
   ]
 }

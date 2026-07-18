@@ -1,17 +1,21 @@
 {
   "race": "middle-earth:goblin",
   "traits": [
-    { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 },
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
-    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -3.0 },
+    { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 2.0 },
+    { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -4.0 },
+    { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.06 },
+    { "type": "curse", "curse_id": "dread_of_the_sun", "severity": 1, "when": "daylight",
+      "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 0, "duration_ticks": -1 } },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -2.0 }
   ],
   "pluses": [
-    "Wall-clinging climber of the deep tunnels",
     "Cave-eyes that pierce the black",
-    "Skulks unseen through the dark"
+    "Wall-crawler — climbs the sheer stone of the deep places",
+    "Skulking and swift through the tunnels"
   ],
   "minuses": [
+    "Dread of the Sun — weakened under open daylight",
     "Wretched and frail of body (−1 heart)"
   ]
 }
