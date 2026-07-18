@@ -44,7 +44,7 @@
         "type": "attribute",
         "attribute": "minecraft:attack_damage",
         "operation": "add_multiplied_total",
-        "amount": 1.0
+        "amount": 0.5
       }
     },
     {
@@ -63,16 +63,6 @@
       "effect": {
         "type": "status_effect",
         "effect": "minecraft:speed",
-        "amplifier": 1,
-        "duration_ticks": -1
-      }
-    },
-    {
-      "type": "contextual_boon",
-      "when": "low_health",
-      "effect": {
-        "type": "status_effect",
-        "effect": "minecraft:strength",
         "amplifier": 0,
         "duration_ticks": -1
       }
