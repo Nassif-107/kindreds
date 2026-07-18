@@ -3,113 +3,631 @@
   "theme": "kindreds:hobbit",
   "nodes": [
     {
-      "id": "hobbit.light_feet",
+      "id": "hobbit.stealth.light_feet",
       "tier": 1,
-      "pos": [-60, 0],
-      "cost": { "discipline": "kindreds:stealth", "points": 1 },
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 1
+      },
       "prereqs": [],
       "abilities": [
-        { "type": "vision_unlock", "vision_id": "unseen", "radius": 16 }
-      ]
-    },
-    {
-      "id": "hobbit.leathery_soles",
-      "tier": 1,
-      "pos": [0, 0],
-      "cost": { "discipline": "kindreds:survival", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 3.0 }
-      ]
-    },
-    {
-      "id": "hobbit.small_folk",
-      "tier": 1,
-      "pos": [60, 0],
-      "cost": { "discipline": "kindreds:lore", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 1.0 },
         {
-          "type": "curse",
-          "curse_id": "small_folk",
-          "severity": 1,
-          "when": "",
-          "effect": { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": -0.5 }
+          "type": "attribute",
+          "attribute": "sneaking_speed",
+          "operation": "add_value",
+          "amount": 0.5
         }
       ]
     },
-
     {
-      "id": "hobbit.burglar.unassuming",
+      "id": "hobbit.stealth.quiet_folk",
       "tier": 2,
-      "pos": [-60, 30],
-      "cost": { "discipline": "kindreds:stealth", "points": 3 },
-      "prereqs": ["hobbit.light_feet"],
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.stealth.light_feet"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -2.0 }
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -3.0
+        }
       ]
     },
     {
-      "id": "hobbit.burglar.quiet_killer",
+      "id": "hobbit.stealth.nimble_fingers",
       "tier": 2,
-      "pos": [-60, 60],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["hobbit.burglar.unassuming"],
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.stealth.light_feet"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.0 }
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 1.0
+        }
       ]
     },
     {
-      "id": "hobbit.burglar.thief_of_erebor",
+      "id": "hobbit.stealth.slip_away",
       "tier": 3,
-      "pos": [-60, 90],
-      "cost": { "discipline": "kindreds:stealth", "points": 6 },
-      "prereqs": ["hobbit.burglar.quiet_killer"],
-      "deed_advancement": "kindreds:deed/hobbit_thief_of_erebor",
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.quiet_folk"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -3.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.burglars_touch",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.nimble_fingers"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "block_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.unseen",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.stealth.slip_away"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "sneaking_speed",
+          "operation": "add_value",
+          "amount": 0.3
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.thief_of_erebor",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 6
+      },
+      "prereqs": [
+        "hobbit.stealth.unseen"
+      ],
       "abilities": [
         {
           "type": "active",
           "ability_id": "kindreds:thief_of_erebor",
           "cooldown_ticks": 2400,
           "effects": [
-            { "effect": "minecraft:invisibility", "amplifier": 0, "duration_ticks": 100 },
-            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 100 }
+            {
+              "effect": "minecraft:invisibility",
+              "amplifier": 0,
+              "duration_ticks": 100
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 1,
+              "duration_ticks": 100
+            }
           ]
+        }
+      ],
+      "deed_advancement": "kindreds:deed/hobbit_thief_of_erebor",
+      "exclusive_group": "hobbit.stealth.spec"
+    },
+    {
+      "id": "hobbit.stealth.ringbearers_shadow",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 6
+      },
+      "prereqs": [
+        "hobbit.stealth.burglars_touch"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:invisibility",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.stealth.spec"
+    },
+    {
+      "id": "hobbit.survival.hardy_gut",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "status_effect",
+          "effect": "minecraft:saturation",
+          "amplifier": 0,
+          "duration_ticks": -1
         }
       ]
     },
-
     {
-      "id": "hobbit.homebody.packed_lunch",
+      "id": "hobbit.survival.second_breakfast",
       "tier": 2,
-      "pos": [60, 30],
-      "cost": { "discipline": "kindreds:survival", "points": 3 },
-      "prereqs": ["hobbit.leathery_soles"],
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.survival.hardy_gut"
+      ],
       "abilities": [
-        { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 }
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
       ]
     },
     {
-      "id": "hobbit.homebody.second_breakfast",
+      "id": "hobbit.survival.sure_foot",
       "tier": 2,
-      "pos": [60, 60],
-      "cost": { "discipline": "kindreds:survival", "points": 4 },
-      "prereqs": ["hobbit.homebody.packed_lunch"],
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.survival.hardy_gut"
+      ],
       "abilities": [
-        { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 }
+        {
+          "type": "attribute",
+          "attribute": "safe_fall_distance",
+          "operation": "add_value",
+          "amount": 3.0
+        }
       ]
     },
     {
-      "id": "hobbit.homebody.ringbearers_resolve",
+      "id": "hobbit.survival.shire_luck",
       "tier": 3,
-      "pos": [60, 90],
-      "cost": { "discipline": "kindreds:survival", "points": 6 },
-      "prereqs": ["hobbit.homebody.second_breakfast"],
-      "deed_advancement": "kindreds:deed/hobbit_ringbearers_resolve",
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.second_breakfast"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 },
-        { "type": "status_effect", "effect": "minecraft:luck", "amplifier": 0, "duration_ticks": -1 }
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.stout_heart",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.sure_foot"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.ringbearers_resolve",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 6
+      },
+      "prereqs": [
+        "hobbit.survival.shire_luck",
+        "hobbit.survival.stout_heart"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ],
+      "deed_advancement": "kindreds:deed/hobbit_ringbearers_resolve"
+    },
+    {
+      "id": "hobbit.archery.stone_thrower",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.keen_eye",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.archery.stone_thrower"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "entity_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.sling_master",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.archery.stone_thrower"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.true_aim",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.archery.keen_eye",
+        "hobbit.archery.sling_master"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_base",
+          "amount": 0.12
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.bullseye",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.archery.true_aim"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.walking_song",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.04
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.drinking_song",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.song.walking_song"
+      ],
+      "abilities": [
+        {
+          "type": "status_effect",
+          "effect": "minecraft:saturation",
+          "amplifier": 0,
+          "duration_ticks": -1
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.song_of_bilbo",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.song.drinking_song"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.pony_friend",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.03
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.gardener",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.beast_lore.pony_friend"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.bill_the_pony",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.beast_lore.pony_friend"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "safe_fall_distance",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.grand.the_ringbearer",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 8
+      },
+      "prereqs": [
+        "hobbit.survival.ringbearers_resolve",
+        "hobbit.stealth.thief_of_erebor"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -4.0
+        }
       ]
     }
   ]

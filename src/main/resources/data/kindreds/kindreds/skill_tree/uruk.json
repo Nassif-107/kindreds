@@ -2,116 +2,58 @@
   "race": "middle-earth:uruk",
   "theme": "kindreds:uruk",
   "nodes": [
-    {
-      "id": "uruk.relentless_gaze",
-      "tier": 1,
-      "pos": [-60, 0],
-      "cost": { "discipline": "kindreds:combat", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "vision_unlock", "vision_id": "relentless_gaze", "radius": 24 }
-      ]
-    },
-    {
-      "id": "uruk.heavy_hand",
-      "tier": 1,
-      "pos": [0, 0],
-      "cost": { "discipline": "kindreds:combat", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 },
-        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.0 }
-      ]
-    },
-    {
-      "id": "uruk.forged_not_born",
-      "tier": 1,
-      "pos": [60, 0],
-      "cost": { "discipline": "kindreds:lore", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 0.5 },
-        {
-          "type": "curse",
-          "curse_id": "forged_not_born",
-          "severity": 1,
-          "when": "",
-          "effect": { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": -1.0 }
-        }
-      ]
-    },
-
-    {
-      "id": "uruk.relentless.relentless_march",
-      "tier": 2,
-      "pos": [-60, 30],
-      "cost": { "discipline": "kindreds:survival", "points": 3 },
-      "prereqs": ["uruk.relentless_gaze"],
-      "abilities": [
-        { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 }
-      ]
-    },
-    {
-      "id": "uruk.relentless.forced_march",
-      "tier": 2,
-      "pos": [-60, 60],
-      "cost": { "discipline": "kindreds:survival", "points": 4 },
-      "prereqs": ["uruk.relentless.relentless_march"],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:forced_march",
-          "cooldown_ticks": 1200,
-          "effects": [
-            { "effect": "minecraft:speed", "amplifier": 3, "duration_ticks": 100 }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "uruk.relentless.sun_defiance",
-      "tier": 3,
-      "pos": [-60, 90],
-      "cost": { "discipline": "kindreds:survival", "points": 6 },
-      "prereqs": ["uruk.relentless.forced_march"],
-      "deed_advancement": "kindreds:deed/uruk_sun_defiance",
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 3.0 },
-        { "type": "status_effect", "effect": "minecraft:fire_resistance", "amplifier": 0, "duration_ticks": -1 }
-      ]
-    },
-
-    {
-      "id": "uruk.discipline.isengard_drilling",
-      "tier": 2,
-      "pos": [60, 30],
-      "cost": { "discipline": "kindreds:combat", "points": 3 },
-      "prereqs": ["uruk.heavy_hand"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 }
-      ]
-    },
-    {
-      "id": "uruk.discipline.breeding_pits_gift",
-      "tier": 2,
-      "pos": [60, 60],
-      "cost": { "discipline": "kindreds:combat", "points": 4 },
-      "prereqs": ["uruk.discipline.isengard_drilling"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 }
-      ]
-    },
-    {
-      "id": "uruk.discipline.fighting_uruk_hai",
-      "tier": 3,
-      "pos": [60, 90],
-      "cost": { "discipline": "kindreds:combat", "points": 6 },
-      "prereqs": ["uruk.discipline.breeding_pits_gift"],
+    { "id": "uruk.war.fighting_bred", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:combat", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "uruk.war.heavy_blade", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["uruk.war.fighting_bred"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.12 } ] },
+    { "id": "uruk.war.great_frame", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["uruk.war.fighting_bred"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
+    { "id": "uruk.war.crushing_arm", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["uruk.war.heavy_blade"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.15 } ] },
+    { "id": "uruk.war.braced", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["uruk.war.great_frame"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.2 } ] },
+    { "id": "uruk.war.relentless", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:combat", "points": 4 }, "prereqs": ["uruk.war.crushing_arm"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
+    { "id": "uruk.war.fighting_uruk_hai", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:combat", "points": 6 }, "prereqs": ["uruk.war.relentless"], "exclusive_group": "uruk.combat.spec",
       "deed_advancement": "kindreds:deed/uruk_fighting_uruk_hai",
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 2.0 },
-        { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.15 }
-      ]
-    }
+      "abilities": [ { "type": "active", "ability_id": "kindreds:fighting_uruk_hai", "cooldown_ticks": 2400, "effects": [ { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 160 }, { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 160 } ] } ] },
+    { "id": "uruk.war.unbroken_line", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:combat", "points": 6 }, "prereqs": ["uruk.war.braced"], "exclusive_group": "uruk.combat.spec",
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 }, { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.2 } ] },
+
+    { "id": "uruk.captain.white_hand", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:leadership", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.04 } ] },
+    { "id": "uruk.captain.drill_master", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:leadership", "points": 2 }, "prereqs": ["uruk.captain.white_hand"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.08 } ] },
+    { "id": "uruk.captain.forced_march", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:leadership", "points": 2 }, "prereqs": ["uruk.captain.white_hand"],
+      "abilities": [ { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 } ] },
+    { "id": "uruk.captain.iron_discipline", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:leadership", "points": 3 }, "prereqs": ["uruk.captain.drill_master"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 2.0 } ] },
+    { "id": "uruk.captain.sun_defiant", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:leadership", "points": 3 }, "prereqs": ["uruk.captain.forced_march"], "deed_advancement": "kindreds:deed/uruk_sun_defiance",
+      "abilities": [ { "type": "contextual_boon", "when": "daylight", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "uruk.captain.warlord", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:leadership", "points": 4 }, "prereqs": ["uruk.captain.iron_discipline"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 }, { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.06 } ] },
+
+    { "id": "uruk.forge.isengard_steel", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:smithing", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "uruk.forge.plate_bearer", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:smithing", "points": 2 }, "prereqs": ["uruk.forge.isengard_steel"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 2.0 } ] },
+    { "id": "uruk.forge.tempered", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:smithing", "points": 2 }, "prereqs": ["uruk.forge.isengard_steel"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "uruk.forge.heavy_helm", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:smithing", "points": 3 }, "prereqs": ["uruk.forge.plate_bearer"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 } ] },
+    { "id": "uruk.forge.war_smith", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:smithing", "points": 4 }, "prereqs": ["uruk.forge.heavy_helm"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 2.0 }, { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 } ] },
+
+    { "id": "uruk.shadow.saruman_bred", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:shadow", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.06 } ] },
+    { "id": "uruk.shadow.fireproof_will", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["uruk.shadow.saruman_bred"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:burning_time", "operation": "add_multiplied_base", "amount": -0.3 } ] },
+    { "id": "uruk.shadow.no_fear", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["uruk.shadow.saruman_bred"],
+      "abilities": [ { "type": "contextual_boon", "when": "low_health", "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 1, "duration_ticks": -1 } } ] },
+    { "id": "uruk.shadow.man_flesh", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:shadow", "points": 3 }, "prereqs": ["uruk.shadow.no_fear"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
+
+    { "id": "uruk.host_of_isengard", "tier": 6, "pos": [0, 150], "cost": { "discipline": "kindreds:combat", "points": 8 }, "prereqs": ["uruk.war.fighting_uruk_hai", "uruk.captain.warlord"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 }, { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] }
   ]
 }

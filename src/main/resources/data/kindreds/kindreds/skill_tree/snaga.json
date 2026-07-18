@@ -2,124 +2,56 @@
   "race": "middle-earth:snaga",
   "theme": "kindreds:snaga",
   "nodes": [
-    {
-      "id": "snaga.overlooked_eye",
-      "tier": 1,
-      "pos": [-60, 0],
-      "cost": { "discipline": "kindreds:stealth", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "vision_unlock", "vision_id": "scavengers_eye", "radius": 20 }
-      ]
-    },
-    {
-      "id": "snaga.reach_of_the_overlooked",
-      "tier": 1,
-      "pos": [0, 0],
-      "cost": { "discipline": "kindreds:mining", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:block_interaction_range", "operation": "add_value", "amount": 0.5 },
-        { "type": "attribute", "attribute": "minecraft:entity_interaction_range", "operation": "add_value", "amount": 0.5 }
-      ]
-    },
-    {
-      "id": "snaga.dread_of_the_sun",
-      "tier": 1,
-      "pos": [60, 0],
-      "cost": { "discipline": "kindreds:lore", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_total", "amount": 0.02 },
-        {
-          "type": "curse",
-          "curse_id": "dread_of_the_sun",
-          "severity": 1,
-          "when": "daylight",
-          "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": -1 }
-        }
-      ]
-    },
+    { "id": "snaga.sneak.overlooked", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:stealth", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -2.0 } ] },
+    { "id": "snaga.sneak.slinker", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["snaga.sneak.overlooked"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:sneaking_speed", "operation": "add_value", "amount": 0.5 } ] },
+    { "id": "snaga.sneak.dust_and_shadow", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["snaga.sneak.overlooked"],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -3.0 } ] },
+    { "id": "snaga.sneak.cutpurse", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["snaga.sneak.slinker"], "deed_advancement": "kindreds:deed/snaga_slit_and_run",
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:luck", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "snaga.sneak.backstabber", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["snaga.sneak.dust_and_shadow"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "snaga.sneak.unseen", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:stealth", "points": 4 }, "prereqs": ["snaga.sneak.backstabber"],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -3.0 } ] },
+    { "id": "snaga.sneak.ghost_of_the_pits", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:stealth", "points": 6 }, "prereqs": ["snaga.sneak.cutpurse"], "exclusive_group": "snaga.stealth.spec",
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -6.0 }, { "type": "attribute", "attribute": "minecraft:sneaking_speed", "operation": "add_value", "amount": 0.4 } ] },
+    { "id": "snaga.sneak.knife_in_the_dark", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:stealth", "points": 6 }, "prereqs": ["snaga.sneak.unseen"], "exclusive_group": "snaga.stealth.spec",
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": -1 } } ] },
 
-    {
-      "id": "snaga.underdog.kicked_awake",
-      "tier": 2,
-      "pos": [-60, 30],
-      "cost": { "discipline": "kindreds:combat", "points": 3 },
-      "prereqs": ["snaga.reach_of_the_overlooked"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 1.0 }
-      ]
-    },
-    {
-      "id": "snaga.underdog.underdog",
-      "tier": 2,
-      "pos": [-60, 60],
-      "cost": { "discipline": "kindreds:combat", "points": 4 },
-      "prereqs": ["snaga.underdog.kicked_awake"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 1.5 }
-      ]
-    },
-    {
-      "id": "snaga.underdog.whatever_it_takes",
-      "tier": 3,
-      "pos": [-60, 90],
-      "cost": { "discipline": "kindreds:combat", "points": 6 },
-      "prereqs": ["snaga.underdog.underdog"],
-      "deed_advancement": "kindreds:deed/snaga_whatever_it_takes",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:whatever_it_takes",
-          "cooldown_ticks": 2400,
-          "effects": [
-            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 100 },
-            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 100 },
-            { "effect": "minecraft:resistance", "amplifier": 1, "duration_ticks": 100 }
-          ]
-        }
-      ]
-    },
+    { "id": "snaga.grub.lash_driven", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:survival", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.05 } ] },
+    { "id": "snaga.grub.scrounger", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:survival", "points": 2 }, "prereqs": ["snaga.grub.lash_driven"],
+      "abilities": [ { "type": "status_effect", "effect": "minecraft:saturation", "amplifier": 0, "duration_ticks": -1 } ] },
+    { "id": "snaga.grub.desperate", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:survival", "points": 2 }, "prereqs": ["snaga.grub.lash_driven"], "deed_advancement": "kindreds:deed/snaga_whatever_it_takes",
+      "abilities": [ { "type": "contextual_boon", "when": "low_health", "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": -1 } } ] },
+    { "id": "snaga.grub.wiry", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:survival", "points": 3 }, "prereqs": ["snaga.grub.scrounger"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.06 } ] },
+    { "id": "snaga.grub.survivor", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:survival", "points": 3 }, "prereqs": ["snaga.grub.desperate"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
+    { "id": "snaga.grub.fleet", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:survival", "points": 4 }, "prereqs": ["snaga.grub.wiry"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.08 } ] },
 
-    {
-      "id": "snaga.quiet.quiet_feet",
-      "tier": 2,
-      "pos": [60, 30],
-      "cost": { "discipline": "kindreds:stealth", "points": 3 },
-      "prereqs": ["snaga.overlooked_eye"],
-      "abilities": [
-        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -1.5 }
-      ]
-    },
-    {
-      "id": "snaga.quiet.waste_not",
-      "tier": 2,
-      "pos": [60, 60],
-      "cost": { "discipline": "kindreds:mining", "points": 3 },
-      "prereqs": ["snaga.quiet.quiet_feet"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.1 }
-      ]
-    },
-    {
-      "id": "snaga.quiet.slit_and_run",
-      "tier": 3,
-      "pos": [60, 90],
-      "cost": { "discipline": "kindreds:stealth", "points": 6 },
-      "prereqs": ["snaga.quiet.waste_not"],
-      "deed_advancement": "kindreds:deed/snaga_slit_and_run",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:slit_and_run",
-          "cooldown_ticks": 1200,
-          "effects": [
-            { "effect": "minecraft:invisibility", "amplifier": 0, "duration_ticks": 60 },
-            { "effect": "minecraft:speed", "amplifier": 2, "duration_ticks": 60 }
-          ]
-        }
-      ]
-    }
+    { "id": "snaga.shadow.cringing_dark", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:shadow", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "snaga.shadow.spiteful", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["snaga.shadow.cringing_dark"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 },
+                     { "type": "curse", "curse_id": "sun_scorn", "severity": 1, "when": "daylight", "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "snaga.shadow.night_creeper", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["snaga.shadow.cringing_dark"],
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "snaga.shadow.hate_fed", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:shadow", "points": 3 }, "prereqs": ["snaga.shadow.spiteful"],
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": -1 } } ] },
+
+    { "id": "snaga.bow.crude_bow", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:archery", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.08 } ] },
+    { "id": "snaga.bow.quick_draw", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:archery", "points": 2 }, "prereqs": ["snaga.bow.crude_bow"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "snaga.bow.poison_tips", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:archery", "points": 2 }, "prereqs": ["snaga.bow.crude_bow"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "snaga.bow.sniper", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:archery", "points": 3 }, "prereqs": ["snaga.bow.quick_draw"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:entity_interaction_range", "operation": "add_value", "amount": 1.0 } ] },
+
+    { "id": "snaga.overlooked_end", "tier": 6, "pos": [0, 150], "cost": { "discipline": "kindreds:stealth", "points": 8 }, "prereqs": ["snaga.sneak.ghost_of_the_pits", "snaga.grub.fleet"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.10 }, { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -3.0 } ] }
   ]
 }

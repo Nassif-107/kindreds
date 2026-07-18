@@ -2,128 +2,62 @@
   "race": "middle-earth:goblin",
   "theme": "kindreds:goblin",
   "nodes": [
-    {
-      "id": "goblin.tunnel_sight",
-      "tier": 1,
-      "pos": [-60, 0],
-      "cost": { "discipline": "kindreds:mining", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "vision_unlock", "vision_id": "tunnel_sight", "radius": 24 }
-      ]
-    },
-    {
-      "id": "goblin.tinkers_hands",
-      "tier": 1,
-      "pos": [0, 0],
-      "cost": { "discipline": "kindreds:smithing", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.15 }
-      ]
-    },
-    {
-      "id": "goblin.dread_of_the_sun",
-      "tier": 1,
-      "pos": [60, 0],
-      "cost": { "discipline": "kindreds:lore", "points": 1 },
-      "prereqs": [],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.05 },
-        {
-          "type": "curse",
-          "curse_id": "dread_of_the_sun",
-          "severity": 1,
-          "when": "daylight",
-          "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 1, "duration_ticks": -1 }
-        }
-      ]
-    },
+    { "id": "goblin.skulk.tunnel_born", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:stealth", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -2.0 } ] },
+    { "id": "goblin.skulk.wall_crawler", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["goblin.skulk.tunnel_born"],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "goblin.skulk.creep", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:stealth", "points": 2 }, "prereqs": ["goblin.skulk.tunnel_born"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:sneaking_speed", "operation": "add_value", "amount": 0.4 } ] },
+    { "id": "goblin.skulk.ceiling_lurker", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["goblin.skulk.wall_crawler"],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "goblin.skulk.silent_feet", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:stealth", "points": 3 }, "prereqs": ["goblin.skulk.creep"],
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -3.0 } ] },
+    { "id": "goblin.skulk.ambusher", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:stealth", "points": 4 }, "prereqs": ["goblin.skulk.silent_feet"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.08 } ] },
+    { "id": "goblin.skulk.shadow_of_moria", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:stealth", "points": 6 }, "prereqs": ["goblin.skulk.ceiling_lurker"], "exclusive_group": "goblin.stealth.spec",
+      "abilities": [ { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -5.0 }, { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "goblin.skulk.throat_slitter", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:stealth", "points": 6 }, "prereqs": ["goblin.skulk.ambusher"], "exclusive_group": "goblin.stealth.spec",
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": -1 } } ] },
 
-    {
-      "id": "goblin.wallcling.wall_cling_plus",
-      "tier": 2,
-      "pos": [-60, 30],
-      "cost": { "discipline": "kindreds:stealth", "points": 3 },
-      "prereqs": ["goblin.tunnel_sight"],
-      "abilities": [
-        { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 }
-      ]
-    },
-    {
-      "id": "goblin.wallcling.ambush_drop",
-      "tier": 2,
-      "pos": [-60, 60],
-      "cost": { "discipline": "kindreds:combat", "points": 3 },
-      "prereqs": ["goblin.wallcling.wall_cling_plus"],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:ambush_drop",
-          "cooldown_ticks": 600,
-          "effects": [
-            { "effect": "minecraft:strength", "amplifier": 2, "duration_ticks": 20 }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "goblin.wallcling.great_goblins_horde",
-      "tier": 3,
-      "pos": [-60, 90],
-      "cost": { "discipline": "kindreds:combat", "points": 6 },
-      "prereqs": ["goblin.wallcling.ambush_drop"],
-      "deed_advancement": "kindreds:deed/goblin_great_goblins_horde",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:great_goblins_horde",
-          "cooldown_ticks": 3600,
-          "effects": [
-            { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 200 },
-            { "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": 200 }
-          ]
-        }
-      ]
-    },
+    { "id": "goblin.delve.grubber", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:mining", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.2 } ] },
+    { "id": "goblin.delve.deep_digger", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["goblin.delve.grubber"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.25 } ] },
+    { "id": "goblin.delve.dark_dweller", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["goblin.delve.grubber"],
+      "abilities": [ { "type": "contextual_boon", "when": "underground", "effect": { "type": "status_effect", "effect": "minecraft:haste", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "goblin.delve.warren_maker", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:mining", "points": 3 }, "prereqs": ["goblin.delve.deep_digger"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:submerged_mining_speed", "operation": "add_value", "amount": 1.0 } ] },
+    { "id": "goblin.delve.sure_footed", "tier": 3, "pos": [30, 60], "cost": { "discipline": "kindreds:mining", "points": 3 }, "prereqs": ["goblin.delve.dark_dweller"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 3.0 } ] },
+    { "id": "goblin.delve.great_goblin", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:mining", "points": 4 }, "prereqs": ["goblin.delve.warren_maker"], "deed_advancement": "kindreds:deed/goblin_great_goblins_horde",
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 }, { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.3 } ] },
 
-    {
-      "id": "goblin.swarm.cave_rat_swarm",
-      "tier": 2,
-      "pos": [60, 30],
-      "cost": { "discipline": "kindreds:stealth", "points": 3 },
-      "prereqs": ["goblin.tinkers_hands"],
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 0.5 }
-      ]
-    },
-    {
-      "id": "goblin.swarm.screech",
-      "tier": 2,
-      "pos": [60, 60],
-      "cost": { "discipline": "kindreds:survival", "points": 3 },
-      "prereqs": ["goblin.swarm.cave_rat_swarm"],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:screech",
-          "cooldown_ticks": 1200,
-          "effects": [
-            { "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": 200 }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "goblin.swarm.instruments_of_torture",
-      "tier": 3,
-      "pos": [60, 90],
-      "cost": { "discipline": "kindreds:smithing", "points": 6 },
-      "prereqs": ["goblin.swarm.screech"],
-      "deed_advancement": "kindreds:deed/goblin_instruments_of_torture",
-      "abilities": [
-        { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_value", "amount": 2.0 }
-      ]
-    }
+    { "id": "goblin.shadow.gloom_child", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:shadow", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "goblin.shadow.torturer", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["goblin.shadow.gloom_child"], "deed_advancement": "kindreds:deed/goblin_instruments_of_torture",
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.12 } ] },
+    { "id": "goblin.shadow.sun_hater", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:shadow", "points": 2 }, "prereqs": ["goblin.shadow.gloom_child"],
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": -1 } },
+                     { "type": "curse", "curse_id": "sun_scorn", "severity": 1, "when": "daylight", "effect": { "type": "status_effect", "effect": "minecraft:weakness", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "goblin.shadow.cave_dread", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:shadow", "points": 3 }, "prereqs": ["goblin.shadow.torturer"],
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": -1 } } ] },
+    { "id": "goblin.shadow.spider_kin", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:shadow", "points": 4 }, "prereqs": ["goblin.shadow.cave_dread"], "exclusive_group": "goblin.shadow.spec",
+      "abilities": [ { "type": "contextual_boon", "when": "darkness", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": -1 } } ] },
+    { "id": "goblin.shadow.deep_king", "tier": 4, "pos": [30, 90], "cost": { "discipline": "kindreds:shadow", "points": 4 }, "prereqs": ["goblin.shadow.cave_dread"], "exclusive_group": "goblin.shadow.spec",
+      "abilities": [ { "type": "contextual_boon", "when": "underground", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } } ] },
+
+    { "id": "goblin.war.biter", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:combat", "points": 1 }, "prereqs": [],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "goblin.war.swarm_tactics", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["goblin.war.biter"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "goblin.war.cornered_rat", "tier": 2, "pos": [30, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["goblin.war.biter"],
+      "abilities": [ { "type": "contextual_boon", "when": "low_health", "effect": { "type": "status_effect", "effect": "minecraft:speed", "amplifier": 1, "duration_ticks": -1 } } ] },
+    { "id": "goblin.war.poisoned_blade", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["goblin.war.swarm_tactics"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] },
+    { "id": "goblin.war.pack_fury", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:combat", "points": 4 }, "prereqs": ["goblin.war.poisoned_blade"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.12 } ] },
+
+    { "id": "goblin.horde_of_the_deep", "tier": 6, "pos": [0, 150], "cost": { "discipline": "kindreds:stealth", "points": 8 }, "prereqs": ["goblin.skulk.shadow_of_moria", "goblin.shadow.spider_kin"],
+      "abilities": [ { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.10 }, { "type": "attribute", "attribute": "middle-earth:climbing_strength", "operation": "add_value", "amount": 1.0 } ] }
   ]
 }

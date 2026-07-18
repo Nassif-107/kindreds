@@ -2,77 +2,832 @@
   "race": "middle-earth:dwarf",
   "theme": "kindreds:dwarf",
   "nodes": [
-    { "id": "dwarf.stone_sense", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:mining", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "vision_unlock", "vision_id": "stone_sense", "radius": 24 } ] },
-    { "id": "dwarf.delver.aules_inheritance", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["dwarf.stone_sense"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "dwarf.delver.vein_seeker", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:mining", "points": 2 }, "prereqs": ["dwarf.stone_sense"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.25 } ] },
-    { "id": "dwarf.delver.miners_grit", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:mining", "points": 3 }, "prereqs": ["dwarf.delver.aules_inheritance"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "dwarf.delver.rockbreaker", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:mining", "points": 3 }, "prereqs": ["dwarf.delver.vein_seeker"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.25 } ] },
-    { "id": "dwarf.delver.prospector", "tier": 4, "pos": [-30, 90], "cost": { "discipline": "kindreds:mining", "points": 4 }, "prereqs": ["dwarf.delver.miners_grit"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:mining_efficiency", "operation": "add_value", "amount": 0.25 } ] },
-    { "id": "dwarf.delver.sure_footed", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:mining", "points": 4 }, "prereqs": ["dwarf.delver.rockbreaker"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:safe_fall_distance", "operation": "add_value", "amount": 4.0 } ] },
-    { "id": "dwarf.delver.heart_of_the_mountain", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:mining", "points": 6 }, "prereqs": ["dwarf.delver.rockbreaker"],
-      "deed_advancement": "kindreds:deed/dwarf_heart_of_the_mountain", "exclusive_group": "dwarf.mining.spec",
-      "abilities": [ { "type": "active", "ability_id": "kindreds:heart_of_the_mountain", "cooldown_ticks": 2400, "effects": [ { "effect": "minecraft:haste", "amplifier": 1, "duration_ticks": 400 } ] } ] },
-    { "id": "dwarf.delver.dragon_hoard", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:mining", "points": 6 }, "prereqs": ["dwarf.delver.sure_footed"],
-      "exclusive_group": "dwarf.mining.spec",
-      "abilities": [ { "type": "contextual_boon", "when": "underground", "effect": { "type": "status_effect", "effect": "minecraft:strength", "amplifier": 0, "duration_ticks": -1 } } ] },
-
-    { "id": "dwarf.forge_born", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:smithing", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "dwarf.smith.tempering", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:smithing", "points": 2 }, "prereqs": ["dwarf.forge_born"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "dwarf.smith.khazad_craft", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:smithing", "points": 2 }, "prereqs": ["dwarf.forge_born"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "dwarf.smith.mithril_lore", "tier": 3, "pos": [-30, 60], "cost": { "discipline": "kindreds:smithing", "points": 3 }, "prereqs": ["dwarf.smith.tempering"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "dwarf.smith.deep_forge", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:smithing", "points": 3 }, "prereqs": ["dwarf.smith.khazad_craft"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "dwarf.smith.anvil_song", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:smithing", "points": 4 }, "prereqs": ["dwarf.smith.deep_forge"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "dwarf.smith.master_smith_of_erebor", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:smithing", "points": 6 }, "prereqs": ["dwarf.smith.mithril_lore"],
-      "exclusive_group": "dwarf.smithing.spec",
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 }, { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "dwarf.smith.dragon_slayer_plate", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:smithing", "points": 6 }, "prereqs": ["dwarf.smith.anvil_song"],
-      "exclusive_group": "dwarf.smithing.spec",
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:burning_time", "operation": "add_multiplied_base", "amount": -0.4 }, { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 2.0 } ] },
-
-    { "id": "dwarf.rune.moon_runes", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:runecraft", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:block_interaction_range", "operation": "add_value", "amount": 0.5 } ] },
-    { "id": "dwarf.rune.rune_of_binding", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:runecraft", "points": 2 }, "prereqs": ["dwarf.rune.moon_runes"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 } ] },
-    { "id": "dwarf.rune.warding", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:runecraft", "points": 2 }, "prereqs": ["dwarf.rune.moon_runes"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 } ] },
-    { "id": "dwarf.rune.ithildin", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:runecraft", "points": 3 }, "prereqs": ["dwarf.rune.warding"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor_toughness", "operation": "add_value", "amount": 1.0 } ] },
-    { "id": "dwarf.rune.doors_of_durin", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:runecraft", "points": 4 }, "prereqs": ["dwarf.rune.ithildin"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.1 } ] },
-    { "id": "dwarf.rune.warden_runes", "tier": 5, "pos": [0, 120], "cost": { "discipline": "kindreds:runecraft", "points": 6 }, "prereqs": ["dwarf.rune.doors_of_durin"],
-      "abilities": [ { "type": "active", "ability_id": "kindreds:warden_runes", "cooldown_ticks": 2400, "effects": [ { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 300 } ] } ] },
-
-    { "id": "dwarf.axe_master", "tier": 1, "pos": [0, 0], "cost": { "discipline": "kindreds:combat", "points": 1 }, "prereqs": [],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] },
-    { "id": "dwarf.combat.stone_stance", "tier": 2, "pos": [-30, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["dwarf.axe_master"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "dwarf.combat.shield_wall", "tier": 2, "pos": [0, 30], "cost": { "discipline": "kindreds:combat", "points": 2 }, "prereqs": ["dwarf.axe_master"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:knockback_resistance", "operation": "add_value", "amount": 0.15 } ] },
-    { "id": "dwarf.combat.slayer_of_the_deep", "tier": 3, "pos": [0, 60], "cost": { "discipline": "kindreds:combat", "points": 3 }, "prereqs": ["dwarf.combat.shield_wall"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_base", "amount": 0.10 } ] },
-    { "id": "dwarf.combat.dwarven_resilience", "tier": 4, "pos": [0, 90], "cost": { "discipline": "kindreds:combat", "points": 4 }, "prereqs": ["dwarf.combat.slayer_of_the_deep"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:armor", "operation": "add_value", "amount": 2.0 } ] },
-    { "id": "dwarf.combat.baruk_khazad", "tier": 5, "pos": [-30, 120], "cost": { "discipline": "kindreds:combat", "points": 6 }, "prereqs": ["dwarf.combat.dwarven_resilience"],
-      "exclusive_group": "dwarf.combat.spec",
-      "abilities": [ { "type": "active", "ability_id": "kindreds:baruk_khazad", "cooldown_ticks": 1800, "effects": [ { "effect": "minecraft:strength", "amplifier": 1, "duration_ticks": 100 }, { "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 100 } ] } ] },
-    { "id": "dwarf.combat.unbroken", "tier": 5, "pos": [30, 120], "cost": { "discipline": "kindreds:combat", "points": 6 }, "prereqs": ["dwarf.combat.dwarven_resilience"],
-      "deed_advancement": "kindreds:deed/dwarf_unbroken_will", "exclusive_group": "dwarf.combat.spec",
-      "abilities": [ { "type": "contextual_boon", "when": "low_health", "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 1, "duration_ticks": -1 } } ] },
-
-    { "id": "dwarf.durins_crown", "tier": 6, "pos": [0, 150], "cost": { "discipline": "kindreds:combat", "points": 8 }, "prereqs": ["dwarf.delver.heart_of_the_mountain", "dwarf.combat.baruk_khazad"],
-      "abilities": [ { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 4.0 }, { "type": "contextual_boon", "when": "underground", "effect": { "type": "status_effect", "effect": "minecraft:haste", "amplifier": 1, "duration_ticks": -1 } } ] }
+    {
+      "id": "dwarf.mining.deep_lungs",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "submerged_mining_speed",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.stone_sense",
+      "tier": 1,
+      "pos": [
+        60,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "vision_unlock",
+          "vision_id": "stone_sense",
+          "radius": 16
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.khazad_pick",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.mining.deep_lungs"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "mining_efficiency",
+          "operation": "add_value",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.tunnel_sense",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.mining.deep_lungs"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "block_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.mithril_seeker",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.mining.khazad_pick"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "mining_efficiency",
+          "operation": "add_value",
+          "amount": 0.2
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.cavern_ward",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.mining.tunnel_sense"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:haste",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.moria_delver",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.mining.mithril_seeker"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "mining_efficiency",
+          "operation": "add_value",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.undelved_deep",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.mining.cavern_ward"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.mining.heart_of_the_mountain",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 6
+      },
+      "prereqs": [
+        "dwarf.mining.moria_delver"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:heart_of_the_mountain",
+          "cooldown_ticks": 3000,
+          "effects": [
+            {
+              "effect": "minecraft:haste",
+              "amplifier": 2,
+              "duration_ticks": 400
+            }
+          ]
+        }
+      ],
+      "deed_advancement": "kindreds:deed/dwarf_heart_of_the_mountain",
+      "exclusive_group": "dwarf.mining.spec"
+    },
+    {
+      "id": "dwarf.mining.dragon_hoard",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 6
+      },
+      "prereqs": [
+        "dwarf.mining.undelved_deep"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "mining_efficiency",
+          "operation": "add_value",
+          "amount": 0.2
+        }
+      ],
+      "exclusive_group": "dwarf.mining.spec"
+    },
+    {
+      "id": "dwarf.smithing.forge_born",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.aule_hand",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.smithing.forge_born"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor_toughness",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.temper_steel",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.smithing.forge_born"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.erebor_craft",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.aule_hand"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.dwarf_mail",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.temper_steel"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor_toughness",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.master_smith",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.smithing.erebor_craft"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "deed_advancement": "kindreds:deed/dwarf_khazad_craft"
+    },
+    {
+      "id": "dwarf.smithing.dragonslayer_plate",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 6
+      },
+      "prereqs": [
+        "dwarf.smithing.master_smith"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor_toughness",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.2
+        }
+      ],
+      "exclusive_group": "dwarf.smithing.spec"
+    },
+    {
+      "id": "dwarf.smithing.mithril_coat",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 6
+      },
+      "prereqs": [
+        "dwarf.smithing.dwarf_mail"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.3
+        }
+      ],
+      "exclusive_group": "dwarf.smithing.spec"
+    },
+    {
+      "id": "dwarf.runecraft.cirth_carver",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "block_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.angerthas",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.runecraft.cirth_carver"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.warding_rune",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.runecraft.cirth_carver"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.ithildin",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.angerthas"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:night_vision",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.doors_of_durin",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.warding_rune"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.rune_of_wardship",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.runecraft.ithildin",
+        "dwarf.runecraft.doors_of_durin"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.stout_arm",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.shield_wall",
+      "tier": 2,
+      "pos": [
+        -30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.combat.stout_arm"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.axe_master",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.combat.stout_arm"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "attack_damage",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.iron_stance",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.shield_wall"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "armor_toughness",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.cleaving_blow",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.axe_master"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "sweeping_damage_ratio",
+          "operation": "add_value",
+          "amount": 0.3
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.unbroken",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.combat.iron_stance"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "deed_advancement": "kindreds:deed/dwarf_unbroken_will"
+    },
+    {
+      "id": "dwarf.combat.baruk_khazad",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 6
+      },
+      "prereqs": [
+        "dwarf.combat.unbroken"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:baruk_khazad",
+          "cooldown_ticks": 2400,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 2,
+              "duration_ticks": 140
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 1,
+              "duration_ticks": 140
+            }
+          ]
+        }
+      ],
+      "exclusive_group": "dwarf.combat.spec"
+    },
+    {
+      "id": "dwarf.combat.last_stand_of_azanulbizar",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 6
+      },
+      "prereqs": [
+        "dwarf.combat.cleaving_blow"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ],
+      "exclusive_group": "dwarf.combat.spec"
+    },
+    {
+      "id": "dwarf.grand.durins_crown",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 8
+      },
+      "prereqs": [
+        "dwarf.mining.heart_of_the_mountain",
+        "dwarf.combat.baruk_khazad",
+        "dwarf.smithing.master_smith"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "max_health",
+          "operation": "add_value",
+          "amount": 6.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "armor",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.2
+        }
+      ]
+    }
   ]
 }
