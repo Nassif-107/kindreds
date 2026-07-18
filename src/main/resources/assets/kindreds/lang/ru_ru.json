@@ -1003,5 +1003,7 @@
   "kindreds.node.uruk.shadow.dread_of_isengard.name": "Ужас Изенгарда",
   "kindreds.node.uruk.shadow.dread_of_isengard.flavor": "Одно твоё имя обращает вражеский строй в бегство прежде первого удара.",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.name": "Ужас Белой Руки",
-  "kindreds.node.uruk.grand.terror_of_the_white_hand.flavor": "Кровь и страх воедино — знак Белой Руки, воплощённый в войне."
+  "kindreds.node.uruk.grand.terror_of_the_white_hand.flavor": "Кровь и страх воедино — знак Белой Руки, воплощённый в войне.",
+  "kindreds.hud.switch": "смена",
+  "kindreds.hud.use": "применить"
 }

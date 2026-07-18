@@ -54,6 +54,11 @@ public class KindredsClient implements ClientModInitializer {
         return CYCLE_VISION_KEY.getBoundKeyLocalizedText();
     }
 
+    /** The localized name of the "Cycle ability slot" key (for the HUD ability-bar hint). */
+    public static net.minecraft.text.Text cycleAbilityKeyName() {
+        return CYCLE_ABILITY_KEY.getBoundKeyLocalizedText();
+    }
+
     /**
      * "Open skill tree" keybind (Task 11). Unlike {@link #USE_ABILITY_KEY}/{@link #CYCLE_VISION_KEY},
      * this defaults to a bound key ({@code K}) rather than {@code GLFW_KEY_UNKNOWN}: opening a menu

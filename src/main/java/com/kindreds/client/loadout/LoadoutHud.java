@@ -73,5 +73,13 @@ public final class LoadoutHud {
 
             ctx.drawText(tr, label, x + 4, slotY + 4, textColor, false);
         }
+
+        // Hint line: how to switch the selected slot and fire it (uses the player's actual keybinds).
+        String hint = com.kindreds.KindredsClient.cycleAbilityKeyName().getString() + " "
+                + Text.translatable("kindreds.hud.switch").getString() + "   ·   "
+                + com.kindreds.KindredsClient.useAbilityKeyName().getString() + " "
+                + Text.translatable("kindreds.hud.use").getString();
+        ctx.drawText(tr, Text.literal(hint).formatted(Formatting.DARK_GRAY),
+                x, y + total + 3, 0xFF9A9484, false);
     }
 }
