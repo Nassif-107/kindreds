@@ -52,7 +52,8 @@ class BirthTraitDataTest {
     private static final Set<String> VALID_STATUS_EFFECT_PATHS = Set.of(
             "night_vision", "saturation", "fire_resistance", "regeneration", "speed", "haste",
             "resistance", "strength", "weakness", "slowness", "luck", "absorption", "jump_boost",
-            "water_breathing", "invisibility", "glowing", "slow_falling");
+            "water_breathing", "invisibility", "glowing", "slow_falling", "poison", "wither",
+            "hunger", "nausea", "mining_fatigue", "blindness");
 
     /** Contexts {@code CurseContextService.matchesContext} actually implements. */
     private static final Set<String> VALID_CONTEXTS = Set.of(

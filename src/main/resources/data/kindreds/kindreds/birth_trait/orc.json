@@ -1,6 +1,7 @@
 {
   "race": "middle-earth:orc",
   "traits": [
+    { "type": "perk", "perk": "heal_on_kill", "params": { "health": 2 } },
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
     { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.15 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 2.0 },
@@ -14,6 +15,7 @@
   "pluses": [
     "Eyes bred for the black — Night Vision, always",
     "Made for slaughter — a crueler, stronger blow (+15%)",
+    "Bloodlust — a fresh kill knits an Orc's wounds (heal on kill)",
     "Soldier's hide — hardened for war (9 hearts)",
     "Children of the Dark — by night and in the deep places, a heavier blow (+30% melee damage, stacks with Strength)",
     "Iron-gutted — devours foul carrion (rotten flesh) without sickening"

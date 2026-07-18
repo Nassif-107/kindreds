@@ -1,6 +1,7 @@
 {
   "race": "middle-earth:uruk",
   "traits": [
+    { "type": "perk", "perk": "heal_on_kill", "params": { "health": 3 } },
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
     { "type": "attribute", "attribute": "minecraft:max_health", "operation": "add_value", "amount": 6.0 },
     { "type": "attribute", "attribute": "minecraft:attack_damage", "operation": "add_multiplied_total", "amount": 0.20 },
@@ -13,6 +14,7 @@
     "Fighting-Uruk — great of frame and stout (12 hearts)",
     "Eyes bred for the dark — Night Vision, always",
     "A crushing, brutal blow — strongest of the Orc-kind (+20%)",
+    "Bloodlust — feeds on slaughter, mending swiftly with each kill (heal on kill)",
     "Braced and unyielding against the shove of battle (knockback resistance)",
     "Fire-toughened — burns briefer than most folk (base Uruk)",
     "Sun-defiant — where lesser Orcs cower, the fighting-Uruk grows bold in the open day (+30% melee damage, stacks with Strength)",

@@ -1,6 +1,7 @@
 {
   "race": "middle-earth:elf",
   "traits": [
+    { "type": "perk", "perk": "bane", "foe": "spider", "params": { "bonus": 0.5 } },
     { "type": "status_effect", "effect": "minecraft:night_vision", "amplifier": 0, "duration_ticks": -1 },
     { "type": "attribute", "attribute": "minecraft:movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
     { "type": "attribute", "attribute": "minecraft:attack_speed", "operation": "add_multiplied_base", "amount": 0.15 },
@@ -17,6 +18,7 @@
   ],
   "pluses": [
     "Star-sight — the Eldar see through the dark of night",
+    "Foe of the Spiders — hews the brood of Ungoliant with deadly ease (+50% damage vs spiders)",
     "Elven-swift — fleet and graceful of foot",
     "Deft and quick — strikes faster than mortal eye can follow",
     "Silent in the wild — moves unheard and unseen; foes notice the Firstborn late",
