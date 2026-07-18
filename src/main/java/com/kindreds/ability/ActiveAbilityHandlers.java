@@ -1,0 +1,134 @@
+package com.kindreds.ability;
+
+import com.kindreds.data.ability.ActiveAbilityDef;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * The <b>thematic</b> half of an active ability: beyond the self-buff {@link ActiveAbilityDef#effects()}
+ * (applied by {@link AbilityApplier#applyActiveEffect}), a handful of actives DO something in the world
+ * - fire a volley of arrows, burst light that burns the undead, loose a shockwave. Handlers are keyed
+ * by the ability id's <b>path</b> ({@code kindreds:galadhrim_volley} -&gt; {@code galadhrim_volley}) so
+ * the tree/data just names the ability and this class gives it teeth. An ability with no handler here
+ * simply grants its effects (a perfectly good self-buff active); adding a new world-effect is one entry
+ * in {@link #HANDLERS}.
+ */
+public final class ActiveAbilityHandlers {
+    private ActiveAbilityHandlers() {
+    }
+
+    @FunctionalInterface
+    private interface Handler {
+        void run(ServerPlayerEntity player, ServerWorld world);
+    }
+
+    private static final Map<String, Handler> HANDLERS = new HashMap<>();
+
+    static {
+        HANDLERS.put("galadhrim_volley", (p, w) -> volley(p, w, 5, 6.0f));
+        HANDLERS.put("arrow_of_the_eldar", (p, w) -> piercingShot(p, w, 14.0f));
+        HANDLERS.put("star_glass", (p, w) -> phialBurst(p, w, 8.0));
+        HANDLERS.put("light_of_the_phial", (p, w) -> phialBurst(p, w, 10.0));
+        HANDLERS.put("durins_wrath", (p, w) -> shockwave(p, w, 5.0, 8.0f));
+        HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
+    }
+
+    /** Runs the world-effect for {@code def}, if it has one. Called by {@link ActiveAbilityService}
+     * right after the self-buff effects + cast feedback. */
+    public static void run(ServerPlayerEntity player, ActiveAbilityDef def, ServerWorld world) {
+        Handler handler = HANDLERS.get(def.abilityId().getPath());
+        if (handler != null) {
+            handler.run(player, world);
+        }
+    }
+
+    // --- Handlers -------------------------------------------------------------------------------
+
+    /** A fanned volley of {@code count} arrows loosed from the player's aim. */
+    private static void volley(ServerPlayerEntity p, ServerWorld world, int count, float damage) {
+        float yaw = p.getYaw();
+        float pitch = p.getPitch();
+        for (int i = 0; i < count; i++) {
+            float spread = (i - (count - 1) / 2f) * 8f; // degrees, symmetric fan
+            ArrowEntity arrow = new ArrowEntity(world, p, new ItemStack(Items.ARROW), null);
+            arrow.setVelocity(p, pitch, yaw + spread, 0f, 2.6f, 1.0f);
+            arrow.setDamage(damage);
+            arrow.pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED; // don't litter arrows
+            world.spawnEntity(arrow);
+        }
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.1f);
+    }
+
+    /** One heavy, piercing arrow - the Eldar's slaying shot. */
+    private static void piercingShot(ServerPlayerEntity p, ServerWorld world, float damage) {
+        ArrowEntity arrow = new ArrowEntity(world, p, new ItemStack(Items.ARROW), null);
+        arrow.setVelocity(p, p.getPitch(), p.getYaw(), 0f, 3.5f, 0.0f);
+        arrow.setDamage(damage);
+        arrow.setCritical(true);
+        arrow.pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
+        world.spawnEntity(arrow);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 0.7f);
+    }
+
+    /** A burst of hallowed light: undead nearby take fire and glow, and the light shines out. */
+    private static void phialBurst(ServerPlayerEntity p, ServerWorld world, double radius) {
+        Box box = p.getBoundingBox().expand(radius);
+        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, box, e -> e != p && e.isAlive());
+        for (LivingEntity e : nearby) {
+            if (e.getType().isIn(EntityTypeTags.SENSITIVE_TO_SMITE)) {
+                e.setOnFireForTicks(100);
+                e.damage(world, world.getDamageSources().magic(), 4.0f);
+            }
+        }
+        world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(1.0), p.getZ(), 80,
+                radius / 2.5, 1.0, radius / 2.5, 0.08);
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 0.9f, 1.6f);
+    }
+
+    /** A ground-shaking shockwave: nearby hostiles are hurled back and hurt. */
+    private static void shockwave(ServerPlayerEntity p, ServerWorld world, double radius, float damage) {
+        Box box = p.getBoundingBox().expand(radius);
+        Vec3d center = p.getPos();
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                x -> x != p && x.isAlive() && x instanceof Monster)) {
+            Vec3d push = e.getPos().subtract(center).normalize().multiply(1.3);
+            e.addVelocity(push.x, 0.45, push.z);
+            e.velocityModified = true;
+            e.damage(world, p.getDamageSources().playerAttack(p), damage);
+        }
+        world.spawnParticles(ParticleTypes.EXPLOSION, p.getX(), p.getY() + 0.4, p.getZ(), 6,
+                radius / 2.5, 0.2, radius / 2.5, 0.0);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.9f, 0.7f);
+    }
+
+    /** A wave of dread: nearby hostiles are weakened and slowed as the frenzy takes the caster. */
+    private static void dreadNova(ServerPlayerEntity p, ServerWorld world, double radius) {
+        Box box = p.getBoundingBox().expand(radius);
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                x -> x != p && x.isAlive() && x instanceof Monster)) {
+            e.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
+                    net.minecraft.entity.effect.StatusEffects.WEAKNESS, 120, 0));
+            e.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
+                    net.minecraft.entity.effect.StatusEffects.SLOWNESS, 120, 0));
+        }
+        world.spawnParticles(ParticleTypes.ANGRY_VILLAGER, p.getX(), p.getBodyY(1.0), p.getZ(), 20,
+                radius / 3, 0.6, radius / 3, 0.02);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 0.5f, 1.4f);
+    }
+}

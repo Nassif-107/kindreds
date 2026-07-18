@@ -87,6 +87,9 @@ public final class ActiveAbilityService {
         AbilityApplier.applyActiveEffect(player, def);
         data.cooldowns().put(def.abilityId().toString(), now + def.cooldownTicks());
         castFeedback(player, def);
+        if (player.getWorld() instanceof ServerWorld world) {
+            ActiveAbilityHandlers.run(player, def, world); // thematic world-effect (volley, phial, ...)
+        }
         SyncKindredDataS2C.sendTo(player);
     }
 
