@@ -114,6 +114,9 @@ public final class BirthTraitService {
                     ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
                     if (player != null) {
                         refreshIfChanged(player);
+                        // Same post-base-mod window: re-assert unlocked-node passives too, which the base
+                        // mod's clearModifiers() on login/dimension would otherwise have stripped.
+                        NodeReconcileService.reapply(player);
                     }
                     it.remove();
                 } else {

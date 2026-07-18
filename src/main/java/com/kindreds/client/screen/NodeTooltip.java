@@ -198,6 +198,10 @@ public final class NodeTooltip {
                     + (p.effect().isPresent() ? " (" + titleCase(p.effect().get().effect().getPath()) + ")" : "");
             case "ally_aura" -> String.format(Locale.ROOT, "§bLeadership: allies within %d blocks are heartened",
                     Math.round(p.param("radius", 8f)));
+            case "war_pack" -> String.format(Locale.ROOT, "§cWar-pack: +%d%% melee damage per nearby foe (up to %d)",
+                    Math.round(p.param("per_ally", 0.05f) * 100), Math.round(p.param("max", 6f)));
+            case "evasion" -> String.format(Locale.ROOT, "§bEvasion: %d%% chance to shrug off %d%% of a hit",
+                    Math.round(p.param("chance", 0f) * 100), Math.round(p.param("reduction", 1f) * 100));
             case "light_ward" -> "§eStar-glass: light wards off the creatures of the dark";
             default -> {
                 StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));

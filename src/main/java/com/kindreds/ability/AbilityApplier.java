@@ -223,6 +223,41 @@ public final class AbilityApplier {
         }, () -> Kindreds.LOGGER.warn("[Kindreds] unknown status effect id '{}'", def.effect()));
     }
 
+    // --- Dynamic (runtime-computed) modifiers --------------------------------------------------
+
+    /**
+     * Sets a <b>temporary</b>, node-tagged attribute modifier to a runtime-computed {@code amount},
+     * replacing any prior value under the same {@code key} (remove-then-add, so it never throws on a
+     * duplicate id). Temporary means it isn't saved and vanishes on relog - correct for a value that a
+     * tick handler recomputes continuously (e.g. an orc's War-pack bonus scaling with nearby allies).
+     * An {@code amount} of 0 just clears it. Distinct from {@link #applyContextual}'s data-driven
+     * {@link AttributeMod}: here the caller supplies the number, not a JSON record.
+     */
+    public static void setDynamicModifier(ServerPlayerEntity p, Identifier attributeId, String key,
+                                          double amount, EntityAttributeModifier.Operation operation) {
+        Registries.ATTRIBUTE.getEntry(attributeId).ifPresent(attribute -> {
+            EntityAttributeInstance instance = p.getAttributeInstance(attribute);
+            if (instance == null) {
+                return;
+            }
+            Identifier id = attributeModifierId(key, attributeId.getPath());
+            instance.removeModifier(id);
+            if (amount != 0.0) {
+                instance.addTemporaryModifier(new EntityAttributeModifier(id, amount, operation));
+            }
+        });
+    }
+
+    /** Removes a modifier previously installed by {@link #setDynamicModifier} under {@code key}. */
+    public static void clearDynamicModifier(ServerPlayerEntity p, Identifier attributeId, String key) {
+        Registries.ATTRIBUTE.getEntry(attributeId).ifPresent(attribute -> {
+            EntityAttributeInstance instance = p.getAttributeInstance(attribute);
+            if (instance != null) {
+                instance.removeModifier(attributeModifierId(key, attributeId.getPath()));
+            }
+        });
+    }
+
     // --- ActiveAbilityDef (Task 9 / firmed up in Task 12 Stage A) -----------------------------
 
     /**

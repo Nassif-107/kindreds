@@ -1,14 +1,16 @@
 package com.kindreds.ability;
 
 import com.kindreds.data.ability.PerkDef;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.Monster;
@@ -19,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 
 import java.util.List;
 
@@ -99,6 +102,89 @@ public final class PerkEventHandlers {
             }
             return ActionResult.PASS;
         });
+
+        // Tick-driven perks (ally auras, war-pack scaling). A 10-tick cadence is plenty for a buff
+        // that lasts longer than that and keeps the per-player scan cheap.
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (++tickCounter % AURA_INTERVAL != 0) {
+                return;
+            }
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                tickAllyAura(player);
+                tickWarPack(player);
+            }
+        });
+    }
+
+    private static final int AURA_INTERVAL = 10;
+    private static final Identifier ATTACK_DAMAGE = Identifier.of("minecraft", "attack_damage");
+    private static int tickCounter;
+
+    /** <b>ally_aura</b> ({@code radius}, {@code effect}): other players within range are granted the
+     * effect - the Captain-of-Men leadership buff, and the backbone of the Fellowship "lent gifts". */
+    private static void tickAllyAura(ServerPlayerEntity player) {
+        List<PerkDef> auras = PerkService.perksOfType(player, "ally_aura");
+        if (auras.isEmpty()) {
+            return;
+        }
+        for (PerkDef perk : auras) {
+            if (perk.effect().isEmpty()) {
+                continue;
+            }
+            double radius = perk.param("radius", 8f);
+            Box box = player.getBoundingBox().expand(radius);
+            for (ServerPlayerEntity other : player.getWorld().getEntitiesByClass(ServerPlayerEntity.class, box,
+                    p -> p != player && p.isAlive() && p.squaredDistanceTo(player) <= radius * radius)) {
+                perk.effect().ifPresent(eff -> Registries.STATUS_EFFECT.getEntry(eff.effect()).ifPresent(e ->
+                        other.addStatusEffect(new StatusEffectInstance(e,
+                                // outlast the tick cadence so it never flickers between refreshes
+                                eff.durationTicks() < 0 ? AURA_INTERVAL * 4 : eff.durationTicks(), eff.amplifier(),
+                                false, false, true))));
+            }
+        }
+    }
+
+    /** <b>war_pack</b> ({@code radius}, {@code per_ally}, {@code max}): the owner's melee damage grows
+     * with the number of nearby hostiles (the horde at their back) - the Orc-kind's strength in
+     * numbers. Applied as a live temporary {@code attack_damage} modifier recomputed each tick. */
+    private static void tickWarPack(ServerPlayerEntity player) {
+        List<PerkDef> packs = PerkService.perksOfType(player, "war_pack");
+        if (packs.isEmpty()) {
+            return;
+        }
+        // Only the strongest war_pack a player owns applies (they don't compound with themselves).
+        float perAlly = 0f;
+        float bonus = 0f;
+        for (PerkDef perk : packs) {
+            double radius = perk.param("radius", 12f);
+            int max = Math.max(1, Math.round(perk.param("max", 6f)));
+            Box box = player.getBoundingBox().expand(radius);
+            int allies = player.getWorld().getEntitiesByClass(LivingEntity.class, box,
+                    m -> m instanceof Monster && m.isAlive() && m.squaredDistanceTo(player) <= radius * radius).size();
+            float thisBonus = perk.param("per_ally", 0.05f) * Math.min(allies, max);
+            if (thisBonus > bonus) {
+                bonus = thisBonus;
+                perAlly = perk.param("per_ally", 0.05f);
+            }
+        }
+        AbilityApplier.setDynamicModifier(player, ATTACK_DAMAGE, "perk/war_pack", bonus,
+                EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    }
+
+    /**
+     * The multiplier a defending player's perks apply to incoming damage - {@code 1.0} for none.
+     * Called by {@code LivingEntityDamageMixin} when the victim is a player. Currently backs
+     * <b>evasion</b> ({@code chance}, {@code reduction}): a roll to shrug off part or all of a hit
+     * (the Little Folk are wondrously hard to catch).
+     */
+    public static float incomingDamageMultiplier(ServerPlayerEntity victim, DamageSource source) {
+        float multiplier = 1.0f;
+        for (PerkDef perk : PerkService.perksOfType(victim, "evasion")) {
+            if (victim.getRandom().nextFloat() < perk.param("chance", 0f)) {
+                multiplier *= (1.0f - Math.min(1.0f, perk.param("reduction", 1f)));
+            }
+        }
+        return multiplier;
     }
 
     /**

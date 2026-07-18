@@ -32,12 +32,18 @@ public abstract class LivingEntityDamageMixin {
             method = "damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z",
             at = @At("HEAD"),
             argsOnly = true)
-    private float kindreds$scaleOutgoingPerkDamage(float value, ServerWorld world, DamageSource source, float rawAmount) {
-        if (!(source.getAttacker() instanceof ServerPlayerEntity attacker)) {
-            return value;
-        }
+    private float kindreds$scalePerkDamage(float value, ServerWorld world, DamageSource source, float rawAmount) {
+        float amount = value;
         LivingEntity self = (LivingEntity) (Object) this;
-        boolean projectile = source.isIn(DamageTypeTags.IS_PROJECTILE);
-        return value * PerkEventHandlers.outgoingDamageMultiplier(attacker, self, projectile);
+        // Attacker-side perks (bane / arrow-slaying) scale damage this player DEALS.
+        if (source.getAttacker() instanceof ServerPlayerEntity attacker) {
+            boolean projectile = source.isIn(DamageTypeTags.IS_PROJECTILE);
+            amount *= PerkEventHandlers.outgoingDamageMultiplier(attacker, self, projectile);
+        }
+        // Defender-side perks (evasion) scale damage this player TAKES.
+        if (self instanceof ServerPlayerEntity victim) {
+            amount *= PerkEventHandlers.incomingDamageMultiplier(victim, source);
+        }
+        return amount;
     }
 }
