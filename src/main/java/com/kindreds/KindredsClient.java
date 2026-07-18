@@ -22,30 +22,37 @@ import org.lwjgl.glfw.GLFW;
 public class KindredsClient implements ClientModInitializer {
     /**
      * "Use ability" keybind: the P1 trigger for the active-ability framework (see
-     * {@link ActivateAbilityC2S}). Default-unbound ({@code GLFW_KEY_UNKNOWN}) rather than bound to
-     * a concrete key out of the box - with no per-ability selection UI yet (see
-     * {@link ActivateAbilityC2S}'s javadoc for the P1 "always activate my first unlocked active
-     * ability" simplification), auto-binding this to e.g. an unused key could fire an ability a
-     * player never consciously opted into; shipping unbound means it only fires for someone who
-     * deliberately binds it via Controls.
+     * {@link ActivateAbilityC2S}) - activates the player's first unlocked active ability. Defaults
+     * to {@code G} so active skills are usable out of the box; the skill-tree detail panel shows
+     * this key next to each active skill, and it can be rebound in Controls if it collides with
+     * another mod in a given pack.
      */
     private static final KeyBinding USE_ABILITY_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.kindreds.use_ability",
             InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_UNKNOWN,
+            GLFW.GLFW_KEY_G,
             "key.category.kindreds"));
 
     /**
      * "Cycle vision" keybind: advances {@link VisionManager}'s active lens among {@code [off,
-     * ...unlocked lenses]} (see {@link VisionManager#cycle}). Default-unbound for the same reason
-     * as {@link #USE_ABILITY_KEY}: with no dedicated vision-select UI yet, auto-binding this to an
-     * unused key could swap a player's vision lens without them ever having opted in.
+     * ...unlocked lenses]} (see {@link VisionManager#cycle}). Defaults to {@code V}; vision skills
+     * can also be equipped directly from the skill-tree detail panel, and this key can be rebound.
      */
     private static final KeyBinding CYCLE_VISION_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.kindreds.cycle_vision",
             InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_UNKNOWN,
+            GLFW.GLFW_KEY_V,
             "key.category.kindreds"));
+
+    /** The localized name of the currently-bound "Use ability" key (for the skill-tree UI hint). */
+    public static net.minecraft.text.Text useAbilityKeyName() {
+        return USE_ABILITY_KEY.getBoundKeyLocalizedText();
+    }
+
+    /** The localized name of the currently-bound "Cycle vision" key (for the skill-tree UI hint). */
+    public static net.minecraft.text.Text cycleVisionKeyName() {
+        return CYCLE_VISION_KEY.getBoundKeyLocalizedText();
+    }
 
     /**
      * "Open skill tree" keybind (Task 11). Unlike {@link #USE_ABILITY_KEY}/{@link #CYCLE_VISION_KEY},

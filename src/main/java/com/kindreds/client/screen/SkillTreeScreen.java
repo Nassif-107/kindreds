@@ -1,16 +1,22 @@
 package com.kindreds.client.screen;
 
+import com.kindreds.KindredsClient;
 import com.kindreds.data.Disciplines;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.data.Theme;
+import com.kindreds.data.ability.AbilityDef;
+import com.kindreds.data.ability.ActiveAbilityDef;
+import com.kindreds.data.ability.CurseDef;
+import com.kindreds.data.ability.VisionUnlock;
 import com.kindreds.network.RequestUnlockC2S;
 import com.kindreds.network.RespecC2S;
 import com.kindreds.playerdata.ClientKindredData;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.progression.LevelCurve;
 import com.kindreds.progression.ProgressionService;
+import com.kindreds.vision.VisionManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -65,7 +71,8 @@ public class SkillTreeScreen extends Screen {
     private Identifier resolvedForRace;
     private final KindredData initialData;
 
-    private List<String> tabDisciplines = List.of();   // discipline paths that have nodes, in order
+    private List<String> tabDisciplines = List.of();   // all 7 discipline paths, in canonical order
+    private java.util.Set<String> disciplinesWithNodes = java.util.Set.of();
     private String selectedDiscipline;                 // e.g. "combat"
     private SkillNode selectedNode;
 
@@ -77,6 +84,7 @@ public class SkillTreeScreen extends Screen {
     private int[] canvas = new int[4];
     private int[] panel = new int[4];
     private int[] unlockButton = new int[4];  // only valid while an unlockable node is selected
+    private int[] visionButton = new int[4];  // only valid while an owned vision node is selected
     private int[] respecButton = new int[4];
 
     private final List<int[]> tabRects = new ArrayList<>();   // parallel to tabDisciplines: x,y,w,h
@@ -163,27 +171,107 @@ public class SkillTreeScreen extends Screen {
     /** Builds the discipline tab list from the disciplines that actually have nodes in this tree,
      * in the canonical {@link Disciplines#ALL} order, and picks a sensible default focus. */
     private void buildTabs() {
-        List<String> withNodes = new ArrayList<>();
+        // All 7 disciplines are always shown, so the player sees the full spread even before any
+        // race has content for one; disciplinesWithNodes marks which actually have a path here.
+        java.util.Set<String> withNodes = new java.util.HashSet<>();
+        for (SkillNode node : tree.nodes()) {
+            withNodes.add(node.cost().disciplineId().getPath());
+        }
+        tabDisciplines = Disciplines.ALL;
+        disciplinesWithNodes = withNodes;
+
+        // Default focus: the first discipline (with content) that already has points to spend, else
+        // the first discipline that has any content, else the first tab.
+        KindredData data = currentData();
+        selectedDiscipline = Disciplines.ALL.get(0);
+        String firstWithContent = null;
         for (String disc : Disciplines.ALL) {
-            for (SkillNode node : tree.nodes()) {
-                if (node.cost().disciplineId().getPath().equals(disc)) {
-                    withNodes.add(disc);
-                    break;
+            if (withNodes.contains(disc)) {
+                if (firstWithContent == null) {
+                    firstWithContent = disc;
+                }
+                if (available(data, disc) > 0) {
+                    selectedDiscipline = disc;
+                    scrollY = 0;
+                    selectedNode = null;
+                    return;
                 }
             }
         }
-        tabDisciplines = withNodes;
-        // Default focus: the first discipline that already has points to spend, else the first tab.
-        KindredData data = currentData();
-        selectedDiscipline = withNodes.isEmpty() ? null : withNodes.get(0);
-        for (String disc : withNodes) {
-            if (available(data, disc) > 0) {
-                selectedDiscipline = disc;
-                break;
-            }
+        if (firstWithContent != null) {
+            selectedDiscipline = firstWithContent;
         }
         scrollY = 0;
         selectedNode = null;
+    }
+
+    /** Short human label + color for a node's primary kind, so passive/active/vision/curse skills
+     * are distinguishable at a glance. */
+    private static NodeKind kindOf(SkillNode node) {
+        boolean vision = false, active = false, curse = false;
+        for (AbilityDef a : node.abilities()) {
+            if (a instanceof ActiveAbilityDef) {
+                active = true;
+            } else if (a instanceof VisionUnlock) {
+                vision = true;
+            } else if (a instanceof CurseDef) {
+                curse = true;
+            }
+        }
+        if (active) {
+            return NodeKind.ACTIVE;
+        }
+        if (vision) {
+            return NodeKind.VISION;
+        }
+        if (curse) {
+            return NodeKind.CURSE;
+        }
+        return NodeKind.PASSIVE;
+    }
+
+    private enum NodeKind {
+        PASSIVE("Passive", "P", 0xFF8FC7FF),
+        ACTIVE("Active", "A", 0xFFFFC24A),
+        VISION("Vision", "V", 0xFF7CE0C0),
+        CURSE("Curse", "!", ThemeAssets.WARNING_COLOR);
+
+        final String label;
+        final String badge;
+        final int color;
+
+        NodeKind(String label, String badge, int color) {
+            this.label = label;
+            this.badge = badge;
+            this.color = color;
+        }
+    }
+
+    private static int activeCooldownSeconds(SkillNode node) {
+        for (AbilityDef a : node.abilities()) {
+            if (a instanceof ActiveAbilityDef act) {
+                return act.cooldownTicks() / 20;
+            }
+        }
+        return 0;
+    }
+
+    private static String curseWhenText(SkillNode node) {
+        for (AbilityDef a : node.abilities()) {
+            if (a instanceof CurseDef c && !c.when().isEmpty()) {
+                return " in the " + titleCase(c.when());
+            }
+        }
+        return "";
+    }
+
+    private static Identifier visionLensId(SkillNode node) {
+        for (AbilityDef a : node.abilities()) {
+            if (a instanceof VisionUnlock v) {
+                return Identifier.of("kindreds", v.visionId());
+            }
+        }
+        return null;
     }
 
     // --- Discipline point helpers ----------------------------------------------------------------
@@ -261,6 +349,7 @@ public class SkillTreeScreen extends Screen {
             tabRects.add(r);
             boolean sel = disc.equals(selectedDiscipline);
             boolean hover = within(r, mouseX, mouseY);
+            boolean hasNodes = disciplinesWithNodes.contains(disc);
             int avail = available(data, disc);
 
             if (sel) {
@@ -270,12 +359,14 @@ public class SkillTreeScreen extends Screen {
                 ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], 0x40FFFFFF);
             }
 
-            int textColor = sel ? 0xFFFFFFFF : 0xFFD8D2C0;
+            int textColor = !hasNodes ? 0xFF6E6A60 : (sel ? 0xFFFFFFFF : 0xFFD8D2C0);
             ctx.drawText(textRenderer, Text.literal(titleCase(disc)).formatted(sel ? Formatting.BOLD : Formatting.RESET),
                     r[0] + 8, r[1] + 5, textColor, false);
-            String sub = "Lv " + level(data, disc) + "   " + spent(data, disc) + " spent";
-            ctx.drawText(textRenderer, Text.literal(sub), r[0] + 8, r[1] + 17, 0xFF9A9484, false);
-            if (avail > 0) {
+            String sub = hasNodes
+                    ? "Lv " + level(data, disc) + "   " + spent(data, disc) + " spent"
+                    : "No path for this race";
+            ctx.drawText(textRenderer, Text.literal(sub), r[0] + 8, r[1] + 17, 0xFF7A756A, false);
+            if (hasNodes && avail > 0) {
                 String pts = "+" + avail;
                 int pw = textRenderer.getWidth(pts);
                 ctx.drawText(textRenderer, Text.literal(pts).formatted(Formatting.BOLD),
@@ -327,6 +418,15 @@ public class SkillTreeScreen extends Screen {
                         ThemeAssets.withAlpha(0xFFFFE070, Math.max(0, alpha)));
             }
             TreeRenderer.drawNode(ctx, p.node(), p.state(), theme, p.x(), p.y(), p.r(), hover || selected);
+
+            // Small type badge (P/A/V/!) at the node's upper-right, so passive vs active vs vision
+            // vs curse reads at a glance without opening the detail panel.
+            NodeKind kind = kindOf(p.node());
+            int bx = (int) (p.x() + p.r() - 3);
+            int by = (int) (p.y() - p.r() - 7);
+            ctx.fill(bx - 2, by - 1, bx + 9, by + 9, 0xD0101014);
+            ctx.drawBorder(bx - 2, by - 1, 11, 10, ThemeAssets.withAlpha(kind.color, 200));
+            ctx.drawText(textRenderer, Text.literal(kind.badge), bx, by, kind.color, false);
 
             // Inline node name so the branch is readable at a glance.
             String name = NodeTooltip.displayName(p.node().id());
@@ -440,6 +540,7 @@ public class SkillTreeScreen extends Screen {
         y += 6;
 
         unlockButton = new int[]{0, 0, 0, 0};
+        visionButton = new int[]{0, 0, 0, 0};
         if (selectedNode != null) {
             y = renderNodeDetail(ctx, data, x, y);
         } else {
@@ -527,6 +628,9 @@ public class SkillTreeScreen extends Screen {
             case LOCKED -> 0xFF9A9484;
         };
         ctx.drawText(textRenderer, Text.literal(status), x, y, statusColor, false);
+        NodeKind kind = kindOf(node);
+        String kindLabel = "[" + kind.label + "]";
+        ctx.drawText(textRenderer, Text.literal(kindLabel), panel[0] + panel[2] - 10 - textRenderer.getWidth(kindLabel), y, kind.color, false);
         y += 14;
 
         for (var line : textRenderer.wrapLines(Text.literal(NodeTooltip.flavor(node)).formatted(Formatting.GRAY), wrap)) {
@@ -558,6 +662,42 @@ public class SkillTreeScreen extends Screen {
             }
         }
         node.deedAdvancement().ifPresent(deed -> { /* shown via status line above */ });
+
+        // How to use, by kind - so the player knows whether a skill just works or needs a key/equip.
+        y += 5;
+        String use = switch (kind) {
+            case PASSIVE -> "Passive - always active while owned.";
+            case ACTIVE -> {
+                int cd = activeCooldownSeconds(node);
+                yield "Active - press [" + KindredsClient.useAbilityKeyName().getString() + "] to use"
+                        + (cd > 0 ? " (" + cd + "s cooldown)." : ".");
+            }
+            case VISION -> state == TreeRenderer.NodeState.OWNED
+                    ? "Vision - equip below, or press [" + KindredsClient.cycleVisionKeyName().getString() + "] to cycle."
+                    : "Vision - learn it, then equip it here or press [" + KindredsClient.cycleVisionKeyName().getString() + "].";
+            case CURSE -> "Curse - triggers automatically" + curseWhenText(node) + ".";
+        };
+        for (var line : textRenderer.wrapLines(Text.literal(use).formatted(Formatting.ITALIC), wrap)) {
+            ctx.drawText(textRenderer, line, x, y, kind.color, false);
+            y += 10;
+        }
+
+        // Equip/Unequip button for an owned vision node.
+        if (state == TreeRenderer.NodeState.OWNED && kind == NodeKind.VISION) {
+            Identifier lensId = visionLensId(node);
+            boolean activeLens = lensId != null && lensId.equals(VisionManager.activeLens());
+            y += 4;
+            visionButton = new int[]{x, y, wrap, 20};
+            boolean hover = within(visionButton, lastMouseX, lastMouseY);
+            ctx.fill(visionButton[0], visionButton[1], visionButton[0] + visionButton[2], visionButton[1] + visionButton[3],
+                    activeLens ? 0xC03A2E10 : (hover ? 0xC0104834 : 0x80183028));
+            ctx.drawBorder(visionButton[0], visionButton[1], visionButton[2], visionButton[3],
+                    activeLens ? ThemeAssets.WARNING_COLOR : 0xFF7CE0C0);
+            String label = activeLens ? "Unequip Vision" : "Equip Vision";
+            int lw = textRenderer.getWidth(label);
+            ctx.drawText(textRenderer, Text.literal(label), visionButton[0] + (visionButton[2] - lw) / 2, visionButton[1] + 6, 0xFFFFFFFF, true);
+            y += 24;
+        }
 
         // Unlock action for an unlockable node.
         if (state == TreeRenderer.NodeState.AVAILABLE || state == TreeRenderer.NodeState.SEALED) {
@@ -596,6 +736,15 @@ public class SkillTreeScreen extends Screen {
         // Unlock button.
         if (selectedNode != null && within(unlockButton, mouseX, mouseY)) {
             attemptUnlock(selectedNode);
+            return true;
+        }
+        // Equip/unequip vision button.
+        if (selectedNode != null && within(visionButton, mouseX, mouseY)) {
+            Identifier lensId = visionLensId(selectedNode);
+            if (lensId != null) {
+                boolean activeLens = lensId.equals(VisionManager.activeLens());
+                VisionManager.equip(activeLens ? null : lensId);
+            }
             return true;
         }
         // Discipline tabs.

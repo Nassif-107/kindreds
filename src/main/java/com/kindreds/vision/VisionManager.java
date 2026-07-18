@@ -134,6 +134,17 @@ public final class VisionManager {
         ClientPlayNetworking.send(new SetVisionLensC2S(Optional.ofNullable(next)));
     }
 
+    /** Equips {@code lensId} directly (or clears it when {@code null}) - used by the skill-tree
+     * screen's per-vision Equip/Unequip button so a lens can be toggled without cycling. Applies
+     * optimistically then tells the server (which re-validates ownership). */
+    public static void equip(Identifier lensId) {
+        KindredData data = ClientKindredData.INSTANCE;
+        if (data != null) {
+            data.setActiveVisionLens(lensId); // optimistic; SetVisionLensC2S re-validates server-side
+        }
+        ClientPlayNetworking.send(new SetVisionLensC2S(Optional.ofNullable(lensId)));
+    }
+
     // --- World-leave gamma cleanup --------------------------------------------------------------
 
     /** Force-restores every gamma-lifting lens's saved gamma, unconditionally, and clears its
