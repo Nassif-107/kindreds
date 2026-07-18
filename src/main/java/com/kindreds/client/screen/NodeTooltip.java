@@ -95,15 +95,15 @@ public final class NodeTooltip {
         }
 
         SkillNode.Cost cost = node.cost();
-        addWrapped(lines, tr, Text.literal("Cost: " + cost.points() + " " + disciplineName(client, cost.disciplineId()) + " pt(s)")
-                .formatted(Formatting.AQUA));
+        addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.cost",
+                cost.points(), disciplineName(client, cost.disciplineId()))).formatted(Formatting.AQUA));
 
         if (!node.prereqs().isEmpty()) {
             List<String> names = new ArrayList<>();
             for (String prereqId : node.prereqs()) {
                 names.add(tree.node(prereqId).map(n -> displayName(n.id())).orElse(displayName(prereqId)));
             }
-            addWrapped(lines, tr, Text.literal("Requires: " + String.join(", ", names))
+            addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.requires", String.join(", ", names)))
                     .formatted(Formatting.DARK_GRAY));
         }
 
@@ -111,10 +111,10 @@ public final class NodeTooltip {
         // shown as an earned deed instead (see TreeRenderer.drawNode for the matching seal-ring gate).
         node.deedAdvancement().ifPresent(deed -> {
             if (state != TreeRenderer.NodeState.OWNED) {
-                addWrapped(lines, tr, Text.literal("Sealed - Deed: " + titleCase(deed.getPath()))
+                addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.sealed_deed", titleCase(deed.getPath())))
                         .withColor(ThemeAssets.WARNING_COLOR));
             } else {
-                addWrapped(lines, tr, Text.literal("Deed earned: " + titleCase(deed.getPath()))
+                addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.deed_earned", titleCase(deed.getPath())))
                         .formatted(Formatting.GREEN));
             }
         });
@@ -167,16 +167,44 @@ public final class NodeTooltip {
     static String describe(AbilityDef ability) {
         return switch (ability) {
             case AttributeMod a -> String.format(Locale.ROOT, "%s%.1f %s",
-                    a.amount() >= 0 ? "+" : "", a.amount(), titleCase(a.attribute().getPath()));
-            case StatusEffectDef s -> "Grants " + titleCase(s.effect().getPath()) + " " + (s.amplifier() + 1)
-                    + (s.durationTicks() < 0 ? " (while owned)" : "");
-            case VisionUnlock v -> "Unlocks the " + titleCase(v.visionId()) + " vision (range " + v.radius() + ")";
-            case ActiveAbilityDef act -> "Active: " + titleCase(act.abilityId().getPath())
-                    + " (cooldown " + (act.cooldownTicks() / 20) + "s)";
-            case CurseDef c -> "§6Curse: " + titleCase(c.curseId()) + " (severity " + c.severity() + ")";
-            case ContextualBoon c -> "§aIn " + titleCase(c.when()) + ": " + describe(c.effect());
+                    a.amount() >= 0 ? "+" : "", a.amount(), attrName(a.attribute()));
+            case StatusEffectDef s -> I18n.translate("kindreds.effect.grants", effectName(s.effect()), s.amplifier() + 1)
+                    + (s.durationTicks() < 0 ? " " + I18n.translate("kindreds.effect.while_owned") : "");
+            case VisionUnlock v -> I18n.translate("kindreds.effect.vision", visionName(v.visionId()), v.radius());
+            case ActiveAbilityDef act -> I18n.translate("kindreds.effect.active",
+                    titleCase(act.abilityId().getPath()), act.cooldownTicks() / 20);
+            case CurseDef c -> "§6" + I18n.translate("kindreds.effect.curse", titleCase(c.curseId()), c.severity());
+            case ContextualBoon c -> "§a" + I18n.translate("kindreds.effect.in_context", contextName(c.when()), describe(c.effect()));
             case PerkDef p -> describePerk(p);
         };
+    }
+
+    /** A localized attribute name via Minecraft's own {@code attribute.name.<path>} key (already
+     * translated for every language), falling back to a title-cased path for non-vanilla attributes. */
+    private static String attrName(Identifier attribute) {
+        String key = "attribute.name." + attribute.getPath();
+        return I18n.hasTranslation(key) ? I18n.translate(key) : titleCase(attribute.getPath());
+    }
+
+    /** A localized status-effect name via vanilla's {@code effect.<ns>.<path>} key. */
+    private static String effectName(Identifier effect) {
+        String key = "effect." + effect.getNamespace() + "." + effect.getPath();
+        return I18n.hasTranslation(key) ? I18n.translate(key) : titleCase(effect.getPath());
+    }
+
+    private static String visionName(String id) {
+        String key = "kindreds.vision." + id;
+        return I18n.hasTranslation(key) ? I18n.translate(key) : titleCase(id);
+    }
+
+    private static String contextName(String when) {
+        String key = "kindreds.context." + when;
+        return I18n.hasTranslation(key) ? I18n.translate(key) : titleCase(when);
+    }
+
+    private static String foeName(String foe) {
+        String key = "kindreds.foe." + foe;
+        return I18n.hasTranslation(key) ? I18n.translate(key) : titleCase(foe);
     }
 
     /** Human-readable one-liner for a {@link PerkDef}, keyed on its perk id. Known perks get bespoke,
@@ -184,25 +212,23 @@ public final class NodeTooltip {
      * the perk name and its authored params, so a newly-added perk always reads as <i>something</i>
      * before this switch is taught its wording. */
     static String describePerk(PerkDef p) {
-        String foe = titleCase(p.foe().orElse("any"));
+        String foe = foeName(p.foe().orElse("any"));
         return switch (p.perk()) {
-            case "bane" -> String.format(Locale.ROOT, "§cBane: +%d%% damage vs %s",
+            case "bane" -> "§c" + I18n.translate("kindreds.perk.bane", Math.round(p.param("bonus", 0f) * 100), foe);
+            case "arrow_slaying" -> "§c" + I18n.translate("kindreds.perk.arrow_slaying",
                     Math.round(p.param("bonus", 0f) * 100), foe);
-            case "arrow_slaying" -> String.format(Locale.ROOT, "§cBlack Arrow: +%d%% bow damage vs %s",
-                    Math.round(p.param("bonus", 0f) * 100), foe);
-            case "mining_fortune" -> String.format(Locale.ROOT, "§eDelver's Fortune: %d%% chance of +%d ore drop",
+            case "mining_fortune" -> "§e" + I18n.translate("kindreds.perk.mining_fortune",
                     Math.round(p.param("chance", 0f) * 100), Math.round(p.param("amount", 1f)));
-            case "heal_on_kill" -> String.format(Locale.ROOT, "§aBloodlust: restore %.1f health on a kill",
-                    p.param("health", 0f));
-            case "strike_effect" -> "§cCruel blade: inflicts an affliction on a struck foe"
-                    + (p.effect().isPresent() ? " (" + titleCase(p.effect().get().effect().getPath()) + ")" : "");
-            case "ally_aura" -> String.format(Locale.ROOT, "§bLeadership: allies within %d blocks are heartened",
-                    Math.round(p.param("radius", 8f)));
-            case "war_pack" -> String.format(Locale.ROOT, "§cWar-pack: +%d%% melee damage per nearby foe (up to %d)",
+            case "heal_on_kill" -> "§a" + I18n.translate("kindreds.perk.heal_on_kill",
+                    String.format(Locale.ROOT, "%.1f", p.param("health", 0f)));
+            case "strike_effect" -> "§c" + I18n.translate("kindreds.perk.strike_effect")
+                    + (p.effect().isPresent() ? " (" + effectName(p.effect().get().effect()) + ")" : "");
+            case "ally_aura" -> "§b" + I18n.translate("kindreds.perk.ally_aura", Math.round(p.param("radius", 8f)));
+            case "war_pack" -> "§c" + I18n.translate("kindreds.perk.war_pack",
                     Math.round(p.param("per_ally", 0.05f) * 100), Math.round(p.param("max", 6f)));
-            case "evasion" -> String.format(Locale.ROOT, "§bEvasion: %d%% chance to shrug off %d%% of a hit",
+            case "evasion" -> "§b" + I18n.translate("kindreds.perk.evasion",
                     Math.round(p.param("chance", 0f) * 100), Math.round(p.param("reduction", 1f) * 100));
-            case "light_ward" -> "§eStar-glass: light wards off the creatures of the dark";
+            case "light_ward" -> "§e" + I18n.translate("kindreds.perk.light_ward");
             default -> {
                 StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));
                 if (!p.params().isEmpty()) {

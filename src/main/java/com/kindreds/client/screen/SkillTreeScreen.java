@@ -18,9 +18,11 @@ import com.kindreds.progression.LevelCurve;
 import com.kindreds.progression.ProgressionService;
 import com.kindreds.vision.VisionManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import java.util.Locale;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.toast.SystemToast;
@@ -724,10 +726,10 @@ public class SkillTreeScreen extends Screen {
                 x, y, 0xFFFFFFFF, true);
         y += 13;
         String status = switch (state) {
-            case OWNED -> "Owned";
-            case AVAILABLE -> "Available";
-            case SEALED -> "Sealed - needs a deed";
-            case LOCKED -> "Locked";
+            case OWNED -> I18n.translate("kindreds.tree.status.owned");
+            case AVAILABLE -> I18n.translate("kindreds.tree.status.available");
+            case SEALED -> I18n.translate("kindreds.tree.status.sealed");
+            case LOCKED -> I18n.translate("kindreds.tree.status.locked");
         };
         int statusColor = switch (state) {
             case OWNED -> 0xFF66DD66;
@@ -737,7 +739,7 @@ public class SkillTreeScreen extends Screen {
         };
         ctx.drawText(textRenderer, Text.literal(status), x, y, statusColor, false);
         NodeKind kind = kindOf(node);
-        String kindLabel = "[" + kind.label + "]";
+        String kindLabel = "[" + I18n.translate("kindreds.tree.kind." + kind.name().toLowerCase(Locale.ROOT)) + "]";
         ctx.drawText(textRenderer, Text.literal(kindLabel), panel[0] + panel[2] - 10 - textRenderer.getWidth(kindLabel), y, kind.color, false);
         y += 14;
 
@@ -746,7 +748,7 @@ public class SkillTreeScreen extends Screen {
             y += 10;
         }
         y += 4;
-        ctx.drawText(textRenderer, Text.literal("Effects").formatted(Formatting.BOLD), x, y, accent, false);
+        ctx.drawText(textRenderer, Text.literal(I18n.translate("kindreds.tree.effects")).formatted(Formatting.BOLD), x, y, accent, false);
         y += 12;
         for (var ability : node.abilities()) {
             // describe() embeds legacy color codes (e.g. curses); the String draw path honors them.
@@ -756,15 +758,15 @@ public class SkillTreeScreen extends Screen {
             }
         }
         y += 4;
-        ctx.drawText(textRenderer, Text.literal("Cost: " + node.cost().points() + " " + titleCase(selectedDiscipline) + " pt"),
-                x, y, 0xFF7FD0E0, false);
+        ctx.drawText(textRenderer, Text.literal(I18n.translate("kindreds.tree.cost", node.cost().points(),
+                I18n.translate("kindreds.discipline." + selectedDiscipline))), x, y, 0xFF7FD0E0, false);
         y += 12;
         if (!node.prereqs().isEmpty()) {
             List<String> names = new ArrayList<>();
             for (String pid : node.prereqs()) {
                 names.add(tree.node(pid).map(n -> NodeTooltip.displayName(n.id())).orElse(pid));
             }
-            for (var line : textRenderer.wrapLines(Text.literal("Requires: " + String.join(", ", names)).formatted(Formatting.DARK_GRAY), wrap)) {
+            for (var line : textRenderer.wrapLines(Text.literal(I18n.translate("kindreds.tree.requires", String.join(", ", names))).formatted(Formatting.DARK_GRAY), wrap)) {
                 ctx.drawText(textRenderer, line, x, y, 0xFF9A9484, false);
                 y += 10;
             }
@@ -774,16 +776,20 @@ public class SkillTreeScreen extends Screen {
         // How to use, by kind - so the player knows whether a skill just works or needs a key/equip.
         y += 5;
         String use = switch (kind) {
-            case PASSIVE -> "Passive - always active while owned.";
+            case PASSIVE -> I18n.translate("kindreds.tree.use.passive");
             case ACTIVE -> {
                 int cd = activeCooldownSeconds(node);
-                yield "Active - press [" + KindredsClient.useAbilityKeyName().getString() + "] to use"
-                        + (cd > 0 ? " (" + cd + "s cooldown)." : ".");
+                String keyName = KindredsClient.useAbilityKeyName().getString();
+                yield cd > 0 ? I18n.translate("kindreds.tree.use.active_cd", keyName, cd)
+                        : I18n.translate("kindreds.tree.use.active", keyName);
             }
-            case VISION -> state == TreeRenderer.NodeState.OWNED
-                    ? "Vision - equip below, or press [" + KindredsClient.cycleVisionKeyName().getString() + "] to cycle."
-                    : "Vision - learn it, then equip it here or press [" + KindredsClient.cycleVisionKeyName().getString() + "].";
-            case CURSE -> "Curse - triggers automatically" + curseWhenText(node) + ".";
+            case VISION -> {
+                String keyName = KindredsClient.cycleVisionKeyName().getString();
+                yield state == TreeRenderer.NodeState.OWNED
+                        ? I18n.translate("kindreds.tree.use.vision_owned", keyName)
+                        : I18n.translate("kindreds.tree.use.vision", keyName);
+            }
+            case CURSE -> I18n.translate("kindreds.tree.use.curse", curseWhenText(node));
         };
         for (var line : textRenderer.wrapLines(Text.literal(use).formatted(Formatting.ITALIC), wrap)) {
             ctx.drawText(textRenderer, line, x, y, kind.color, false);
@@ -801,7 +807,7 @@ public class SkillTreeScreen extends Screen {
                     activeLens ? 0xC03A2E10 : (hover ? 0xC0104834 : 0x80183028));
             ctx.drawBorder(visionButton[0], visionButton[1], visionButton[2], visionButton[3],
                     activeLens ? ThemeAssets.WARNING_COLOR : 0xFF7CE0C0);
-            String label = activeLens ? "Unequip Vision" : "Equip Vision";
+            String label = activeLens ? I18n.translate("kindreds.tree.unequip_vision") : I18n.translate("kindreds.tree.equip_vision");
             int lw = textRenderer.getWidth(label);
             ctx.drawText(textRenderer, Text.literal(label), visionButton[0] + (visionButton[2] - lw) / 2, visionButton[1] + 6, 0xFFFFFFFF, true);
             y += 24;
@@ -812,7 +818,7 @@ public class SkillTreeScreen extends Screen {
             String abilityId = activeAbilityId(node);
             if (abilityId != null) {
                 y += 4;
-                ctx.drawText(textRenderer, Text.literal("Equip to ability slot:").formatted(Formatting.BOLD),
+                ctx.drawText(textRenderer, Text.literal(I18n.translate("kindreds.tree.equip_slot")).formatted(Formatting.BOLD),
                         x, y, accent, false);
                 y += 12;
                 int n = com.kindreds.client.loadout.ClientLoadout.SLOTS;
@@ -829,7 +835,7 @@ public class SkillTreeScreen extends Screen {
                             y + 6, holds ? 0xFFF0C000 : 0xFFFFFFFF, true);
                 }
                 y += 24;
-                ctx.drawText(textRenderer, Text.literal("(gold = equipped; click again to clear)").formatted(Formatting.DARK_GRAY),
+                ctx.drawText(textRenderer, Text.literal(I18n.translate("kindreds.tree.equip_hint")).formatted(Formatting.DARK_GRAY),
                         x, y, 0xFF8A8478, false);
                 y += 11;
             }
@@ -846,8 +852,8 @@ public class SkillTreeScreen extends Screen {
             ctx.drawBorder(unlockButton[0], unlockButton[1], unlockButton[2], unlockButton[3],
                     state == TreeRenderer.NodeState.SEALED ? ThemeAssets.WARNING_COLOR : 0xFF66DD66);
             String label = state == TreeRenderer.NodeState.SEALED
-                    ? "Attempt (deed-sealed)"
-                    : "Learn  (" + node.cost().points() + " pt)";
+                    ? I18n.translate("kindreds.tree.attempt_sealed")
+                    : I18n.translate("kindreds.tree.learn", node.cost().points());
             int lw = textRenderer.getWidth(label);
             ctx.drawText(textRenderer, Text.literal(label), unlockButton[0] + (unlockButton[2] - lw) / 2, unlockButton[1] + 6, 0xFFFFFFFF, true);
             y += 24;
