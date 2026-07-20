@@ -35,7 +35,7 @@ race. No filler.**
   — real craftable items per race, lore-first. No mod does this.
 
 ## Execution order (agreed)
-1. **Per-discipline redesign, race by race, discipline by discipline — Elf first, no filler.** ← ACTIVE
+1. **Per-discipline redesign, race by race, discipline by discipline — Elf DONE (all 5). Dwarf next.** ← ACTIVE
 2. Meta-systems: costed respec + Paths/identity + level-up milestones.
 3. Fellowship/synergy system.
 4. Race-craft (lembas, elven-cloak, mithril, Dwarf-smithing).
@@ -48,4 +48,4 @@ race. No filler.**
    lembas endurance, forest-speed).
 3. **Lore** — ✅ built — wisdom, foresight, star/light-magic, keen mind.
 4. **Song** — ✅ built — song-magic, healing, minstrelsy (Lúthien).
-5. **Beast-lore** — Elf-friend of beasts, Elven steeds, wild allies.
+5. **Beast-lore** — ✅ built — Elf-friend of beasts, Elven steeds, wild allies.

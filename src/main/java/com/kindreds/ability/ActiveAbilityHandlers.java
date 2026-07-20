@@ -1,10 +1,13 @@
 package com.kindreds.ability;
 
 import com.kindreds.data.ability.ActiveAbilityDef;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
@@ -51,6 +54,9 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
         HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
+        HANDLERS.put("call_of_the_wild", (p, w) -> summonWolves(p, w, 2, false));
+        HANDLERS.put("summon_the_pack", (p, w) -> summonWolves(p, w, 4, false));
+        HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
     }
 
     /** Runs the world-effect for {@code def}, if it has one. Called by {@link ActiveAbilityService}
@@ -150,6 +156,49 @@ public final class ActiveAbilityHandlers {
         world.spawnParticles(ParticleTypes.HEART, p.getX(), p.getBodyY(1.0), p.getZ(), 8, 0.5, 0.5, 0.5, 0.1);
         world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0f, 1.5f);
     }
+
+    /** Call of the wild (the Elf-friend of beasts): a pack of wolves answers, tamed to your side and
+     * set upon the nearest foe. Calling again dismisses the old pack, so they never accumulate. Huan
+     * is a single mighty hound, hallowed and strong. */
+    private static void summonWolves(ServerPlayerEntity p, ServerWorld world, int count, boolean huan) {
+        // Dismiss the caster's existing summoned beasts so a new call replaces the old pack.
+        Box near = p.getBoundingBox().expand(48.0);
+        for (WolfEntity old : world.getEntitiesByClass(WolfEntity.class, near,
+                w -> w.getCommandTags().contains(SUMMON_TAG) && p.equals(w.getOwner()))) {
+            old.discard();
+        }
+        LivingEntity foe = world.getEntitiesByClass(LivingEntity.class, p.getBoundingBox().expand(16.0),
+                        e -> e != p && e.isAlive() && e instanceof Monster).stream()
+                .min((a, b) -> Double.compare(a.squaredDistanceTo(p), b.squaredDistanceTo(p)))
+                .orElse(null);
+        for (int i = 0; i < count; i++) {
+            WolfEntity wolf = EntityType.WOLF.create(world, SpawnReason.MOB_SUMMONED);
+            if (wolf == null) {
+                continue;
+            }
+            double ang = (Math.PI * 2 * i) / Math.max(1, count);
+            wolf.refreshPositionAndAngles(p.getX() + Math.cos(ang) * 1.5, p.getY(), p.getZ() + Math.sin(ang) * 1.5,
+                    p.getYaw(), 0f);
+            wolf.setOwner(p);
+            wolf.setTamed(true, true);
+            wolf.addCommandTag(SUMMON_TAG);
+            if (foe != null) {
+                wolf.setTarget(foe);
+            }
+            if (huan) {
+                wolf.setCustomName(net.minecraft.text.Text.literal("Huan"));
+                wolf.setCustomNameVisible(true);
+                wolf.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 2400, 2, false, false, true));
+                wolf.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 2400, 1, false, false, true));
+                wolf.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 2400, 1, false, false, true));
+            }
+            world.spawnEntity(wolf);
+        }
+        world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, p.getX(), p.getBodyY(0.8), p.getZ(), 20, 1.2, 0.4, 1.2, 0.1);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_FOX_AGGRO, SoundCategory.PLAYERS, 1.0f, huan ? 0.7f : 1.0f);
+    }
+
+    private static final String SUMMON_TAG = "kindreds_summon";
 
     /** A wave of dread: nearby hostiles are weakened and slowed as the frenzy takes the caster. */
     private static void dreadNova(ServerPlayerEntity p, ServerWorld world, double radius) {

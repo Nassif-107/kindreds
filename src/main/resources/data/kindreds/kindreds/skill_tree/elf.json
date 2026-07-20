@@ -3,268 +3,6 @@
   "theme": "kindreds:elf",
   "nodes": [
     {
-      "id": "elf.beast_lore.wood_friend",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -0.1
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.spider_hunter",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.beast_lore.wood_friend"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "spider",
-          "params": {
-            "bonus": 0.65
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.silent_tread",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.beast_lore.wood_friend"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "sneaking_speed",
-          "operation": "add_value",
-          "amount": 0.3
-        },
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -0.1
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.thranduils_hunt",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.beast_lore.spider_hunter"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.3
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.starlit_stalker",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.beast_lore.silent_tread"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "attribute",
-            "attribute": "attack_damage",
-            "operation": "add_multiplied_total",
-            "amount": 0.15
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.lord_of_beasts",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.beast_lore.thranduils_hunt",
-        "elf.beast_lore.starlit_stalker"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 3.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "jump_strength",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.warden_of_the_wood",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.beast_lore.lord_of_beasts"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "spider",
-          "params": {
-            "bonus": 0.7
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -0.2
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.scourge_of_the_yrch",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.beast_lore.lord_of_beasts"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "orc",
-          "params": {
-            "bonus": 0.5
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.25
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.beast_lore.master_of_the_greenwood",
-      "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.beast_lore.warden_of_the_wood",
-        "elf.beast_lore.scourge_of_the_yrch"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "lifesteal",
-          "params": {
-            "percent": 0.12
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
       "id": "elf.grand.arrow_of_the_eldar",
       "tier": 6,
       "pos": [
@@ -2302,6 +2040,420 @@
           "perk": "foresight",
           "params": {
             "reduction": 0.08
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.friend_of_beasts",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.speech_of_beasts",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.beast_lore.friend_of_beasts"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:call_of_the_wild",
+          "cooldown_ticks": 1800,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.pack_bond",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.beast_lore.speech_of_beasts"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 0,
+            "radius": 14
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.summon_the_pack",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.beast_lore.pack_bond"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:summon_the_pack",
+          "cooldown_ticks": 1600,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.alpha_of_the_pack",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.beast_lore.summon_the_pack"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 1,
+            "radius": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.lord_of_wolves",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.beast_lore.alpha_of_the_pack"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:summon_the_pack",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 1,
+            "radius": 16
+          }
+        }
+      ],
+      "exclusive_group": "elf.beast_lore.spec"
+    },
+    {
+      "id": "elf.beast_lore.call_of_huan",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.beast_lore.speech_of_beasts"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:huan_the_hound",
+          "cooldown_ticks": 2400,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.hunters_bond",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.beast_lore.call_of_huan"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "amount": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.the_great_hunt",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.beast_lore.hunters_bond"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "amount": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.hound_of_the_valar",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.beast_lore.the_great_hunt"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:huan_the_hound",
+          "cooldown_ticks": 1800,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 2,
+            "radius": 16
+          }
+        }
+      ],
+      "exclusive_group": "elf.beast_lore.spec"
+    },
+    {
+      "id": "elf.beast_lore.elven_steed",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.beast_lore.speech_of_beasts"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "elven_steed",
+          "params": {
+            "speed": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.tireless_mount",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.beast_lore.elven_steed"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "elven_steed",
+          "params": {
+            "speed": 2,
+            "regen": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.sure_seat",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.beast_lore.tireless_mount"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "elven_steed",
+          "params": {
+            "speed": 2,
+            "rider_resistance": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.beast_lore.asfaloth",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.beast_lore.sure_seat"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "elven_steed",
+          "params": {
+            "speed": 3,
+            "regen": 1,
+            "rider_resistance": 1
+          }
+        }
+      ],
+      "exclusive_group": "elf.beast_lore.spec"
+    },
+    {
+      "id": "elf.beast_lore.friend_of_all_living_things",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.beast_lore.alpha_of_the_pack",
+        "elf.beast_lore.sure_seat"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 20
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:summon_the_pack",
+          "cooldown_ticks": 1600,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 1,
+            "radius": 18
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "elven_steed",
+          "params": {
+            "speed": 2,
+            "regen": 1
           }
         }
       ]

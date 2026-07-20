@@ -167,6 +167,7 @@ public final class PerkEventHandlers {
                 tickAllyAura(player);
                 tickWarPack(player);
                 tickCamouflage(player);
+                BeastPerks.tick(player);
             }
         });
     }
