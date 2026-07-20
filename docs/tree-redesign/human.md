@@ -29,4 +29,4 @@ Leadership morale and Combat soldiery.)
 2. **Leadership** — ✅ built — Kingship.
 3. **Archery** — ✅ built — Bowmen.
 4. **Beast-lore** — ✅ built — Horse-lords.
-5. **Survival** — Rangers of the North.
+5. **Survival** — ✅ built — Rangers of the North.
