@@ -3,247 +3,6 @@
   "theme": "kindreds:elf",
   "nodes": [
     {
-      "id": "elf.song.first_song",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 6.0
-        }
-      ]
-    },
-    {
-      "id": "elf.song.lay_of_leithian",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.song.first_song"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 3.0,
-            "food": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.song.marching_song",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.song.first_song"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.08
-        }
-      ]
-    },
-    {
-      "id": "elf.song.song_of_healing",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.song.lay_of_leithian"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": {
-            "radius": 8
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.song.voice_of_luthien",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.song.song_of_healing"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:song_of_luthien",
-          "cooldown_ticks": 3000,
-          "effects": [
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 1,
-              "duration_ticks": 320
-            },
-            {
-              "effect": "minecraft:absorption",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "elf.song.echoes_of_valinor",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.song.voice_of_luthien"
-      ],
-      "exclusive_group": "elf.song.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": {
-            "radius": 12
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:speed",
-            "amplifier": 1,
-            "duration_ticks": 200
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.song.dirge_of_mandos",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.song.voice_of_luthien"
-      ],
-      "exclusive_group": "elf.song.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 1,
-            "duration_ticks": 100
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "elf.song.song_of_the_valar",
-      "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.song.echoes_of_valinor",
-        "elf.song.dirge_of_mandos"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:song_of_the_valar",
-          "cooldown_ticks": 3600,
-          "effects": [
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 2,
-              "duration_ticks": 400
-            },
-            {
-              "effect": "minecraft:absorption",
-              "amplifier": 1,
-              "duration_ticks": 400
-            },
-            {
-              "effect": "minecraft:resistance",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "elf.beast_lore.wood_friend",
       "tier": 1,
       "pos": [
@@ -561,7 +320,7 @@
         "points": 4
       },
       "prereqs": [
-        "elf.song.song_of_the_valar",
+        "elf.song.song_of_rest",
         "elf.survival.light_of_foot"
       ],
       "abilities": [
@@ -2044,6 +1803,505 @@
             "effect": "minecraft:speed",
             "amplifier": 0,
             "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.song.voice_of_the_eldar",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "elf.song.song_of_rest",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.song.voice_of_the_eldar"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_healing",
+          "cooldown_ticks": 1800,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "elf.song.song_of_valour",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.song.song_of_rest"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.song.march_of_the_hosts",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.song.song_of_valour"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "elf.song.hymn_of_courage",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.song.march_of_the_hosts"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.song.lay_of_gil_galad",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.song.hymn_of_courage"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ],
+      "exclusive_group": "elf.song.spec"
+    },
+    {
+      "id": "elf.song.song_of_binding",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.song.song_of_rest"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_luthien",
+          "cooldown_ticks": 2000,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "elf.song.voice_of_command",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.song.song_of_binding"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.song.lay_of_leithian",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.song.voice_of_command"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_luthien",
+          "cooldown_ticks": 1800,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "elf.song.song_that_cast_down_the_tower",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.song.lay_of_leithian"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_luthien",
+          "cooldown_ticks": 1600,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.5
+          },
+          "foe": "undead"
+        }
+      ],
+      "exclusive_group": "elf.song.spec"
+    },
+    {
+      "id": "elf.song.song_of_mending",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.song.song_of_rest"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "elf.song.grace_of_rivendell",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.song.song_of_mending"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_healing",
+          "cooldown_ticks": 1500,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "elf.song.song_of_the_undying",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.song.grace_of_rivendell"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 5.0
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.song.music_of_the_ainur",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.song.song_of_the_undying"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_healing",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "exclusive_group": "elf.song.spec"
+    },
+    {
+      "id": "elf.song.song_of_luthien_tinuviel",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.song.lay_of_leithian",
+        "elf.song.grace_of_rivendell"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:song_of_luthien",
+          "cooldown_ticks": 2000,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "foresight",
+          "params": {
+            "reduction": 0.08
           }
         }
       ]

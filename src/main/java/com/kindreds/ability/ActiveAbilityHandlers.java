@@ -2,6 +2,8 @@ package com.kindreds.ability;
 
 import com.kindreds.data.ability.ActiveAbilityDef;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -47,6 +49,8 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("light_of_the_phial", (p, w) -> phialBurst(p, w, 10.0));
         HANDLERS.put("durins_wrath", (p, w) -> shockwave(p, w, 5.0, 8.0f));
         HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
+        HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
+        HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
     }
 
     /** Runs the world-effect for {@code def}, if it has one. Called by {@link ActiveAbilityService}
@@ -115,6 +119,36 @@ public final class ActiveAbilityHandlers {
         world.spawnParticles(ParticleTypes.EXPLOSION, p.getX(), p.getY() + 0.4, p.getZ(), 6,
                 radius / 2.5, 0.2, radius / 2.5, 0.0);
         world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.9f, 0.7f);
+    }
+
+    /** The enchantress's song (Lúthien): nearby foes are bound in slumberous weakness - slowed,
+     * weakened, and reeling. The song that unmade the tower of Sauron. */
+    private static void enchantSong(ServerPlayerEntity p, ServerWorld world, double radius) {
+        Box box = p.getBoundingBox().expand(radius);
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                x -> x != p && x.isAlive() && x instanceof Monster)) {
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 160, 2));
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 160, 1));
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 120, 0));
+        }
+        world.spawnParticles(ParticleTypes.NOTE, p.getX(), p.getBodyY(1.1), p.getZ(), 30, radius / 3, 0.6, radius / 3, 1.0);
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0f, 0.7f);
+    }
+
+    /** A song of healing (the House of Elrond): the singer and nearby allied players are mended and
+     * shielded. */
+    private static void healingSong(ServerPlayerEntity p, ServerWorld world, double radius) {
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 160, 1));
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 400, 1));
+        Box box = p.getBoundingBox().expand(radius);
+        for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
+                a -> a != p && a.isAlive())) {
+            ally.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 160, 1));
+            ally.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 400, 1));
+        }
+        world.spawnParticles(ParticleTypes.NOTE, p.getX(), p.getBodyY(1.1), p.getZ(), 24, radius / 3, 0.6, radius / 3, 1.0);
+        world.spawnParticles(ParticleTypes.HEART, p.getX(), p.getBodyY(1.0), p.getZ(), 8, 0.5, 0.5, 0.5, 0.1);
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0f, 1.5f);
     }
 
     /** A wave of dread: nearby hostiles are weakened and slowed as the frenzy takes the caster. */
