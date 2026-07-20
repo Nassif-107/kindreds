@@ -3,331 +3,6 @@
   "theme": "kindreds:snaga",
   "nodes": [
     {
-      "id": "snaga.shadow.cringing_dark",
-      "tier": 1,
-      "pos": [
-        0,
-        0
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:speed",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.lash_driven",
-      "tier": 2,
-      "pos": [
-        -30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.shadow.cringing_dark"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "attribute",
-            "attribute": "minecraft:attack_damage",
-            "operation": "add_multiplied_total",
-            "amount": 0.21
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 1.5,
-            "food": 1
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.spite_of_the_whip",
-      "tier": 2,
-      "pos": [
-        30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.shadow.cringing_dark"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        },
-        {
-          "type": "curse",
-          "curse_id": "sun_scorn",
-          "severity": 1,
-          "when": "daylight",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.flinching_malice",
-      "tier": 3,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.shadow.lash_driven"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "attribute",
-            "attribute": "minecraft:attack_damage",
-            "operation": "add_multiplied_total",
-            "amount": 0.2
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.foul_reek",
-      "tier": 3,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.shadow.spite_of_the_whip"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 0,
-            "duration_ticks": 100
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.3
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.lugburz_hate",
-      "tier": 3,
-      "pos": [
-        0,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.shadow.lash_driven",
-        "snaga.shadow.spite_of_the_whip"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.drivers_wrath",
-      "tier": 4,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.shadow.lugburz_hate"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "attribute",
-            "attribute": "minecraft:attack_speed",
-            "operation": "add_multiplied_base",
-            "amount": 0.203
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.night_terror",
-      "tier": 5,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.shadow.drivers_wrath"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 2,
-            "duration_ticks": -1
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 2.0,
-            "food": 1
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.despair_monger",
-      "tier": 6,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.shadow.night_terror"
-      ],
-      "exclusive_group": "snaga.shadow.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.4
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 1,
-            "duration_ticks": 140
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.4
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.shadow.black_breath_echo",
-      "tier": 6,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.shadow.night_terror"
-      ],
-      "exclusive_group": "snaga.shadow.spec",
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "attribute",
-            "attribute": "minecraft:attack_damage",
-            "operation": "add_multiplied_total",
-            "amount": 0.3
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.3,
-            "reduction": 1.0
-          }
-        }
-      ]
-    },
-    {
       "id": "snaga.survival.scrounger",
       "tier": 1,
       "pos": [
@@ -1714,6 +1389,578 @@
         {
           "type": "perk",
           "perk": "true_flight"
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.dark_dweller",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.whipped_cur",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.shadow.dark_dweller"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.one_with_shadow",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.shadow.whipped_cur"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.shadow_skin",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.shadow.one_with_shadow"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.dark_venom",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.shadow.shadow_skin"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.creature_of_the_pit",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.shadow.dark_venom"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        }
+      ],
+      "exclusive_group": "snaga.shadow.spec"
+    },
+    {
+      "id": "snaga.shadow.cornered_rat",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.shadow.whipped_cur"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.drivers_wrath",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.shadow.cornered_rat"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.nothing_to_lose",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.shadow.drivers_wrath"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.slaves_last_stand",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.shadow.nothing_to_lose"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ],
+      "exclusive_group": "snaga.shadow.spec"
+    },
+    {
+      "id": "snaga.shadow.foul_shiv",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.shadow.whipped_cur"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.crippling_strike",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.shadow.foul_shiv"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:slowness",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.festering_wound",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.shadow.crippling_strike"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.shadow.death_of_a_thousand_cuts",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.shadow.festering_wound"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 100
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 120
+          }
+        }
+      ],
+      "exclusive_group": "snaga.shadow.spec"
+    },
+    {
+      "id": "snaga.shadow.spite_of_the_slave",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.shadow.dark_venom",
+        "snaga.shadow.drivers_wrath"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
         }
       ]
     }
