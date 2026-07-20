@@ -3,321 +3,6 @@
   "theme": "kindreds:dwarf",
   "nodes": [
     {
-      "id": "dwarf.runecraft.cirth_carver",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "block_interaction_range",
-          "operation": "add_value",
-          "amount": 1.0
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.angerthas",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.runecraft.cirth_carver"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.rune_of_warding",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.runecraft.cirth_carver"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 6.0
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.moon_door",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.runecraft.angerthas"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:night_vision",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.runes_of_power",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.runecraft.angerthas",
-        "dwarf.runecraft.rune_of_warding"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 2.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.doors_of_durin",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.runecraft.rune_of_warding"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.warding_sigil",
-      "tier": 4,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.runecraft.moon_door"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.rune_of_might",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.runecraft.moon_door",
-        "dwarf.runecraft.doors_of_durin"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "underground",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.durins_ward",
-      "tier": 5,
-      "pos": [
-        0,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.runecraft.rune_of_might"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:durins_ward",
-          "cooldown_ticks": 2400,
-          "effects": [
-            {
-              "effect": "minecraft:resistance",
-              "amplifier": 1,
-              "duration_ticks": 400
-            },
-            {
-              "effect": "minecraft:absorption",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.ward_everlasting",
-      "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.runecraft.durins_ward"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.runecraft.rune_of_the_dwarrowdelf",
-      "tier": 7,
-      "pos": [
-        0,
-        210
-      ],
-      "cost": {
-        "discipline": "kindreds:runecraft",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.runecraft.ward_everlasting"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 5.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "contextual_boon",
-          "when": "underground",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 2,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
       "id": "dwarf.grand.durins_wrath",
       "tier": 5,
       "pos": [
@@ -1828,6 +1513,566 @@
               "duration_ticks": 400
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.rune_lore",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 1.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.rune_of_warding",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_lore"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:durins_ward",
+          "cooldown_ticks": 2000,
+          "effects": [
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:absorption",
+              "amplifier": 1,
+              "duration_ticks": 600
+            },
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.ward_of_stone",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_of_warding"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.rune_of_endurance",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.ward_of_stone"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.ward_everlasting",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_of_endurance"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.2
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.gate_of_durin",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.runecraft.ward_everlasting"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:durins_ward",
+          "cooldown_ticks": 1600,
+          "effects": [
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 2,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:absorption",
+              "amplifier": 2,
+              "duration_ticks": 800
+            },
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ],
+      "exclusive_group": "dwarf.runecraft.spec"
+    },
+    {
+      "id": "dwarf.runecraft.rune_of_might",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_of_warding"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.graven_weapon",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_of_might"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.25
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:glowing",
+            "amplifier": 0,
+            "duration_ticks": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.rune_of_wrath",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.graven_weapon"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:rune_of_wrath",
+          "cooldown_ticks": 1800,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:haste",
+              "amplifier": 0,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.rune_of_the_mountain_king",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_of_wrath"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.18
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:rune_of_wrath",
+          "cooldown_ticks": 1400,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:haste",
+              "amplifier": 1,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 1,
+              "duration_ticks": 500
+            }
+          ]
+        }
+      ],
+      "exclusive_group": "dwarf.runecraft.spec"
+    },
+    {
+      "id": "dwarf.runecraft.durins_lore",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_of_warding"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.runes_of_moria",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.durins_lore"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.heart_rune",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.runecraft.runes_of_moria"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:aule_legacy",
+          "cooldown_ticks": 2400,
+          "effects": [
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 600
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.runecraft.power_of_khazad_dum",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.runecraft.heart_rune"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:khazad_dum_reborn",
+          "cooldown_ticks": 3600,
+          "effects": [
+            {
+              "effect": "minecraft:haste",
+              "amplifier": 2,
+              "duration_ticks": 600
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 0,
+              "duration_ticks": 600
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ],
+      "exclusive_group": "dwarf.runecraft.spec"
+    },
+    {
+      "id": "dwarf.runecraft.master_of_runes",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_of_endurance",
+        "dwarf.runecraft.graven_weapon"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:durins_ward",
+          "cooldown_ticks": 1600,
+          "effects": [
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 2,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:absorption",
+              "amplifier": 2,
+              "duration_ticks": 800
+            },
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.25
+          }
         }
       ]
     }

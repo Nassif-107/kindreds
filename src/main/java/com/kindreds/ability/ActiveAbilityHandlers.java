@@ -55,6 +55,7 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
         HANDLERS.put("masters_forge", (p, w) -> mastersForge(p, w));
+        HANDLERS.put("durins_ward", (p, w) -> runeWard(p, w, 6.0));
         HANDLERS.put("call_of_the_wild", (p, w) -> summonWolves(p, w, 2, false));
         HANDLERS.put("summon_the_pack", (p, w) -> summonWolves(p, w, 4, false));
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
@@ -200,6 +201,30 @@ public final class ActiveAbilityHandlers {
     }
 
     private static final String SUMMON_TAG = "kindreds_summon";
+
+    /** A rune-ward of Durin (graven wards, as on the West-gate): a glowing rune-circle flares out,
+     * hurling back the servants of the dark and sapping their strength. The caster's own protection
+     * comes from the ability's effects; this is the ward that turns the foe. */
+    private static void runeWard(ServerPlayerEntity p, ServerWorld world, double radius) {
+        Box box = p.getBoundingBox().expand(radius);
+        Vec3d centre = p.getPos();
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                x -> x != p && x.isAlive() && x instanceof Monster)) {
+            Vec3d push = e.getPos().subtract(centre).normalize().multiply(1.1);
+            e.addVelocity(push.x, 0.35, push.z);
+            e.velocityModified = true;
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 140, 1));
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 140, 0));
+        }
+        // A ring of glowing runes at the caster's feet.
+        for (int i = 0; i < 36; i++) {
+            double a = (Math.PI * 2 * i) / 36;
+            world.spawnParticles(ParticleTypes.ENCHANT, p.getX() + Math.cos(a) * radius * 0.8, p.getBodyY(0.1),
+                    p.getZ() + Math.sin(a) * radius * 0.8, 2, 0.0, 0.3, 0.0, 0.02);
+        }
+        world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(1.0), p.getZ(), 24, 0.4, 0.6, 0.4, 0.04);
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS, 1.0f, 0.8f);
+    }
 
     /** The master smith's touch (Aulë's craft): every worn or held item is made whole again. */
     private static void mastersForge(ServerPlayerEntity p, ServerWorld world) {

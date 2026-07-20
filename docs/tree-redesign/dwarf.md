@@ -21,4 +21,4 @@ thorns, war_pack, ally_aura, evasion, strike_effect, contextual boons (`undergro
 1. **Mining** — ✅ built — delver's fortune, tunneler (vein-mine), deep-dweller (thrive underground). ← building
 2. **Smithing** — ✅ built — master-craft, self-repairing gear, temper, mithril.
 3. **Combat** — ✅ built — axe/hammer, shield-wall, Dwarf-fury (low-health rage), bane of orcs & trolls.
-4. **Runecraft** — rune-magic: wards, Durin's power, Khazad-dûm.
+4. **Runecraft** — ✅ built — rune-magic: wards, Durin's power, Khazad-dûm.
