@@ -3,299 +3,6 @@
   "theme": "kindreds:uruk",
   "nodes": [
     {
-      "id": "uruk.shadow.made_not_born",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "burning_time",
-          "operation": "add_multiplied_base",
-          "amount": -0.4
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.sun_marcher",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.shadow.made_not_born"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "daylight",
-          "effect": {
-            "type": "attribute",
-            "attribute": "movement_speed",
-            "operation": "add_multiplied_total",
-            "amount": 0.15
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.cruelty",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.shadow.made_not_born"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.3
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:wither",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.unshaken",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.shadow.sun_marcher"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.reckless_fury",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.shadow.cruelty"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.28
-        },
-        {
-          "type": "curse",
-          "curse_id": "reckless_abandon",
-          "severity": 2,
-          "when": "",
-          "effect": {
-            "type": "attribute",
-            "attribute": "armor",
-            "operation": "add_value",
-            "amount": -2.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.undying_hatred",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.shadow.unshaken",
-        "uruk.shadow.reckless_fury"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 4.5
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.noonday_wrath",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.shadow.undying_hatred"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "daylight",
-          "effect": {
-            "type": "attribute",
-            "attribute": "attack_damage",
-            "operation": "add_multiplied_total",
-            "amount": 0.25
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.black_speech_curse",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.shadow.undying_hatred"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:wither",
-            "amplifier": 1,
-            "duration_ticks": 100
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.unbreakable_will",
-      "tier": 6,
-      "pos": [
-        -30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 4
-      },
-      "prereqs": [
-        "uruk.shadow.noonday_wrath"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.25
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        }
-      ]
-    },
-    {
-      "id": "uruk.shadow.dread_of_isengard",
-      "tier": 6,
-      "pos": [
-        30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 4
-      },
-      "prereqs": [
-        "uruk.shadow.black_speech_curse"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.4
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 1,
-            "duration_ticks": 120
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
       "id": "uruk.grand.fighting_uruk_hai",
       "tier": 5,
       "pos": [
@@ -1907,6 +1614,569 @@
           "attribute": "minecraft:max_health",
           "operation": "add_value",
           "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.cruelty",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.25
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.no_fear",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.cruelty"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.barbed_strikes",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.no_fear"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.morgul_poison",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.shadow.barbed_strikes"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.cruel_wounds",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.shadow.morgul_poison"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 1,
+            "duration_ticks": 120
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.venom_of_mordor",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.shadow.cruel_wounds"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.4
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.4
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 100
+          }
+        }
+      ],
+      "exclusive_group": "uruk.shadow.spec"
+    },
+    {
+      "id": "uruk.shadow.dread",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.no_fear"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:blood_frenzy",
+          "cooldown_ticks": 1400,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 0,
+              "duration_ticks": 300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.fearmonger",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.shadow.dread"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.terror_of_the_shadow",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.shadow.fearmonger"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:slowness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.nameless_dread",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.shadow.terror_of_the_shadow"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:blood_frenzy",
+          "cooldown_ticks": 1200,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 0,
+              "duration_ticks": 300
+            }
+          ]
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        }
+      ],
+      "exclusive_group": "uruk.shadow.spec"
+    },
+    {
+      "id": "uruk.shadow.savage",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.no_fear"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.berserker",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.shadow.savage"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.unbroken",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.shadow.berserker"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.shadow.mindless_fury",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.shadow.unbroken"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ],
+      "exclusive_group": "uruk.shadow.spec"
+    },
+    {
+      "id": "uruk.shadow.servant_of_the_dark_power",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.shadow.cruel_wounds",
+        "uruk.shadow.terror_of_the_shadow"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:blood_frenzy",
+          "cooldown_ticks": 1400,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 300
+            }
+          ]
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
         }
       ]
     }

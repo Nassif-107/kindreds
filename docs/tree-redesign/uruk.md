@@ -23,4 +23,4 @@ The orc-kin template: strength-in-numbers, savagery, sun-behaviour. Orc/Snaga/Go
 1. **Combat** — ✅ built — The Fighting Uruk-hai. ← building
 2. **Leadership** — ✅ built — Warlord of Isengard.
 3. **Smithing** — ✅ built — Forges of Isengard.
-4. **Shadow** — Servants of the Shadow.
+4. **Shadow** — ✅ built — Servants of the Shadow.
