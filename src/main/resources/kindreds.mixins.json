@@ -8,6 +8,7 @@
     "ItemMixin",
     "LivingEntityBowSpeedMixin",
     "LivingEntityDamageMixin",
+    "LivingEntityStatusEffectMixin",
     "PersistentProjectileEntityAccessor",
     "PersistentProjectileEntityMixin",
     "PlayerAdvancementTrackerMixin"

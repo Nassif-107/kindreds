@@ -288,6 +288,13 @@
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
           "amount": -0.15
+        },
+        {
+          "type": "perk",
+          "perk": "prey_sense",
+          "params": {
+            "radius": 16
+          }
         }
       ]
     },
@@ -323,6 +330,13 @@
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
           "amount": -0.2
+        },
+        {
+          "type": "perk",
+          "perk": "prey_sense",
+          "params": {
+            "radius": 20
+          }
         }
       ],
       "exclusive_group": "snaga.stealth.spec"

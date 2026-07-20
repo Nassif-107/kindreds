@@ -2107,5 +2107,9 @@
   "kindreds.node.hobbit.song.courage_of_the_halflings.name": "Отвага невеличек",
   "kindreds.node.hobbit.song.courage_of_the_halflings.flavor": "Тихая упрямая доблесть, что изменила судьбу мира.",
   "kindreds.node.hobbit.song.spirit_of_the_shire.name": "Дух Шира",
-  "kindreds.node.hobbit.song.spirit_of_the_shire.flavor": "Веселье, пир и нежданная отвага — сердце Малого Народца."
+  "kindreds.node.hobbit.song.spirit_of_the_shire.flavor": "Веселье, пир и нежданная отвага — сердце Малого Народца.",
+  "kindreds.perk.prey_sense": "Чутьё добычи: живые враги поблизости светятся, видны сквозь стены и тьму (в пределах %d блоков)",
+  "kindreds.perk.dread_aura": "Ужас Ока: враги поблизости слабеют, лишь стоя пред вами (в пределах %d блоков)",
+  "kindreds.perk.unyielding": "Несгибаемый: вас нельзя замедлить — ни Замедление, ни Усталость не коснутся вас",
+  "kindreds.ability.blasting_fire": "Взрывной огонь Ортханка"
 }

@@ -54,6 +54,7 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("light_of_the_phial", (p, w) -> phialBurst(p, w, 10.0));
         HANDLERS.put("durins_wrath", (p, w) -> shockwave(p, w, 5.0, 8.0f));
         HANDLERS.put("savage_swing", (p, w) -> shockwave(p, w, 4.0, 7.0f)); // Uruk scimitar sweep (AoE cleave)
+        HANDLERS.put("blasting_fire", (p, w) -> goblinBomb(p, w, 6.0, 14.0f)); // Isengard siege-charge (bigger than the goblins')
         HANDLERS.put("skulk", (p, w) -> skulk(p, w, 12.0));
         HANDLERS.put("vanish", (p, w) -> skulk(p, w, 12.0));           // Hobbit "art of disappearing"
         HANDLERS.put("throw_stone", (p, w) -> throwStone(p, w, 1, 6.0f));

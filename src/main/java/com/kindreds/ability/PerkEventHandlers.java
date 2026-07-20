@@ -170,6 +170,7 @@ public final class PerkEventHandlers {
                 tickCamouflage(player);
                 BeastPerks.tick(player);
                 DwarfSmithing.tickMendGear(player);
+                RacialSignatures.tick(player);
             }
         });
     }

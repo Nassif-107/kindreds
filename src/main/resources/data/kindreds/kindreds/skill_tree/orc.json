@@ -939,6 +939,14 @@
               "duration_ticks": 300
             }
           ]
+        },
+        {
+          "type": "perk",
+          "perk": "dread_aura",
+          "params": {
+            "radius": 8,
+            "amplifier": 0
+          }
         }
       ]
     },
@@ -1065,6 +1073,14 @@
               "duration_ticks": 300
             }
           ]
+        },
+        {
+          "type": "perk",
+          "perk": "dread_aura",
+          "params": {
+            "radius": 10,
+            "amplifier": 1
+          }
         }
       ],
       "exclusive_group": "orc.shadow.spec"
@@ -1117,6 +1133,14 @@
           "attribute": "minecraft:attack_damage",
           "operation": "add_multiplied_total",
           "amount": 0.1
+        },
+        {
+          "type": "perk",
+          "perk": "dread_aura",
+          "params": {
+            "radius": 10,
+            "amplifier": 1
+          }
         }
       ]
     },
