@@ -1270,5 +1270,8 @@
   "kindreds.node.dwarf.runecraft.power_of_khazad_dum.name": "Мощь Кхазад-дума",
   "kindreds.node.dwarf.runecraft.power_of_khazad_dum.flavor": "Полная мощь величайшего царства, что когда-либо строили гномы.",
   "kindreds.node.dwarf.runecraft.master_of_runes.name": "Мастер рун",
-  "kindreds.node.dwarf.runecraft.master_of_runes.flavor": "Оберег, мощь и глубокое знание Дурина, слитые воедино."
+  "kindreds.node.dwarf.runecraft.master_of_runes.flavor": "Оберег, мощь и глубокое знание Дурина, слитые воедино.",
+  "kindreds.perk.auto_smelt": "Кузнец-копатель: добываемая руда выходит уже переплавленной",
+  "kindreds.perk.ore_magnet": "Рудный магнит: добытое летит прямо в вашу котомку",
+  "kindreds.perk.prospector_xp": "Добыча старателя: добыча руды даёт +%d опыта"
 }

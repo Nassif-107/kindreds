@@ -196,6 +196,13 @@
           "attribute": "minecraft:luck",
           "operation": "add_value",
           "amount": 1.0
+        },
+        {
+          "type": "perk",
+          "perk": "prospector_xp",
+          "params": {
+            "xp": 3
+          }
         }
       ]
     },
@@ -336,6 +343,10 @@
           "attribute": "minecraft:mining_efficiency",
           "operation": "add_value",
           "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "ore_magnet"
         }
       ]
     },
@@ -367,6 +378,10 @@
           "params": {
             "amplifier": 1
           }
+        },
+        {
+          "type": "perk",
+          "perk": "auto_smelt"
         }
       ],
       "exclusive_group": "dwarf.mining.spec"
@@ -561,6 +576,13 @@
           "attribute": "minecraft:luck",
           "operation": "add_value",
           "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "prospector_xp",
+          "params": {
+            "xp": 5
+          }
         }
       ]
     },

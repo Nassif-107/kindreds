@@ -1270,5 +1270,8 @@
   "kindreds.node.dwarf.runecraft.power_of_khazad_dum.name": "Power of Khazad-dûm",
   "kindreds.node.dwarf.runecraft.power_of_khazad_dum.flavor": "The full might of the greatest realm the Dwarves ever built.",
   "kindreds.node.dwarf.runecraft.master_of_runes.name": "Master of Runes",
-  "kindreds.node.dwarf.runecraft.master_of_runes.flavor": "Ward, might, and the deep lore of Durin, graven into one."
+  "kindreds.node.dwarf.runecraft.master_of_runes.flavor": "Ward, might, and the deep lore of Durin, graven into one.",
+  "kindreds.perk.auto_smelt": "Forge-delver: ore you mine comes up already smelted",
+  "kindreds.perk.ore_magnet": "Ore-magnet: mined drops fly straight into your pack",
+  "kindreds.perk.prospector_xp": "Prospector's bounty: mining ore grants +%d bonus experience"
 }

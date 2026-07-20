@@ -22,3 +22,5 @@ thorns, war_pack, ally_aura, evasion, strike_effect, contextual boons (`undergro
 2. **Smithing** — ✅ built — master-craft, self-repairing gear, temper, mithril.
 3. **Combat** — ✅ built — axe/hammer, shield-wall, Dwarf-fury (low-health rage), bane of orcs & trolls.
 4. **Runecraft** — ✅ built — rune-magic: wards, Durin's power, Khazad-dûm.
+
+**Economy extras (built):** auto_smelt, ore_magnet, prospector_xp woven into Mining (Tunneler = industrial delving, Fortune = worth-of-stone). Utility power, not combat — Dwarf owns the mining/crafting lane.
