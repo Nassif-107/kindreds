@@ -3,380 +3,6 @@
   "theme": "kindreds:snaga",
   "nodes": [
     {
-      "id": "snaga.stealth.beneath_notice",
-      "tier": 1,
-      "pos": [
-        0,
-        0
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -2.0
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.cowards_speed",
-      "tier": 2,
-      "pos": [
-        -30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.stealth.beneath_notice"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.135
-        },
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.28,
-            "reduction": 1.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.dust_and_shadow",
-      "tier": 2,
-      "pos": [
-        30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.stealth.beneath_notice"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -3.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:sneaking_speed",
-          "operation": "add_value",
-          "amount": 0.5
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.rag_cloak",
-      "tier": 2,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.stealth.beneath_notice"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.15
-        },
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.2,
-            "reduction": 1.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.cutpurse",
-      "tier": 3,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.stealth.cowards_speed"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.45
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.backstabber",
-      "tier": 3,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.stealth.dust_and_shadow"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.168
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.midden_lurker",
-      "tier": 3,
-      "pos": [
-        0,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.stealth.rag_cloak"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 1.0,
-            "food": 1
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -0.3
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.unseen",
-      "tier": 4,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.stealth.cutpurse",
-        "snaga.stealth.backstabber"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -3.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:sneaking_speed",
-          "operation": "add_value",
-          "amount": 0.3
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.ghost_of_the_pits",
-      "tier": 5,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.stealth.unseen"
-      ],
-      "exclusive_group": "snaga.stealth.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.28,
-            "reduction": 1.0
-          }
-        },
-        {
-          "type": "active",
-          "ability_id": "kindreds:skulk",
-          "cooldown_ticks": 1200,
-          "effects": [
-            {
-              "type": "status_effect",
-              "effect": "minecraft:invisibility",
-              "amplifier": 0,
-              "duration_ticks": 320
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.knife_in_the_dark",
-      "tier": 5,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.stealth.unseen"
-      ],
-      "exclusive_group": "snaga.stealth.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 1,
-            "duration_ticks": 100
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.45
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.shadow_of_lugburz",
-      "tier": 6,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.stealth.ghost_of_the_pits"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.35,
-            "reduction": 1.0
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:sneaking_speed",
-          "operation": "add_value",
-          "amount": 0.6
-        },
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -0.3
-        }
-      ]
-    },
-    {
-      "id": "snaga.stealth.gutting_the_watch",
-      "tier": 6,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.stealth.knife_in_the_dark"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.45
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 1,
-            "duration_ticks": 160
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.5
-          }
-        }
-      ]
-    },
-    {
       "id": "snaga.shadow.cringing_dark",
       "tier": 1,
       "pos": [
@@ -1489,6 +1115,491 @@
           "attribute": "minecraft:max_health",
           "operation": "add_value",
           "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.sneak",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.skulk",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.stealth.sneak"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:skulk",
+          "cooldown_ticks": 1000,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.shadow_step",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.stealth.skulk"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.15
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.unseen",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.stealth.shadow_step"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.ghost",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.stealth.unseen"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.15
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.never_seen",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.stealth.ghost"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        }
+      ],
+      "exclusive_group": "snaga.stealth.spec"
+    },
+    {
+      "id": "snaga.stealth.backstab",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.stealth.skulk"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.cheap_shot",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.stealth.backstab"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.6
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.assassin",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.stealth.cheap_shot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.7
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.throat_cutter",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.stealth.assassin"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.8
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 1,
+            "duration_ticks": 120
+          }
+        }
+      ],
+      "exclusive_group": "snaga.stealth.spec"
+    },
+    {
+      "id": "snaga.stealth.slippery",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.stealth.skulk"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.quick_feet",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.stealth.slippery"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.12
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.vanish",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.stealth.quick_feet"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:skulk",
+          "cooldown_ticks": 700,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.stealth.now_you_dont",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.stealth.vanish"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:skulk",
+          "cooldown_ticks": 500,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ],
+      "exclusive_group": "snaga.stealth.spec"
+    },
+    {
+      "id": "snaga.stealth.unseen_death",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.stealth.unseen",
+        "snaga.stealth.assassin"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.6
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:skulk",
+          "cooldown_ticks": 700,
+          "effects": []
         }
       ]
     }

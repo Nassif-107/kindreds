@@ -53,6 +53,7 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("light_of_the_phial", (p, w) -> phialBurst(p, w, 10.0));
         HANDLERS.put("durins_wrath", (p, w) -> shockwave(p, w, 5.0, 8.0f));
         HANDLERS.put("savage_swing", (p, w) -> shockwave(p, w, 4.0, 7.0f)); // Uruk scimitar sweep (AoE cleave)
+        HANDLERS.put("skulk", (p, w) -> skulk(p, w, 12.0));
         HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
         HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
@@ -338,6 +339,21 @@ public final class ActiveAbilityHandlers {
         world.spawnParticles(ParticleTypes.FLAME, p.getX(), p.getBodyY(1.0), p.getZ(), 30, 0.5, 0.7, 0.5, 0.02);
         world.spawnParticles(ParticleTypes.CRIT, p.getX(), p.getBodyY(1.0), p.getZ(), 20, 0.5, 0.7, 0.5, 0.05);
         world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_ANVIL_USE, SoundCategory.PLAYERS, 1.0f, 1.2f);
+    }
+
+    /** Skulk: the slave-orc melts into the shadows - it goes unseen (Invisibility) and quick (Speed),
+     * and the foes hunting it lose the scent (their aim breaks off). The coward's escape. */
+    private static void skulk(ServerPlayerEntity p, ServerWorld world, double radius) {
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 200, 0, false, false, true));
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 200, 1, false, false, true));
+        Box box = p.getBoundingBox().expand(radius);
+        for (net.minecraft.entity.mob.MobEntity m : world.getEntitiesByClass(net.minecraft.entity.mob.MobEntity.class,
+                box, e -> e.getTarget() == p)) {
+            m.setTarget(null);
+        }
+        world.spawnParticles(ParticleTypes.SMOKE, p.getX(), p.getBodyY(0.8), p.getZ(), 40, 0.4, 0.6, 0.4, 0.02);
+        world.spawnParticles(ParticleTypes.LARGE_SMOKE, p.getX(), p.getBodyY(0.8), p.getZ(), 12, 0.3, 0.4, 0.3, 0.01);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_FOX_AMBIENT, SoundCategory.PLAYERS, 0.7f, 0.6f);
     }
 
     /** A wave of dread: nearby hostiles are weakened and slowed as the frenzy takes the caster. */
