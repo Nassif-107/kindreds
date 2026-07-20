@@ -245,6 +245,8 @@ public final class NodeTooltip {
             case "camouflage" -> "§b" + I18n.translate("kindreds.perk.camouflage");
             case "foresight" -> "§d" + I18n.translate("kindreds.perk.foresight", Math.round(p.param("reduction", 0.1f) * 100));
             case "light_ward" -> "§e" + I18n.translate("kindreds.perk.light_ward");
+            case "vein_miner" -> "§6" + I18n.translate("kindreds.perk.vein_miner", Math.round(p.param("max", 16f)));
+            case "miners_rhythm" -> "§6" + I18n.translate("kindreds.perk.miners_rhythm", Math.round(p.param("amplifier", 0f)) + 1);
             case "beast_calm" -> "§a" + I18n.translate("kindreds.perk.beast_calm");
             case "pack_bond" -> "§a" + I18n.translate("kindreds.perk.pack_bond", Math.round(p.param("amplifier", 0f)) + 1);
             case "elven_steed" -> "§a" + I18n.translate("kindreds.perk.elven_steed", Math.round(p.param("speed", 0f)) + 1);

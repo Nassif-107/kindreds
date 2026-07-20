@@ -58,6 +58,7 @@ public final class PerkEventHandlers {
             if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity sp)) {
                 return;
             }
+            DwarfMining.onBlockBroken(serverWorld, sp, pos, state);
             List<PerkDef> perks = PerkService.perksOfType(sp, "mining_fortune");
             if (perks.isEmpty() || !state.isIn(ConventionalBlockTags.ORES)) {
                 return;
