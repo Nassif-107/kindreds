@@ -301,291 +301,6 @@
       ]
     },
     {
-      "id": "human.combat.swordsman_of_gondor",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "human.combat.shieldwall",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "human.combat.swordsman_of_gondor"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        },
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.2
-        }
-      ]
-    },
-    {
-      "id": "human.combat.swift_blade",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "human.combat.swordsman_of_gondor"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
-      "id": "human.combat.sons_of_numenor",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "human.combat.shieldwall",
-        "human.combat.swift_blade"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "orc",
-          "params": {
-            "bonus": 0.55
-          }
-        }
-      ]
-    },
-    {
-      "id": "human.combat.blade_of_the_white_company",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "human.combat.shieldwall",
-        "human.combat.swift_blade"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "sweeping_damage_ratio",
-          "operation": "add_value",
-          "amount": 0.5
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "human.combat.desperate_valour",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "human.combat.sons_of_numenor"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "human.combat.anduril_reforged",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "human.combat.desperate_valour"
-      ],
-      "exclusive_group": "human.combat.spec",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:anduril",
-          "cooldown_ticks": 2400,
-          "effects": [
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 2,
-              "duration_ticks": 300
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "human.combat.shieldmaidens_stand",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "human.combat.desperate_valour"
-      ],
-      "exclusive_group": "human.combat.spec",
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "attribute",
-            "attribute": "attack_speed",
-            "operation": "add_multiplied_total",
-            "amount": 0.2
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 1.5
-          }
-        }
-      ]
-    },
-    {
-      "id": "human.combat.blood_of_numenor",
-      "tier": 6,
-      "pos": [
-        -30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 4
-      },
-      "prereqs": [
-        "human.combat.anduril_reforged"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.25
-        },
-        {
-          "type": "perk",
-          "perk": "lifesteal",
-          "params": {
-            "percent": 0.12
-          }
-        }
-      ]
-    },
-    {
-      "id": "human.combat.last_stand_of_the_captains",
-      "tier": 6,
-      "pos": [
-        30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 4
-      },
-      "prereqs": [
-        "human.combat.shieldmaidens_stand"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 2.5
-          }
-        }
-      ]
-    },
-    {
       "id": "human.archery.bowman_of_dale",
       "tier": 1,
       "pos": [
@@ -1562,6 +1277,559 @@
           "attribute": "attack_damage",
           "operation": "add_multiplied_total",
           "amount": 0.2
+        }
+      ]
+    },
+    {
+      "id": "human.combat.swordsman",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "human.combat.valour_of_men",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "human.combat.swordsman"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "human.combat.bladework",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "human.combat.valour_of_men"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        }
+      ]
+    },
+    {
+      "id": "human.combat.deft_strokes",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "human.combat.bladework"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "human.combat.master_at_arms",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "human.combat.deft_strokes"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "human.combat.blademaster_of_gondor",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "human.combat.master_at_arms"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.18
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ],
+      "exclusive_group": "human.combat.spec"
+    },
+    {
+      "id": "human.combat.defiance",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "human.combat.valour_of_men"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.combat.second_wind",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "human.combat.defiance"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.combat.desperate_valour",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "human.combat.second_wind"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.combat.last_hope_of_men",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "human.combat.desperate_valour"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4.0
+          }
+        }
+      ],
+      "exclusive_group": "human.combat.spec"
+    },
+    {
+      "id": "human.combat.soldier_of_gondor",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "human.combat.valour_of_men"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "human.combat.foe_of_the_shadow",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "human.combat.soldier_of_gondor"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.35
+          },
+          "foe": "orc"
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.3
+          },
+          "foe": "troll"
+        }
+      ]
+    },
+    {
+      "id": "human.combat.flame_of_the_west",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "human.combat.foe_of_the_shadow"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:anduril",
+          "cooldown_ticks": 2000,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "undead"
+        }
+      ]
+    },
+    {
+      "id": "human.combat.heir_of_isildur",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "human.combat.flame_of_the_west"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:anduril",
+          "cooldown_ticks": 1600,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 0,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 1,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 500
+            }
+          ]
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.5
+          },
+          "foe": "undead"
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        }
+      ],
+      "exclusive_group": "human.combat.spec"
+    },
+    {
+      "id": "human.combat.champion_of_men",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "human.combat.master_at_arms",
+        "human.combat.desperate_valour"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.15
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:anduril",
+          "cooldown_ticks": 1800,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 0,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 1,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 500
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
         }
       ]
     }

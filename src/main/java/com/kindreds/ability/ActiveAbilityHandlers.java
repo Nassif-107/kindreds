@@ -56,6 +56,7 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
         HANDLERS.put("masters_forge", (p, w) -> mastersForge(p, w));
         HANDLERS.put("durins_ward", (p, w) -> runeWard(p, w, 6.0));
+        HANDLERS.put("anduril", (p, w) -> anduril(p, w, 8.0));
         HANDLERS.put("call_of_the_wild", (p, w) -> summonWolves(p, w, 2, false));
         HANDLERS.put("summon_the_pack", (p, w) -> summonWolves(p, w, 4, false));
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
@@ -224,6 +225,25 @@ public final class ActiveAbilityHandlers {
         }
         world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(1.0), p.getZ(), 24, 0.4, 0.6, 0.4, 0.04);
         world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS, 1.0f, 0.8f);
+    }
+
+    /** Andúril, the Flame of the West, reforged and drawn: its light throws fear into the servants of
+     * the Enemy (Weakness + Slowness), and burns the undead as it burned before the Paths of the Dead.
+     * The bearer's own war-fury comes from the ability's effects. */
+    private static void anduril(ServerPlayerEntity p, ServerWorld world, double radius) {
+        Box box = p.getBoundingBox().expand(radius);
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                x -> x != p && x.isAlive() && x instanceof Monster)) {
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 160, 1));
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 160, 0));
+            if (e.getType().isIn(EntityTypeTags.SENSITIVE_TO_SMITE)) {
+                e.setOnFireForTicks(120);
+                e.damage(world, world.getDamageSources().magic(), 5.0f);
+            }
+        }
+        world.spawnParticles(ParticleTypes.FLAME, p.getX(), p.getBodyY(1.1), p.getZ(), 40, 0.5, 0.7, 0.5, 0.04);
+        world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(1.1), p.getZ(), 20, 0.4, 0.6, 0.4, 0.05);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ITEM_TRIDENT_RIPTIDE_3.value(), SoundCategory.PLAYERS, 1.0f, 1.2f);
     }
 
     /** The master smith's touch (Aulë's craft): every worn or held item is made whole again. */
