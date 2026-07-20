@@ -3,347 +3,6 @@
   "theme": "kindreds:uruk",
   "nodes": [
     {
-      "id": "uruk.leadership.white_hand",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.forced_march",
-      "tier": 2,
-      "pos": [
-        0,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.leadership.white_hand"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "daylight",
-          "effect": {
-            "type": "attribute",
-            "attribute": "movement_speed",
-            "operation": "add_multiplied_total",
-            "amount": 0.12
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.drill_master",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.leadership.white_hand"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.isengard_drill",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.leadership.white_hand"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "war_pack",
-          "params": {
-            "radius": 12,
-            "per_ally": 0.08,
-            "max": 6
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.iron_discipline",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.leadership.drill_master",
-        "uruk.leadership.isengard_drill"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        },
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.fear_of_the_white_hand",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.leadership.drill_master"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.3
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.orc_kin_rally",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.leadership.isengard_drill"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": {
-            "radius": 8
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.warlord_of_isengard",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.leadership.fear_of_the_white_hand",
-        "uruk.leadership.orc_kin_rally"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.marshal_of_isengard",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.leadership.warlord_of_isengard"
-      ],
-      "exclusive_group": "uruk.leadership.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "war_pack",
-          "params": {
-            "radius": 16,
-            "per_ally": 0.09,
-            "max": 9
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.master_of_terror",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.leadership.warlord_of_isengard"
-      ],
-      "exclusive_group": "uruk.leadership.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 1,
-            "duration_ticks": 100
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.drillmaster_of_lugburz",
-      "tier": 6,
-      "pos": [
-        -30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 4
-      },
-      "prereqs": [
-        "uruk.leadership.marshal_of_isengard"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": {
-            "radius": 10
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 1,
-            "duration_ticks": 100
-          }
-        }
-      ]
-    },
-    {
-      "id": "uruk.leadership.whispers_of_saruman",
-      "tier": 6,
-      "pos": [
-        30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:leadership",
-        "points": 4
-      },
-      "prereqs": [
-        "uruk.leadership.master_of_terror"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.4
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:wither",
-            "amplifier": 1,
-            "duration_ticks": 100
-          }
-        }
-      ]
-    },
-    {
       "id": "uruk.smithing.isengard_steel",
       "tier": 1,
       "pos": [
@@ -1480,6 +1139,574 @@
           "attribute": "minecraft:max_health",
           "operation": "add_value",
           "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.taskmaster",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "per_ally": 0.05,
+            "max": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.uruk_captain",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.taskmaster"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.strength_in_numbers",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.uruk_captain"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "per_ally": 0.06,
+            "max": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.the_swarm",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.leadership.strength_in_numbers"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.warlord_of_isengard",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.leadership.the_swarm"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "per_ally": 0.07,
+            "max": 7
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.horde_master",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.leadership.warlord_of_isengard"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "per_ally": 0.08,
+            "max": 8
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ],
+      "exclusive_group": "uruk.leadership.spec"
+    },
+    {
+      "id": "uruk.leadership.driver",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.uruk_captain"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.white_hand",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.leadership.driver"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.banner_of_the_white_hand",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.leadership.white_hand"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.saruman_of_many_colours",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.leadership.banner_of_the_white_hand"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ],
+      "exclusive_group": "uruk.leadership.spec"
+    },
+    {
+      "id": "uruk.leadership.cruel_master",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.uruk_captain"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.whispers_of_saruman",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.leadership.cruel_master"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.dread_of_the_white_hand",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.leadership.whispers_of_saruman"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.leadership.terror_incarnate",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.leadership.dread_of_the_white_hand"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 1,
+            "duration_ticks": 120
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ],
+      "exclusive_group": "uruk.leadership.spec"
+    },
+    {
+      "id": "uruk.leadership.master_of_the_host",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.leadership.warlord_of_isengard",
+        "uruk.leadership.white_hand"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_pack",
+          "params": {
+            "per_ally": 0.07,
+            "max": 7
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
         }
       ]
     }
