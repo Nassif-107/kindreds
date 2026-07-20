@@ -3,255 +3,6 @@
   "theme": "kindreds:orc",
   "nodes": [
     {
-      "id": "orc.survival.thick_hide",
-      "tier": 1,
-      "pos": [
-        0,
-        0
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.hardened_scars",
-      "tier": 2,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.survival.thick_hide"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.scavenger",
-      "tier": 2,
-      "pos": [
-        -30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.survival.thick_hide"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 3.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.foul_feeder",
-      "tier": 2,
-      "pos": [
-        30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.survival.thick_hide"
-      ],
-      "abilities": [
-        {
-          "type": "status_effect",
-          "effect": "minecraft:saturation",
-          "amplifier": 0,
-          "duration_ticks": -1
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.war_scarred_hide",
-      "tier": 3,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.survival.scavenger"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.mordor_bred",
-      "tier": 3,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.survival.foul_feeder"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.pit_endurance",
-      "tier": 4,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.survival.war_scarred_hide",
-        "orc.survival.mordor_bred"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.carrion_gorge",
-      "tier": 5,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.survival.pit_endurance"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 4.0,
-            "food": 2
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.gorgoroth_endurance",
-      "tier": 5,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.survival.pit_endurance"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "operation": "add_value",
-          "amount": 6.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:armor",
-          "operation": "add_value",
-          "amount": 4
-        }
-      ]
-    },
-    {
-      "id": "orc.survival.iron_stomach",
-      "tier": 6,
-      "pos": [
-        0,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 4
-      },
-      "prereqs": [
-        "orc.survival.carrion_gorge",
-        "orc.survival.gorgoroth_endurance"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
       "id": "orc.beast_lore.warg_kin",
       "tier": 1,
       "pos": [
@@ -1622,6 +1373,494 @@
           "attribute": "minecraft:attack_damage",
           "operation": "add_multiplied_total",
           "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.orc_hide",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.skulking_survivor",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.survival.orc_hide"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.wall_crawler",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.survival.skulking_survivor"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 350.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:step_height",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.deep_dweller",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.wall_crawler"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.cave_orc",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.deep_dweller"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 350.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.thing_from_the_deep",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.survival.cave_orc"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 400.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ],
+      "exclusive_group": "orc.survival.spec"
+    },
+    {
+      "id": "orc.survival.nimble",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.survival.skulking_survivor"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.cowards_luck",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.nimble"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.slippery",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.cowards_luck"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.never_caught",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.survival.slippery"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.25,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        }
+      ],
+      "exclusive_group": "orc.survival.spec"
+    },
+    {
+      "id": "orc.survival.iron_stomach",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.survival.skulking_survivor"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.plague_ridden",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.iron_stomach"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.hardy_vermin",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.survival.plague_ridden"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "orc.survival.unkillable_pest",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.survival.hardy_vermin"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 5.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "exclusive_group": "orc.survival.spec"
+    },
+    {
+      "id": "orc.survival.survivor_of_the_pits",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.survival.cave_orc",
+        "orc.survival.iron_stomach"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 350.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     }
