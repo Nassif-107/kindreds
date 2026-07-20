@@ -3,338 +3,6 @@
   "theme": "kindreds:orc",
   "nodes": [
     {
-      "id": "orc.shadow.unseen_prowler",
-      "tier": 1,
-      "pos": [
-        0,
-        0
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -2.0
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.shadow_step",
-      "tier": 2,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.shadow.unseen_prowler"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.2,
-            "reduction": 0.3
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.cruel_blade",
-      "tier": 2,
-      "pos": [
-        -30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.shadow.unseen_prowler"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.3
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.dread_blade",
-      "tier": 2,
-      "pos": [
-        30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.shadow.unseen_prowler"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.3
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.reaping_dark",
-      "tier": 3,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.shadow.cruel_blade"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.45
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.night_strength",
-      "tier": 3,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.shadow.dread_blade"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.black_breath",
-      "tier": 4,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.shadow.reaping_dark",
-        "orc.shadow.night_strength"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "attribute",
-            "attribute": "minecraft:attack_damage",
-            "operation": "add_multiplied_total",
-            "amount": 0.21
-          }
-        },
-        {
-          "type": "curse",
-          "curse_id": "black_breath_daylight",
-          "severity": 1,
-          "when": "daylight",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:slowness",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.venom_kiss",
-      "tier": 5,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.shadow.black_breath"
-      ],
-      "exclusive_group": "orc.shadow.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 1,
-            "duration_ticks": 120
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.4
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.grishnakh_terror",
-      "tier": 5,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.shadow.black_breath"
-      ],
-      "exclusive_group": "orc.shadow.spec",
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "darkness",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.3
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:weakness",
-            "amplifier": 1,
-            "duration_ticks": 100
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.moria_dark",
-      "tier": 6,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 4
-      },
-      "prereqs": [
-        "orc.shadow.venom_kiss"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "deep_dark",
-          "effect": {
-            "type": "attribute",
-            "attribute": "minecraft:attack_damage",
-            "operation": "add_multiplied_total",
-            "amount": 0.28
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.shadow.unmaking_dread",
-      "tier": 6,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:shadow",
-        "points": 4
-      },
-      "prereqs": [
-        "orc.shadow.grishnakh_terror"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "deep_dark",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 2,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
       "id": "orc.survival.thick_hide",
       "tier": 1,
       "pos": [
@@ -1396,6 +1064,564 @@
             "per_ally": 0.06,
             "max": 6
           }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.child_of_the_dark",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.shadow_born",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.shadow.child_of_the_dark"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.one_with_the_dark",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.shadow.shadow_born"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.unseen_in_the_dark",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.one_with_the_dark"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.strength_of_the_shadow",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.unseen_in_the_dark"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.creature_of_night",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.shadow.strength_of_the_shadow"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        }
+      ],
+      "exclusive_group": "orc.shadow.spec"
+    },
+    {
+      "id": "orc.shadow.foul_blades",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.shadow.shadow_born"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.black_breath",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.foul_blades"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 120
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:slowness",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.morgul_wound",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.black_breath"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.breath_of_the_nazgul",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.shadow.morgul_wound"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 1,
+            "duration_ticks": 140
+          }
+        }
+      ],
+      "exclusive_group": "orc.shadow.spec"
+    },
+    {
+      "id": "orc.shadow.fear_the_eye",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.shadow.shadow_born"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:blood_frenzy",
+          "cooldown_ticks": 1400,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 0,
+              "duration_ticks": 300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.saurons_will",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.fear_the_eye"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.undying_malice",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.shadow.saurons_will"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.shadow.slave_of_the_dark_lord",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.shadow.undying_malice"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:blood_frenzy",
+          "cooldown_ticks": 1200,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 300
+            }
+          ]
+        }
+      ],
+      "exclusive_group": "orc.shadow.spec"
+    },
+    {
+      "id": "orc.shadow.shadow_of_mordor",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.shadow.strength_of_the_shadow",
+        "orc.shadow.black_breath"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
         }
       ]
     }
