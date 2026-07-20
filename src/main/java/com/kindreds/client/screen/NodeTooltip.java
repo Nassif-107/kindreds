@@ -254,6 +254,7 @@ public final class NodeTooltip {
             case "beast_calm" -> "§a" + I18n.translate("kindreds.perk.beast_calm");
             case "pack_bond" -> "§a" + I18n.translate("kindreds.perk.pack_bond", Math.round(p.param("amplifier", 0f)) + 1);
             case "elven_steed" -> "§a" + I18n.translate("kindreds.perk.elven_steed", Math.round(p.param("speed", 0f)) + 1);
+            case "war_steed" -> "§a" + I18n.translate("kindreds.perk.war_steed", Math.round(p.param("speed", 0f)) + 1);
             default -> {
                 StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));
                 if (!p.params().isEmpty()) {

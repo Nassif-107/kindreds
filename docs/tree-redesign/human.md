@@ -28,5 +28,5 @@ Leadership morale and Combat soldiery.)
 1. **Combat** — ✅ built — Valour & the Blade. ← building
 2. **Leadership** — ✅ built — Kingship.
 3. **Archery** — ✅ built — Bowmen.
-4. **Beast-lore** — Horse-lords.
+4. **Beast-lore** — ✅ built — Horse-lords.
 5. **Survival** — Rangers of the North.

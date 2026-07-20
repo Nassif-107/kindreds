@@ -216,204 +216,6 @@
       ]
     },
     {
-      "id": "human.beast_lore.horse_lord_of_the_mark",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.08
-        }
-      ]
-    },
-    {
-      "id": "human.beast_lore.eored_riding",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "human.beast_lore.horse_lord_of_the_mark"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.06
-        }
-      ]
-    },
-    {
-      "id": "human.beast_lore.horse_masters_grace",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "human.beast_lore.horse_lord_of_the_mark"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "jump_strength",
-          "operation": "add_value",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
-      "id": "human.beast_lore.riders_of_the_mark",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "human.beast_lore.eored_riding",
-        "human.beast_lore.horse_masters_grace"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": {
-            "radius": 12
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:speed",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "human.beast_lore.charge_of_the_rohirrim",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "human.beast_lore.riders_of_the_mark"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.2
-        },
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.08
-        }
-      ]
-    },
-    {
-      "id": "human.beast_lore.ride_of_the_rohirrim",
-      "tier": 5,
-      "pos": [
-        0,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "human.beast_lore.charge_of_the_rohirrim"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:ride_of_the_rohirrim",
-          "cooldown_ticks": 2400,
-          "effects": [
-            {
-              "effect": "minecraft:speed",
-              "amplifier": 2,
-              "duration_ticks": 300
-            },
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
-          ]
-        }
-      ],
-      "deed_advancement": "kindreds:deed/human_rohan_ride_of_the_rohirrim"
-    },
-    {
-      "id": "human.beast_lore.king_of_the_mark",
-      "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 4
-      },
-      "prereqs": [
-        "human.beast_lore.ride_of_the_rohirrim"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 2.0
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        }
-      ]
-    },
-    {
       "id": "human.song.song_of_the_mark",
       "tier": 1,
       "pos": [
@@ -2331,6 +2133,473 @@
             "bonus": 0.3
           },
           "foe": "orc"
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.horse_lord",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.rider_of_the_mark",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "human.beast_lore.horse_lord"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.groom",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "human.beast_lore.rider_of_the_mark"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2,
+            "regen": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.barded_horse",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "human.beast_lore.groom"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2,
+            "rider_resistance": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.tireless_mount",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "human.beast_lore.barded_horse"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2,
+            "regen": 1,
+            "rider_resistance": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.mearas",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "human.beast_lore.tireless_mount"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 3,
+            "regen": 1,
+            "rider_resistance": 1
+          }
+        }
+      ],
+      "exclusive_group": "human.beast_lore.spec"
+    },
+    {
+      "id": "human.beast_lore.cavalryman",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "human.beast_lore.rider_of_the_mark"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:ride_of_the_rohirrim",
+          "cooldown_ticks": 1800,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.lancer",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "human.beast_lore.cavalryman"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.35
+          },
+          "foe": "orc"
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.the_charge",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "human.beast_lore.lancer"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:ride_of_the_rohirrim",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.ride_of_the_rohirrim",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "human.beast_lore.the_charge"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:ride_of_the_rohirrim",
+          "cooldown_ticks": 1200,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "orc"
+        }
+      ],
+      "exclusive_group": "human.beast_lore.spec"
+    },
+    {
+      "id": "human.beast_lore.hardy_rider",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "human.beast_lore.rider_of_the_mark"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.horse_friend",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "human.beast_lore.hardy_rider"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 12
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.eored_captain",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "human.beast_lore.horse_friend"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.beast_lore.marshal_of_the_mark",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "human.beast_lore.eored_captain"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ],
+      "exclusive_group": "human.beast_lore.spec"
+    },
+    {
+      "id": "human.beast_lore.lord_of_the_mark",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "human.beast_lore.tireless_mount",
+        "human.beast_lore.the_charge"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2,
+            "regen": 1
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:ride_of_the_rohirrim",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
         }
       ]
     }

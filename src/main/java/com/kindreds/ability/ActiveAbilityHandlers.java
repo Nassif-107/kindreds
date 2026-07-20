@@ -60,6 +60,7 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("anduril", (p, w) -> anduril(p, w, 8.0));
         HANDLERS.put("hands_of_the_king", (p, w) -> handsOfTheKing(p, w, 10.0));
         HANDLERS.put("war_horn", (p, w) -> warHorn(p, w, 12.0));
+        HANDLERS.put("ride_of_the_rohirrim", (p, w) -> rideOfTheRohirrim(p, w, 8.0));
         HANDLERS.put("call_of_the_wild", (p, w) -> summonWolves(p, w, 2, false));
         HANDLERS.put("summon_the_pack", (p, w) -> summonWolves(p, w, 4, false));
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
@@ -228,6 +229,32 @@ public final class ActiveAbilityHandlers {
         }
         world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(1.0), p.getZ(), 24, 0.4, 0.6, 0.4, 0.04);
         world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS, 1.0f, 0.8f);
+    }
+
+    /** The Ride of the Rohirrim: the rider and nearby allies surge forward (Speed, and for the caster
+     * Strength and Resistance), and if you charge mounted, the foes in your path are trampled - hurled
+     * back and hurt. "Ride now, ride now! Ride to Gondor!" */
+    private static void rideOfTheRohirrim(ServerPlayerEntity p, ServerWorld world, double radius) {
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 300, 1, false, false, true));
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 0, false, false, true));
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 300, 0, false, false, true));
+        Box box = p.getBoundingBox().expand(radius);
+        for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
+                a -> a != p && a.isAlive())) {
+            ally.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 300, 1, false, false, true));
+        }
+        if (p.hasVehicle()) {
+            Vec3d centre = p.getPos();
+            for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                    x -> x != p && x.isAlive() && x instanceof Monster)) {
+                Vec3d push = e.getPos().subtract(centre).normalize().multiply(1.2);
+                e.addVelocity(push.x, 0.4, push.z);
+                e.velocityModified = true;
+                e.damage(world, p.getDamageSources().playerAttack(p), 6.0f);
+            }
+        }
+        world.spawnParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.2, p.getZ(), 30, radius / 3, 0.2, radius / 3, 0.05);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_RAVAGER_ROAR, SoundCategory.PLAYERS, 1.0f, 1.5f);
     }
 
     /** The Hands of the King are the hands of a healer (athelas/kingsfoil): the caster and nearby allies

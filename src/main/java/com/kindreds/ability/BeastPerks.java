@@ -85,7 +85,9 @@ public final class BeastPerks {
     /** While you ride a living mount it runs swift and tireless (Speed, Jump, and at the deeper art a
      * slow mending), and you sit the saddle sure (Resistance). */
     private static void elvenSteed(ServerPlayerEntity player) {
-        List<PerkDef> perks = PerkService.perksOfType(player, "elven_steed");
+        // The same mount-craft under two names: the Elf's elven_steed and the Rohirrim's war_steed.
+        List<PerkDef> perks = new java.util.ArrayList<>(PerkService.perksOfType(player, "elven_steed"));
+        perks.addAll(PerkService.perksOfType(player, "war_steed"));
         if (perks.isEmpty() || !(player.getVehicle() instanceof LivingEntity mount)) {
             return;
         }
