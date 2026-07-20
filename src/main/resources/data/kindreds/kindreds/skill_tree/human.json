@@ -3,246 +3,6 @@
   "theme": "kindreds:human",
   "nodes": [
     {
-      "id": "human.archery.bowman_of_dale",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "human.archery.keen_shaft",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "human.archery.bowman_of_dale"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
-      "id": "human.archery.long_sight_of_the_bowmen",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "human.archery.bowman_of_dale"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "entity_interaction_range",
-          "operation": "add_value",
-          "amount": 1.5
-        }
-      ]
-    },
-    {
-      "id": "human.archery.aim_of_the_bardings",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "human.archery.keen_shaft",
-        "human.archery.long_sight_of_the_bowmen"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.168
-        }
-      ]
-    },
-    {
-      "id": "human.archery.black_arrow_of_dale",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "human.archery.captain_of_the_bowmen"
-      ],
-      "exclusive_group": "human.archery.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "arrow_slaying",
-          "foe": "dragon",
-          "params": {
-            "bonus": 0.75
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "arrow_slaying",
-          "foe": "troll",
-          "params": {
-            "bonus": 0.75
-          }
-        }
-      ],
-      "deed_advancement": "kindreds:deed/human_dale_last_arrow"
-    },
-    {
-      "id": "human.archery.master_bowman_of_esgaroth",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "human.archery.captain_of_the_bowmen"
-      ],
-      "exclusive_group": "human.archery.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.18
-        }
-      ]
-    },
-    {
-      "id": "human.archery.captain_of_the_bowmen",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "human.archery.aim_of_the_bardings"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.18
-        },
-        {
-          "type": "attribute",
-          "attribute": "entity_interaction_range",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "human.archery.heir_of_bard",
-      "tier": 6,
-      "pos": [
-        -30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 4
-      },
-      "prereqs": [
-        "human.archery.black_arrow_of_dale"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "arrow_slaying",
-          "foe": "any",
-          "params": {
-            "bonus": 0.5
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "human.archery.wind_lord_of_dale",
-      "tier": 6,
-      "pos": [
-        30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 4
-      },
-      "prereqs": [
-        "human.archery.master_bowman_of_esgaroth"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 1.5
-          }
-        }
-      ]
-    },
-    {
       "id": "human.smithing.smith_of_dale",
       "tier": 1,
       "pos": [
@@ -2128,6 +1888,449 @@
             "amplifier": 0,
             "duration_ticks": 80
           }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.bowman",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.steady_aim",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "human.archery.bowman"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "swift_draw",
+          "params": {
+            "ticks": 1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.keen_archer",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "human.archery.steady_aim"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.far_shot",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "human.archery.keen_archer"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "long_shot",
+          "params": {
+            "per_block": 0.02,
+            "max": 0.6
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.piercing_shot",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "human.archery.far_shot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_pierce",
+          "params": {
+            "targets": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.deadshot",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "human.archery.piercing_shot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_crit"
+        }
+      ],
+      "exclusive_group": "human.archery.spec"
+    },
+    {
+      "id": "human.archery.quick_nock",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "human.archery.steady_aim"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "swift_draw",
+          "params": {
+            "ticks": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.hail_of_arrows",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "human.archery.quick_nock"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:hail_of_arrows",
+          "cooldown_ticks": 800,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "human.archery.massed_volley",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "human.archery.hail_of_arrows"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "multishot",
+          "params": {
+            "arrows": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.rain_of_gondor",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "human.archery.massed_volley"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:hail_of_arrows",
+          "cooldown_ticks": 600,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "multishot",
+          "params": {
+            "arrows": 1
+          }
+        }
+      ],
+      "exclusive_group": "human.archery.spec"
+    },
+    {
+      "id": "human.archery.soldier_bowman",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "human.archery.steady_aim"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.3
+          },
+          "foe": "orc"
+        }
+      ]
+    },
+    {
+      "id": "human.archery.orc_fletcher",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "human.archery.soldier_bowman"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_effect",
+          "foe": "orc",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 120
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.captain_of_the_bowmen",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "human.archery.orc_fletcher"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "orc"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "long_shot",
+          "params": {
+            "per_block": 0.02,
+            "max": 0.6
+          }
+        }
+      ]
+    },
+    {
+      "id": "human.archery.warden_of_the_walls",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "human.archery.captain_of_the_bowmen"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.5
+          },
+          "foe": "orc"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_pierce",
+          "params": {
+            "targets": 3
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ],
+      "exclusive_group": "human.archery.spec"
+    },
+    {
+      "id": "human.archery.bowmaster_of_gondor",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "human.archery.far_shot",
+        "human.archery.captain_of_the_bowmen"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "multishot",
+          "params": {
+            "arrows": 1
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:hail_of_arrows",
+          "cooldown_ticks": 700,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.3
+          },
+          "foe": "orc"
         }
       ]
     }

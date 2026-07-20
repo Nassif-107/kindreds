@@ -47,6 +47,7 @@ public final class ActiveAbilityHandlers {
 
     static {
         HANDLERS.put("galadhrim_volley", (p, w) -> volley(p, w, 5, 6.0f));
+        HANDLERS.put("hail_of_arrows", (p, w) -> volley(p, w, 4, 5.0f)); // Gondor's massed volley (below the Elf's)
         HANDLERS.put("arrow_of_the_eldar", (p, w) -> piercingShot(p, w, 14.0f));
         HANDLERS.put("star_glass", (p, w) -> phialBurst(p, w, 8.0));
         HANDLERS.put("light_of_the_phial", (p, w) -> phialBurst(p, w, 10.0));

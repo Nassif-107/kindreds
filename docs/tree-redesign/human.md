@@ -27,6 +27,6 @@ Leadership morale and Combat soldiery.)
 ## Discipline order & status
 1. **Combat** — ✅ built — Valour & the Blade. ← building
 2. **Leadership** — ✅ built — Kingship.
-3. **Archery** — Bowmen.
+3. **Archery** — ✅ built — Bowmen.
 4. **Beast-lore** — Horse-lords.
 5. **Survival** — Rangers of the North.
