@@ -57,6 +57,8 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("masters_forge", (p, w) -> mastersForge(p, w));
         HANDLERS.put("durins_ward", (p, w) -> runeWard(p, w, 6.0));
         HANDLERS.put("anduril", (p, w) -> anduril(p, w, 8.0));
+        HANDLERS.put("hands_of_the_king", (p, w) -> handsOfTheKing(p, w, 10.0));
+        HANDLERS.put("war_horn", (p, w) -> warHorn(p, w, 12.0));
         HANDLERS.put("call_of_the_wild", (p, w) -> summonWolves(p, w, 2, false));
         HANDLERS.put("summon_the_pack", (p, w) -> summonWolves(p, w, 4, false));
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
@@ -225,6 +227,59 @@ public final class ActiveAbilityHandlers {
         }
         world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(1.0), p.getZ(), 24, 0.4, 0.6, 0.4, 0.04);
         world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS, 1.0f, 0.8f);
+    }
+
+    /** The Hands of the King are the hands of a healer (athelas/kingsfoil): the caster and nearby allies
+     * are healed and their hurts and afflictions cured. */
+    private static void handsOfTheKing(ServerPlayerEntity p, ServerWorld world, double radius) {
+        healAndCure(p);
+        Box box = p.getBoundingBox().expand(radius);
+        for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
+                a -> a != p && a.isAlive())) {
+            healAndCure(ally);
+        }
+        world.spawnParticles(ParticleTypes.HEART, p.getX(), p.getBodyY(1.0), p.getZ(), 12, 0.6, 0.6, 0.6, 0.1);
+        world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, p.getX(), p.getBodyY(1.0), p.getZ(), 20, 0.6, 0.8, 0.6, 0.1);
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0f, 1.6f);
+    }
+
+    /** Heal a chunk of health, grant a short Regeneration, and strip every harmful effect (the healing
+     * of the King). */
+    private static void healAndCure(net.minecraft.entity.LivingEntity e) {
+        e.heal(8.0f);
+        e.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 120, 1, false, false, true));
+        java.util.List<net.minecraft.registry.entry.RegistryEntry<net.minecraft.entity.effect.StatusEffect>> bad =
+                new java.util.ArrayList<>();
+        for (StatusEffectInstance inst : e.getStatusEffects()) {
+            if (inst.getEffectType().value().getCategory() == net.minecraft.entity.effect.StatusEffectCategory.HARMFUL) {
+                bad.add(inst.getEffectType());
+            }
+        }
+        bad.forEach(e::removeStatusEffect);
+    }
+
+    /** A great war-horn (the horns of the Mark): allies are heartened (Strength, Resistance, Speed) and
+     * the servants of the Enemy are dismayed (Weakness, Slowness). */
+    private static void warHorn(ServerPlayerEntity p, ServerWorld world, double radius) {
+        Box box = p.getBoundingBox().expand(radius);
+        rally(p);
+        for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
+                a -> a != p && a.isAlive())) {
+            rally(ally);
+        }
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                x -> x != p && x.isAlive() && x instanceof Monster)) {
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 160, 0));
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 160, 0));
+        }
+        world.spawnParticles(ParticleTypes.NOTE, p.getX(), p.getBodyY(1.4), p.getZ(), 24, 1.0, 0.4, 1.0, 1.0);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_RAVAGER_ROAR, SoundCategory.PLAYERS, 1.0f, 1.3f);
+    }
+
+    private static void rally(ServerPlayerEntity player) {
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 0, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 300, 0, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 300, 0, false, false, true));
     }
 
     /** Andúril, the Flame of the West, reforged and drawn: its light throws fear into the servants of
