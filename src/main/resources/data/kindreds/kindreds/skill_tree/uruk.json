@@ -3,273 +3,6 @@
   "theme": "kindreds:uruk",
   "nodes": [
     {
-      "id": "uruk.smithing.isengard_steel",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.tempered_plate",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.smithing.isengard_steel"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.black_iron",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.smithing.isengard_steel"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2.2
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.war_smith_of_orthanc",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "uruk.smithing.tempered_plate",
-        "uruk.smithing.black_iron"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.forge_of_orthanc",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.smithing.war_smith_of_orthanc"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 6.0
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.black_iron_plating",
-      "tier": 4,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.smithing.war_smith_of_orthanc"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2.5
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.black_plate_mail",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.smithing.forge_of_orthanc"
-      ],
-      "exclusive_group": "uruk.smithing.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 5.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2.5
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.hardened_by_fire",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "uruk.smithing.forge_of_orthanc"
-      ],
-      "exclusive_group": "uruk.smithing.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "burning_time",
-          "operation": "add_multiplied_base",
-          "amount": -0.5
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.siege_plate",
-      "tier": 6,
-      "pos": [
-        -30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 4
-      },
-      "prereqs": [
-        "uruk.smithing.black_plate_mail"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.2
-        }
-      ]
-    },
-    {
-      "id": "uruk.smithing.molten_temper",
-      "tier": 6,
-      "pos": [
-        30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 4
-      },
-      "prereqs": [
-        "uruk.smithing.hardened_by_fire"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 3.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 4.0
-        }
-      ]
-    },
-    {
       "id": "uruk.shadow.made_not_born",
       "tier": 1,
       "pos": [
@@ -1707,6 +1440,473 @@
             "amplifier": 0,
             "duration_ticks": 80
           }
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.crude_forge",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.05
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.iron_of_isengard",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.crude_forge"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.uruk_plate",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.iron_of_isengard"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.jagged_plate",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.smithing.uruk_plate"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.25
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.heavy_harness",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.smithing.jagged_plate"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.15
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.armour_of_the_white_hand",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.smithing.heavy_harness"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.3
+          }
+        }
+      ],
+      "exclusive_group": "uruk.smithing.spec"
+    },
+    {
+      "id": "uruk.smithing.crude_blade",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.iron_of_isengard"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.serrated_edge",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.smithing.crude_blade"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.cleaving_axe",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.smithing.serrated_edge"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.3
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:slowness",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.weapon_of_the_uruk_hai",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.smithing.cleaving_axe"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.18
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.35
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 1,
+            "duration_ticks": 120
+          }
+        }
+      ],
+      "exclusive_group": "uruk.smithing.spec"
+    },
+    {
+      "id": "uruk.smithing.forge_tempered",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.iron_of_isengard"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.5
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.war_machine",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.smithing.forge_tempered"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.unfeeling",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "uruk.smithing.war_machine"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "uruk.smithing.engine_of_isengard",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.smithing.unfeeling"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.4
+        }
+      ],
+      "exclusive_group": "uruk.smithing.spec"
+    },
+    {
+      "id": "uruk.smithing.forge_master_of_isengard",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "uruk.smithing.heavy_harness",
+        "uruk.smithing.cleaving_axe"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.25
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
         }
       ]
     }
