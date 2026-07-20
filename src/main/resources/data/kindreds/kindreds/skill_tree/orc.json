@@ -3,262 +3,6 @@
   "theme": "kindreds:orc",
   "nodes": [
     {
-      "id": "orc.beast_lore.warg_kin",
-      "tier": 1,
-      "pos": [
-        0,
-        0
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.108
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.blood_scent",
-      "tier": 2,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.beast_lore.warg_kin"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.35
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.warg_rider",
-      "tier": 2,
-      "pos": [
-        -30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.beast_lore.warg_kin"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.108
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.pack_caller",
-      "tier": 2,
-      "pos": [
-        30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.beast_lore.warg_kin"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "war_pack",
-          "params": {
-            "radius": 12,
-            "per_ally": 0.07,
-            "max": 6
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.gundabad_breed",
-      "tier": 3,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.beast_lore.warg_rider"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.135
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.trampling_charge",
-      "tier": 3,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "orc.beast_lore.pack_caller"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.2
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.warg_lord",
-      "tier": 4,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.beast_lore.gundabad_breed",
-        "orc.beast_lore.trampling_charge"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.135
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.gundabad_alpha",
-      "tier": 5,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.beast_lore.warg_lord"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "war_pack",
-          "params": {
-            "radius": 12,
-            "per_ally": 0.08,
-            "max": 8
-          }
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.warg_charge",
-      "tier": 5,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 3
-      },
-      "prereqs": [
-        "orc.beast_lore.warg_lord"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.15
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "orc.beast_lore.moria_wolf_pact",
-      "tier": 6,
-      "pos": [
-        0,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 4
-      },
-      "prereqs": [
-        "orc.beast_lore.gundabad_alpha",
-        "orc.beast_lore.warg_charge"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.2
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
       "id": "orc.capstone.spawn_of_mordor",
       "tier": 5,
       "pos": [
@@ -1860,6 +1604,451 @@
             "effect": "minecraft:speed",
             "amplifier": 0,
             "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.wolf_friend",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.pack_runner",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.beast_lore.wolf_friend"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 14
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.call_wolves",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.beast_lore.pack_runner"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:call_of_wargs",
+          "cooldown_ticks": 1600,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.pack_bond",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.call_wolves"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 0,
+            "radius": 14
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.moria_wolf_pact",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.pack_bond"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:warg_pack",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 1,
+            "radius": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.wolf_lord",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.beast_lore.moria_wolf_pact"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:warg_pack",
+          "cooldown_ticks": 1200,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 2,
+            "radius": 16
+          }
+        }
+      ],
+      "exclusive_group": "orc.beast_lore.spec"
+    },
+    {
+      "id": "orc.beast_lore.houndmaster",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.beast_lore.pack_runner"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 0,
+            "radius": 14
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.blood_scent",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.houndmaster"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 14
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.alpha",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.blood_scent"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 1,
+            "radius": 16
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.pack_alpha",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.beast_lore.alpha"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 2,
+            "radius": 16
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4.0
+          }
+        }
+      ],
+      "exclusive_group": "orc.beast_lore.spec"
+    },
+    {
+      "id": "orc.beast_lore.warg_rider",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.beast_lore.pack_runner"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.swift_warg",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.warg_rider"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.savage_rider",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "orc.beast_lore.swift_warg"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "orc.beast_lore.dread_rider",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.beast_lore.savage_rider"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 3,
+            "regen": 1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ],
+      "exclusive_group": "orc.beast_lore.spec"
+    },
+    {
+      "id": "orc.beast_lore.master_of_the_pack",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "orc.beast_lore.moria_wolf_pact",
+        "orc.beast_lore.alpha"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:warg_pack",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "pack_bond",
+          "params": {
+            "amplifier": 1,
+            "radius": 18
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 16
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2
           }
         }
       ]
