@@ -105,9 +105,14 @@ public final class ActiveAbilityService {
             world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 0.7f, 1.5f);
             world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_TRIDENT_RETURN, SoundCategory.PLAYERS, 0.5f, 1.2f);
         }
-        String name = titleCase(def.abilityId().getPath());
+        // Localized on the client (kindreds.ability.<path>), with a title-cased fallback so an
+        // untranslated active still reads cleanly.
+        String path = def.abilityId().getPath();
+        net.minecraft.text.MutableText name = Text
+                .translatableWithFallback("kindreds.ability." + path, titleCase(path))
+                .formatted(Formatting.AQUA, Formatting.BOLD);
         player.sendMessage(Text.literal("✦ ").formatted(Formatting.AQUA)
-                .append(Text.literal(name).formatted(Formatting.AQUA, Formatting.BOLD))
+                .append(name)
                 .append(Text.literal(" ✦").formatted(Formatting.AQUA)), true);
     }
 

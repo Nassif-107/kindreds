@@ -175,6 +175,13 @@ public final class ClientLoadout {
             return net.minecraft.client.resource.language.I18n.translate("kindreds.loadout.empty");
         }
         String path = abilityId.contains(":") ? abilityId.substring(abilityId.indexOf(':') + 1) : abilityId;
+        // Prefer a localized name (kindreds.ability.<path>); fall back to a title-cased path when a
+        // given active has no translation yet, so nothing ever shows a raw key.
+        String key = "kindreds.ability." + path;
+        String localized = net.minecraft.client.resource.language.I18n.translate(key);
+        if (!localized.equals(key)) {
+            return localized;
+        }
         String[] words = path.split("_");
         StringBuilder sb = new StringBuilder();
         for (String word : words) {

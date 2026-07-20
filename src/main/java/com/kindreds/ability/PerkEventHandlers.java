@@ -199,6 +199,12 @@ public final class PerkEventHandlers {
                 continue;
             }
             double radius = perk.param("radius", 8f);
+            // The singer/captain is heartened by their own song too, so the aura is felt even when
+            // you march alone (and still lends its gift to every ally in range).
+            perk.effect().ifPresent(eff -> Registries.STATUS_EFFECT.getEntry(eff.effect()).ifPresent(e ->
+                    player.addStatusEffect(new StatusEffectInstance(e,
+                            eff.durationTicks() < 0 ? AURA_INTERVAL * 4 : eff.durationTicks(), eff.amplifier(),
+                            false, false, true))));
             Box box = player.getBoundingBox().expand(radius);
             for (ServerPlayerEntity other : player.getWorld().getEntitiesByClass(ServerPlayerEntity.class, box,
                     p -> p != player && p.isAlive() && p.squaredDistanceTo(player) <= radius * radius)) {
