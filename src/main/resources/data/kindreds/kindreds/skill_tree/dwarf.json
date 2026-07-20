@@ -3,398 +3,6 @@
   "theme": "kindreds:dwarf",
   "nodes": [
     {
-      "id": "dwarf.combat.stout_arm",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.bane_of_orcs",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.combat.stout_arm"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "orc",
-          "params": {
-            "bonus": 0.65
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.shield_wall",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.combat.stout_arm"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.2
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.bane_of_trolls",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.combat.bane_of_orcs"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "troll",
-          "params": {
-            "bonus": 0.75
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.unmovable",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.combat.shield_wall"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.2
-        },
-        {
-          "type": "attribute",
-          "attribute": "explosion_knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.3
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.heat_of_battle",
-      "tier": 4,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.combat.bane_of_trolls"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.iron_stance",
-      "tier": 4,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.combat.unmovable"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.baruk_khazad",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.combat.heat_of_battle"
-      ],
-      "exclusive_group": "dwarf.combat.spec",
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 2,
-            "duration_ticks": -1
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 4.5
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.ironbreaker",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.combat.iron_stance"
-      ],
-      "exclusive_group": "dwarf.combat.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 4.5
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2
-        },
-        {
-          "type": "contextual_boon",
-          "when": "underground",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.grudge_bearer",
-      "tier": 6,
-      "pos": [
-        -30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.combat.baruk_khazad"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "lifesteal",
-          "params": {
-            "percent": 0.12
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.2
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.stonehelm_guard",
-      "tier": 6,
-      "pos": [
-        30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.combat.ironbreaker"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 5
-        },
-        {
-          "type": "perk",
-          "perk": "thorns",
-          "params": {
-            "percent": 0.3
-          }
-        },
-        {
-          "type": "contextual_boon",
-          "when": "deep_dark",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 2,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.combat.durins_bane_slayer",
-      "tier": 7,
-      "pos": [
-        -30,
-        210
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.combat.grudge_bearer"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.4
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 3.0
-          }
-        }
-      ],
-      "deed_advancement": "kindreds:deed/dwarf_unbroken_will"
-    },
-    {
-      "id": "dwarf.combat.unbreakable_line",
-      "tier": 7,
-      "pos": [
-        30,
-        210
-      ],
-      "cost": {
-        "discipline": "kindreds:combat",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.combat.stonehelm_guard"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.3
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 6.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
       "id": "dwarf.runecraft.cirth_carver",
       "tier": 1,
       "pos": [
@@ -1713,6 +1321,513 @@
           "ability_id": "kindreds:masters_forge",
           "cooldown_ticks": 1000,
           "effects": []
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.axe_of_the_dwarves",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.iron_stance",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.combat.axe_of_the_dwarves"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.2
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.hewer",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.combat.iron_stance"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.12
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.orc_cleaver",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.hewer"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "orc"
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.troll_hewer",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.orc_cleaver"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.5
+          },
+          "foe": "troll"
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.baruk_khazad",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.combat.troll_hewer"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.2
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.5
+          },
+          "foe": "orc"
+        }
+      ],
+      "exclusive_group": "dwarf.combat.spec"
+    },
+    {
+      "id": "dwarf.combat.shield_wall",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.combat.iron_stance"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.2
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.stone_skin",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.shield_wall"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.25
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.unmovable",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.stone_skin"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.3
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:explosion_knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.5
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.stonehelm_guard",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.combat.unmovable"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.35
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.2
+        }
+      ],
+      "exclusive_group": "dwarf.combat.spec"
+    },
+    {
+      "id": "dwarf.combat.dwarven_temper",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.combat.iron_stance"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.battle_wrath",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.dwarven_temper"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.last_stand_of_the_dwarves",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.combat.battle_wrath"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.combat.fury_of_khazad_dum",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.combat.last_stand_of_the_dwarves"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4.0
+          }
+        }
+      ],
+      "exclusive_group": "dwarf.combat.spec"
+    },
+    {
+      "id": "dwarf.combat.bane_of_the_orcs",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.combat.troll_hewer",
+        "dwarf.combat.last_stand_of_the_dwarves"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_multiplied_total",
+          "amount": 0.15
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.5
+          },
+          "foe": "orc"
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "troll"
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:dwarven_war_cry",
+          "cooldown_ticks": 1800,
+          "effects": [
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
         }
       ]
     }
