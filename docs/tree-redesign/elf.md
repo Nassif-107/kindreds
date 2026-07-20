@@ -9,7 +9,14 @@ in lightless places. Disciplines they train: **archery, beast_lore, lore, song, 
 
 ---
 
-## DISCIPLINE 1 — ARCHERY  *(in design)*
+## DISCIPLINE 1 — ARCHERY  *(✅ BUILT — 17 nodes, real arrow engine, EN+RU. Awaiting playtest.)*
+
+**Implemented mechanics:** arrow_damage, long_shot, arrow_crit, arrow_pierce, arrow_velocity,
+multishot, arrow_effect (venom/barbed), swift_draw (perk, stacks on Elf innate), true_flight, +
+thematic actives (Galadhrim Volley fires arrows, Arrow of the Eldar heavy shot).
+**Branches:** trunk (Wood-elf's Aim → Eye of the Eldar) → Keen-eyed (precision) / Swift Bow (speed) /
+The Long Bow (power+arrows) → Bow of the Galadhrim capstone. Deadeye vs Storm are exclusive; venom vs
+barbed arrows are exclusive.
 
 ### Lore foundation (researched)
 - **Legolas**, greatest archer of the Third Age: unearthly **eyesight** (counts riders leagues off,
