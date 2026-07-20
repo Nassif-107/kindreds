@@ -3,314 +3,6 @@
   "theme": "kindreds:snaga",
   "nodes": [
     {
-      "id": "snaga.survival.scrounger",
-      "tier": 1,
-      "pos": [
-        0,
-        0
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 1.5,
-            "food": 1
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.desperate_flight",
-      "tier": 2,
-      "pos": [
-        -30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.survival.scrounger"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:speed",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.wiry",
-      "tier": 2,
-      "pos": [
-        30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.survival.scrounger"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.108
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.carrion_gorge",
-      "tier": 2,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.survival.scrounger"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 2.0,
-            "food": 1
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.wretchs_endurance",
-      "tier": 3,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.survival.desperate_flight"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.scavengers_luck",
-      "tier": 3,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.survival.wiry"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:luck",
-          "operation": "add_value",
-          "amount": 1.5
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.orc_draught",
-      "tier": 4,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.survival.wretchs_endurance",
-        "snaga.survival.scavengers_luck"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.135
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.rat_of_the_tunnels",
-      "tier": 5,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.survival.orc_draught"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.2
-        },
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.3,
-            "reduction": 1.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.gutter_glutton",
-      "tier": 5,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.survival.orc_draught"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 2.0,
-            "food": 1
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.deep_burrow_rat",
-      "tier": 6,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.survival.rat_of_the_tunnels"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.15
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:safe_fall_distance",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "snaga.survival.never_say_die",
-      "tier": 6,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.survival.gutter_glutton"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
       "id": "snaga.capstone.slave_orcs_spite",
       "tier": 5,
       "pos": [
@@ -1961,6 +1653,518 @@
           "params": {
             "health": 3.0
           }
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.scavenger",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.runner",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.survival.scavenger"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.fleet",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.survival.runner"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.12
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.nimble_dodge",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.fleet"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.tireless_runner",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.nimble_dodge"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.12
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.swift_as_a_shadow",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.survival.tireless_runner"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        }
+      ],
+      "exclusive_group": "snaga.survival.spec"
+    },
+    {
+      "id": "snaga.survival.orc_draught",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.survival.runner"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:orc_draught",
+          "cooldown_ticks": 1200,
+          "effects": [
+            {
+              "effect": "minecraft:regeneration",
+              "amplifier": 1,
+              "duration_ticks": 200
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 0,
+              "duration_ticks": 200
+            },
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 0,
+              "duration_ticks": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.hardy",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.orc_draught"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.second_wind",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.hardy"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:orc_draught",
+          "cooldown_ticks": 900,
+          "effects": [
+            {
+              "effect": "minecraft:regeneration",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 0,
+              "duration_ticks": 300
+            }
+          ]
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.unquenchable",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.survival.second_wind"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:orc_draught",
+          "cooldown_ticks": 700,
+          "effects": [
+            {
+              "effect": "minecraft:regeneration",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 0,
+              "duration_ticks": 300
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "exclusive_group": "snaga.survival.spec"
+    },
+    {
+      "id": "snaga.survival.wall_crawler",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.survival.runner"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 350.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:step_height",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.deep_dweller",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.wall_crawler"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.scrounger",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.survival.deep_dweller"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.survival.pit_survivor",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.survival.scrounger"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 350.0
+        }
+      ],
+      "exclusive_group": "snaga.survival.spec"
+    },
+    {
+      "id": "snaga.survival.will_to_live",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.survival.tireless_runner",
+        "snaga.survival.orc_draught"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:orc_draught",
+          "cooldown_ticks": 900,
+          "effects": [
+            {
+              "effect": "minecraft:regeneration",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:speed",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 0,
+              "duration_ticks": 300
+            }
+          ]
         }
       ]
     }
