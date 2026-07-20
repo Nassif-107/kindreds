@@ -3,668 +3,6 @@
   "theme": "kindreds:hobbit",
   "nodes": [
     {
-      "id": "hobbit.stealth.unseen",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -0.2
-        }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.light_footed",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.stealth.unseen"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "sneaking_speed",
-          "operation": "add_value",
-          "amount": 0.4
-        }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.nimble_fingers",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.stealth.unseen"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 1.5
-        }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.slip_away",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.stealth.light_footed"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.23,
-            "reduction": 1.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.quiet_as_a_shadow",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.stealth.nimble_fingers"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "middle-earth:detection_range",
-          "operation": "add_value",
-          "amount": -0.2
-        }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.dusk_walker",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 3
-      },
-      "prereqs": [
-        "hobbit.stealth.slip_away",
-        "hobbit.stealth.quiet_as_a_shadow"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "dawn_dusk",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:invisibility",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.burglar",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 3
-      },
-      "prereqs": [
-        "hobbit.stealth.dusk_walker"
-      ],
-      "exclusive_group": "hobbit.stealth.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 2.5
-        },
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.23,
-            "reduction": 1.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.ghost",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:stealth",
-        "points": 3
-      },
-      "prereqs": [
-        "hobbit.stealth.dusk_walker"
-      ],
-      "exclusive_group": "hobbit.stealth.spec",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:vanish",
-          "cooldown_ticks": 1200,
-          "effects": [
-            {
-              "effect": "minecraft:invisibility",
-              "amplifier": 0,
-              "duration_ticks": 400
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "hobbit.survival.tough_little_folk",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "hobbit.survival.second_breakfast",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.survival.tough_little_folk"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "hobbit.survival.sure_foot",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.survival.tough_little_folk"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "hobbit.survival.well_provisioned",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.survival.second_breakfast"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": 100
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.survival.stout_heart",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.survival.sure_foot"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "hobbit.survival.shire_resolve",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "hobbit.survival.well_provisioned",
-        "hobbit.survival.stout_heart"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_efficiency",
-          "operation": "add_value",
-          "amount": 0.4
-        }
-      ]
-    },
-    {
-      "id": "hobbit.archery.stone_thrower",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "hobbit.archery.quick_hands",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.archery.stone_thrower"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.1
-        }
-      ]
-    },
-    {
-      "id": "hobbit.archery.conker_shot",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.archery.stone_thrower"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "arrow_slaying",
-          "foe": "any",
-          "params": {
-            "bonus": 0.45
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.archery.true_aim",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.archery.quick_hands",
-        "hobbit.archery.conker_shot"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "hobbit.archery.bullseye",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "hobbit.archery.true_aim"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 1.5
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.beast_lore.pony_friend",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.08
-        }
-      ]
-    },
-    {
-      "id": "hobbit.beast_lore.bill_the_pony",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.beast_lore.pony_friend"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "hobbit.beast_lore.gentle_hand",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.beast_lore.pony_friend"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 1.5
-        }
-      ]
-    },
-    {
-      "id": "hobbit.beast_lore.green_thumb",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:beast_lore",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.beast_lore.bill_the_pony",
-        "hobbit.beast_lore.gentle_hand"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "dawn_dusk",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": 100
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.song.walking_song",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.08
-        }
-      ]
-    },
-    {
-      "id": "hobbit.song.merry_heart",
-      "tier": 2,
-      "pos": [
-        0,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.song.walking_song"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": {
-            "radius": 8
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.song.song_of_bilbo",
-      "tier": 3,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 2
-      },
-      "prereqs": [
-        "hobbit.song.merry_heart"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "hobbit.song.chorus_of_the_shire",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:song",
-        "points": 3
-      },
-      "prereqs": [
-        "hobbit.song.song_of_bilbo"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": {
-            "radius": 8
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:regeneration",
-            "amplifier": 0,
-            "duration_ticks": 80
-          }
-        }
-      ]
-    },
-    {
       "id": "hobbit.grand.ringbearers_resolve",
       "tier": 5,
       "pos": [
@@ -707,285 +45,2435 @@
       ]
     },
     {
-      "id": "hobbit.stealth.fair_folk_luck",
+      "id": "hobbit.grand.bullroarer_took",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.archery.bandobras_charge",
+        "hobbit.beast_lore.wild_free_folk"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "foe": "goblin",
+          "params": {
+            "bonus": 0.5
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "luck",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.well_fed",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.hardy",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.survival.well_fed"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.1,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.tough_as_roots",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.survival.hardy"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.shire_resolve",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.tough_as_roots"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.stout_hearted",
       "tier": 5,
-      "pos": [0, 150],
-      "cost": { "discipline": "kindreds:stealth", "points": 3 },
-      "prereqs": ["hobbit.stealth.dusk_walker"],
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.shire_resolve"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 3.0 }
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
       ]
     },
     {
-      "id": "hobbit.stealth.prince_of_burglars",
+      "id": "hobbit.survival.ringbearers_endurance",
       "tier": 6,
-      "pos": [-30, 180],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["hobbit.stealth.burglar"],
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.survival.stout_hearted"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 4.0 },
-        { "type": "perk", "perk": "evasion", "params": { "chance": 0.28, "reduction": 1.0 } }
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 5.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.survival.spec"
+    },
+    {
+      "id": "hobbit.survival.second_breakfast",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.survival.hardy"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
       ]
     },
     {
-      "id": "hobbit.stealth.shadow_of_bree",
+      "id": "hobbit.survival.good_food",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.second_breakfast"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.comforts_of_home",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.good_food"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.never_say_die",
       "tier": 6,
-      "pos": [30, 180],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["hobbit.stealth.ghost"],
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.survival.comforts_of_home"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 5.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 4.0
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.survival.spec"
+    },
+    {
+      "id": "hobbit.survival.lucky",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.survival.hardy"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.fools_luck",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.lucky"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.luck_of_the_shire",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.survival.fools_luck"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.survival.impossibly_lucky",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.survival.luck_of_the_shire"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 5.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.survival.spec"
+    },
+    {
+      "id": "hobbit.survival.resilience_of_the_shire",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.survival.shire_resolve",
+        "hobbit.survival.luck_of_the_shire"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.quiet_folk",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_value",
+          "amount": 0.3
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.slip_away",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.stealth.quiet_folk"
+      ],
       "abilities": [
         {
           "type": "active",
           "ability_id": "kindreds:vanish",
           "cooldown_ticks": 900,
-          "effects": [
-            { "effect": "minecraft:invisibility", "amplifier": 0, "duration_ticks": 500 }
-          ]
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.hide_in_plain_sight",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.stealth.slip_away"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
         },
-        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.3 }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.master_thief",
-      "tier": 7,
-      "pos": [-30, 210],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["hobbit.stealth.prince_of_burglars"],
-      "abilities": [
-        { "type": "perk", "perk": "evasion", "params": { "chance": 0.3, "reduction": 1.0 } },
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 5.0 }
-      ]
-    },
-    {
-      "id": "hobbit.stealth.unseen_legend",
-      "tier": 7,
-      "pos": [30, 210],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["hobbit.stealth.shadow_of_bree"],
-      "abilities": [
-        { "type": "attribute", "attribute": "middle-earth:detection_range", "operation": "add_value", "amount": -0.3 },
         {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": { "type": "status_effect", "effect": "minecraft:invisibility", "amplifier": 0, "duration_ticks": 200 }
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.15
         }
       ]
     },
     {
-      "id": "hobbit.survival.iron_pot_belly",
-      "tier": 5,
-      "pos": [-30, 150],
-      "cost": { "discipline": "kindreds:survival", "points": 3 },
-      "prereqs": ["hobbit.survival.shire_resolve"],
-      "exclusive_group": "hobbit.survival.spec",
+      "id": "hobbit.stealth.dusk_walker",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.hide_in_plain_sight"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 5.0 },
-        { "type": "perk", "perk": "thorns", "params": { "percent": 0.3 } }
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.15
+        }
       ]
     },
     {
-      "id": "hobbit.survival.fleet_of_foot",
+      "id": "hobbit.stealth.now_you_see_me",
       "tier": 5,
-      "pos": [30, 150],
-      "cost": { "discipline": "kindreds:survival", "points": 3 },
-      "prereqs": ["hobbit.survival.shire_resolve"],
-      "exclusive_group": "hobbit.survival.spec",
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.dusk_walker"
+      ],
       "abilities": [
-        { "type": "perk", "perk": "evasion", "params": { "chance": 0.2, "reduction": 0.6 } },
-        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_base", "amount": 0.12 }
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:vanish",
+          "cooldown_ticks": 600,
+          "effects": []
+        }
       ]
     },
     {
-      "id": "hobbit.survival.hobbit_hole_healthy",
+      "id": "hobbit.stealth.art_of_disappearing",
       "tier": 6,
-      "pos": [-30, 180],
-      "cost": { "discipline": "kindreds:survival", "points": 4 },
-      "prereqs": ["hobbit.survival.iron_pot_belly"],
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.stealth.now_you_see_me"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 4.0 },
         {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": { "type": "status_effect", "effect": "minecraft:absorption", "amplifier": 1, "duration_ticks": 200 }
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        }
+      ],
+      "exclusive_group": "hobbit.stealth.spec"
+    },
+    {
+      "id": "hobbit.stealth.nimble",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.stealth.slip_away"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
         }
       ]
     },
     {
-      "id": "hobbit.survival.long_road_home",
+      "id": "hobbit.stealth.hard_to_catch",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.nimble"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.slippery_customer",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.hard_to_catch"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.25,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.impossible_to_pin_down",
       "tier": 6,
-      "pos": [30, 180],
-      "cost": { "discipline": "kindreds:survival", "points": 4 },
-      "prereqs": ["hobbit.survival.fleet_of_foot"],
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.stealth.slippery_customer"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "safe_fall_distance", "operation": "add_value", "amount": 6.0 },
-        { "type": "perk", "perk": "evasion", "params": { "chance": 0.25, "reduction": 0.7 } }
-      ]
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.3,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ],
+      "exclusive_group": "hobbit.stealth.spec"
     },
     {
-      "id": "hobbit.survival.there_and_back_again",
-      "tier": 7,
-      "pos": [-30, 210],
-      "cost": { "discipline": "kindreds:survival", "points": 4 },
-      "prereqs": ["hobbit.survival.hobbit_hole_healthy"],
+      "id": "hobbit.stealth.light_step",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.stealth.slip_away"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "max_health", "operation": "add_value", "amount": 6.0 },
         {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 150 }
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 3.0
         }
       ]
     },
     {
-      "id": "hobbit.archery.deadeye_shot",
-      "tier": 5,
-      "pos": [-30, 150],
-      "cost": { "discipline": "kindreds:archery", "points": 3 },
-      "prereqs": ["hobbit.archery.bullseye"],
-      "exclusive_group": "hobbit.archery.spec",
+      "id": "hobbit.stealth.barefoot",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.light_step"
+      ],
       "abilities": [
-        { "type": "perk", "perk": "arrow_slaying", "foe": "any", "params": { "bonus": 0.5 } },
-        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.15 }
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_value",
+          "amount": 0.4
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
       ]
     },
     {
-      "id": "hobbit.archery.quickfire_sling",
+      "id": "hobbit.stealth.soft_footed",
       "tier": 5,
-      "pos": [30, 150],
-      "cost": { "discipline": "kindreds:archery", "points": 3 },
-      "prereqs": ["hobbit.archery.bullseye"],
-      "exclusive_group": "hobbit.archery.spec",
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.stealth.barefoot"
+      ],
       "abilities": [
-        { "type": "attribute", "attribute": "attack_speed", "operation": "add_multiplied_total", "amount": 0.15 },
-        { "type": "perk", "perk": "heal_on_kill", "params": { "health": 1.5 } }
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.stealth.unheard_unseen",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.stealth.soft_footed"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ],
+      "exclusive_group": "hobbit.stealth.spec"
+    },
+    {
+      "id": "hobbit.stealth.vanished_without_a_trace",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.stealth.dusk_walker",
+        "hobbit.stealth.slippery_customer"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:vanish",
+          "cooldown_ticks": 600,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.stone_thrower",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.deadly_accuracy",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.archery.stone_thrower"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:throw_stone",
+          "cooldown_ticks": 400,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.slinger",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.archery.deadly_accuracy"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.keen_eye",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.archery.slinger"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_crit"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.1
+          }
+        }
       ]
     },
     {
       "id": "hobbit.archery.bandobras_charge",
-      "tier": 6,
-      "pos": [-30, 180],
-      "cost": { "discipline": "kindreds:archery", "points": 4 },
-      "prereqs": ["hobbit.archery.deadeye_shot"],
-      "abilities": [
-        { "type": "perk", "perk": "arrow_slaying", "foe": "goblin", "params": { "bonus": 0.4 } },
-        { "type": "attribute", "attribute": "attack_damage", "operation": "add_multiplied_total", "amount": 0.1 }
-      ]
-    },
-    {
-      "id": "hobbit.archery.thain_of_the_shire",
-      "tier": 7,
-      "pos": [-30, 210],
-      "cost": { "discipline": "kindreds:archery", "points": 4 },
-      "prereqs": ["hobbit.archery.bandobras_charge"],
-      "abilities": [
-        { "type": "perk", "perk": "arrow_slaying", "foe": "goblin", "params": { "bonus": 0.5 } },
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 3.0 }
-      ]
-    },
-    {
-      "id": "hobbit.beast_lore.farmer_maggots_dogs",
-      "tier": 4,
-      "pos": [0, 120],
-      "cost": { "discipline": "kindreds:beast_lore", "points": 3 },
-      "prereqs": ["hobbit.beast_lore.green_thumb"],
-      "abilities": [
-        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_base", "amount": 0.12 },
-        { "type": "attribute", "attribute": "safe_fall_distance", "operation": "add_value", "amount": 4.0 }
-      ]
-    },
-    {
-      "id": "hobbit.beast_lore.smials_menagerie",
       "tier": 5,
-      "pos": [-30, 150],
-      "cost": { "discipline": "kindreds:beast_lore", "points": 3 },
-      "prereqs": ["hobbit.beast_lore.farmer_maggots_dogs"],
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.archery.keen_eye"
+      ],
       "abilities": [
         {
           "type": "perk",
-          "perk": "ally_aura",
-          "params": { "radius": 10 },
-          "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 100 }
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "orc"
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.deadeye_of_the_shire",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.archery.bandobras_charge"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_crit"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_pierce",
+          "params": {
+            "targets": 2
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.archery.spec"
+    },
+    {
+      "id": "hobbit.archery.quick_stones",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.archery.deadly_accuracy"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:throw_stone",
+          "cooldown_ticks": 300,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.sling_flurry",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.archery.quick_stones"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:sling_stones",
+          "cooldown_ticks": 700,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.pelter",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.archery.sling_flurry"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:sling_stones",
+          "cooldown_ticks": 500,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.stone_storm",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.archery.pelter"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:sling_stones",
+          "cooldown_ticks": 400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.3
+          },
+          "foe": "orc"
+        }
+      ],
+      "exclusive_group": "hobbit.archery.spec"
+    },
+    {
+      "id": "hobbit.archery.sharp_eye",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.archery.deadly_accuracy"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.goblin_cleaver",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.archery.sharp_eye"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "orc"
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.never_miss",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.archery.goblin_cleaver"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_crit"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.archery.hero_of_the_shire",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.archery.never_miss"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "orc"
+        },
+        {
+          "type": "perk",
+          "perk": "true_flight"
+        }
+      ],
+      "exclusive_group": "hobbit.archery.spec"
+    },
+    {
+      "id": "hobbit.archery.master_slinger",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.archery.bandobras_charge",
+        "hobbit.archery.sling_flurry"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:sling_stones",
+          "cooldown_ticks": 500,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_slaying",
+          "params": {
+            "bonus": 0.3
+          },
+          "foe": "orc"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_crit"
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.pony_friend",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.gentle_folk",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.beast_lore.pony_friend"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.sure_pony",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.beast_lore.gentle_folk"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.hardy_pony",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.beast_lore.sure_pony"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2,
+            "regen": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.pony_of_the_shire",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.beast_lore.hardy_pony"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2,
+            "rider_resistance": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.bill_the_pony",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.beast_lore.pony_of_the_shire"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 3,
+            "regen": 1,
+            "rider_resistance": 1
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.beast_lore.spec"
+    },
+    {
+      "id": "hobbit.beast_lore.beast_friend",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.beast_lore.gentle_folk"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 14
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 1.0
         }
       ]
     },
     {
       "id": "hobbit.beast_lore.wild_free_folk",
-      "tier": 5,
-      "pos": [30, 150],
-      "cost": { "discipline": "kindreds:beast_lore", "points": 3 },
-      "prereqs": ["hobbit.beast_lore.farmer_maggots_dogs"],
-      "abilities": [
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 3.0 },
-        { "type": "attribute", "attribute": "safe_fall_distance", "operation": "add_value", "amount": 5.0 }
-      ]
-    },
-    {
-      "id": "hobbit.beast_lore.old_took_menagerie",
-      "tier": 6,
-      "pos": [-30, 180],
-      "cost": { "discipline": "kindreds:beast_lore", "points": 4 },
-      "prereqs": ["hobbit.beast_lore.smials_menagerie"],
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.beast_lore.beast_friend"
+      ],
       "abilities": [
         {
           "type": "perk",
-          "perk": "ally_aura",
-          "params": { "radius": 12 },
-          "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 0, "duration_ticks": 120 }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.song.green_hill_country",
-      "tier": 5,
-      "pos": [-30, 150],
-      "cost": { "discipline": "kindreds:song", "points": 3 },
-      "prereqs": ["hobbit.song.chorus_of_the_shire"],
-      "abilities": [
-        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_base", "amount": 0.15 },
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 2.0 }
-      ]
-    },
-    {
-      "id": "hobbit.song.rousing_chorus",
-      "tier": 5,
-      "pos": [30, 150],
-      "cost": { "discipline": "kindreds:song", "points": 3 },
-      "prereqs": ["hobbit.song.chorus_of_the_shire"],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": { "radius": 10 },
-          "effect": { "type": "status_effect", "effect": "minecraft:resistance", "amplifier": 0, "duration_ticks": 100 }
-        }
-      ]
-    },
-    {
-      "id": "hobbit.song.song_of_the_fellowship",
-      "tier": 6,
-      "pos": [0, 180],
-      "cost": { "discipline": "kindreds:song", "points": 4 },
-      "prereqs": ["hobbit.song.green_hill_country", "hobbit.song.rousing_chorus"],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "ally_aura",
-          "params": { "radius": 12 },
-          "effect": { "type": "status_effect", "effect": "minecraft:regeneration", "amplifier": 1, "duration_ticks": 120 }
+          "perk": "beast_calm",
+          "params": {
+            "radius": 14
+          }
         },
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 3.0 }
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
       ]
     },
     {
-      "id": "hobbit.grand.bullroarer_took",
-      "tier": 7,
-      "pos": [0, 210],
-      "cost": { "discipline": "kindreds:archery", "points": 4 },
-      "prereqs": ["hobbit.archery.bandobras_charge", "hobbit.beast_lore.wild_free_folk"],
+      "id": "hobbit.beast_lore.friend_to_all",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.beast_lore.wild_free_folk"
+      ],
       "abilities": [
-        { "type": "perk", "perk": "arrow_slaying", "foe": "goblin", "params": { "bonus": 0.5 } },
-        { "type": "attribute", "attribute": "movement_speed", "operation": "add_multiplied_base", "amount": 0.15 },
-        { "type": "attribute", "attribute": "luck", "operation": "add_value", "amount": 3.0 }
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 16
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.master_of_beasts",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.beast_lore.friend_to_all"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 16
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "exclusive_group": "hobbit.beast_lore.spec"
+    },
+    {
+      "id": "hobbit.beast_lore.foraging",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.beast_lore.gentle_folk"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.herb_lore",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.beast_lore.foraging"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.field_and_stream",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.beast_lore.herb_lore"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.beast_lore.at_home_in_the_wild",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.beast_lore.field_and_stream"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 14
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ],
+      "exclusive_group": "hobbit.beast_lore.spec"
+    },
+    {
+      "id": "hobbit.beast_lore.friend_of_pony_and_beast",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.beast_lore.pony_of_the_shire",
+        "hobbit.beast_lore.wild_free_folk"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "war_steed",
+          "params": {
+            "speed": 2
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "beast_calm",
+          "params": {
+            "radius": 16
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.good_cheer",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.walking_song",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.song.good_cheer"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.hearten",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.song.walking_song"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.merry_company",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.song.hearten"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.songs_of_the_shire",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.song.merry_company"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.heart_of_the_fellowship",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.song.songs_of_the_shire"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.song.spec"
+    },
+    {
+      "id": "hobbit.song.share_the_food",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.song.walking_song"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:good_cheer",
+          "cooldown_ticks": 1800,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.hospitality",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.song.share_the_food"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.a_proper_meal",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.song.hospitality"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:good_cheer",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "heal_on_kill",
+          "params": {
+            "health": 3.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.feast_of_the_shire",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.song.a_proper_meal"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:good_cheer",
+          "cooldown_ticks": 1200,
+          "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.song.spec"
+    },
+    {
+      "id": "hobbit.song.brave_heart",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.song.walking_song"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.unexpected_courage",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.song.brave_heart"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.stand_together",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 3
+      },
+      "prereqs": [
+        "hobbit.song.unexpected_courage"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hobbit.song.courage_of_the_halflings",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.song.stand_together"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ],
+      "exclusive_group": "hobbit.song.spec"
+    },
+    {
+      "id": "hobbit.song.spirit_of_the_shire",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 4
+      },
+      "prereqs": [
+        "hobbit.song.songs_of_the_shire",
+        "hobbit.song.a_proper_meal"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ally_aura",
+          "params": {
+            "radius": 10
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 1,
+            "duration_ticks": 80
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:good_cheer",
+          "cooldown_ticks": 1400,
+          "effects": []
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
       ]
     }
   ]

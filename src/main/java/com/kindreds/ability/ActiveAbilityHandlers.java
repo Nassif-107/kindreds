@@ -55,6 +55,10 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("durins_wrath", (p, w) -> shockwave(p, w, 5.0, 8.0f));
         HANDLERS.put("savage_swing", (p, w) -> shockwave(p, w, 4.0, 7.0f)); // Uruk scimitar sweep (AoE cleave)
         HANDLERS.put("skulk", (p, w) -> skulk(p, w, 12.0));
+        HANDLERS.put("vanish", (p, w) -> skulk(p, w, 12.0));           // Hobbit "art of disappearing"
+        HANDLERS.put("throw_stone", (p, w) -> throwStone(p, w, 1, 6.0f));
+        HANDLERS.put("sling_stones", (p, w) -> throwStone(p, w, 3, 5.0f));
+        HANDLERS.put("good_cheer", (p, w) -> healingSong(p, w, 10.0));  // a hobbit feast heartens the company
         HANDLERS.put("goblin_bomb", (p, w) -> goblinBomb(p, w, 3.5, 8.0f));
         HANDLERS.put("cluster_bomb", (p, w) -> goblinBomb(p, w, 5.0, 11.0f));
         HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
@@ -365,6 +369,23 @@ public final class ActiveAbilityHandlers {
         world.spawnParticles(ParticleTypes.EXPLOSION, c.x, c.y, c.z, 10, radius / 3, radius / 3, radius / 3, 0.0);
         world.playSound(null, BlockPos.ofFloored(c), SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
                 SoundCategory.PLAYERS, 1.2f, 1.1f);
+    }
+
+    /** Thrown stones - the hobbits' one deadly art ("they could throw stones with deadly accuracy").
+     * A hard, fast stone (or a sling-fed flurry) loosed where the hobbit is looking. */
+    private static void throwStone(ServerPlayerEntity p, ServerWorld world, int count, float damage) {
+        float yaw = p.getYaw();
+        float pitch = p.getPitch();
+        for (int i = 0; i < count; i++) {
+            float spread = count > 1 ? (i - (count - 1) / 2f) * 5f : 0f;
+            ArrowEntity stone = new ArrowEntity(world, p, new ItemStack(Items.ARROW), null);
+            stone.setVelocity(p, pitch, yaw + spread, 0f, 3.0f, 0.5f);
+            stone.setDamage(damage);
+            stone.setCritical(true); // the hard "thunk" of a well-thrown stone
+            stone.pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
+            world.spawnEntity(stone);
+        }
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.PLAYERS, 1.0f, 0.8f);
     }
 
     /** Skulk: the slave-orc melts into the shadows - it goes unseen (Invisibility) and quick (Speed),
