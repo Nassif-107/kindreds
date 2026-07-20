@@ -18,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -54,6 +55,8 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("durins_wrath", (p, w) -> shockwave(p, w, 5.0, 8.0f));
         HANDLERS.put("savage_swing", (p, w) -> shockwave(p, w, 4.0, 7.0f)); // Uruk scimitar sweep (AoE cleave)
         HANDLERS.put("skulk", (p, w) -> skulk(p, w, 12.0));
+        HANDLERS.put("goblin_bomb", (p, w) -> goblinBomb(p, w, 3.5, 8.0f));
+        HANDLERS.put("cluster_bomb", (p, w) -> goblinBomb(p, w, 5.0, 11.0f));
         HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
         HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
@@ -339,6 +342,29 @@ public final class ActiveAbilityHandlers {
         world.spawnParticles(ParticleTypes.FLAME, p.getX(), p.getBodyY(1.0), p.getZ(), 30, 0.5, 0.7, 0.5, 0.02);
         world.spawnParticles(ParticleTypes.CRIT, p.getX(), p.getBodyY(1.0), p.getZ(), 20, 0.5, 0.7, 0.5, 0.05);
         world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_ANVIL_USE, SoundCategory.PLAYERS, 1.0f, 1.2f);
+    }
+
+    /** A goblin bomb ("wheels and engines and explosions always delighted them"): a device is lobbed at
+     * the nearest foe (or just ahead) and bursts - a real-looking blast that hurts and hurls back
+     * everything nearby, but breaks no blocks and spares the goblin who threw it. */
+    private static void goblinBomb(ServerPlayerEntity p, ServerWorld world, double radius, float damage) {
+        Vec3d ahead = p.getPos().add(p.getRotationVector().multiply(4.0)).add(0, 0.5, 0);
+        LivingEntity foe = world.getEntitiesByClass(LivingEntity.class, p.getBoundingBox().expand(16.0),
+                        e -> e != p && e.isAlive() && e instanceof Monster).stream()
+                .min((a, b) -> Double.compare(a.squaredDistanceTo(p), b.squaredDistanceTo(p))).orElse(null);
+        Vec3d c = foe != null ? foe.getPos().add(0, 0.5, 0) : ahead;
+        Box box = new Box(c.subtract(radius, radius, radius), c.add(radius, radius, radius));
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
+                x -> x != p && x.isAlive() && x instanceof Monster)) {
+            Vec3d push = e.getPos().subtract(c).normalize().multiply(1.2);
+            e.addVelocity(push.x, 0.4, push.z);
+            e.velocityModified = true;
+            e.damage(world, p.getDamageSources().playerAttack(p), damage);
+        }
+        world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y, c.z, 1, 0.0, 0.0, 0.0, 0.0);
+        world.spawnParticles(ParticleTypes.EXPLOSION, c.x, c.y, c.z, 10, radius / 3, radius / 3, radius / 3, 0.0);
+        world.playSound(null, BlockPos.ofFloored(c), SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
+                SoundCategory.PLAYERS, 1.2f, 1.1f);
     }
 
     /** Skulk: the slave-orc melts into the shadows - it goes unseen (Invisibility) and quick (Speed),

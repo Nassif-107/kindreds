@@ -370,9 +370,17 @@
     {
       "id": "goblin.delve.pick_that_bites",
       "tier": 2,
-      "pos": [0, 30],
-      "cost": { "discipline": "kindreds:mining", "points": 2 },
-      "prereqs": ["goblin.delve.tunnel_rat"],
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.delve.tunnel_rat"
+      ],
       "abilities": [
         {
           "type": "attribute",
@@ -383,7 +391,9 @@
         {
           "type": "perk",
           "perk": "strike_effect",
-          "params": { "chance": 0.3 },
+          "params": {
+            "chance": 0.3
+          },
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:poison",
@@ -396,28 +406,50 @@
     {
       "id": "goblin.delve.rich_seam",
       "tier": 3,
-      "pos": [0, 60],
-      "cost": { "discipline": "kindreds:mining", "points": 2 },
-      "prereqs": ["goblin.delve.pick_that_bites"],
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.delve.pick_that_bites"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "mining_fortune",
-          "params": { "chance": 0.3, "amount": 1 }
+          "params": {
+            "chance": 0.3,
+            "amount": 1
+          }
         }
       ]
     },
     {
       "id": "goblin.delve.moria_gold_vein",
       "tier": 4,
-      "pos": [-30, 90],
-      "cost": { "discipline": "kindreds:mining", "points": 3 },
-      "prereqs": ["goblin.delve.rich_seam"],
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.delve.rich_seam"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "mining_fortune",
-          "params": { "chance": 0.35, "amount": 1 }
+          "params": {
+            "chance": 0.35,
+            "amount": 1
+          }
         },
         {
           "type": "attribute",
@@ -430,15 +462,26 @@
     {
       "id": "goblin.delve.ore_hoarder",
       "tier": 5,
-      "pos": [-30, 120],
-      "cost": { "discipline": "kindreds:mining", "points": 3 },
-      "prereqs": ["goblin.delve.cave_fortune"],
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.delve.cave_fortune"
+      ],
       "exclusive_group": "goblin.mining.spec",
       "abilities": [
         {
           "type": "perk",
           "perk": "mining_fortune",
-          "params": { "chance": 0.5, "amount": 2 }
+          "params": {
+            "chance": 0.5,
+            "amount": 2
+          }
         },
         {
           "type": "attribute",
@@ -451,9 +494,17 @@
     {
       "id": "goblin.delve.black_chasm_driller",
       "tier": 5,
-      "pos": [30, 120],
-      "cost": { "discipline": "kindreds:mining", "points": 3 },
-      "prereqs": ["goblin.delve.cave_fortune"],
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.delve.cave_fortune"
+      ],
       "exclusive_group": "goblin.mining.spec",
       "abilities": [
         {
@@ -473,19 +524,35 @@
     {
       "id": "goblin.delve.great_goblin_reckoning",
       "tier": 5,
-      "pos": [0, 120],
-      "cost": { "discipline": "kindreds:mining", "points": 3 },
-      "prereqs": ["goblin.delve.cave_fortune", "goblin.war.cornered_savagery"],
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.delve.cave_fortune",
+        "goblin.war.cornered_savagery"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "mining_fortune",
-          "params": { "chance": 0.4, "amount": 1 }
+          "params": {
+            "chance": 0.4,
+            "amount": 1
+          }
         },
         {
           "type": "perk",
           "perk": "war_pack",
-          "params": { "radius": 12, "per_ally": 0.05, "max": 8 }
+          "params": {
+            "radius": 12,
+            "per_ally": 0.05,
+            "max": 8
+          }
         },
         {
           "type": "attribute",
@@ -498,14 +565,25 @@
     {
       "id": "goblin.delve.gundabad_treasury",
       "tier": 6,
-      "pos": [-30, 150],
-      "cost": { "discipline": "kindreds:mining", "points": 4 },
-      "prereqs": ["goblin.delve.ore_hoarder"],
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.delve.ore_hoarder"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "mining_fortune",
-          "params": { "chance": 0.6, "amount": 2 }
+          "params": {
+            "chance": 0.6,
+            "amount": 2
+          }
         },
         {
           "type": "attribute",
@@ -518,9 +596,17 @@
     {
       "id": "goblin.delve.black_pit_driller",
       "tier": 6,
-      "pos": [30, 150],
-      "cost": { "discipline": "kindreds:mining", "points": 4 },
-      "prereqs": ["goblin.delve.black_chasm_driller"],
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.delve.black_chasm_driller"
+      ],
       "abilities": [
         {
           "type": "attribute",
@@ -728,14 +814,24 @@
     {
       "id": "goblin.shadow.night_terror",
       "tier": 5,
-      "pos": [-30, 120],
-      "cost": { "discipline": "kindreds:shadow", "points": 3 },
-      "prereqs": ["goblin.shadow.spider_kinship"],
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.shadow.spider_kinship"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "strike_effect",
-          "params": { "chance": 0.35 },
+          "params": {
+            "chance": 0.35
+          },
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:weakness",
@@ -754,14 +850,26 @@
     {
       "id": "goblin.shadow.gundabad_gloom",
       "tier": 5,
-      "pos": [0, 120],
-      "cost": { "discipline": "kindreds:shadow", "points": 3 },
-      "prereqs": ["goblin.shadow.black_pit_dread", "goblin.shadow.wretched_resilience"],
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.shadow.black_pit_dread",
+        "goblin.shadow.wretched_resilience"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "evasion",
-          "params": { "chance": 0.25, "reduction": 0.6 }
+          "params": {
+            "chance": 0.25,
+            "reduction": 0.6
+          }
         },
         {
           "type": "attribute",
@@ -774,9 +882,17 @@
     {
       "id": "goblin.shadow.deep_throne",
       "tier": 5,
-      "pos": [30, 120],
-      "cost": { "discipline": "kindreds:shadow", "points": 3 },
-      "prereqs": ["goblin.shadow.deep_king"],
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.shadow.deep_king"
+      ],
       "abilities": [
         {
           "type": "attribute",
@@ -950,23 +1066,43 @@
     {
       "id": "goblin.war.horde_master",
       "tier": 5,
-      "pos": [-30, 120],
-      "cost": { "discipline": "kindreds:combat", "points": 3 },
-      "prereqs": ["goblin.war.cornered_savagery"],
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.war.cornered_savagery"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "war_pack",
-          "params": { "radius": 16, "per_ally": 0.07, "max": 10 }
+          "params": {
+            "radius": 16,
+            "per_ally": 0.07,
+            "max": 10
+          }
         }
       ]
     },
     {
       "id": "goblin.war.gundabad_warcry",
       "tier": 5,
-      "pos": [0, 120],
-      "cost": { "discipline": "kindreds:combat", "points": 3 },
-      "prereqs": ["goblin.war.cornered_savagery"],
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.war.cornered_savagery"
+      ],
       "abilities": [
         {
           "type": "attribute",
@@ -978,21 +1114,33 @@
           "type": "perk",
           "perk": "bane",
           "foe": "any",
-          "params": { "bonus": 0.3 }
+          "params": {
+            "bonus": 0.3
+          }
         }
       ]
     },
     {
       "id": "goblin.war.venom_master",
       "tier": 5,
-      "pos": [30, 120],
-      "cost": { "discipline": "kindreds:combat", "points": 3 },
-      "prereqs": ["goblin.war.cornered_savagery"],
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.war.cornered_savagery"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "strike_effect",
-          "params": { "chance": 0.45 },
+          "params": {
+            "chance": 0.45
+          },
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:poison",
@@ -1011,9 +1159,17 @@
     {
       "id": "goblin.war.moria_horde_king",
       "tier": 6,
-      "pos": [-30, 150],
-      "cost": { "discipline": "kindreds:combat", "points": 4 },
-      "prereqs": ["goblin.war.horde_master"],
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.war.horde_master"
+      ],
       "abilities": [
         {
           "type": "attribute",
@@ -1032,14 +1188,24 @@
     {
       "id": "goblin.war.black_venom",
       "tier": 6,
-      "pos": [30, 150],
-      "cost": { "discipline": "kindreds:combat", "points": 4 },
-      "prereqs": ["goblin.war.venom_master"],
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.war.venom_master"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "strike_effect",
-          "params": { "chance": 0.45 },
+          "params": {
+            "chance": 0.45
+          },
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:poison",
@@ -1050,7 +1216,10 @@
         {
           "type": "perk",
           "perk": "heal_on_kill",
-          "params": { "health": 2, "food": 2 }
+          "params": {
+            "health": 2,
+            "food": 2
+          }
         }
       ]
     },
@@ -1098,9 +1267,17 @@
     {
       "id": "goblin.skulk.moria_depths",
       "tier": 6,
-      "pos": [-30, 150],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["goblin.skulk.wall_runner"],
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.skulk.wall_runner"
+      ],
       "abilities": [
         {
           "type": "attribute",
@@ -1119,9 +1296,17 @@
     {
       "id": "goblin.skulk.tunnel_ghost",
       "tier": 6,
-      "pos": [0, 150],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["goblin.skulk.ambush_from_shadow"],
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.skulk.ambush_from_shadow"
+      ],
       "abilities": [
         {
           "type": "attribute",
@@ -1132,21 +1317,34 @@
         {
           "type": "perk",
           "perk": "evasion",
-          "params": { "chance": 0.2, "reduction": 0.6 }
+          "params": {
+            "chance": 0.2,
+            "reduction": 0.6
+          }
         }
       ]
     },
     {
       "id": "goblin.skulk.throat_cutter",
       "tier": 6,
-      "pos": [30, 150],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["goblin.skulk.backstabber"],
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.skulk.backstabber"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "strike_effect",
-          "params": { "chance": 0.45 },
+          "params": {
+            "chance": 0.45
+          },
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:poison",
@@ -1165,14 +1363,25 @@
     {
       "id": "goblin.skulk.gundabad_nightmare",
       "tier": 7,
-      "pos": [0, 180],
-      "cost": { "discipline": "kindreds:stealth", "points": 4 },
-      "prereqs": ["goblin.stealth.goblintown_horde"],
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.stealth.goblintown_horde"
+      ],
       "abilities": [
         {
           "type": "perk",
           "perk": "evasion",
-          "params": { "chance": 0.3, "reduction": 1.0 }
+          "params": {
+            "chance": 0.3,
+            "reduction": 1.0
+          }
         },
         {
           "type": "attribute",
@@ -1184,7 +1393,488 @@
           "type": "perk",
           "perk": "bane",
           "foe": "any",
-          "params": { "bonus": 0.5 }
+          "params": {
+            "bonus": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.tunnel_rat",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:mining_efficiency",
+          "operation": "add_value",
+          "amount": 2.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 200.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.wall_crawler",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.mining.tunnel_rat"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 400.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:step_height",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.ceiling_crawler",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.mining.wall_crawler"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 400.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 6.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.pounce",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.mining.ceiling_crawler"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "pounce",
+          "params": {
+            "bonus": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.cliff_scuttler",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.mining.pounce"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 500.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.08
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.spider_climb",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.mining.cliff_scuttler"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 600.0
+        },
+        {
+          "type": "perk",
+          "perk": "pounce",
+          "params": {
+            "bonus": 0.6
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 6.0
+        }
+      ],
+      "exclusive_group": "goblin.mining.spec"
+    },
+    {
+      "id": "goblin.mining.grubber",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.mining.wall_crawler"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "mining_fortune",
+          "params": {
+            "chance": 0.35,
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.fast_digger",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.mining.grubber"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:mining_efficiency",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:submerged_mining_speed",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.vein_grubber",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.mining.fast_digger"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "vein_miner",
+          "params": {
+            "max": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.gold_greed",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.mining.vein_grubber"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "mining_fortune",
+          "params": {
+            "chance": 0.5,
+            "amount": 2
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "exclusive_group": "goblin.mining.spec"
+    },
+    {
+      "id": "goblin.mining.cold_blooded",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.mining.wall_crawler"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:powdered_snow_immunity",
+          "operation": "add_value",
+          "amount": 1.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.deep_scuttler",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.mining.cold_blooded"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:haste",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.mountain_born",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 3
+      },
+      "prereqs": [
+        "goblin.mining.deep_scuttler"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:powdered_snow_immunity",
+          "operation": "add_value",
+          "amount": 1.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "goblin.mining.thing_in_the_deep",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.mining.mountain_born"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:strength",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 300.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ],
+      "exclusive_group": "goblin.mining.spec"
+    },
+    {
+      "id": "goblin.mining.goblin_of_the_deep",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 4
+      },
+      "prereqs": [
+        "goblin.mining.cliff_scuttler",
+        "goblin.mining.vein_grubber"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 400.0
+        },
+        {
+          "type": "perk",
+          "perk": "pounce",
+          "params": {
+            "bonus": 0.5
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "mining_fortune",
+          "params": {
+            "chance": 0.4,
+            "amount": 1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:haste",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     }

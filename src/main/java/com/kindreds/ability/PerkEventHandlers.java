@@ -314,6 +314,13 @@ public final class PerkEventHandlers {
                         foeBonus = true;
                     }
                 }
+                // Pounce: the wall-crawler drops on its prey - bonus damage while falling onto a foe.
+                case "pounce" -> {
+                    if (!attacker.isOnGround() && attacker.getVelocity().y < 0.0) {
+                        multiplier += perk.param("bonus", 0.5f);
+                        foeBonus = true;
+                    }
+                }
                 default -> {
                 }
             }
