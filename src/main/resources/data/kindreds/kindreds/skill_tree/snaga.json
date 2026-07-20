@@ -328,345 +328,6 @@
       ]
     },
     {
-      "id": "snaga.archery.crooked_bow",
-      "tier": 1,
-      "pos": [
-        0,
-        0
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.108
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.quick_loose",
-      "tier": 2,
-      "pos": [
-        -30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.archery.crooked_bow"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.135
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.foul_darts",
-      "tier": 2,
-      "pos": [
-        30,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.archery.crooked_bow"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 0,
-            "duration_ticks": 100
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.parting_shot",
-      "tier": 2,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.archery.crooked_bow"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.15
-        },
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.2,
-            "reduction": 1.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.hunters_range",
-      "tier": 3,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.archery.quick_loose"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:entity_interaction_range",
-          "operation": "add_value",
-          "amount": 1.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.108
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.mordor_venom",
-      "tier": 3,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 2
-      },
-      "prereqs": [
-        "snaga.archery.foul_darts"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.35
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 0,
-            "duration_ticks": 100
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_damage",
-          "operation": "add_multiplied_total",
-          "amount": 0.15
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.loosed_in_flight",
-      "tier": 4,
-      "pos": [
-        0,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.archery.hunters_range",
-        "snaga.archery.mordor_venom"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.203
-        },
-        {
-          "type": "attribute",
-          "attribute": "minecraft:movement_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.108
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.eye_for_weakness",
-      "tier": 5,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.archery.loosed_in_flight"
-      ],
-      "exclusive_group": "snaga.archery.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.4
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "true_flight",
-          "params": {}
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.black_venom_arrows",
-      "tier": 5,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 3
-      },
-      "prereqs": [
-        "snaga.archery.loosed_in_flight"
-      ],
-      "exclusive_group": "snaga.archery.spec",
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.4
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 1,
-            "duration_ticks": 140
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "arrow_slaying",
-          "foe": "any",
-          "params": {
-            "bonus": 0.35
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.lugburz_marksman",
-      "tier": 6,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.archery.eye_for_weakness"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "minecraft:attack_speed",
-          "operation": "add_multiplied_base",
-          "amount": 0.25
-        },
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "any",
-          "params": {
-            "bonus": 0.5
-          }
-        }
-      ]
-    },
-    {
-      "id": "snaga.archery.viper_quiver",
-      "tier": 6,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:archery",
-        "points": 4
-      },
-      "prereqs": [
-        "snaga.archery.black_venom_arrows"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "strike_effect",
-          "params": {
-            "chance": 0.45
-          },
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:poison",
-            "amplifier": 1,
-            "duration_ticks": 180
-          }
-        },
-        {
-          "type": "perk",
-          "perk": "heal_on_kill",
-          "params": {
-            "health": 1.0,
-            "food": 1
-          }
-        }
-      ]
-    },
-    {
       "id": "snaga.survival.scrounger",
       "tier": 1,
       "pos": [
@@ -1600,6 +1261,459 @@
           "ability_id": "kindreds:skulk",
           "cooldown_ticks": 700,
           "effects": []
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.crude_bow",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.poisoned_arrows",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.archery.crude_bow"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_effect",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.barbed_arrows",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.archery.poisoned_arrows"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_effect",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.filthy_darts",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.barbed_arrows"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_effect",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.loosed_in_flight",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.filthy_darts"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_velocity",
+          "params": {
+            "bonus": 0.3
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "true_flight"
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.morgul_dart",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.archery.loosed_in_flight"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_effect",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:wither",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ],
+      "exclusive_group": "snaga.archery.spec"
+    },
+    {
+      "id": "snaga.archery.keen_shot",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.archery.poisoned_arrows"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.from_the_shadows",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.keen_shot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "long_shot",
+          "params": {
+            "per_block": 0.02,
+            "max": 0.6
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.ambush_shot",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.from_the_shadows"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_crit"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.12
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.deadeye_snaga",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.archery.ambush_shot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_crit"
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_pierce",
+          "params": {
+            "targets": 2
+          }
+        }
+      ],
+      "exclusive_group": "snaga.archery.spec"
+    },
+    {
+      "id": "snaga.archery.quick_draw",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.archery.poisoned_arrows"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "swift_draw",
+          "params": {
+            "ticks": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.rain_of_darts",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.quick_draw"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "multishot",
+          "params": {
+            "arrows": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.pelt_them",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 3
+      },
+      "prereqs": [
+        "snaga.archery.rain_of_darts"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "multishot",
+          "params": {
+            "arrows": 1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "swift_draw",
+          "params": {
+            "ticks": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "snaga.archery.stinging_swarm",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.archery.pelt_them"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "multishot",
+          "params": {
+            "arrows": 2
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_effect",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 0,
+            "duration_ticks": 80
+          }
+        }
+      ],
+      "exclusive_group": "snaga.archery.spec"
+    },
+    {
+      "id": "snaga.archery.deadly_from_afar",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 4
+      },
+      "prereqs": [
+        "snaga.archery.loosed_in_flight",
+        "snaga.archery.ambush_shot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "arrow_damage",
+          "params": {
+            "bonus": 0.15
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "arrow_effect",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:poison",
+            "amplifier": 1,
+            "duration_ticks": 100
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "multishot",
+          "params": {
+            "arrows": 1
+          }
+        },
+        {
+          "type": "perk",
+          "perk": "true_flight"
         }
       ]
     }
