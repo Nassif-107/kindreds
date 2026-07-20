@@ -169,6 +169,7 @@ public final class PerkEventHandlers {
                 tickWarPack(player);
                 tickCamouflage(player);
                 BeastPerks.tick(player);
+                DwarfSmithing.tickMendGear(player);
             }
         });
     }

@@ -395,355 +395,6 @@
       ]
     },
     {
-      "id": "dwarf.smithing.forge_born",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.aule_hand",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.smithing.forge_born"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.fireproof_plus",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.smithing.forge_born"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "burning_time",
-          "operation": "add_multiplied_base",
-          "amount": -0.4
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.erebor_craft",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.smithing.aule_hand"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.dwarven_mail",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 2
-      },
-      "prereqs": [
-        "dwarf.smithing.fireproof_plus"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2
-        },
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.2
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.master_smith",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.smithing.erebor_craft",
-        "dwarf.smithing.dwarven_mail"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        },
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2
-        }
-      ],
-      "deed_advancement": "kindreds:deed/dwarf_khazad_craft"
-    },
-    {
-      "id": "dwarf.smithing.dragonslayer_plate",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.smithing.master_smith"
-      ],
-      "exclusive_group": "dwarf.smithing.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 3.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.26
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.mithril_coat",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 3
-      },
-      "prereqs": [
-        "dwarf.smithing.master_smith"
-      ],
-      "exclusive_group": "dwarf.smithing.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 4.5
-        },
-        {
-          "type": "attribute",
-          "attribute": "burning_time",
-          "operation": "add_multiplied_base",
-          "amount": -0.3
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.runic_temper",
-      "tier": 6,
-      "pos": [
-        -30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.smithing.dragonslayer_plate"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 3
-        },
-        {
-          "type": "perk",
-          "perk": "thorns",
-          "params": {
-            "percent": 0.3
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.mithril_weave",
-      "tier": 6,
-      "pos": [
-        30,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.smithing.mithril_coat"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 4
-        },
-        {
-          "type": "attribute",
-          "attribute": "burning_time",
-          "operation": "add_multiplied_base",
-          "amount": -0.3
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 6.0
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.helm_of_erebor",
-      "tier": 7,
-      "pos": [
-        -30,
-        210
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.smithing.runic_temper"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor_toughness",
-          "operation": "add_value",
-          "amount": 2
-        },
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.3
-        },
-        {
-          "type": "contextual_boon",
-          "when": "low_health",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 1,
-            "duration_ticks": -1
-          }
-        }
-      ]
-    },
-    {
-      "id": "dwarf.smithing.durins_mithril",
-      "tier": 7,
-      "pos": [
-        30,
-        210
-      ],
-      "cost": {
-        "discipline": "kindreds:smithing",
-        "points": 4
-      },
-      "prereqs": [
-        "dwarf.smithing.mithril_weave"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "armor",
-          "operation": "add_value",
-          "amount": 3
-        },
-        {
-          "type": "attribute",
-          "attribute": "burning_time",
-          "operation": "add_multiplied_base",
-          "amount": -0.4
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        }
-      ]
-    },
-    {
       "id": "dwarf.runecraft.cirth_carver",
       "tier": 1,
       "pos": [
@@ -1617,6 +1268,451 @@
           "attribute": "minecraft:luck",
           "operation": "add_value",
           "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.smiths_hand",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.master_craft",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.smithing.smiths_hand"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "mend_gear",
+          "params": {
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.plated",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.smithing.master_craft"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.tempered_plate",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.plated"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.dwarf_mail",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.tempered_plate"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.mithril_coat",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.smithing.dwarf_mail"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "exclusive_group": "dwarf.smithing.spec"
+    },
+    {
+      "id": "dwarf.smithing.careful_work",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.smithing.master_craft"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "mend_gear",
+          "params": {
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.forge_master",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.careful_work"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:masters_forge",
+          "cooldown_ticks": 1200,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.everlasting_craft",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.forge_master"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "mend_gear",
+          "params": {
+            "amount": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.work_of_the_longbeards",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.smithing.everlasting_craft"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "mend_gear",
+          "params": {
+            "amount": 4
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:masters_forge",
+          "cooldown_ticks": 800,
+          "effects": []
+        }
+      ],
+      "exclusive_group": "dwarf.smithing.spec"
+    },
+    {
+      "id": "dwarf.smithing.forge_hardened",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.smithing.master_craft"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.5
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.anvil_stance",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.forge_hardened"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:explosion_knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.aule_blessed",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 3
+      },
+      "prereqs": [
+        "dwarf.smithing.anvil_stance"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:aule_legacy",
+          "cooldown_ticks": 2400,
+          "effects": [
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 600
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 0,
+              "duration_ticks": 400
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.3
+        }
+      ]
+    },
+    {
+      "id": "dwarf.smithing.forgefather",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.smithing.aule_blessed"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:aule_legacy",
+          "cooldown_ticks": 1800,
+          "effects": [
+            {
+              "effect": "minecraft:fire_resistance",
+              "amplifier": 0,
+              "duration_ticks": 800
+            },
+            {
+              "effect": "minecraft:resistance",
+              "amplifier": 1,
+              "duration_ticks": 500
+            },
+            {
+              "effect": "minecraft:strength",
+              "amplifier": 0,
+              "duration_ticks": 500
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.5
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ],
+      "exclusive_group": "dwarf.smithing.spec"
+    },
+    {
+      "id": "dwarf.smithing.master_smith",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 4
+      },
+      "prereqs": [
+        "dwarf.smithing.dwarf_mail",
+        "dwarf.smithing.everlasting_craft"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "mend_gear",
+          "params": {
+            "amount": 3
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:masters_forge",
+          "cooldown_ticks": 1000,
+          "effects": []
         }
       ]
     }

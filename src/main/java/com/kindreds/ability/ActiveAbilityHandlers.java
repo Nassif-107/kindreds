@@ -54,6 +54,7 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
         HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
+        HANDLERS.put("masters_forge", (p, w) -> mastersForge(p, w));
         HANDLERS.put("call_of_the_wild", (p, w) -> summonWolves(p, w, 2, false));
         HANDLERS.put("summon_the_pack", (p, w) -> summonWolves(p, w, 4, false));
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
@@ -199,6 +200,14 @@ public final class ActiveAbilityHandlers {
     }
 
     private static final String SUMMON_TAG = "kindreds_summon";
+
+    /** The master smith's touch (Aulë's craft): every worn or held item is made whole again. */
+    private static void mastersForge(ServerPlayerEntity p, ServerWorld world) {
+        DwarfSmithing.repairAll(p);
+        world.spawnParticles(ParticleTypes.FLAME, p.getX(), p.getBodyY(1.0), p.getZ(), 30, 0.5, 0.7, 0.5, 0.02);
+        world.spawnParticles(ParticleTypes.CRIT, p.getX(), p.getBodyY(1.0), p.getZ(), 20, 0.5, 0.7, 0.5, 0.05);
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_ANVIL_USE, SoundCategory.PLAYERS, 1.0f, 1.2f);
+    }
 
     /** A wave of dread: nearby hostiles are weakened and slowed as the frenzy takes the caster. */
     private static void dreadNova(ServerPlayerEntity p, ServerWorld world, double radius) {
