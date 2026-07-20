@@ -65,6 +65,8 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("call_of_the_wild", (p, w) -> summonWolves(p, w, 2, false));
         HANDLERS.put("summon_the_pack", (p, w) -> summonWolves(p, w, 4, false));
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
+        HANDLERS.put("call_of_wargs", (p, w) -> summonWolves(p, w, 2, false)); // Uruk warg-pack (wolves as wargs)
+        HANDLERS.put("warg_pack", (p, w) -> summonWolves(p, w, 4, false));
     }
 
     /** Runs the world-effect for {@code def}, if it has one. Called by {@link ActiveAbilityService}

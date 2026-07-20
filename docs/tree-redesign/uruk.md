@@ -24,3 +24,4 @@ The orc-kin template: strength-in-numbers, savagery, sun-behaviour. Orc/Snaga/Go
 2. **Leadership** — ✅ built — Warlord of Isengard.
 3. **Smithing** — ✅ built — Forges of Isengard.
 4. **Shadow** — ✅ built — Servants of the Shadow.
+5. **Beast-lore** — ✅ built — Warg-riders (mount + warg-pack summons).
