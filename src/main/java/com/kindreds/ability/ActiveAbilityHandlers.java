@@ -52,6 +52,7 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("star_glass", (p, w) -> phialBurst(p, w, 8.0));
         HANDLERS.put("light_of_the_phial", (p, w) -> phialBurst(p, w, 10.0));
         HANDLERS.put("durins_wrath", (p, w) -> shockwave(p, w, 5.0, 8.0f));
+        HANDLERS.put("savage_swing", (p, w) -> shockwave(p, w, 4.0, 7.0f)); // Uruk scimitar sweep (AoE cleave)
         HANDLERS.put("blood_frenzy", (p, w) -> dreadNova(p, w, 6.0));
         HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
