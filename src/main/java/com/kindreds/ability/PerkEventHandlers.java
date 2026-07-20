@@ -250,6 +250,10 @@ public final class PerkEventHandlers {
                 multiplier *= (1.0f - Math.min(1.0f, perk.param("reduction", 1f)));
             }
         }
+        // Foresight: the Eldar sense the blow ere it falls and turn its edge - a steady damage cut.
+        for (PerkDef perk : PerkService.perksOfType(victim, "foresight")) {
+            multiplier *= (1.0f - Math.min(0.8f, perk.param("reduction", 0.1f)));
+        }
         if (multiplier < 1.0f && victim.getWorld() instanceof ServerWorld world) {
             // Dodge: a puff of dust and a whoosh mark the shrugged-off blow.
             flash(world, victim.getX(), victim.getBodyY(0.6), victim.getZ(), ParticleTypes.CLOUD, 12, 0.3);

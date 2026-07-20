@@ -3,316 +3,6 @@
   "theme": "kindreds:elf",
   "nodes": [
     {
-      "id": "elf.lore.elven_tongue",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "luck",
-          "operation": "add_value",
-          "amount": 2.0
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.moon_letters",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.lore.elven_tongue"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "block_interaction_range",
-          "operation": "add_value",
-          "amount": 1.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "entity_interaction_range",
-          "operation": "add_value",
-          "amount": 1.0
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.ring_lore",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.lore.elven_tongue"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "knockback_resistance",
-          "operation": "add_value",
-          "amount": 0.2
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.star_glass",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.lore.moon_letters"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:star_glass",
-          "cooldown_ticks": 2400,
-          "effects": [
-            {
-              "effect": "minecraft:resistance",
-              "amplifier": 0,
-              "duration_ticks": 400
-            },
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 0,
-              "duration_ticks": 300
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.ancient_grace",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.lore.ring_lore"
-      ],
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "attribute",
-            "attribute": "max_absorption",
-            "operation": "add_value",
-            "amount": 6.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.light_of_the_phial",
-      "tier": 4,
-      "pos": [
-        -30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.lore.star_glass"
-      ],
-      "exclusive_group": "elf.lore.spec",
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:light_of_the_phial",
-          "cooldown_ticks": 3600,
-          "effects": [
-            {
-              "effect": "minecraft:strength",
-              "amplifier": 1,
-              "duration_ticks": 300
-            },
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.shadow_ward",
-      "tier": 4,
-      "pos": [
-        30,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.lore.ancient_grace"
-      ],
-      "exclusive_group": "elf.lore.spec",
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "deep_dark",
-          "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:resistance",
-            "amplifier": 0,
-            "duration_ticks": -1
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.earendils_watch",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.lore.light_of_the_phial"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.2,
-            "reduction": 1.0
-          }
-        },
-        {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "attribute",
-            "attribute": "max_health",
-            "operation": "add_value",
-            "amount": 4.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.bane_of_the_barrow_wights",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.lore.shadow_ward"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "bane",
-          "foe": "undead",
-          "params": {
-            "bonus": 0.5
-          }
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 3.0
-        }
-      ]
-    },
-    {
-      "id": "elf.lore.light_everlasting",
-      "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:lore",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.lore.earendils_watch",
-        "elf.lore.bane_of_the_barrow_wights"
-      ],
-      "abilities": [
-        {
-          "type": "active",
-          "ability_id": "kindreds:star_glass",
-          "cooldown_ticks": 3200,
-          "effects": [
-            {
-              "effect": "minecraft:resistance",
-              "amplifier": 1,
-              "duration_ticks": 400
-            },
-            {
-              "effect": "minecraft:regeneration",
-              "amplifier": 1,
-              "duration_ticks": 300
-            }
-          ]
-        },
-        {
-          "type": "attribute",
-          "attribute": "max_absorption",
-          "operation": "add_value",
-          "amount": 8.0
-        }
-      ]
-    },
-    {
       "id": "elf.song.first_song",
       "tier": 1,
       "pos": [
@@ -1851,6 +1541,510 @@
           "attribute": "middle-earth:climbing_strength",
           "operation": "add_value",
           "amount": 300.0
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.lore_of_the_eldar",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.sight_beyond_sight",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.lore.lore_of_the_eldar"
+      ],
+      "abilities": [
+        {
+          "type": "vision_unlock",
+          "vision_id": "keen_sight",
+          "radius": 40
+        },
+        {
+          "type": "perk",
+          "perk": "foresight",
+          "params": {
+            "reduction": 0.05
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.premonition",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.lore.sight_beyond_sight"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "foresight",
+          "params": {
+            "reduction": 0.08
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.elven_reflexes",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.lore.premonition"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.doom_averted",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.lore.elven_reflexes"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "foresight",
+          "params": {
+            "reduction": 0.1
+          }
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.wisdom_of_ages",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.lore.doom_averted"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "foresight",
+          "params": {
+            "reduction": 0.15
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 5.0
+        }
+      ],
+      "exclusive_group": "elf.lore.spec"
+    },
+    {
+      "id": "elf.lore.star_glass",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.lore.sight_beyond_sight"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:star_glass",
+          "cooldown_ticks": 1800,
+          "effects": [
+            {
+              "type": "status_effect",
+              "effect": "minecraft:resistance",
+              "amplifier": 0,
+              "duration_ticks": 300
+            },
+            {
+              "type": "status_effect",
+              "effect": "minecraft:regeneration",
+              "amplifier": 0,
+              "duration_ticks": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.light_of_earendil",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.lore.star_glass"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.6
+          },
+          "foe": "undead"
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.phial_of_galadriel",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.lore.light_of_earendil"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:light_of_the_phial",
+          "cooldown_ticks": 2400,
+          "effects": [
+            {
+              "type": "status_effect",
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 200
+            },
+            {
+              "type": "status_effect",
+              "effect": "minecraft:regeneration",
+              "amplifier": 1,
+              "duration_ticks": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.star_of_earendil_lore",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.lore.phial_of_galadriel"
+      ],
+      "abilities": [
+        {
+          "type": "active",
+          "ability_id": "kindreds:light_of_the_phial",
+          "cooldown_ticks": 2000,
+          "effects": [
+            {
+              "type": "status_effect",
+              "effect": "minecraft:strength",
+              "amplifier": 1,
+              "duration_ticks": 300
+            },
+            {
+              "type": "status_effect",
+              "effect": "minecraft:resistance",
+              "amplifier": 1,
+              "duration_ticks": 300
+            }
+          ]
+        },
+        {
+          "type": "perk",
+          "perk": "bane",
+          "params": {
+            "bonus": 0.4
+          },
+          "foe": "undead"
+        }
+      ],
+      "exclusive_group": "elf.lore.spec"
+    },
+    {
+      "id": "elf.lore.elf_friend",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.lore.sight_beyond_sight"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.unstained_by_shadow",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.lore.elf_friend"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "deep_dark",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.keeper_of_lore",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.lore.unstained_by_shadow"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        }
+      ]
+    },
+    {
+      "id": "elf.lore.light_of_valinor",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.lore.keeper_of_lore"
+      ],
+      "abilities": [
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "foresight",
+          "params": {
+            "reduction": 0.1
+          }
+        }
+      ],
+      "exclusive_group": "elf.lore.spec"
+    },
+    {
+      "id": "elf.lore.wisdom_of_the_firstborn",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.lore.doom_averted",
+        "elf.lore.phial_of_galadriel"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "foresight",
+          "params": {
+            "reduction": 0.12
+          }
+        },
+        {
+          "type": "active",
+          "ability_id": "kindreds:light_of_the_phial",
+          "cooldown_ticks": 2400,
+          "effects": [
+            {
+              "type": "status_effect",
+              "effect": "minecraft:strength",
+              "amplifier": 2,
+              "duration_ticks": 300
+            },
+            {
+              "type": "status_effect",
+              "effect": "minecraft:regeneration",
+              "amplifier": 1,
+              "duration_ticks": 300
+            }
+          ]
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     }

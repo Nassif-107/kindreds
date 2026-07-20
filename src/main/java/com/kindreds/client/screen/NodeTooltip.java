@@ -243,6 +243,7 @@ public final class NodeTooltip {
             case "swift_draw" -> "§b" + I18n.translate("kindreds.perk.swift_draw");
             case "ambush" -> "§c" + I18n.translate("kindreds.perk.ambush", Math.round(p.param("bonus", 0.5f) * 100));
             case "camouflage" -> "§b" + I18n.translate("kindreds.perk.camouflage");
+            case "foresight" -> "§d" + I18n.translate("kindreds.perk.foresight", Math.round(p.param("reduction", 0.1f) * 100));
             case "light_ward" -> "§e" + I18n.translate("kindreds.perk.light_ward");
             default -> {
                 StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));

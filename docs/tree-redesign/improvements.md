@@ -46,6 +46,6 @@ race. No filler.**
 1. **Archery** — ✅ built (real arrow engine, 17 nodes).
 2. **Survival** — ✅ built (Wood-elf ranger: Silvan-shadow stealth, woodcraft, snow/cold, elven-rope/climb,
    lembas endurance, forest-speed).
-3. **Lore** — wisdom, foresight, star/light-magic, keen mind.
+3. **Lore** — ✅ built — wisdom, foresight, star/light-magic, keen mind.
 4. **Song** — song-magic, healing, minstrelsy (Lúthien).
 5. **Beast-lore** — Elf-friend of beasts, Elven steeds, wild allies.
