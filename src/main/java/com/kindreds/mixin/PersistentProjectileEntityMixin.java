@@ -1,13 +1,16 @@
 package com.kindreds.mixin;
 
+import com.kindreds.ability.ArrowPerks;
 import com.kindreds.progression.ActivityHooks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -31,11 +34,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(PersistentProjectileEntity.class)
 public abstract class PersistentProjectileEntityMixin {
+
+    /** One-shot guard so the arrow's spawn-time perks (crit/pierce/velocity/multishot) apply exactly
+     * once, on its first ticked frame, rather than every tick. */
+    @Unique
+    private boolean kindreds$perksApplied;
+
     @Inject(method = "onEntityHit", at = @At("HEAD"))
     private void kindreds$onEntityHit(EntityHitResult hitResult, CallbackInfo ci) {
         Entity owner = ((ProjectileEntity) (Object) this).getOwner();
         if (owner instanceof ServerPlayerEntity player) {
             ActivityHooks.onArrowHitEntity(player);
+            if (hitResult.getEntity() instanceof LivingEntity target) {
+                ArrowPerks.onHit((PersistentProjectileEntity) (Object) this, player, target);
+            }
         }
     }
 
@@ -50,10 +62,15 @@ public abstract class PersistentProjectileEntityMixin {
     /** Keen-eye aim-assist: nudge an in-flight arrow toward a nearby foe if its owner has the
      * {@code true_flight} perk (a no-op otherwise). See {@link com.kindreds.ability.ArcheryAssist}. */
     @Inject(method = "tick", at = @At("HEAD"))
-    private void kindreds$aimAssist(CallbackInfo ci) {
+    private void kindreds$arrowTick(CallbackInfo ci) {
         Entity owner = ((ProjectileEntity) (Object) this).getOwner();
         if (owner instanceof ServerPlayerEntity player) {
-            com.kindreds.ability.ArcheryAssist.steer((net.minecraft.entity.projectile.PersistentProjectileEntity) (Object) this, player);
+            PersistentProjectileEntity self = (PersistentProjectileEntity) (Object) this;
+            if (!kindreds$perksApplied) {
+                kindreds$perksApplied = true;
+                ArrowPerks.onSpawn(self, player); // crit / pierce / velocity / multishot, once
+            }
+            com.kindreds.ability.ArcheryAssist.steer(self, player); // keen-eye aim-assist
         }
     }
 }

@@ -16,23 +16,30 @@ public final class BowDrawSpeed {
     private BowDrawSpeed() {
     }
 
-    /** Extra {@code itemUseTimeLeft} decrement per tick while drawing a bow: 0 = normal, 1 = 2x, ... */
+    /** Extra {@code itemUseTimeLeft} decrement per tick while drawing a bow: 0 = normal, 1 = 2x, 2 = 3x.
+     * Elves draw fast by nature; the {@code swift_draw} skill-tree perk stacks on top (so a Wood-elf
+     * who trains it draws faster still). Read on both sides so the local player's animation matches the
+     * server's shot charge. */
     public static int extraTicks(PlayerEntity player) {
         Identifier race;
+        boolean swiftDrawPerk;
         if (player.getWorld().isClient) {
-            // Lazily hops to a client-only class; never loaded on a dedicated server (isClient=false there).
+            // Lazily hops to client-only classes; never loaded on a dedicated server (isClient=false there).
             race = com.kindreds.client.ClientRaceAccess.localRace(player);
+            swiftDrawPerk = com.kindreds.client.ClientPerkAccess.localHasPerk(player, "swift_draw");
         } else if (player instanceof ServerPlayerEntity serverPlayer) {
             race = KindredAttachment.get(serverPlayer).race();
+            swiftDrawPerk = !PerkService.perksOfType(serverPlayer, "swift_draw").isEmpty();
         } else {
             return 0;
         }
-        if (race == null) {
-            return 0;
+        int extra = 0;
+        if (race != null && race.getPath().equals("elf")) {
+            extra += 1; // the Eldar: innately swift of hand
         }
-        return switch (race.getPath()) {
-            case "elf" -> 1;   // the Eldar: double draw speed
-            default -> 0;
-        };
+        if (swiftDrawPerk) {
+            extra += 1; // trained swift-draw
+        }
+        return extra;
     }
 }

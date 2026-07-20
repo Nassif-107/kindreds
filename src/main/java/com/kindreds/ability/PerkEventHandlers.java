@@ -253,21 +253,40 @@ public final class PerkEventHandlers {
      */
     public static float outgoingDamageMultiplier(ServerPlayerEntity attacker, LivingEntity target, boolean projectile) {
         float multiplier = 1.0f;
+        boolean foeBonus = false; // a foe-specific (bane/arrow-slaying) bonus landed - worth a spark
         for (PerkDef perk : PerkService.ownedPerks(attacker)) {
-            boolean isBane = perk.perk().equals("bane");
-            boolean isArrow = perk.perk().equals("arrow_slaying");
-            if (!isBane && !isArrow) {
-                continue;
-            }
-            if (isArrow && !projectile) {
-                continue; // arrow-slaying only augments bow hits
-            }
-            String foe = perk.foe().orElse("any");
-            if (matchesFoe(target, foe)) {
-                multiplier += perk.param("bonus", 0f);
+            switch (perk.perk()) {
+                case "bane" -> {
+                    if (matchesFoe(target, perk.foe().orElse("any"))) {
+                        multiplier += perk.param("bonus", 0f);
+                        foeBonus = true;
+                    }
+                }
+                case "arrow_slaying" -> {
+                    if (projectile && matchesFoe(target, perk.foe().orElse("any"))) {
+                        multiplier += perk.param("bonus", 0f);
+                        foeBonus = true;
+                    }
+                }
+                // Real bow damage: a flat percent on every arrow hit (fixes 'fake' +bow-damage nodes,
+                // which were a melee attribute that arrows never used).
+                case "arrow_damage" -> {
+                    if (projectile) {
+                        multiplier += perk.param("bonus", 0.15f);
+                    }
+                }
+                // Long-shot: bonus scaling with how far the target is - rewards the quarter-mile shot.
+                case "long_shot" -> {
+                    if (projectile) {
+                        double dist = Math.sqrt(attacker.squaredDistanceTo(target));
+                        multiplier += Math.min(perk.param("max", 1.0f), (float) dist * perk.param("per_block", 0.02f));
+                    }
+                }
+                default -> {
+                }
             }
         }
-        if (multiplier > 1.0f && attacker.getWorld() instanceof ServerWorld world) {
+        if (foeBonus && attacker.getWorld() instanceof ServerWorld world) {
             // Bane/arrow-slaying lands: an enchanted-hit spark and a sharp crack, so the bonus reads.
             flash(world, target.getX(), target.getBodyY(0.7), target.getZ(), ParticleTypes.ENCHANTED_HIT, 12, 0.3);
             sound(world, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, 0.7f, 1.2f);

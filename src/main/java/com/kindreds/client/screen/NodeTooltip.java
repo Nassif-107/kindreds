@@ -231,6 +231,16 @@ public final class NodeTooltip {
             case "lifesteal" -> "§a" + I18n.translate("kindreds.perk.lifesteal", Math.round(p.param("percent", 0.1f) * 100));
             case "thorns" -> "§c" + I18n.translate("kindreds.perk.thorns", Math.round(p.param("percent", 0.25f) * 100));
             case "true_flight" -> "§b" + I18n.translate("kindreds.perk.true_flight");
+            case "arrow_damage" -> "§c" + I18n.translate("kindreds.perk.arrow_damage", Math.round(p.param("bonus", 0.15f) * 100));
+            case "long_shot" -> "§c" + I18n.translate("kindreds.perk.long_shot",
+                    Math.round(p.param("per_block", 0.02f) * 100), Math.round(p.param("max", 1f) * 100));
+            case "arrow_crit" -> "§e" + I18n.translate("kindreds.perk.arrow_crit");
+            case "arrow_pierce" -> "§e" + I18n.translate("kindreds.perk.arrow_pierce", Math.round(p.param("targets", 1f)));
+            case "arrow_velocity" -> "§b" + I18n.translate("kindreds.perk.arrow_velocity", Math.round(p.param("bonus", 0.3f) * 100));
+            case "multishot" -> "§e" + I18n.translate("kindreds.perk.multishot", Math.round(p.param("arrows", 1f)));
+            case "arrow_effect" -> "§c" + I18n.translate("kindreds.perk.arrow_effect")
+                    + (p.effect().isPresent() ? " (" + effectName(p.effect().get().effect()) + ")" : "");
+            case "swift_draw" -> "§b" + I18n.translate("kindreds.perk.swift_draw");
             case "light_ward" -> "§e" + I18n.translate("kindreds.perk.light_ward");
             default -> {
                 StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));
