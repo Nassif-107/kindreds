@@ -554,265 +554,6 @@
       ]
     },
     {
-      "id": "elf.survival.light_step",
-      "tier": 1,
-      "pos": [
-        0,
-        30
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 1
-      },
-      "prereqs": [],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_efficiency",
-          "operation": "add_value",
-          "amount": 1.0
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.featherfall",
-      "tier": 2,
-      "pos": [
-        -30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.survival.light_step"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 6.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "fall_damage_multiplier",
-          "operation": "add_value",
-          "amount": -0.3
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.fleet_of_foot",
-      "tier": 2,
-      "pos": [
-        30,
-        60
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.survival.light_step"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.08
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.cliff_walker",
-      "tier": 3,
-      "pos": [
-        -30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.survival.featherfall"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "step_height",
-          "operation": "add_value",
-          "amount": 0.6
-        },
-        {
-          "type": "attribute",
-          "attribute": "fall_damage_multiplier",
-          "operation": "add_value",
-          "amount": -0.2
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.woodland_grace",
-      "tier": 3,
-      "pos": [
-        30,
-        90
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 2
-      },
-      "prereqs": [
-        "elf.survival.fleet_of_foot"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.08
-        },
-        {
-          "type": "attribute",
-          "attribute": "water_movement_efficiency",
-          "operation": "add_value",
-          "amount": 0.5
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.paths_of_the_wandering_folk",
-      "tier": 4,
-      "pos": [
-        0,
-        120
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.survival.cliff_walker",
-        "elf.survival.woodland_grace"
-      ],
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "movement_speed",
-          "operation": "add_multiplied_total",
-          "amount": 0.1
-        },
-        {
-          "type": "contextual_boon",
-          "when": "dawn_dusk",
-          "effect": {
-            "type": "attribute",
-            "attribute": "movement_speed",
-            "operation": "add_multiplied_total",
-            "amount": 0.1
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.starlit_wayfarer",
-      "tier": 5,
-      "pos": [
-        -30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.survival.paths_of_the_wandering_folk"
-      ],
-      "exclusive_group": "elf.survival.spec",
-      "abilities": [
-        {
-          "type": "contextual_boon",
-          "when": "starlight",
-          "effect": {
-            "type": "attribute",
-            "attribute": "movement_speed",
-            "operation": "add_multiplied_total",
-            "amount": 0.2
-          }
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.endurance_of_the_firstborn",
-      "tier": 5,
-      "pos": [
-        30,
-        150
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 3
-      },
-      "prereqs": [
-        "elf.survival.paths_of_the_wandering_folk"
-      ],
-      "exclusive_group": "elf.survival.spec",
-      "abilities": [
-        {
-          "type": "attribute",
-          "attribute": "max_health",
-          "operation": "add_value",
-          "amount": 4.0
-        },
-        {
-          "type": "attribute",
-          "attribute": "safe_fall_distance",
-          "operation": "add_value",
-          "amount": 6.0
-        }
-      ]
-    },
-    {
-      "id": "elf.survival.paths_beyond_the_sea",
-      "tier": 6,
-      "pos": [
-        0,
-        180
-      ],
-      "cost": {
-        "discipline": "kindreds:survival",
-        "points": 4
-      },
-      "prereqs": [
-        "elf.survival.starlit_wayfarer",
-        "elf.survival.endurance_of_the_firstborn"
-      ],
-      "abilities": [
-        {
-          "type": "perk",
-          "perk": "evasion",
-          "params": {
-            "chance": 0.2,
-            "reduction": 1.0
-          }
-        },
-        {
-          "type": "contextual_boon",
-          "when": "dawn_dusk",
-          "effect": {
-            "type": "attribute",
-            "attribute": "movement_speed",
-            "operation": "add_multiplied_total",
-            "amount": 0.15
-          }
-        }
-      ]
-    },
-    {
       "id": "elf.beast_lore.wood_friend",
       "tier": 1,
       "pos": [
@@ -1131,7 +872,7 @@
       },
       "prereqs": [
         "elf.song.song_of_the_valar",
-        "elf.survival.paths_beyond_the_sea"
+        "elf.survival.light_of_foot"
       ],
       "abilities": [
         {
@@ -1642,6 +1383,474 @@
         {
           "type": "perk",
           "perk": "true_flight"
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.wood_wise",
+      "tier": 1,
+      "pos": [
+        0,
+        30
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 1
+      },
+      "prereqs": [],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_value",
+          "amount": 0.4
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.15
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.light_of_foot",
+      "tier": 2,
+      "pos": [
+        0,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.survival.wood_wise"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_efficiency",
+          "operation": "add_value",
+          "amount": 1.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 6.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:step_height",
+          "operation": "add_value",
+          "amount": 0.6
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.silvan_shadow",
+      "tier": 3,
+      "pos": [
+        -30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.survival.light_of_foot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.4
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.unseen_hunter",
+      "tier": 4,
+      "pos": [
+        -30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.survival.silvan_shadow"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.25
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.cloak_of_lorien",
+      "tier": 5,
+      "pos": [
+        -30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.survival.unseen_hunter"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.ghost_of_the_greenwood",
+      "tier": 6,
+      "pos": [
+        -30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.survival.cloak_of_lorien"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.55
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:detection_range",
+          "operation": "add_value",
+          "amount": -0.2
+        }
+      ],
+      "exclusive_group": "elf.survival.spec"
+    },
+    {
+      "id": "elf.survival.snow_treader",
+      "tier": 3,
+      "pos": [
+        0,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.survival.light_of_foot"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:water_movement_efficiency",
+          "operation": "add_value",
+          "amount": 0.6
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 8.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:oxygen_bonus",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.tree_climber",
+      "tier": 4,
+      "pos": [
+        0,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.survival.snow_treader"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 350.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:step_height",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.fleet_of_foot",
+      "tier": 5,
+      "pos": [
+        0,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.survival.tree_climber"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:jump_strength",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.swift_as_nimrodel",
+      "tier": 6,
+      "pos": [
+        0,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.survival.fleet_of_foot"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.22
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 350.0
+        }
+      ],
+      "exclusive_group": "elf.survival.spec"
+    },
+    {
+      "id": "elf.survival.waybread",
+      "tier": 3,
+      "pos": [
+        30,
+        90
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.survival.light_of_foot"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.enduring_grace",
+      "tier": 4,
+      "pos": [
+        30,
+        120
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.survival.waybread"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:knockback_resistance",
+          "operation": "add_value",
+          "amount": 0.2
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.grace_of_the_eldar",
+      "tier": 5,
+      "pos": [
+        30,
+        150
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 3
+      },
+      "prereqs": [
+        "elf.survival.enduring_grace"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 3.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "low_health",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 1,
+            "duration_ticks": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "elf.survival.deathless_vigor",
+      "tier": 6,
+      "pos": [
+        30,
+        180
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.survival.grace_of_the_eldar"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 4.0
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.2,
+            "reduction": 1.0
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 5.0
+        }
+      ],
+      "exclusive_group": "elf.survival.spec"
+    },
+    {
+      "id": "elf.survival.warden_of_the_woodland_realm",
+      "tier": 7,
+      "pos": [
+        0,
+        210
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 4
+      },
+      "prereqs": [
+        "elf.survival.cloak_of_lorien",
+        "elf.survival.fleet_of_foot"
+      ],
+      "abilities": [
+        {
+          "type": "perk",
+          "perk": "camouflage"
+        },
+        {
+          "type": "perk",
+          "perk": "ambush",
+          "params": {
+            "bonus": 0.4
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.15
+        },
+        {
+          "type": "attribute",
+          "attribute": "middle-earth:climbing_strength",
+          "operation": "add_value",
+          "amount": 300.0
         }
       ]
     }

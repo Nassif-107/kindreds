@@ -166,6 +166,7 @@ public final class PerkEventHandlers {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 tickAllyAura(player);
                 tickWarPack(player);
+                tickCamouflage(player);
             }
         });
     }
@@ -176,6 +177,17 @@ public final class PerkEventHandlers {
 
     /** <b>ally_aura</b> ({@code radius}, {@code effect}): other players within range are granted the
      * effect - the Captain-of-Men leadership buff, and the backbone of the Fellowship "lent gifts". */
+    /** <b>camouflage</b>: the Cloak of Lórien - while the wearer is sneaking they melt into the
+     * surroundings (Invisibility), the Silvan art of going unseen. Refreshed each cadence, so it
+     * lasts exactly as long as they stay still and hidden. */
+    private static void tickCamouflage(ServerPlayerEntity player) {
+        if (PerkService.perksOfType(player, "camouflage").isEmpty() || !player.isSneaking()) {
+            return;
+        }
+        player.addStatusEffect(new StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.INVISIBILITY,
+                AURA_INTERVAL * 3, 0, false, false, false));
+    }
+
     private static void tickAllyAura(ServerPlayerEntity player) {
         List<PerkDef> auras = PerkService.perksOfType(player, "ally_aura");
         if (auras.isEmpty()) {
@@ -280,6 +292,13 @@ public final class PerkEventHandlers {
                     if (projectile) {
                         double dist = Math.sqrt(attacker.squaredDistanceTo(target));
                         multiplier += Math.min(perk.param("max", 1.0f), (float) dist * perk.param("per_block", 0.02f));
+                    }
+                }
+                // Ambush: the Silvan Shadow strikes unseen - bonus damage while sneaking (melee or bow).
+                case "ambush" -> {
+                    if (attacker.isSneaking()) {
+                        multiplier += perk.param("bonus", 0.5f);
+                        foeBonus = true;
                     }
                 }
                 default -> {
