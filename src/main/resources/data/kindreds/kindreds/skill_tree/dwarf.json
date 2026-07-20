@@ -651,6 +651,13 @@
           "attribute": "minecraft:armor",
           "operation": "add_value",
           "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.2
+          }
         }
       ]
     },
@@ -674,6 +681,13 @@
           "attribute": "minecraft:armor_toughness",
           "operation": "add_value",
           "amount": 3.0
+        },
+        {
+          "type": "perk",
+          "perk": "mend_gear",
+          "params": {
+            "amount": 1
+          }
         }
       ]
     },
@@ -893,6 +907,13 @@
           "attribute": "minecraft:explosion_knockback_resistance",
           "operation": "add_value",
           "amount": 0.5
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.25
+          }
         }
       ]
     },
@@ -1630,6 +1651,13 @@
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
           "amount": 0.1
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.2
+          }
         }
       ]
     },
@@ -1943,6 +1971,16 @@
           "attribute": "minecraft:max_absorption",
           "operation": "add_value",
           "amount": 3.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "underground",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     },

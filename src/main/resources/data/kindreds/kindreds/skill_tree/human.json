@@ -237,6 +237,19 @@
           "attribute": "minecraft:attack_damage",
           "operation": "add_multiplied_total",
           "amount": 0.12
+        },
+        {
+          "type": "perk",
+          "perk": "strike_effect",
+          "params": {
+            "chance": 0.25
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 100
+          }
         }
       ]
     },
@@ -289,6 +302,13 @@
           "attribute": "minecraft:armor",
           "operation": "add_value",
           "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "lifesteal",
+          "params": {
+            "percent": 0.08
+          }
         }
       ]
     },
@@ -511,6 +531,13 @@
           "attribute": "minecraft:max_health",
           "operation": "add_value",
           "amount": 2.0
+        },
+        {
+          "type": "perk",
+          "perk": "thorns",
+          "params": {
+            "percent": 0.2
+          }
         }
       ]
     },

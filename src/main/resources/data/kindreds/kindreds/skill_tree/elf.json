@@ -897,6 +897,16 @@
           "attribute": "minecraft:max_absorption",
           "operation": "add_value",
           "amount": 4.0
+        },
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:regeneration",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     },
@@ -926,6 +936,14 @@
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
           "amount": 0.2
+        },
+        {
+          "type": "perk",
+          "perk": "evasion",
+          "params": {
+            "chance": 0.15,
+            "reduction": 1.0
+          }
         }
       ]
     },
