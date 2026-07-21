@@ -39,9 +39,34 @@ public record SyncKindredDataS2C(KindredData data) implements CustomPayload {
      * mirrored race id never goes stale, without every call site needing its own
      * {@code RaceAccess.getRace} call.
      */
+    /**
+     * Sends the player their own state.
+     *
+     * <p>Sends a <b>snapshot</b>, not the live attachment. Netty encodes the payload on its own
+     * thread, some ticks after this call, walking the very sets the server thread is still editing -
+     * unlock a node or earn a deed in that window and the encode dies with a
+     * {@link java.util.ConcurrentModificationException}, which drops the packet and can take the
+     * connection with it. Copying costs a few small collections per sync and removes the race
+     * entirely. (Found by a functional test that unlocked nodes while syncs were in flight.)
+     */
     public static void sendTo(ServerPlayerEntity player) {
-        KindredData data = KindredAttachment.get(player);
-        data.setRace(RaceAccess.getRace(player).orElse(null));
-        ServerPlayNetworking.send(player, new SyncKindredDataS2C(data));
+        KindredData live = KindredAttachment.get(player);
+        live.setRace(RaceAccess.getRace(player).orElse(null));
+        ServerPlayNetworking.send(player, new SyncKindredDataS2C(snapshot(live)));
+    }
+
+    /** A detached copy safe to hand to another thread. */
+    private static KindredData snapshot(KindredData live) {
+        KindredData copy = new KindredData(
+                new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>(live.disciplineXp()),
+                new java.util.HashSet<>(live.unlockedNodes()),
+                live.activeVisionLens(),
+                new java.util.HashSet<>(live.titles()),
+                live.corruption(),
+                new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>(live.cooldowns()),
+                new java.util.HashSet<>(live.discoveredBiomes()),
+                new java.util.HashSet<>(live.renown()));
+        copy.setRace(live.race());
+        return copy;
     }
 }

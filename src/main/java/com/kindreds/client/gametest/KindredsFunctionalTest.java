@@ -79,7 +79,15 @@ public class KindredsFunctionalTest implements FabricClientGameTest {
             context.waitTicks(5);
 
             for (String race : RACES) {
-                sp.getServer().runCommand("middle_earth race set " + race);
+                // Set the race through the base mod's own persistent data rather than its command:
+                // the command is gated behind that mod's onboarding flow ("choose your people first"),
+                // which a headless test cannot walk through. assignNewRace is the same call the
+                // command ends up making, and RaceAccess reads the result through the same state.
+                sp.getServer().runOnServer(server -> {
+                    ServerPlayerEntity pl = server.getPlayerManager().getPlayerList().get(0);
+                    var state = net.sevenstars.middleearth.resources.StateSaverAndLoader.getPlayerState(pl);
+                    state.assignNewRace(Identifier.of("middle-earth", race));
+                });
                 // birth traits apply a few ticks after the base mod finishes writing its own values
                 context.waitTicks(40);
                 sp.getServer().runOnServer(server -> checkRace(server, race));
@@ -87,7 +95,11 @@ public class KindredsFunctionalTest implements FabricClientGameTest {
             }
 
             // and prove switching away leaves nothing behind
-            sp.getServer().runCommand("middle_earth race set dwarf");
+            sp.getServer().runOnServer(server -> {
+                ServerPlayerEntity pl = server.getPlayerManager().getPlayerList().get(0);
+                net.sevenstars.middleearth.resources.StateSaverAndLoader.getPlayerState(pl)
+                        .assignNewRace(Identifier.of("middle-earth", "dwarf"));
+            });
             context.waitTicks(40);
             sp.getServer().runOnServer(server -> checkNoLeftovers(server, "dwarf"));
 

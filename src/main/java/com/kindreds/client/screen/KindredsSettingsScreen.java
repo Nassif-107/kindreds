@@ -63,8 +63,17 @@ public class KindredsSettingsScreen extends Screen {
 
         int panelW = Math.min(420, this.width - 40);
         int x = (this.width - panelW) / 2;
-        int panelH = 54 + PRESETS.length * 38 + 24 + FLAGS.length * 18 + 26;
-        int y = Math.max(12, (this.height - panelH) / 2);
+        // At a small window or a high GUI scale there is far less room than the full layout wants
+        // (854x480 at scale 2 leaves 427x240, against 384 needed), and the bottom of the panel -
+        // the rule toggles and the last preset - simply fell off the screen. Compact the rows until
+        // it fits rather than drawing something the player cannot reach.
+        boolean compact = this.height < 320;
+        int rowH = compact ? 22 : 34;
+        int flagH = compact ? 14 : 18;
+        int headH = compact ? 34 : 54;
+        int panelH = headH + PRESETS.length * (rowH + 4) + (compact ? 14 : 24)
+                + FLAGS.length * flagH + (compact ? 16 : 26);
+        int y = Math.max(4, (this.height - panelH) / 2);
 
         ctx.fill(x - 8, y - 10, x + panelW + 8, y + panelH, 0xE0120F0A);
         ctx.drawBorder(x - 8, y - 10, panelW + 16, panelH + 10, 0xFF4A3D28);
@@ -93,10 +102,10 @@ public class KindredsSettingsScreen extends Screen {
                                 + onOff(v.enemyScaling()))
                 .formatted(Formatting.GRAY), x, y + 33, 0xFFB6A888, false);
 
-        int by = y + 54;
+        int by = y + headH;
         for (Difficulty d : PRESETS) {
             boolean active = d.name().equalsIgnoreCase(v.difficulty());
-            int h = 34;
+            int h = rowH;
             int[] r = {x, by, panelW, h};
             presetRects.add(r);
             boolean hover = isOperator() && within(r, mouseX, mouseY);
@@ -108,21 +117,23 @@ public class KindredsSettingsScreen extends Screen {
                     Text.translatable("kindreds.difficulty." + d.name().toLowerCase(Locale.ROOT))
                             .formatted(active ? Formatting.GOLD : Formatting.WHITE),
                     r[0] + 8, r[1] + 7, active ? 0xFFD8B45F : 0xFFECE3CD, false);
-            ctx.drawText(this.textRenderer,
-                    Text.translatable("kindreds.difficulty." + d.name().toLowerCase(Locale.ROOT) + ".desc")
-                            .formatted(Formatting.GRAY),
-                    r[0] + 8, r[1] + 21, 0xFF9A8F76, false);
+            if (!compact) {
+                ctx.drawText(this.textRenderer,
+                        Text.translatable("kindreds.difficulty." + d.name().toLowerCase(Locale.ROOT) + ".desc")
+                                .formatted(Formatting.GRAY),
+                        r[0] + 8, r[1] + 21, 0xFF9A8F76, false);
+            }
             by += h + 4;
         }
 
         // --- Rule switches (lore/sandbox, not difficulty) ---
-        by += 8;
+        by += compact ? 4 : 8;
         ctx.drawText(this.textRenderer, Text.translatable("kindreds.settings.rules")
                 .formatted(Formatting.GOLD), x, by, 0xFFD8B45F, false);
-        by += 13;
+        by += compact ? 10 : 13;
         for (String flag : FLAGS) {
             boolean on = flagValue(v, flag);
-            int[] r = {x, by, panelW, 16};
+            int[] r = {x, by, panelW, flagH - 2};
             flagRects.add(r);
             boolean hover = isOperator() && within(r, mouseX, mouseY);
             if (hover) {
@@ -137,7 +148,7 @@ public class KindredsSettingsScreen extends Screen {
             ctx.drawBorder(px, r[1] + 2, pw, 12, on ? 0xFF8FCA79 : 0xFF7A5A5A);
             ctx.drawText(this.textRenderer, pill, px + 5, r[1] + 4,
                     on ? 0xFF8FCA79 : 0xFFB08A8A, false);
-            by += 18;
+            by += flagH;
         }
 
         Text foot = isOperator()
