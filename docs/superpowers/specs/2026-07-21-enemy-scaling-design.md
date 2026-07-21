@@ -403,7 +403,42 @@ rather than how it behaves.
 
 ---
 
-## 11. Testing
+## 11. Implementation hazards
+
+Not exploits - the ways this breaks in code. Each has precedent in this codebase.
+
+**Threat must be cached per player.** `totalPointsSpent` walks the tree, and the damage hook is a hot
+path; computing threat per hit is a performance bug. `PerkService` already does exactly this - a
+per-player cache invalidated when the thing it derives from changes - and threat should follow it,
+invalidating on unlock, respec, race change, equipment change and on its own slow timer.
+
+**`ENTITY_LOAD` fires for every entity**, including item frames, dropped items and armour stands. The
+handler must early-out in a couple of instructions - config off, not a `Monster`, not in scope -
+before it does anything that touches a registry or a player list.
+
+**Mob scaling must be idempotent across chunk reload.** A persistent attribute modifier re-applied on
+every load compounds: the mob grows each time its chunk cycles. `AbilityApplier` hit this exact bug
+with birth traits and solved it by removing the modifier id before adding it; mob scaling uses one
+fixed modifier id per mob and the same remove-then-add.
+
+**Raising max health does not raise current health.** A mob scaled at spawn must have its health set
+to the new maximum, or it arrives looking pre-damaged.
+
+**Elite state must persist on the entity.** A promoted mob's name, ability and loot flag have to
+survive chunk unload, or the troll that terrified you reverts to an ordinary one when you walk away
+and come back.
+
+**`DeathHandler.copyOf` must carry the new fields.** It deep-copies player state onto the respawned
+player, and state it does not know about is silently lost. Threat surviving death is the entire point
+of a high-water mark - a player who could reset it by dying would be back to a difficulty switch.
+
+**A player with no race has no tree**, so `commitment` is undefined. Their prior is gear and renown
+only. This is a real state: the base mod assigns a race on first join, but there is a window before
+it, and `/middle_earth race reset` reopens it.
+
+---
+
+## 12. Testing
 
 - **Unit** — the threat maths: prior weighting, the high-water decay, the competence bounds, the
   floor (assert that a long run of deaths cannot push threat below `0.75 × prior`), curve exponents,
