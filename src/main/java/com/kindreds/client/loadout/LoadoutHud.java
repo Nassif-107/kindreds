@@ -8,25 +8,37 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * The always-on ability bar: a small vertical stack of {@link ClientLoadout#SLOTS} slot boxes on the
- * left edge, each showing the assigned active's name, its live cooldown, and a highlight on the
- * currently-selected slot (the one the "use ability" key fires). Only drawn once the player has
- * unlocked at least one active ability, so it never clutters the screen of someone who hasn't.
+ * The always-on <b>ability bar</b>: a row of {@link ClientLoadout#SLOTS} hotbar-sized slots in the
+ * bottom-right, styled to read at a glance the way the vanilla hotbar does.
+ *
+ * <p>Per slot: its number, a <b>vanilla-style cooldown sweep</b> (a dark overlay draining from the
+ * bottom) with the remaining seconds, and a gold frame on the selected slot. When a cooldown ends the
+ * slot <b>flashes</b> briefly so you notice an ability came back up without watching the bar. Only the
+ * <i>selected</i> ability is named (above the row), which keeps four long Elvish names from becoming
+ * wallpaper.
+ *
+ * <p>Hidden entirely until the player has actually unlocked an active, so it never clutters a new
+ * player's screen.
  */
 public final class LoadoutHud {
     private LoadoutHud() {
     }
 
-    private static final int SLOT_W = 104;
-    private static final int SLOT_H = 16;
-    private static final int MARGIN = 4;
-    private static final int SELECTED_BORDER = 0xFFF0C000; // gold
-    private static final int BORDER = 0xFF3A3A3A;
-    private static final int BG = 0xB0101014;
-    private static final int BG_SELECTED = 0xD0201808;
+    private static final int SLOT = 22;
+    private static final int GAP = 3;
+    private static final int MARGIN = 6;
+    private static final int FLASH_TICKS = 12;
+
+    /** ability id -> the full cooldown length of the current cycle, so the sweep has a denominator
+     * (the synced data only carries the end tick). */
+    private static final Map<String, Long> TOTALS = new HashMap<>();
+    /** ability id -> world time at which it last became ready, for the flash. */
+    private static final Map<String, Long> READY_AT = new HashMap<>();
 
     public static void register() {
         HudRenderCallback.EVENT.register(LoadoutHud::render);
@@ -43,43 +55,79 @@ public final class LoadoutHud {
         }
 
         TextRenderer tr = mc.textRenderer;
-        int total = SLOT_H * ClientLoadout.SLOTS + 2 * (ClientLoadout.SLOTS - 1);
-        int x = MARGIN;
-        int y = (ctx.getScaledWindowHeight() - total) / 2;
         long now = mc.world.getTime();
+        int barW = ClientLoadout.SLOTS * SLOT + (ClientLoadout.SLOTS - 1) * GAP;
+        int x0 = ctx.getScaledWindowWidth() - barW - MARGIN;
+        int y = ctx.getScaledWindowHeight() - SLOT - MARGIN;
 
         for (int i = 0; i < ClientLoadout.SLOTS; i++) {
-            int slotY = y + i * (SLOT_H + 2);
-            boolean isSelected = i == ClientLoadout.selected();
-            ctx.fill(x, slotY, x + SLOT_W, slotY + SLOT_H, isSelected ? BG_SELECTED : BG);
-            ctx.drawBorder(x, slotY, SLOT_W, SLOT_H, isSelected ? SELECTED_BORDER : BORDER);
+            int x = x0 + i * (SLOT + GAP);
+            boolean sel = i == ClientLoadout.selected();
+            String id = ClientLoadout.slot(i);
+            boolean empty = id == null || id.isEmpty();
 
-            String abilityId = ClientLoadout.slot(i);
-            String label = (i + 1) + " " + ClientLoadout.displayName(abilityId);
-            int textColor = abilityId.isEmpty() ? 0xFF808080 : 0xFFFFFFFF;
+            ctx.fill(x, y, x + SLOT, y + SLOT, sel ? 0xD02A2010 : 0xA0101014);
 
-            // Cooldown readout (right-aligned), red while cooling down.
-            long end = ClientKindredData.INSTANCE.cooldowns().getLong(abilityId);
-            long remaining = end - now;
-            if (!abilityId.isEmpty() && remaining > 0) {
-                String cd = String.format("%.0fs", Math.ceil(remaining / 20.0));
-                ctx.drawText(tr, Text.literal(cd).formatted(Formatting.RED),
-                        x + SLOT_W - tr.getWidth(cd) - 3, slotY + 4, 0xFFFF5555, false);
-                textColor = 0xFFB0B0B0; // dim the name while on cooldown
-            } else if (!abilityId.isEmpty()) {
-                ctx.drawText(tr, Text.literal("✔").formatted(Formatting.GREEN),
-                        x + SLOT_W - tr.getWidth("✔") - 3, slotY + 4, 0xFF55FF55, false);
+            long remaining = 0L;
+            if (!empty) {
+                remaining = Math.max(0L, ClientKindredData.INSTANCE.cooldowns().getLong(id) - now);
+                trackCooldown(id, remaining, now);
+                if (remaining > 0) {
+                    // Vanilla-style sweep: a dark overlay covering the fraction still on cooldown.
+                    long total = Math.max(1L, TOTALS.getOrDefault(id, remaining));
+                    int h = (int) Math.round(SLOT * Math.min(1.0, remaining / (double) total));
+                    ctx.fill(x, y + SLOT - h, x + SLOT, y + SLOT, 0x99000000);
+                }
             }
 
-            ctx.drawText(tr, label, x + 4, slotY + 4, textColor, false);
+            // Ready-flash: a brief warm pulse right after an ability comes off cooldown.
+            Long readyAt = empty ? null : READY_AT.get(id);
+            if (readyAt != null && now - readyAt < FLASH_TICKS) {
+                int a = (int) (0x88 * (1.0 - (now - readyAt) / (double) FLASH_TICKS));
+                ctx.fill(x, y, x + SLOT, y + SLOT, (a << 24) | 0x00FFD86B);
+            }
+
+            ctx.drawBorder(x, y, SLOT, SLOT, sel ? 0xFFD8B45F : (empty ? 0xFF2A2A2A : 0xFF4A4030));
+            if (sel) { // a second, inset frame reads as "raised" without moving the slot
+                ctx.drawBorder(x - 1, y - 1, SLOT + 2, SLOT + 2, 0x66D8B45F);
+            }
+
+            // Slot number, dim when empty.
+            ctx.drawText(tr, Text.literal(String.valueOf(i + 1)),
+                    x + 2, y + 2, empty ? 0xFF5A5A5A : 0xFFD8B45F, false);
+
+            if (!empty && remaining > 0) {
+                String cd = remaining >= 20 ? String.valueOf((int) Math.ceil(remaining / 20.0))
+                        : String.format("%.1f", remaining / 20.0);
+                ctx.drawText(tr, Text.literal(cd).formatted(Formatting.RED),
+                        x + SLOT - tr.getWidth(cd) - 2, y + SLOT - 10, 0xFFFF6B6B, true);
+            }
         }
 
-        // Hint line: how to switch the selected slot and fire it (uses the player's actual keybinds).
-        String hint = com.kindreds.KindredsClient.cycleAbilityKeyName().getString() + " "
-                + Text.translatable("kindreds.hud.switch").getString() + "   ·   "
+        // Only the selected ability is named - right-aligned above the row.
+        String selId = ClientLoadout.slot(ClientLoadout.selected());
+        Text name = (selId == null || selId.isEmpty())
+                ? Text.translatable("kindreds.radial.empty").formatted(Formatting.DARK_GRAY)
+                : Text.literal(ClientLoadout.displayName(selId)).formatted(Formatting.GOLD);
+        ctx.drawText(tr, name, x0 + barW - tr.getWidth(name), y - 11, 0xFFE9C979, true);
+
+        // Compact key hint under the row (uses the player's actual, possibly rebound, keys).
+        Text hint = Text.literal(com.kindreds.KindredsClient.cycleAbilityKeyName().getString() + " "
+                + Text.translatable("kindreds.hud.switch").getString() + "  ·  "
                 + com.kindreds.KindredsClient.useAbilityKeyName().getString() + " "
-                + Text.translatable("kindreds.hud.use").getString();
-        ctx.drawText(tr, Text.literal(hint).formatted(Formatting.DARK_GRAY),
-                x, y + total + 3, 0xFF9A9484, false);
+                + Text.translatable("kindreds.hud.use").getString());
+        ctx.drawText(tr, hint, x0 + barW - tr.getWidth(hint), y + SLOT + 2, 0xFF8A7C60, false);
+    }
+
+    /** Remembers each cooldown's full length (for the sweep) and when it ended (for the flash). */
+    private static void trackCooldown(String id, long remaining, long now) {
+        if (remaining > 0) {
+            long prev = TOTALS.getOrDefault(id, 0L);
+            if (remaining > prev) {
+                TOTALS.put(id, remaining); // a fresh cast: this is the full length
+            }
+        } else if (TOTALS.remove(id) != null) {
+            READY_AT.put(id, now); // just came off cooldown - flash it
+        }
     }
 }
