@@ -51,6 +51,7 @@ instead of counting nodes. Nothing in phase 1 touches mobs at spawn — that is 
 |---|---|
 | `src/main/java/com/kindreds/threat/ThreatMath.java` | **Create.** Every formula, pure, no Minecraft imports. |
 | `src/main/java/com/kindreds/threat/ThreatRank.java` | **Create.** The five named ranks and their thresholds. |
+| `src/main/java/com/kindreds/threat/ThreatTuning.java` | **Create.** The tunables, as a pure record. Built from config by `ThreatService`; keeps `ThreatMath` free of Minecraft *and* configurable. |
 | `src/main/java/com/kindreds/threat/ThreatState.java` | **Create.** A player's stored threat state: marks, competence, per-family table. |
 | `src/main/java/com/kindreds/threat/ThreatService.java` | **Create.** Resolves and caches threat per player. The only thing that answers "how strong is this player". |
 | `src/main/java/com/kindreds/threat/ThreatEvidence.java` | **Create.** Combat listeners folding evidence into competence. |
@@ -72,6 +73,7 @@ instead of counting nodes. Nothing in phase 1 touches mobs at spawn — that is 
 **Files:**
 - Create: `src/main/java/com/kindreds/threat/ThreatMath.java`
 - Create: `src/main/java/com/kindreds/threat/ThreatRank.java`
+- Create: `src/main/java/com/kindreds/threat/ThreatTuning.java`
 - Test: `src/test/java/com/kindreds/threat/ThreatMathTest.java`
 
 **Interfaces:**
@@ -80,9 +82,12 @@ instead of counting nodes. Nothing in phase 1 touches mobs at spawn — that is 
   `ThreatMath.decayed(float mark, float current, float perHour, long playedTicks) -> float`,
   `ThreatMath.threat(float prior, float competence) -> float`,
   `ThreatMath.scaled(float threat, float exponent) -> float`,
-  `ThreatMath.foldHardship(float competence, float hardship, float attackerWeight) -> float`,
-  `ThreatMath.foldDeath(float competence, float killerWeight) -> float`,
-  `ThreatMath.foldFastKill(float competence) -> float`,
+  `ThreatMath.foldHardship(float competence, float hardship, float attackerWeight, ThreatTuning t) -> float`,
+  `ThreatMath.foldDeath(float competence, float killerWeight, ThreatTuning t) -> float`,
+  `ThreatMath.foldFastKill(float competence, ThreatTuning t) -> float`,
+  `ThreatMath.bandFor(float min, float max) -> float[]` (length 2, clamped to the hard floor),
+  `ThreatTuning` record with `hardshipTarget, riseRate, fallRate, deathPenalty, bandMin, bandMax`
+  and `ThreatTuning.DEFAULTS`,
   `ThreatMath.attackerWeight(double attackerDanger, double expectedDanger) -> float`,
   `ThreatMath.effectiveCompetence(float global, float family) -> float`,
   `ThreatMath.group(float strongestScaled, int players, float perPlayer, float cap) -> float`,
@@ -130,11 +135,11 @@ class ThreatMathTest {
 
     @Test
     void competenceCannotEscapeItsBand() {
-        float high = ThreatMath.foldFastKill(1.25f);
+        float high = ThreatMath.foldFastKill(1.25f, ThreatTuning.DEFAULTS);
         assertTrue(high <= ThreatMath.COMPETENCE_MAX, "rose past the ceiling: " + high);
         float low = 1.0f;
         for (int i = 0; i < 500; i++) {
-            low = ThreatMath.foldDeath(low, 1.0f);
+            low = ThreatMath.foldDeath(low, 1.0f, ThreatTuning.DEFAULTS);
         }
         assertEquals(ThreatMath.COMPETENCE_MIN, low, 0.001f);
     }
@@ -168,8 +173,8 @@ class ThreatMathTest {
 
     @Test
     void hardshipRisesCompetenceWhenCoastingAndLowersItWhenStruggling() {
-        float coasting = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f);
-        float struggling = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f);
+        float coasting = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float struggling = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
         assertTrue(coasting > 1.0f, "an untouched win should read as coasting");
         assertTrue(struggling < 1.0f, "a near-death should read as struggling");
         // and it rises faster than it falls, by design
@@ -257,6 +262,28 @@ public enum ThreatRank {
 }
 ```
 
+- [ ] **Step 3b: Write `ThreatTuning`**
+
+```java
+package com.kindreds.threat;
+
+/**
+ * The tunables behind threat, as a pure record so {@link ThreatMath} stays free of Minecraft while
+ * still being fully configurable. {@code ThreatService} builds one from the server config.
+ *
+ * <p>{@code bandMin}/{@code bandMax} are the exception to "everything is a setting": they are the
+ * anti-farming floor, not tuning. {@link ThreatMath#bandFor} clamps them so a server may narrow the
+ * band but never widen it - a config field that could widen it would hand back the death-farming
+ * exploit the band exists to prevent.
+ */
+public record ThreatTuning(float hardshipTarget, float riseRate, float fallRate, float deathPenalty,
+                           float bandMin, float bandMax) {
+
+    public static final ThreatTuning DEFAULTS =
+            new ThreatTuning(0.25f, 0.10f, 0.04f, 0.05f, 0.75f, 1.25f);
+}
+```
+
 - [ ] **Step 4: Write `ThreatMath`**
 
 ```java
@@ -275,15 +302,24 @@ public final class ThreatMath {
     private ThreatMath() {
     }
 
-    /** Evidence may move threat only this far around the prior - the floor that stops it being farmed. */
+    /**
+     * The widest the evidence band may ever be. Not a setting: this is the floor that stops threat
+     * being farmed by deliberate dying (spec 2.4). A server may narrow the band through
+     * {@link ThreatTuning}; {@link #bandFor} refuses to widen it past these.
+     */
     public static final float COMPETENCE_MIN = 0.75f;
     public static final float COMPETENCE_MAX = 1.25f;
-    /** A meaningful fight should cost about a quarter of a player's health. */
-    public static final float HARDSHIP_TARGET = 0.25f;
-    private static final float ALPHA_RISE = 0.10f;
-    private static final float ALPHA_FALL = 0.04f;
-    private static final float DEATH_PENALTY = 0.05f;
     private static final long TICKS_PER_HOUR = 72000L;
+
+    /**
+     * The band a server has asked for, clamped to what the floor allows. Clamped here rather than at
+     * the call site deliberately: this must hold however a caller was configured or misconfigured.
+     */
+    public static float[] bandFor(float min, float max) {
+        return new float[]{
+                Math.max(COMPETENCE_MIN, Math.min(1.0f, min)),
+                Math.min(COMPETENCE_MAX, Math.max(1.0f, max))};
+    }
 
     /** Declared power, 0..100, as the weighted blend of its three terms. */
     public static float prior(float commitment, float gear, float renown, int wc, int wg, int wr) {
@@ -319,29 +355,29 @@ public final class ThreatMath {
     }
 
     /** Folds one fight's hardship into competence. Rises when coasting, falls when struggling. */
-    public static float foldHardship(float competence, float hardship, float attackerWeight) {
-        float error = HARDSHIP_TARGET - hardship;              // positive = coasting
-        float alpha = error >= 0 ? ALPHA_RISE : ALPHA_FALL * clamp01(attackerWeight);
-        return band(competence + alpha * error / HARDSHIP_TARGET * 0.25f);
+    public static float foldHardship(float competence, float hardship, float attackerWeight, ThreatTuning t) {
+        float error = t.hardshipTarget() - hardship;           // positive = coasting
+        float alpha = error >= 0 ? t.riseRate() : t.fallRate() * clamp01(attackerWeight);
+        return band(competence + alpha * error / t.hardshipTarget() * 0.25f, t);
     }
 
     /** A fast kill is evidence of strength. Raise-only: a slow kill proves nothing, it can be staged. */
-    public static float foldFastKill(float competence) {
-        return band(competence + ALPHA_RISE * 0.05f);
+    public static float foldFastKill(float competence, ThreatTuning t) {
+        return band(competence + t.riseRate() * 0.05f, t);
     }
 
     /** A death, weighted by how dangerous the killer was relative to what the player should handle. */
-    public static float foldDeath(float competence, float killerWeight) {
-        return band(competence - DEATH_PENALTY * clamp01(killerWeight));
+    public static float foldDeath(float competence, float killerWeight, ThreatTuning t) {
+        return band(competence - t.deathPenalty() * clamp01(killerWeight), t);
     }
 
     /** Half the player's overall record, half their record against this particular family. */
     public static float effectiveCompetence(float global, float family) {
-        return band(0.5f * global + 0.5f * family);
+        return band(0.5f * global + 0.5f * family, ThreatTuning.DEFAULTS);
     }
 
     public static float threat(float prior, float competence) {
-        return Math.max(0f, Math.min(100f, prior * band(competence)));
+        return Math.max(0f, Math.min(100f, prior * band(competence, ThreatTuning.DEFAULTS)));
     }
 
     /** How much of a player's threat becomes world difficulty, 0..1. The curve is a server setting. */
@@ -355,8 +391,9 @@ public final class ThreatMath {
         return strongestScaled * (1f + bonus);
     }
 
-    private static float band(float competence) {
-        return Math.max(COMPETENCE_MIN, Math.min(COMPETENCE_MAX, competence));
+    private static float band(float competence, ThreatTuning t) {
+        float[] limits = bandFor(t.bandMin(), t.bandMax());
+        return Math.max(limits[0], Math.min(limits[1], competence));
     }
 
     private static float clamp01(float value) {
@@ -423,7 +460,7 @@ class ThreatExploitTest {
     void dyingRepeatedlyCannotGrindTheWorldSoft() {
         float competence = 1.0f;
         for (int i = 0; i < 1000; i++) {
-            competence = ThreatMath.foldDeath(competence, 1.0f);
+            competence = ThreatMath.foldDeath(competence, 1.0f, ThreatTuning.DEFAULTS);
         }
         // the floor holds: 75% of the prior, never less
         assertEquals(75f, ThreatMath.threat(100f, competence), 0.001f);
@@ -432,7 +469,7 @@ class ThreatExploitTest {
     @Test
     void dyingToSomethingTrivialBarelyCounts() {
         float weight = ThreatMath.attackerWeight(2.0, 200.0);   // a zombie against a veteran
-        float afterOne = ThreatMath.foldDeath(1.0f, weight);
+        float afterOne = ThreatMath.foldDeath(1.0f, weight, ThreatTuning.DEFAULTS);
         assertTrue(1.0f - afterOne < 0.001f, "a trivial killer moved competence by " + (1.0f - afterOne));
     }
 
@@ -441,7 +478,7 @@ class ThreatExploitTest {
         // there is no fold that LOWERS competence for a slow kill - the only kill signal raises it
         float competence = 1.0f;
         for (int i = 0; i < 100; i++) {
-            competence = ThreatMath.foldFastKill(competence);
+            competence = ThreatMath.foldFastKill(competence, ThreatTuning.DEFAULTS);
         }
         assertTrue(competence >= 1.0f, "a kill signal must never lower competence");
     }
@@ -449,7 +486,7 @@ class ThreatExploitTest {
     @Test
     void chipDamageFromATrivialAttackerIsNotEvidenceOfStruggle() {
         float weight = ThreatMath.attackerWeight(2.0, 200.0);
-        float after = ThreatMath.foldHardship(1.0f, 1.0f, weight);   // maximum hardship, trivial source
+        float after = ThreatMath.foldHardship(1.0f, 1.0f, weight, ThreatTuning.DEFAULTS);   // maximum hardship, trivial source
         assertTrue(1.0f - after < 0.005f, "trivial chip damage moved competence by " + (1.0f - after));
     }
 
