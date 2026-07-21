@@ -2176,5 +2176,7 @@
   "kindreds.result.bargain_ok": "Свершилось. Ты умалён — и ты свободнее.",
   "kindreds.result.bargain_already": "Ты уже торговался однажды. Продавать больше нечего.",
   "kindreds.result.bargain_not_at_cap": "Ты ещё не исчерпал собственных сил. Возвращайся, когда исчерпаешь.",
-  "kindreds.result.bargain_unavailable": "Здесь тебя не держит предел — сделка не купит ничего."
+  "kindreds.result.bargain_unavailable": "Здесь тебя не держит предел — сделка не купит ничего.",
+  "kindreds.ability.mountain_sense": "Камень отвечает: рядом руд — %s (%s)",
+  "kindreds.ability.mountain_sense.empty": "Камень молчит. Ничего ценного поблизости нет."
 }

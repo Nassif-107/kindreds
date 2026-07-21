@@ -2176,5 +2176,7 @@
   "kindreds.result.bargain_ok": "It is done. You are lessened, and you are freer.",
   "kindreds.result.bargain_already": "You have bargained once. There is nothing left to sell.",
   "kindreds.result.bargain_not_at_cap": "You have not yet spent all your own strength. Return when you have.",
-  "kindreds.result.bargain_unavailable": "No ceiling binds you here — the bargain would buy you nothing."
+  "kindreds.result.bargain_unavailable": "No ceiling binds you here — the bargain would buy you nothing.",
+  "kindreds.ability.mountain_sense": "The stone answers: %s ores near — %s",
+  "kindreds.ability.mountain_sense.empty": "The stone is silent. Nothing of worth lies near."
 }

@@ -66,6 +66,14 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("song_of_luthien", (p, w) -> enchantSong(p, w, 9.0));
         HANDLERS.put("song_of_healing", (p, w) -> healingSong(p, w, 10.0));
         HANDLERS.put("masters_forge", (p, w) -> mastersForge(p, w));
+        // Aule taught the Dwarves their craft, so his blessing is craft itself: everything you carry is
+        // made whole again. The same hand as Master's Forge, which is the point - it is the same god.
+        HANDLERS.put("aule_legacy", (p, w) -> mastersForge(p, w));
+        HANDLERS.put("dwarven_war_cry", (p, w) -> dreadNova(p, w, 12.0));    // Baruk Khazad! - orcs falter
+        HANDLERS.put("rune_of_wrath", (p, w) -> shockwave(p, w, 5.0, 7.0f)); // the rune breaks outward
+        HANDLERS.put("heart_of_the_mountain", (p, w) -> mountainSense(p, w, 16));
+        HANDLERS.put("khazad_dum_reborn", (p, w) -> delve(p, w, 5));
+        HANDLERS.put("orc_draught", (p, w) -> orcDraught(p, w));
         HANDLERS.put("durins_ward", (p, w) -> runeWard(p, w, 6.0));
         HANDLERS.put("anduril", (p, w) -> anduril(p, w, 8.0));
         HANDLERS.put("hands_of_the_king", (p, w) -> handsOfTheKing(p, w, 10.0));
@@ -76,6 +84,13 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
         HANDLERS.put("call_of_wargs", (p, w) -> summonWolves(p, w, 2, false)); // Uruk warg-pack (wolves as wargs)
         HANDLERS.put("warg_pack", (p, w) -> summonWolves(p, w, 4, false));
+    }
+
+    /** Whether any handler backs {@code abilityId}. An active ability without one unlocks, binds to a
+     * loadout slot, plays its cast feedback - and does nothing; {@code /kindreds doctor} uses this to
+     * surface that silently-broken state. */
+    public static boolean hasHandler(net.minecraft.util.Identifier abilityId) {
+        return abilityId != null && HANDLERS.containsKey(abilityId.getPath());
     }
 
     /** Runs the world-effect for {@code def}, if it has one. Called by {@link ActiveAbilityService}
@@ -417,5 +432,127 @@ public final class ActiveAbilityHandlers {
         world.spawnParticles(ParticleTypes.ANGRY_VILLAGER, p.getX(), p.getBodyY(1.0), p.getZ(), 20,
                 radius / 3, 0.6, radius / 3, 0.02);
         world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 0.5f, 1.4f);
+    }
+
+    /** Ore block tags {@link #mountainSense} counts, richest last so the message leads with what matters. */
+    private static final net.minecraft.registry.tag.TagKey<net.minecraft.block.Block>[] ORE_TAGS =
+            new net.minecraft.registry.tag.TagKey[]{
+                    net.minecraft.registry.tag.BlockTags.COAL_ORES,
+                    net.minecraft.registry.tag.BlockTags.COPPER_ORES,
+                    net.minecraft.registry.tag.BlockTags.IRON_ORES,
+                    net.minecraft.registry.tag.BlockTags.LAPIS_ORES,
+                    net.minecraft.registry.tag.BlockTags.REDSTONE_ORES,
+                    net.minecraft.registry.tag.BlockTags.GOLD_ORES,
+                    net.minecraft.registry.tag.BlockTags.EMERALD_ORES,
+                    net.minecraft.registry.tag.BlockTags.DIAMOND_ORES,
+            };
+
+    /**
+     * <b>Heart of the Mountain</b> - the stone tells a Dwarf what it holds. Counts every ore within
+     * {@code radius} blocks and reports the tally, most plentiful first.
+     *
+     * <p>Deliberately a <i>readout</i> rather than a highlight: block glow needs a client renderer, and
+     * particles inside stone are hidden by the stone itself. A number you can act on beats an effect you
+     * cannot see. The sweep is one bounded pass over a cube on the server thread, so the radius stays
+     * modest.
+     */
+    private static void mountainSense(ServerPlayerEntity p, ServerWorld world, int radius) {
+        Map<String, Integer> found = new java.util.LinkedHashMap<>();
+        BlockPos origin = p.getBlockPos();
+        BlockPos.Mutable cursor = new BlockPos.Mutable();
+        int total = 0;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    cursor.set(origin.getX() + dx, origin.getY() + dy, origin.getZ() + dz);
+                    if (world.isOutOfHeightLimit(cursor.getY())) {
+                        continue;
+                    }
+                    net.minecraft.block.BlockState state = world.getBlockState(cursor);
+                    for (net.minecraft.registry.tag.TagKey<net.minecraft.block.Block> tag : ORE_TAGS) {
+                        if (state.isIn(tag)) {
+                            found.merge(state.getBlock().getName().getString(), 1, Integer::sum);
+                            total++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (total == 0) {
+            p.sendMessage(net.minecraft.text.Text.translatable("kindreds.ability.mountain_sense.empty")
+                    .formatted(net.minecraft.util.Formatting.GRAY), true);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            found.entrySet().stream()
+                    .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
+                    .limit(4)
+                    .forEach(e -> sb.append(sb.length() == 0 ? "" : ", ")
+                            .append(e.getValue()).append(" ").append(e.getKey()));
+            p.sendMessage(net.minecraft.text.Text.translatable("kindreds.ability.mountain_sense",
+                    total, sb.toString()).formatted(net.minecraft.util.Formatting.GOLD), false);
+        }
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS,
+                0.8f, 0.6f);
+        world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(0.5), p.getZ(), 25, 0.4, 0.5, 0.4, 0.02);
+    }
+
+    /**
+     * <b>Khazad-dum Reborn</b> - the greatest delving of the Dwarves, for one moment: a 3x3 gallery is
+     * driven {@code depth} blocks into the stone ahead, drops and all.
+     *
+     * <p>Only the mountain itself is taken. Bedrock, anything holding items (a chest, a furnace,
+     * someone else's spawner), and every worked block are stepped over rather than destroyed, so a
+     * mis-aimed cast in a base breaks nothing that was built.
+     */
+    private static void delve(ServerPlayerEntity p, ServerWorld world, int depth) {
+        net.minecraft.util.math.Direction facing = p.getHorizontalFacing();
+        BlockPos start = p.getBlockPos().offset(facing);
+        int broken = 0;
+        for (int step = 0; step < depth; step++) {
+            BlockPos slice = start.offset(facing, step);
+            for (int up = 0; up < 3; up++) {
+                for (int side = -1; side <= 1; side++) {
+                    BlockPos pos = slice.up(up).offset(facing.rotateYClockwise(), side);
+                    net.minecraft.block.BlockState state = world.getBlockState(pos);
+                    if (state.isAir() || state.getHardness(world, pos) < 0 || state.hasBlockEntity()) {
+                        continue;
+                    }
+                    boolean mountain = state.isIn(net.minecraft.registry.tag.BlockTags.BASE_STONE_OVERWORLD)
+                            || state.isIn(net.minecraft.registry.tag.BlockTags.BASE_STONE_NETHER)
+                            || state.isIn(net.minecraft.registry.tag.BlockTags.DIRT)
+                            || state.isIn(net.minecraft.registry.tag.BlockTags.SAND);
+                    for (net.minecraft.registry.tag.TagKey<net.minecraft.block.Block> tag : ORE_TAGS) {
+                        if (state.isIn(tag)) {
+                            mountain = true;
+                            break;
+                        }
+                    }
+                    if (!mountain) {
+                        continue;
+                    }
+                    world.breakBlock(pos, true, p);
+                    broken++;
+                }
+            }
+        }
+        world.playSound(null, p.getBlockPos(), SoundEvents.BLOCK_DEEPSLATE_BREAK, SoundCategory.PLAYERS, 1.0f, 0.5f);
+        world.spawnParticles(ParticleTypes.CRIT, p.getX(), p.getBodyY(1.0), p.getZ(),
+                Math.min(60, 10 + broken), 0.6, 0.6, 0.6, 0.1);
+    }
+
+    /**
+     * <b>Orc-draught</b> - the foul brew the snaga are issued. It burns going down: every ill effect is
+     * shaken off and the belly filled, at the cost of a moment of reeling. It is not a cordial.
+     */
+    private static void orcDraught(ServerPlayerEntity p, ServerWorld world) {
+        p.removeStatusEffect(StatusEffects.POISON);
+        p.removeStatusEffect(StatusEffects.WEAKNESS);
+        p.removeStatusEffect(StatusEffects.SLOWNESS);
+        p.removeStatusEffect(StatusEffects.MINING_FATIGUE);
+        p.getHungerManager().add(6, 0.6f);
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 60, 0, false, false, true));
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_GENERIC_DRINK.value(), SoundCategory.PLAYERS, 1.0f, 0.7f);
+        world.spawnParticles(ParticleTypes.ANGRY_VILLAGER, p.getX(), p.getBodyY(1.0), p.getZ(), 8, 0.3, 0.4, 0.3, 0.01);
     }
 }

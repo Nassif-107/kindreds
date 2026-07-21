@@ -46,6 +46,9 @@ import java.util.Optional;
  *       race/discipline/node dump used as the primary play-test tool.</li>
  *   <li>{@code /kindreds grantxp <discipline> <amount> [player]} (op level 2) - awards xp for
  *       testing progression without grinding.</li>
+ *   <li>{@code /kindreds doctor} (op level 2) - self-check: are the mixins applied, the payloads
+ *       agreed with the client, the deeds loaded, the trees sound, the abilities handled? Prints a
+ *       short report and logs the detail.</li>
  *   <li>{@code /kindreds reload} (op level 2) - reloads {@link Kindreds#CONFIG} from
  *       {@code <configDir>/kindreds-server.json}.</li>
  *   <li>{@code /kindreds respec [player]} (op level 2) - admin/mechanism respec, via
@@ -92,6 +95,9 @@ public final class KindredsCommand {
                                                         EntityArgumentType.getPlayer(ctx, "player"),
                                                         StringArgumentType.getString(ctx, "discipline"),
                                                         LongArgumentType.getLong(ctx, "amount")))))))
+                .then(CommandManager.literal("doctor")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .executes(ctx -> KindredsDoctor.run(ctx.getSource())))
                 .then(CommandManager.literal("reload")
                         .requires(source -> source.hasPermissionLevel(2))
                         .executes(ctx -> reload(ctx.getSource())))
