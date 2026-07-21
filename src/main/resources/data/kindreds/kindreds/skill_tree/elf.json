@@ -329,6 +329,16 @@
               "duration_ticks": 300
             }
           ]
+        },
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.15
+          }
         }
       ]
     },
@@ -527,6 +537,11 @@
               "duration_ticks": 200
             }
           ]
+        },
+        {
+          "type": "perk",
+          "perk": "kindreds:true_flight",
+          "params": {}
         }
       ]
     },
@@ -1262,6 +1277,16 @@
               "duration_ticks": 200
             }
           ]
+        },
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.12
+          }
         }
       ]
     },
@@ -1323,6 +1348,16 @@
               "duration_ticks": 200
             }
           ]
+        },
+        {
+          "type": "contextual_boon",
+          "when": "darkness",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:armor",
+            "operation": "add_value",
+            "amount": 3.0
+          }
         }
       ]
     },
@@ -1617,6 +1652,16 @@
           "ability_id": "kindreds:song_of_healing",
           "cooldown_ticks": 1800,
           "effects": []
+        },
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:movement_speed",
+            "operation": "add_multiplied_base",
+            "amount": 0.1
+          }
         }
       ]
     },
@@ -1786,6 +1831,19 @@
           "ability_id": "kindreds:song_of_luthien",
           "cooldown_ticks": 2000,
           "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "kindreds:strike_effect",
+          "params": {
+            "chance": 0.2
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:slowness",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
         }
       ]
     },
@@ -1839,6 +1897,19 @@
           "ability_id": "kindreds:song_of_luthien",
           "cooldown_ticks": 1800,
           "effects": []
+        },
+        {
+          "type": "perk",
+          "perk": "kindreds:strike_effect",
+          "params": {
+            "chance": 0.25
+          },
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:weakness",
+            "amplifier": 0,
+            "duration_ticks": 60
+          }
         }
       ]
     },
@@ -1930,6 +2001,16 @@
           "ability_id": "kindreds:song_of_healing",
           "cooldown_ticks": 1500,
           "effects": []
+        },
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:absorption",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     },
@@ -2104,6 +2185,16 @@
           "ability_id": "kindreds:call_of_the_wild",
           "cooldown_ticks": 1800,
           "effects": []
+        },
+        {
+          "type": "contextual_boon",
+          "when": "dawn_dusk",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:speed",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     },
@@ -2152,6 +2243,16 @@
           "ability_id": "kindreds:summon_the_pack",
           "cooldown_ticks": 1600,
           "effects": []
+        },
+        {
+          "type": "contextual_boon",
+          "when": "dawn_dusk",
+          "effect": {
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.12
+          }
         }
       ]
     },
@@ -2232,6 +2333,16 @@
           "ability_id": "kindreds:huan_the_hound",
           "cooldown_ticks": 2400,
           "effects": []
+        },
+        {
+          "type": "contextual_boon",
+          "when": "starlight",
+          "effect": {
+            "type": "status_effect",
+            "effect": "minecraft:resistance",
+            "amplifier": 0,
+            "duration_ticks": -1
+          }
         }
       ]
     },
