@@ -71,6 +71,24 @@ public final class PerkService {
         return out;
     }
 
+    /**
+     * How many times the player owns {@code perkId} - its <b>rank</b>.
+     *
+     * <p>Several perks used to be read as a yes/no ({@code perksOfType(..).isEmpty()}), which quietly
+     * threw away everything a lane granted after its first node: a Goblin owns {@code camouflage}
+     * seven times over and felt it once. Rank turns that authored depth into real depth - the second
+     * and seventh node of a stealth lane are supposed to differ.
+     */
+    public static int rankOf(ServerPlayerEntity player, String perkId) {
+        int rank = 0;
+        for (PerkDef perk : ownedPerks(player)) {
+            if (perk.perk().equals(perkId)) {
+                rank++;
+            }
+        }
+        return rank;
+    }
+
     private static List<PerkDef> resolve(ServerPlayerEntity player) {
         MinecraftServer server = player.getServer();
         if (server == null) {

@@ -186,12 +186,34 @@ public final class PerkEventHandlers {
      * surroundings (Invisibility), the Silvan art of going unseen. Refreshed each cadence, so it
      * lasts exactly as long as they stay still and hidden. */
     private static void tickCamouflage(ServerPlayerEntity player) {
-        if (PerkService.perksOfType(player, "camouflage").isEmpty() || !player.isSneaking()) {
+        int rank = PerkService.rankOf(player, "camouflage");
+        if (rank <= 0) {
             return;
         }
+        // Ranked, because a stealth lane is supposed to deepen. Rank 1 hides you only while you hold
+        // still - the first lesson is patience. Rank 3 lets you creep. Rank 5+ keeps you unseen for a
+        // moment after you rise, which is what a capstone like Shadow of Goblin-town should mean.
+        boolean moving = player.getVelocity().horizontalLengthSquared() > 0.0016;
+        int linger = rank >= 7 ? 120 : rank >= 5 ? 60 : 0;
+        if (!player.isSneaking()) {
+            if (linger > 0 && LAST_HIDDEN.getOrDefault(player.getUuid(), 0L) + linger
+                    > player.getWorld().getTime()) {
+                player.addStatusEffect(new StatusEffectInstance(
+                        net.minecraft.entity.effect.StatusEffects.INVISIBILITY,
+                        AURA_INTERVAL * 3, 0, false, false, false));
+            }
+            return;
+        }
+        if (moving && rank < 3) {
+            return; // still learning: hold still or be seen
+        }
+        LAST_HIDDEN.put(player.getUuid(), player.getWorld().getTime());
         player.addStatusEffect(new StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.INVISIBILITY,
                 AURA_INTERVAL * 3, 0, false, false, false));
     }
+
+    /** Last tick each player was hidden while sneaking, for camouflage's high-rank linger. */
+    private static final java.util.Map<java.util.UUID, Long> LAST_HIDDEN = new java.util.HashMap<>();
 
     private static void tickAllyAura(ServerPlayerEntity player) {
         List<PerkDef> auras = PerkService.perksOfType(player, "ally_aura");

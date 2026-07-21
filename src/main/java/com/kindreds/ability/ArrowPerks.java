@@ -42,8 +42,15 @@ public final class ArrowPerks {
     private static final String SIBLING_TAG = "kindreds_ms";
 
     public static void onSpawn(PersistentProjectileEntity arrow, ServerPlayerEntity owner) {
-        if (!PerkService.perksOfType(owner, "arrow_crit").isEmpty()) {
+        int critRank = PerkService.rankOf(owner, "arrow_crit");
+        if (critRank > 0) {
             arrow.setCritical(true);
+            // Rank 1 buys the crit itself; each rank after sharpens it, so a four-node marksman lane is
+            // four steps of aim rather than one step and three ornaments.
+            if (critRank > 1) {
+                double base = ((PersistentProjectileEntityAccessor) arrow).kindreds$getDamage();
+                arrow.setDamage(base * (1.0 + 0.08 * (critRank - 1)));
+            }
         }
 
         int pierce = 0;

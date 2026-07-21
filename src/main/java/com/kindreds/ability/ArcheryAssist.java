@@ -29,7 +29,12 @@ public final class ArcheryAssist {
     private static final double PULL = 0.22;
 
     public static void steer(PersistentProjectileEntity arrow, ServerPlayerEntity owner) {
-        if (!(arrow.getWorld() instanceof ServerWorld world) || PerkService.perksOfType(owner, "true_flight").isEmpty()) {
+        if (!(arrow.getWorld() instanceof ServerWorld world)) {
+            return;
+        }
+        // Ranked: a second node of true-flight is a steadier hand, not a duplicate of the first.
+        int rank = PerkService.rankOf(owner, "true_flight");
+        if (rank <= 0) {
             return;
         }
         Vec3d velocity = arrow.getVelocity();
@@ -61,7 +66,10 @@ public final class ArcheryAssist {
             return;
         }
         Vec3d desired = best.getPos().add(0, best.getHeight() * 0.5, 0).subtract(pos).normalize();
-        Vec3d newHeading = heading.multiply(1.0 - PULL).add(desired.multiply(PULL)).normalize();
+        // Rank firms the hand: a single node nudges, a trained archer's shot bends noticeably more.
+        // Capped well below 1.0 so the arrow always still needs pointing roughly right.
+        double pull = Math.min(0.45, PULL * (1.0 + 0.35 * (rank - 1)));
+        Vec3d newHeading = heading.multiply(1.0 - pull).add(desired.multiply(pull)).normalize();
         arrow.setVelocity(newHeading.multiply(speed));
         arrow.velocityModified = true;
     }

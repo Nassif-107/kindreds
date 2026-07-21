@@ -28,30 +28,38 @@ public final class ClientPerkAccess {
     }
 
     public static boolean localHasPerk(PlayerEntity player, String perkId) {
+        return localPerkRank(player, perkId) > 0;
+    }
+
+    /** Client-side mirror of {@code PerkService.rankOf} - how many owned nodes grant {@code perkId}.
+     * The bow-draw animation has to agree with the server's shot charge, so it needs the rank, not
+     * just the fact of ownership. */
+    public static int localPerkRank(PlayerEntity player, String perkId) {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (player != mc.player || mc.world == null) {
-            return false;
+            return 0;
         }
         KindredData data = ClientKindredData.INSTANCE;
         Identifier race = data.race();
         if (race == null) {
-            return false;
+            return 0;
         }
         Registry<SkillTree> trees = mc.world.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
         SkillTree tree = SkillTreeResolver.byRace(trees, race).tree().orElse(null);
         if (tree == null) {
-            return false;
+            return 0;
         }
+        int rank = 0;
         for (String nodeId : data.unlockedNodes()) {
             var node = tree.node(nodeId);
             if (node.isPresent()) {
                 for (AbilityDef ability : node.get().abilities()) {
                     if (ability instanceof PerkDef perk && perk.perk().equals(perkId)) {
-                        return true;
+                        rank++;
                     }
                 }
             }
         }
-        return false;
+        return rank;
     }
 }

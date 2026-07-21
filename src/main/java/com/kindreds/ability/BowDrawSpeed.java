@@ -22,14 +22,14 @@ public final class BowDrawSpeed {
      * server's shot charge. */
     public static int extraTicks(PlayerEntity player) {
         Identifier race;
-        boolean swiftDrawPerk;
+        int swiftDrawRank;
         if (player.getWorld().isClient) {
             // Lazily hops to client-only classes; never loaded on a dedicated server (isClient=false there).
             race = com.kindreds.client.ClientRaceAccess.localRace(player);
-            swiftDrawPerk = com.kindreds.client.ClientPerkAccess.localHasPerk(player, "swift_draw");
+            swiftDrawRank = com.kindreds.client.ClientPerkAccess.localPerkRank(player, "swift_draw");
         } else if (player instanceof ServerPlayerEntity serverPlayer) {
             race = KindredAttachment.get(serverPlayer).race();
-            swiftDrawPerk = !PerkService.perksOfType(serverPlayer, "swift_draw").isEmpty();
+            swiftDrawRank = PerkService.rankOf(serverPlayer, "swift_draw");
         } else {
             return 0;
         }
@@ -37,9 +37,9 @@ public final class BowDrawSpeed {
         if (race != null && race.getPath().equals("elf")) {
             extra += 1; // the Eldar: innately swift of hand
         }
-        if (swiftDrawPerk) {
-            extra += 1; // trained swift-draw
-        }
+        // One tick per trained rank, capped at 2: past 3x draw speed the animation stops reading as
+        // drawing a bow at all.
+        extra += Math.min(2, swiftDrawRank);
         return extra;
     }
 }

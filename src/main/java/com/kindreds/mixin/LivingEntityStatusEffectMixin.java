@@ -26,9 +26,15 @@ public class LivingEntityStatusEffectMixin {
             return;
         }
         var type = effect.getEffectType();
+        int rank = PerkService.rankOf(player, "unyielding");
+        if (rank <= 0) {
+            return;
+        }
         boolean impairing = type.value() == StatusEffects.SLOWNESS.value()
-                || type.value() == StatusEffects.MINING_FATIGUE.value();
-        if (impairing && !PerkService.perksOfType(player, "unyielding").isEmpty()) {
+                || type.value() == StatusEffects.MINING_FATIGUE.value()
+                // Rank 2 is the Uruk who cannot be worn down at all: even a weakening blow slides off.
+                || (rank >= 2 && type.value() == StatusEffects.WEAKNESS.value());
+        if (impairing) {
             cir.setReturnValue(false);
         }
     }

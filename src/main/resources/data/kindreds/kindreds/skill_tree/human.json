@@ -444,7 +444,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:resistance",
-            "amplifier": 0,
+            "amplifier": 1,
             "duration_ticks": -1
           }
         }
@@ -471,7 +471,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:strength",
-            "amplifier": 1,
+            "amplifier": 2,
             "duration_ticks": -1
           }
         },
@@ -481,7 +481,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:resistance",
-            "amplifier": 1,
+            "amplifier": 2,
             "duration_ticks": -1
           }
         },
@@ -491,7 +491,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:speed",
-            "amplifier": 0,
+            "amplifier": 1,
             "duration_ticks": -1
           }
         },
@@ -707,8 +707,8 @@
           "when": "low_health",
           "effect": {
             "type": "status_effect",
-            "effect": "minecraft:strength",
-            "amplifier": 1,
+            "effect": "minecraft:speed",
+            "amplifier": 2,
             "duration_ticks": -1
           }
         },
@@ -2495,7 +2495,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:speed",
-            "amplifier": 0,
+            "amplifier": 1,
             "duration_ticks": -1
           }
         }
@@ -2565,7 +2565,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:resistance",
-            "amplifier": 0,
+            "amplifier": 1,
             "duration_ticks": -1
           }
         },
@@ -2575,7 +2575,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:speed",
-            "amplifier": 0,
+            "amplifier": 2,
             "duration_ticks": -1
           }
         }
@@ -2735,7 +2735,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:strength",
-            "amplifier": 0,
+            "amplifier": 2,
             "duration_ticks": -1
           }
         },

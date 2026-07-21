@@ -479,7 +479,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:regeneration",
-            "amplifier": 0,
+            "amplifier": 1,
             "duration_ticks": -1
           }
         }
@@ -523,7 +523,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:haste",
-            "amplifier": 1,
+            "amplifier": 0,
             "duration_ticks": -1
           }
         }
@@ -1463,7 +1463,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:strength",
-            "amplifier": 1,
+            "amplifier": 2,
             "duration_ticks": -1
           }
         },
@@ -1483,7 +1483,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:speed",
-            "amplifier": 0,
+            "amplifier": 1,
             "duration_ticks": -1
           }
         },
