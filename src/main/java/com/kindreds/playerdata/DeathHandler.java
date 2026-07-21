@@ -193,6 +193,9 @@ public final class DeathHandler {
                 new Object2LongOpenHashMap<>(data.cooldowns()),
                 new HashSet<>(data.discoveredBiomes()));
         copy.setRace(data.race());
+        // Threat survives death. A high-water mark a player could reset by dying would be a
+        // difficulty switch, which is the whole thing the mark exists to prevent.
+        copy.setThreat(data.threat().copy());
         return copy;
     }
 

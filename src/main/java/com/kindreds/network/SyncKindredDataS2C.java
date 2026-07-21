@@ -66,6 +66,10 @@ public record SyncKindredDataS2C(KindredData data) implements CustomPayload {
                 new java.util.HashSet<>(live.discoveredBiomes()),
                 new java.util.HashSet<>(live.renown()));
         copy.setRace(live.race());
+        // ThreatState.copy() deep-copies familyCompetence rather than sharing the reference - the
+        // same ConcurrentModificationException hazard this whole method exists to avoid (see the
+        // class javadoc) applies equally to that map.
+        copy.setThreat(live.threat().copy());
         return copy;
     }
 }

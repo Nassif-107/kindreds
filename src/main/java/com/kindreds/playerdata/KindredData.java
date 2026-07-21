@@ -81,6 +81,14 @@ public final class KindredData {
      */
     private Identifier appliedBirthRace;
 
+    /**
+     * This player's threat state (see {@link com.kindreds.threat.ThreatState}). Not a constructor
+     * parameter - every existing call site would otherwise have to pass one - so it's always
+     * initialised fresh here and mutated in place afterward, the same way {@link #race} is set
+     * post-construction rather than threaded through every constructor.
+     */
+    private final com.kindreds.threat.ThreatState threat;
+
     public KindredData() {
         this(new Object2LongOpenHashMap<>(), new HashSet<>(), null, 0, new Object2LongOpenHashMap<>(),
                 new HashSet<>(), new HashSet<>());
@@ -125,6 +133,7 @@ public final class KindredData {
         this.cooldowns = cooldowns;
         this.discoveredBiomes = discoveredBiomes;
         this.renown = renown;
+        this.threat = new com.kindreds.threat.ThreatState();
     }
 
     public Object2LongMap<Identifier> disciplineXp() {
@@ -182,6 +191,32 @@ public final class KindredData {
 
     public void setAppliedBirthRace(Identifier appliedBirthRace) {
         this.appliedBirthRace = appliedBirthRace;
+    }
+
+    /** This player's threat state. Always present; never null. */
+    public com.kindreds.threat.ThreatState threat() {
+        return threat;
+    }
+
+    /**
+     * Copies {@code threat}'s fields into this instance's own (final) {@link #threat} field, rather
+     * than replacing the reference - used by the {@link #CODEC}/{@link #PACKET_CODEC} decode
+     * factories and by callers (like {@code DeathHandler.copyOf} and {@code
+     * SyncKindredDataS2C.snapshot}, both in other packages - hence {@code public}, same as {@link
+     * #setRace}) restoring a snapshot onto a freshly-constructed {@code KindredData}.
+     *
+     * <p>{@link com.kindreds.threat.ThreatState} deliberately exposes no {@code setPlayedTicks} (only
+     * {@code addPlayedTicks}), so the played-ticks total is transplanted via the delta between the
+     * two - correct regardless of this instance's current total, and exact for the fresh (zeroed)
+     * instances every call site actually passes.
+     */
+    public void setThreat(com.kindreds.threat.ThreatState threat) {
+        this.threat.setPriorMark(threat.priorMark());
+        this.threat.setMaxHealthMark(threat.maxHealthMark());
+        this.threat.setCompetence(threat.competence());
+        this.threat.familyCompetence().clear();
+        this.threat.familyCompetence().putAll(threat.familyCompetence());
+        this.threat.addPlayedTicks(threat.playedTicks() - this.threat.playedTicks());
     }
 
     /** Accumulates {@code amount} xp into {@code discipline} (creating the entry if absent). */
@@ -245,10 +280,17 @@ public final class KindredData {
             // optionalFieldOf for the same save-compatibility reason as discovered_biomes above:
             // worlds written before Great Deeds existed simply load with no renown.
             Codec.STRING.listOf().optionalFieldOf("renown", List.of())
-                    .forGetter(d -> List.copyOf(d.renown()))
-    ).apply(instance, (xp, nodes, lens, corruption, cooldowns, discoveredBiomes, renown) ->
-            new KindredData(xp, nodes, lens.orElse(null), corruption, cooldowns,
-                    new HashSet<>(discoveredBiomes), new HashSet<>(renown))));
+                    .forGetter(d -> List.copyOf(d.renown())),
+            // optionalFieldOf so worlds written before threat scaling existed load cleanly, with a
+            // fresh default ThreatState rather than a failed decode.
+            com.kindreds.threat.ThreatState.CODEC.optionalFieldOf("threat",
+                    new com.kindreds.threat.ThreatState()).forGetter(KindredData::threat)
+    ).apply(instance, (xp, nodes, lens, corruption, cooldowns, discoveredBiomes, renown, threat) -> {
+        KindredData data = new KindredData(xp, nodes, lens.orElse(null), corruption, cooldowns,
+                new HashSet<>(discoveredBiomes), new HashSet<>(renown));
+        data.setThreat(threat);
+        return data;
+    }));
 
     // --- Network codec (S2C sync) --------------------------------------------------------------
 
@@ -259,11 +301,12 @@ public final class KindredData {
             PacketCodecs.optional(Identifier.PACKET_CODEC).xmap(opt -> opt.orElse(null), Optional::ofNullable);
 
     /**
-     * Seven fields wide: {@link #race} (see its javadoc) rides along on the wire only - it's
-     * deliberately absent from the persistent {@link #CODEC} above. The trailing factory builds the
-     * object via the existing six-arg constructor and then sets {@code race} on it, rather than
-     * adding a seventh constructor parameter that every other (persistence-only) call site would
-     * have to pass {@code null} for.
+     * Eight fields wide: {@link #race} (see its javadoc) rides along on the wire only - it's
+     * deliberately absent from the persistent {@link #CODEC} above. {@link #threat} rides on both
+     * codecs (see {@link com.kindreds.threat.ThreatState#PACKET_CODEC} for what it omits on this
+     * one). The trailing factory builds the object via the existing six-arg constructor and then sets
+     * {@code race} and {@code threat} on it, rather than growing the constructor with parameters that
+     * every other (persistence-only) call site would have to pass placeholder values for.
      */
     public static final PacketCodec<RegistryByteBuf, KindredData> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.map((IntFunction<Object2LongMap<Identifier>>) Object2LongOpenHashMap::new,
@@ -282,10 +325,13 @@ public final class KindredData {
             KindredData::race,
             STRING_SET_PACKET_CODEC,
             KindredData::renown,
-            (xp, unlockedNodes, lens, corruption, cooldowns, race, renown) -> {
+            com.kindreds.threat.ThreatState.PACKET_CODEC,
+            KindredData::threat,
+            (xp, unlockedNodes, lens, corruption, cooldowns, race, renown, threat) -> {
                 KindredData data = new KindredData(xp, unlockedNodes, lens, corruption, cooldowns,
                         new HashSet<>(), renown);
                 data.setRace(race);
+                data.setThreat(threat);
                 return data;
             });
 }

@@ -136,4 +136,61 @@ class KindredDataTest {
         assertEquals(12345L, back.cooldowns().getLong("shout_of_valor"));
         assertEquals(elfRace, back.race());
     }
+
+    @Test
+    void threatStateSurvivesThePacketRoundTrip() {
+        KindredData data = new KindredData();
+        data.threat().setPriorMark(63.5f);
+        data.threat().setMaxHealthMark(24f);
+        data.threat().setCompetence(0.9f);
+        data.threat().familyCompetence().put("trolls", 1.1f);
+        data.threat().addPlayedTicks(4321L);
+
+        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), DynamicRegistryManager.EMPTY);
+        KindredData.PACKET_CODEC.encode(buf, data);
+        KindredData back = KindredData.PACKET_CODEC.decode(buf);
+
+        assertEquals(63.5f, back.threat().priorMark(), 0.001f);
+        assertEquals(0.9f, back.threat().competence(), 0.001f);
+    }
+
+    @Test
+    void threatStateCodecRoundTripsIncludingFamilyCompetence() {
+        KindredData data = new KindredData();
+        data.threat().setPriorMark(50f);
+        data.threat().setMaxHealthMark(30f);
+        data.threat().setCompetence(1.2f);
+        data.threat().familyCompetence().put("orcs", 0.8f);
+        data.threat().addPlayedTicks(999L);
+
+        JsonElement json = KindredData.CODEC.encodeStart(JsonOps.INSTANCE, data).result().orElseThrow();
+        KindredData back = KindredData.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
+
+        assertEquals(50f, back.threat().priorMark(), 0.001f);
+        assertEquals(30f, back.threat().maxHealthMark(), 0.001f);
+        assertEquals(1.2f, back.threat().competence(), 0.001f);
+        assertEquals(999L, back.threat().playedTicks());
+        assertEquals(0.8f, back.threat().familyCompetence().get("orcs"), 0.001f);
+    }
+
+    @Test
+    void codecLoadsPreThreatDataMissingThreatFieldAsDefaultThreatState() {
+        // Simulates an old save file written before the threat feature existed: "threat" is simply
+        // absent from the JSON. optionalFieldOf must still parse, defaulting to a fresh ThreatState
+        // rather than failing the whole KindredData decode.
+        JsonObject json = new JsonObject();
+        json.add("discipline_xp", new JsonObject());
+        json.add("unlocked_nodes", new com.google.gson.JsonArray());
+        json.addProperty("corruption", 0);
+        json.add("cooldowns", new JsonObject());
+        // "discovered_biomes", "renown" and "threat" intentionally omitted.
+
+        KindredData back = KindredData.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
+
+        assertEquals(0f, back.threat().priorMark(), 0.001f);
+        assertEquals(0f, back.threat().maxHealthMark(), 0.001f);
+        assertEquals(1.0f, back.threat().competence(), 0.001f);
+        assertEquals(0L, back.threat().playedTicks());
+        assertTrue(back.threat().familyCompetence().isEmpty());
+    }
 }
