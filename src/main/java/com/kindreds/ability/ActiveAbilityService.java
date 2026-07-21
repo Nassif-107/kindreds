@@ -152,22 +152,45 @@ public final class ActiveAbilityService {
         return resolution.tree();
     }
 
+    /**
+     * Whether {@code candidate} is the better version of an ability the player owns twice: a shorter
+     * cooldown first, and on a tie the one that grants more.
+     *
+     * <p>Trees grant the same ability from several nodes on purpose - a later node is the <i>upgrade</i>
+     * (Master Slinger looses stones faster than Sling Flurry). This used to take whichever node came
+     * first in the authored file, so 26 of 29 upgrade chains across every race were bought and never
+     * felt.
+     */
+    private static boolean isStronger(ActiveAbilityDef candidate, ActiveAbilityDef current) {
+        if (candidate.cooldownTicks() != current.cooldownTicks()) {
+            return candidate.cooldownTicks() < current.cooldownTicks();
+        }
+        return candidate.effects().size() > current.effects().size();
+    }
+
     private static ActiveAbilityDef findActiveAbility(Optional<SkillTree> treeOpt, KindredData data, String abilityId) {
         if (treeOpt.isEmpty()) {
             return null;
         }
         boolean matchAny = abilityId == null || abilityId.isBlank();
+        ActiveAbilityDef best = null;
         for (SkillNode node : treeOpt.get().nodes()) {
             if (!data.hasNode(node.id())) {
                 continue;
             }
             for (AbilityDef ability : node.abilities()) {
-                if (ability instanceof ActiveAbilityDef active
-                        && (matchAny || active.abilityId().toString().equals(abilityId))) {
-                    return active;
+                if (!(ability instanceof ActiveAbilityDef active)
+                        || !(matchAny || active.abilityId().toString().equals(abilityId))) {
+                    continue;
+                }
+                if (matchAny) {
+                    return active; // no id asked for: the first owned active ability is as good as any
+                }
+                if (best == null || isStronger(active, best)) {
+                    best = active;
                 }
             }
         }
-        return null;
+        return best;
     }
 }

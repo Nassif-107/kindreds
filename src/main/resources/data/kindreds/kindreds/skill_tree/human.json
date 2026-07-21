@@ -715,7 +715,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:anduril",
-          "cooldown_ticks": 1800,
+          "cooldown_ticks": 1550,
           "effects": [
             {
               "effect": "minecraft:strength",
@@ -1308,7 +1308,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:hands_of_the_king",
-          "cooldown_ticks": 1600,
+          "cooldown_ticks": 1150,
           "effects": [
             {
               "effect": "minecraft:regeneration",
@@ -1773,7 +1773,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:hail_of_arrows",
-          "cooldown_ticks": 700,
+          "cooldown_ticks": 550,
           "effects": []
         },
         {
@@ -2229,7 +2229,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:ride_of_the_rohirrim",
-          "cooldown_ticks": 1400,
+          "cooldown_ticks": 1150,
           "effects": []
         },
         {

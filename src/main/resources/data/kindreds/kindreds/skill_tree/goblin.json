@@ -907,7 +907,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:cluster_bomb",
-          "cooldown_ticks": 600,
+          "cooldown_ticks": 450,
           "effects": []
         },
         {

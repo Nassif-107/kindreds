@@ -65,7 +65,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:light_of_the_phial",
-          "cooldown_ticks": 3600,
+          "cooldown_ticks": 1950,
           "effects": [
             {
               "effect": "minecraft:regeneration",
@@ -1529,7 +1529,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:light_of_the_phial",
-          "cooldown_ticks": 2400,
+          "cooldown_ticks": 1900,
           "effects": [
             {
               "type": "status_effect",
@@ -2031,7 +2031,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:song_of_luthien",
-          "cooldown_ticks": 2000,
+          "cooldown_ticks": 1550,
           "effects": []
         },
         {
@@ -2455,7 +2455,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:summon_the_pack",
-          "cooldown_ticks": 1600,
+          "cooldown_ticks": 1350,
           "effects": []
         },
         {

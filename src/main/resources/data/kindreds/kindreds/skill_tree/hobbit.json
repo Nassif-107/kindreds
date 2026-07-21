@@ -998,7 +998,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:vanish",
-          "cooldown_ticks": 600,
+          "cooldown_ticks": 550,
           "effects": []
         },
         {
@@ -1434,7 +1434,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:sling_stones",
-          "cooldown_ticks": 500,
+          "cooldown_ticks": 350,
           "effects": []
         },
         {
@@ -2455,7 +2455,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:good_cheer",
-          "cooldown_ticks": 1400,
+          "cooldown_ticks": 1150,
           "effects": []
         },
         {

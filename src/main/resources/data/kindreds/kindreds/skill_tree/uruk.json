@@ -561,7 +561,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:blood_frenzy",
-          "cooldown_ticks": 1400,
+          "cooldown_ticks": 1100,
           "effects": [
             {
               "effect": "minecraft:strength",
@@ -1959,7 +1959,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:blood_frenzy",
-          "cooldown_ticks": 1200,
+          "cooldown_ticks": 1150,
           "effects": [
             {
               "effect": "minecraft:strength",
@@ -2173,7 +2173,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:blood_frenzy",
-          "cooldown_ticks": 1400,
+          "cooldown_ticks": 1050,
           "effects": [
             {
               "effect": "minecraft:strength",
@@ -2621,7 +2621,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:warg_pack",
-          "cooldown_ticks": 1400,
+          "cooldown_ticks": 1150,
           "effects": []
         },
         {

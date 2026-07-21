@@ -407,6 +407,25 @@ public final class KindredsDoctor {
                 }
             }
 
+            // Two nodes granting the SAME ability at the same cooldown with the same effects: the
+            // engine picks the strongest owned version, so identical twins leave one of them with
+            // nothing to contribute. (A weaker version is fine - it is a stepping stone you may own
+            // on its own.)
+            Map<String, List<String>> abilityTwins = new java.util.TreeMap<>();
+            for (SkillNode node : tree.nodes()) {
+                for (AbilityDef ability : node.abilities()) {
+                    if (ability instanceof ActiveAbilityDef active) {
+                        String shape = active.abilityId() + "/cd" + active.cooldownTicks()
+                                + "/x" + active.effects().size();
+                        abilityTwins.computeIfAbsent(shape, k -> new ArrayList<>()).add(node.id());
+                        groupsFor.computeIfAbsent("ability/" + shape, k -> new java.util.HashSet<>())
+                                .add(node.exclusiveGroup().orElse(""));
+                    }
+                }
+            }
+            redundant += flagDuplicates(tree, "ability", abilityTwins, groupsFor, problems,
+                    " - identical version of the same ability, so owning both is owning one");
+
             redundant += flagDuplicates(tree, "perk", perkSources, groupsFor, problems,
                     " - the code reads it as a yes/no, so the extra grants change nothing");
             redundant += flagDuplicates(tree, "boon", boonSlots, groupsFor, problems,

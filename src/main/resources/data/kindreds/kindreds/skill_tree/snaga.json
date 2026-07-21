@@ -640,7 +640,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:skulk",
-          "cooldown_ticks": 700,
+          "cooldown_ticks": 450,
           "effects": []
         }
       ]
@@ -2161,7 +2161,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:orc_draught",
-          "cooldown_ticks": 900,
+          "cooldown_ticks": 650,
           "effects": [
             {
               "effect": "minecraft:regeneration",

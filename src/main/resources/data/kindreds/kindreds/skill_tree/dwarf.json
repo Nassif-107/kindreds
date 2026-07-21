@@ -73,7 +73,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:aule_legacy",
-          "cooldown_ticks": 2400,
+          "cooldown_ticks": 1750,
           "effects": [
             {
               "effect": "minecraft:resistance",
@@ -935,7 +935,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:aule_legacy",
-          "cooldown_ticks": 2400,
+          "cooldown_ticks": 2350,
           "effects": [
             {
               "effect": "minecraft:fire_resistance",
@@ -1047,7 +1047,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:masters_forge",
-          "cooldown_ticks": 1000,
+          "cooldown_ticks": 750,
           "effects": []
         }
       ]
@@ -2042,7 +2042,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:khazad_dum_reborn",
-          "cooldown_ticks": 3600,
+          "cooldown_ticks": 3550,
           "effects": [
             {
               "effect": "minecraft:haste",
@@ -2102,7 +2102,7 @@
         {
           "type": "active",
           "ability_id": "kindreds:durins_ward",
-          "cooldown_ticks": 1600,
+          "cooldown_ticks": 1550,
           "effects": [
             {
               "effect": "minecraft:resistance",
