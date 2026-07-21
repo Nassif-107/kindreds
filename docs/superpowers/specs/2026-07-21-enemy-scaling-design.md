@@ -82,9 +82,20 @@ Read instantly, each term of the prior is a difficulty slider:
 | `commitment` | change race into a tree you have barely invested in |
 
 So the whole prior is a **slow high-water mark**: it rises to the current reading immediately and
-decays toward it at no more than **2 points per in-game day**. Respec freely - the world remembers
-what you were. This is also why the mark is on the prior as a whole rather than per term: a player
-who respecs *and* strips gear must not be able to stack two collapses.
+decays toward it at no more than **2 points per hour of played time**. Respec freely - the world
+remembers what you were. This is also why the mark is on the prior as a whole rather than per term: a
+player who respecs *and* strips gear must not be able to stack two collapses.
+
+**Decay is measured in played time, never in-game days.** A bed skips a whole day in about three
+seconds, so a day-based decay would be melted by sleep-spam - the exploit the mark exists to prevent,
+through a door left open beside it. Only ticks in which the player is online count.
+
+**The honest cost of this rule.** A player who genuinely respecs from a warrior into a miner meets a
+world that still thinks they are a warrior, for a while. That is a real playstyle change meeting real
+friction. Two things soften it: the mark decays, and the evidence loop (§2.3) sees them actually
+struggling and pulls threat down within its band, so relief arrives in hours of play rather than
+never. It is not zero, and it is the price of the design: any version without this lag hands back the
+respec exploit whole.
 
 ### 2.3 The evidence — revealed power
 
@@ -94,10 +105,20 @@ average over *qualifying fights* (see §5 for what counts as a scaled mob).
 Per qualifying fight, the signal is **hardship**:
 
 ```
-hardship = damageTakenInFight / maxHealth
+hardship = damageTakenFromScopedMobs / highWaterMaxHealth
 ```
 
 with a target of `0.25` — a meaningful fight should cost about a quarter of your health.
+
+Both halves of that fraction are deliberate:
+
+- **Only damage dealt by mobs in scope counts.** Not players - otherwise two friends soften both their
+  worlds by hitting each other. Not fall damage, lava, drowning, cacti or the void - otherwise the
+  play is to leap off a cliff mid-fight. The same exclusions §2.3 already applies to deaths apply to
+  damage, and for the same reason.
+- **The denominator is the high-water of max health, not current max health.** Shrink your own health
+  pool and every fight reads as brutal; the Bargain costs 4 max health permanently, so a live reading
+  would pay a player +10% cap *and* a gentler world for taking it, and reward staying wounded.
 
 | Observation | Effect on `competence` | May it lower threat? |
 |---|---|---|
@@ -244,8 +265,12 @@ The rule that makes this work:
 scaledGroup = scaled(strongest nearby player) * (1 + 0.15 * (nearbyPlayers - 1))
 ```
 
-capped at `+45%` for group size. "Nearby" is a 128-block radius at spawn time; a mob spawning with no
-player in range uses the strongest player in that dimension, decayed by `0.5`.
+capped at `+45%` for group size. "Nearby" is a 128-block radius at spawn time.
+
+**A mob spawning with no player in range uses the strongest player in that dimension, undecayed.** An
+earlier draft halved it, which made an AFK farm built 130 blocks from anyone a free difficulty
+switch. A mob that never meets a player costs nothing either way, so there is no reason to soften it
+and one good reason not to.
 
 **Why strongest rather than average.** Average lets a veteran hide behind newcomers to farm soft
 mobs. Strongest means a veteran's presence makes the fight beefier — which is fair, because a group
@@ -391,7 +416,12 @@ rather than how it behaves.
   - earning a Great Deed never lowers threat;
   - a hundred slow kills of a trivial mob do not lower competence;
   - a hundred deaths to a trivial mob do not push threat below the floor;
-  - mastering one family does not change what spawns.
+  - mastering one family does not change what spawns;
+  - sleeping through ten nights does not decay the high-water mark;
+  - taking the Bargain (−4 max health) does not lower threat;
+  - damage taken from another player never counts as hardship;
+  - fall, lava and drowning damage during a fight never count as hardship;
+  - a mob spawning with no player within 128 blocks is not softened.
 - **Gametest** — a scaled mob hits a fresh player and a veteran differently in the same world; an
   elite spawns, is named, and drops its bonus; a replacement respects its family ladder; the settings
   section renders without collision at GUI scales 1–4.
