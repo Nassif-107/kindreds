@@ -163,7 +163,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.14
         },
         {
           "type": "attribute",
@@ -219,7 +219,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.15
+          "amount": -0.1
         }
       ]
     },
@@ -254,7 +254,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.1
         }
       ]
     },
@@ -287,7 +287,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.15
+          "amount": -0.08
         },
         {
           "type": "perk",
@@ -329,7 +329,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.06
         },
         {
           "type": "perk",

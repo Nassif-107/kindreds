@@ -370,9 +370,9 @@
       "abilities": [
         {
           "type": "attribute",
-          "attribute": "middle-earth:powdered_snow_immunity",
+          "attribute": "minecraft:safe_fall_distance",
           "operation": "add_value",
-          "amount": 1.0
+          "amount": 3.0
         },
         {
           "type": "contextual_boon",
@@ -1952,7 +1952,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.14
         },
         {
           "type": "attribute",
@@ -1987,7 +1987,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.15
+          "amount": -0.1
         }
       ]
     },
@@ -2014,7 +2014,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.15
+          "amount": -0.1
         }
       ]
     },
@@ -2070,7 +2070,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.08
         },
         {
           "type": "attribute",
@@ -2111,7 +2111,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.06
         }
       ],
       "exclusive_group": "goblin.stealth.spec"

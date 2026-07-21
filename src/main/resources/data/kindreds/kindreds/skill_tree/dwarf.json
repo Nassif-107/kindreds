@@ -442,7 +442,7 @@
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.1
+          "amount": 0.05
         }
       ]
     },
@@ -650,7 +650,7 @@
           "type": "attribute",
           "attribute": "minecraft:armor",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 2.0
         },
         {
           "type": "perk",
@@ -716,7 +716,7 @@
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.1
+          "amount": 0.05
         }
       ]
     },
@@ -877,7 +877,7 @@
           "type": "attribute",
           "attribute": "minecraft:burning_time",
           "operation": "add_multiplied_base",
-          "amount": -0.5
+          "amount": -0.2
         }
       ]
     },
@@ -900,7 +900,7 @@
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.15
+          "amount": 0.1
         },
         {
           "type": "attribute",
@@ -953,7 +953,7 @@
           "type": "attribute",
           "attribute": "minecraft:burning_time",
           "operation": "add_multiplied_base",
-          "amount": -0.3
+          "amount": -0.2
         }
       ]
     },
@@ -1029,13 +1029,13 @@
           "type": "attribute",
           "attribute": "minecraft:armor",
           "operation": "add_value",
-          "amount": 4.0
+          "amount": 3.0
         },
         {
           "type": "attribute",
           "attribute": "minecraft:armor_toughness",
           "operation": "add_value",
-          "amount": 4.0
+          "amount": 3.0
         },
         {
           "type": "perk",
@@ -1092,7 +1092,7 @@
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.2
+          "amount": 0.1
         },
         {
           "type": "attribute",
@@ -1232,7 +1232,7 @@
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.2
+          "amount": 0.1
         },
         {
           "type": "attribute",
@@ -1291,7 +1291,7 @@
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.3
+          "amount": 0.15
         },
         {
           "type": "attribute",
@@ -1339,7 +1339,7 @@
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.2
+          "amount": 0.1
         }
       ],
       "exclusive_group": "dwarf.combat.spec"
@@ -1644,13 +1644,13 @@
           "type": "attribute",
           "attribute": "minecraft:armor",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 2.0
         },
         {
           "type": "attribute",
           "attribute": "minecraft:knockback_resistance",
           "operation": "add_value",
-          "amount": 0.1
+          "amount": 0.05
         },
         {
           "type": "perk",
@@ -1709,13 +1709,13 @@
           "type": "attribute",
           "attribute": "minecraft:armor",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 2.0
         },
         {
           "type": "attribute",
           "attribute": "minecraft:armor_toughness",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 2.0
         },
         {
           "type": "perk",
@@ -1964,7 +1964,7 @@
           "type": "attribute",
           "attribute": "minecraft:armor_toughness",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 2.0
         },
         {
           "type": "attribute",
@@ -2091,7 +2091,7 @@
           "type": "attribute",
           "attribute": "minecraft:armor",
           "operation": "add_value",
-          "amount": 3.0
+          "amount": 2.0
         },
         {
           "type": "attribute",

@@ -585,13 +585,13 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.15
         },
         {
           "type": "attribute",
           "attribute": "minecraft:sneaking_speed",
           "operation": "add_value",
-          "amount": 0.3
+          "amount": 0.15
         }
       ]
     },
@@ -641,7 +641,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.15
+          "amount": -0.11
         }
       ]
     },
@@ -676,7 +676,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.15
+          "amount": -0.11
         }
       ]
     },
@@ -738,7 +738,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.06
         }
       ],
       "exclusive_group": "hobbit.stealth.spec"
@@ -904,7 +904,7 @@
           "type": "attribute",
           "attribute": "minecraft:sneaking_speed",
           "operation": "add_value",
-          "amount": 0.4
+          "amount": 0.25
         },
         {
           "type": "attribute",
@@ -933,7 +933,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.11
         },
         {
           "type": "perk",
@@ -968,7 +968,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.06
         },
         {
           "type": "attribute",
@@ -1017,7 +1017,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.06
         }
       ]
     },

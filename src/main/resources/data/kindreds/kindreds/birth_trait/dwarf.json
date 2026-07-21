@@ -25,7 +25,7 @@
       "type": "attribute",
       "attribute": "minecraft:knockback_resistance",
       "operation": "add_value",
-      "amount": 0.5
+      "amount": 0.3
     },
     {
       "type": "attribute",

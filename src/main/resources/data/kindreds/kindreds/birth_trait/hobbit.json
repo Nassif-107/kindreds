@@ -17,7 +17,7 @@
       "type": "attribute",
       "attribute": "minecraft:sneaking_speed",
       "operation": "add_value",
-      "amount": 0.5
+      "amount": 0.3
     },
     {
       "type": "attribute",

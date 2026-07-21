@@ -678,7 +678,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.25
+          "amount": -0.18
         },
         {
           "type": "perk",
@@ -743,7 +743,7 @@
           "type": "attribute",
           "attribute": "middle-earth:detection_range",
           "operation": "add_value",
-          "amount": -0.2
+          "amount": -0.12
         }
       ],
       "exclusive_group": "elf.survival.spec"
