@@ -7,6 +7,10 @@ import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.ActiveAbilityDef;
+import com.kindreds.data.ability.AttributeMod;
+import com.kindreds.data.ability.ContextualBoon;
+import com.kindreds.data.ability.PerkDef;
+import com.kindreds.data.ability.StatusEffectDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.progression.RenownService;
@@ -29,6 +33,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -104,6 +109,14 @@ public final class KindredsDoctor {
             com.kindreds.network.TakeBargainC2S.ID.id(),
     };
 
+    /**
+     * Perks the gameplay code still reads as a yes/no rather than by rank
+     * ({@code perksOfType(..).isEmpty()}). Granting one of these twice is identical to granting it
+     * once, so a second node spends a point on nothing. Keep in step with the call sites: when a perk
+     * is converted to {@code PerkService.rankOf}, drop it from here.
+     */
+    private static final Set<String> BOOLEAN_PERKS = Set.of("auto_smelt", "ore_magnet");
+
     /** Runs every check, reporting to {@code source} and to the log. Returns the number of problems. */
     public static int run(ServerCommandSource source) {
         MinecraftServer server = source.getServer();
@@ -116,6 +129,8 @@ public final class KindredsDoctor {
         checkDeeds(source, server, problems);
         checkTrees(source, server, problems);
         checkAbilities(source, server, problems);
+        checkClamps(source, server, problems);
+        checkStacking(source, server, problems);
         checkPlayer(source, problems);
 
         if (problems.isEmpty()) {
@@ -271,7 +286,156 @@ public final class KindredsDoctor {
                 orphans.isEmpty() ? null : "orphaned: " + String.join(", ", orphans));
     }
 
-    /** The calling player's own progression state, which is what most "is it working?" questions
+    /**
+     * Attribute totals that a clamp would silently eat.
+     *
+     * <p>Every attribute has a hard range, and anything past it is discarded without a word - a node
+     * that pushes a stat beyond its ceiling costs a point and changes nothing. The bound is read from
+     * the attribute itself via {@code clamp()}, so this stays correct for vanilla attributes, the base
+     * mod's, and anything a datapack adds, with no table here to fall out of date.
+     *
+     * <p>Worst case per race: every node, except that only one member of each exclusive group can be
+     * owned (the one pushing the attribute furthest is assumed taken).
+     */
+    private static void checkClamps(ServerCommandSource source, MinecraftServer server, List<String> problems) {
+        Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
+        Set<String> absentProviders = new java.util.TreeSet<>();
+        int overflowing = 0;
+        for (SkillTree tree : trees) {
+            Map<Identifier, Double> flat = new java.util.HashMap<>();
+            Map<Identifier, Double> scaled = new java.util.HashMap<>();
+            Map<String, Map<Identifier, Double>> groupBest = new java.util.HashMap<>();
+
+            for (SkillNode node : tree.nodes()) {
+                Map<Identifier, Double> flatHere = new java.util.HashMap<>();
+                Map<Identifier, Double> scaledHere = new java.util.HashMap<>();
+                for (AbilityDef ability : node.abilities()) {
+                    if (!(ability instanceof AttributeMod mod)) {
+                        continue;
+                    }
+                    (mod.operation().contains("multiplied") ? scaledHere : flatHere)
+                            .merge(mod.attribute(), mod.amount(), Double::sum);
+                }
+                if (flatHere.isEmpty() && scaledHere.isEmpty()) {
+                    continue;
+                }
+                String group = node.exclusiveGroup().orElse(null);
+                if (group == null) {
+                    flatHere.forEach((k, v) -> flat.merge(k, v, Double::sum));
+                    scaledHere.forEach((k, v) -> scaled.merge(k, v, Double::sum));
+                } else {
+                    // keep whichever rival moves things furthest - that is the reachable worst case
+                    Map<Identifier, Double> best = groupBest.get(group);
+                    double here = flatHere.values().stream().mapToDouble(Math::abs).sum()
+                            + scaledHere.values().stream().mapToDouble(Math::abs).sum();
+                    double there = best == null ? -1
+                            : best.values().stream().mapToDouble(Math::abs).sum();
+                    if (here > there) {
+                        Map<Identifier, Double> merged = new java.util.HashMap<>(flatHere);
+                        scaledHere.forEach((k, v) -> merged.merge(k, v, Double::sum));
+                        groupBest.put(group, merged);
+                    }
+                }
+            }
+            for (Map<Identifier, Double> best : groupBest.values()) {
+                best.forEach((k, v) -> flat.merge(k, v, Double::sum));
+            }
+
+            for (Map.Entry<Identifier, Double> e : flat.entrySet()) {
+                var entry = net.minecraft.registry.Registries.ATTRIBUTE.getEntry(e.getKey()).orElse(null);
+                if (entry == null) {
+                    // An attribute from another mod is only a DEFECT if that mod is present and simply
+                    // has no such id (a typo, or a rename). If the providing mod is absent, the trees
+                    // are fine and the install is merely missing an optional dependency - said once,
+                    // plainly, rather than counted as eight broken races.
+                    String namespace = e.getKey().getNamespace();
+                    if (!FabricLoader.getInstance().isModLoaded(namespace)) {
+                        absentProviders.add(namespace);
+                    } else {
+                        problems.add("attribute " + e.getKey() + " does not exist though " + namespace
+                                + " is loaded - every modifier of it in " + tree.race().getPath()
+                                + " is discarded");
+                    }
+                    continue;
+                }
+                var attribute = entry.value();
+                double total = attribute.getDefaultValue() + e.getValue();
+                total *= 1 + scaled.getOrDefault(e.getKey(), 0.0);
+                double allowed = attribute.clamp(total);
+                if (Math.abs(allowed - total) > 1e-6) {
+                    overflowing++;
+                    problems.add(String.format(
+                            "%s reaches %.2f %s but it clamps to %.2f - %.2f of it is spent on nothing",
+                            tree.race().getPath(), total, e.getKey(), allowed, Math.abs(total - allowed)));
+                }
+            }
+        }
+        report(source, "clamps", overflowing == 0 ? "all attributes fit" : overflowing + " overflowing",
+                overflowing == 0 ? null : "see the log for which race and which attribute");
+        if (!absentProviders.isEmpty()) {
+            line(source, Text.literal("    attributes from " + String.join(", ", absentProviders)
+                    + " skipped - that mod is not installed").formatted(Formatting.YELLOW));
+        }
+    }
+
+    /**
+     * Data that looks stacked but cannot stack: a perk the code reads as a yes/no granted more than
+     * once, and two contextual boons filling the same context/effect/amplifier slot (status effects do
+     * not stack, so only one is ever felt). Rivals inside one exclusive group are alternatives, not
+     * duplicates, and are not counted.
+     */
+    private static void checkStacking(ServerCommandSource source, MinecraftServer server, List<String> problems) {
+        Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
+        int redundant = 0;
+        for (SkillTree tree : trees) {
+            Map<String, List<String>> perkSources = new java.util.TreeMap<>();
+            Map<String, List<String>> boonSlots = new java.util.TreeMap<>();
+            Map<String, Set<String>> groupsFor = new java.util.HashMap<>();
+
+            for (SkillNode node : tree.nodes()) {
+                String group = node.exclusiveGroup().orElse("");
+                for (AbilityDef ability : node.abilities()) {
+                    if (ability instanceof PerkDef perk && BOOLEAN_PERKS.contains(perk.perk())) {
+                        perkSources.computeIfAbsent(perk.perk(), k -> new ArrayList<>()).add(node.id());
+                        groupsFor.computeIfAbsent("perk/" + perk.perk(), k -> new java.util.HashSet<>()).add(group);
+                    } else if (ability instanceof ContextualBoon boon
+                            && boon.effect() instanceof StatusEffectDef effect) {
+                        String slot = boon.when() + "/" + effect.effect() + "/" + effect.amplifier();
+                        boonSlots.computeIfAbsent(slot, k -> new ArrayList<>()).add(node.id());
+                        groupsFor.computeIfAbsent("boon/" + slot, k -> new java.util.HashSet<>()).add(group);
+                    }
+                }
+            }
+
+            redundant += flagDuplicates(tree, "perk", perkSources, groupsFor, problems,
+                    " - the code reads it as a yes/no, so the extra grants change nothing");
+            redundant += flagDuplicates(tree, "boon", boonSlots, groupsFor, problems,
+                    " - status effects do not stack, so only one of these is ever felt");
+        }
+        report(source, "stacking", redundant == 0 ? "nothing redundant" : redundant + " redundant grant(s)",
+                redundant == 0 ? null : "see the log for which nodes");
+    }
+
+    private static int flagDuplicates(SkillTree tree, String kind, Map<String, List<String>> sources,
+                                      Map<String, Set<String>> groupsFor, List<String> problems, String why) {
+        int count = 0;
+        for (Map.Entry<String, List<String>> e : sources.entrySet()) {
+            List<String> nodes = e.getValue();
+            if (nodes.size() < 2) {
+                continue;
+            }
+            Set<String> groups = groupsFor.getOrDefault(kind + "/" + e.getKey(), Set.of());
+            if (groups.size() == 1 && !groups.contains("")) {
+                continue; // mutually exclusive rivals: alternatives, not duplicates
+            }
+            count += nodes.size() - 1;
+            problems.add(tree.race().getPath() + ": " + kind + " " + e.getKey() + " granted by "
+                    + nodes.size() + " nodes " + nodes + why);
+        }
+        return count;
+    }
+
+    /** The calling player\'s own progression state, which is what most "is it working?" questions
      * are really about. */
     private static void checkPlayer(ServerCommandSource source, List<String> problems) {
         ServerPlayerEntity player = source.getPlayer();
