@@ -37,6 +37,13 @@ public class KindredsSettingsScreen extends Screen {
             "allowGrantXp"
     };
 
+    /** "The world answers" (spec §6): the enemy-scaling settings, display only - unlike {@link #FLAGS}
+     * these have no click handler here. Editing is via {@code /kindreds config}; this row set exists
+     * so a non-operator (and an operator without console access) can at least see what is in effect. */
+    private static final String[] WORLD_ANSWERS_ROWS = {
+            "enemyScaling", "scalingCurve", "maxDamageBonus", "xpBonus"
+    };
+
     private final List<int[]> presetRects = new ArrayList<>();
     private final List<int[]> flagRects = new ArrayList<>();
     private final Screen parent;
@@ -84,7 +91,8 @@ public class KindredsSettingsScreen extends Screen {
         // behind Fireside. The header now reserves what it actually draws.
         int headH = compact ? 48 : 56;
         int panelH = headH + PRESETS.length * (rowH + 4) + (compact ? 14 : 24)
-                + FLAGS.length * flagH + (compact ? 16 : 26);
+                + FLAGS.length * flagH + (compact ? 14 : 24)
+                + WORLD_ANSWERS_ROWS.length * flagH + (compact ? 16 : 26);
         int y = Math.max(4, (this.height - panelH) / 2);
 
         ctx.fill(x - 8, y - 10, x + panelW + 8, y + panelH, 0xE0120F0A);
@@ -172,6 +180,20 @@ public class KindredsSettingsScreen extends Screen {
             by += flagH;
         }
 
+        // --- World answers (enemy scaling, spec §6) - display only ---
+        by += compact ? 4 : 8;
+        ctx.drawText(this.textRenderer, Text.translatable("kindreds.settings.section.world_answers")
+                .formatted(Formatting.GOLD), x, by, 0xFFD8B45F, false);
+        by += compact ? 10 : 13;
+        for (String row : WORLD_ANSWERS_ROWS) {
+            ctx.drawText(this.textRenderer, Text.translatable("kindreds.settings." + row)
+                    .formatted(Formatting.WHITE), x + 4, by + 4, 0xFFECE3CD, false);
+            Text value = worldAnswerValue(v, row);
+            int vw = this.textRenderer.getWidth(value);
+            ctx.drawText(this.textRenderer, value, x + panelW - vw - 4, by + 4, 0xFFB6A888, false);
+            by += flagH;
+        }
+
         Text foot = isOperator()
                 ? Text.translatable("kindreds.settings.op").formatted(Formatting.DARK_GRAY)
                 : Text.translatable("kindreds.settings.notop").formatted(Formatting.RED);
@@ -187,6 +209,18 @@ public class KindredsSettingsScreen extends Screen {
             case "allowCrossTraining" -> v.crossTraining();
             case "allowGrantXp" -> v.grantXp();
             default -> false;
+        };
+    }
+
+    /** The right-hand value shown for one {@link #WORLD_ANSWERS_ROWS} row. The curve is localized via
+     * {@code kindreds.settings.curve.<NAME>} rather than shown as its raw enum name. */
+    private static Text worldAnswerValue(SyncConfigS2C.View v, String row) {
+        return switch (row) {
+            case "enemyScaling" -> Text.translatable(v.enemyScaling() ? "kindreds.settings.on" : "kindreds.settings.off");
+            case "scalingCurve" -> Text.translatable("kindreds.settings.curve." + v.scalingCurve());
+            case "maxDamageBonus" -> Text.literal(v.maxDamageBonus() + "%");
+            case "xpBonus" -> Text.literal(v.xpBonus() + "%");
+            default -> Text.literal("");
         };
     }
 

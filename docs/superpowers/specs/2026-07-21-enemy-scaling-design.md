@@ -357,7 +357,7 @@ readable by everyone.
 | `eliteChance` | 25% | 0 disables elites |
 | `replacementChance` | 35% | 0 disables species replacement |
 | `escortChance` | 30% | 0 disables escorts |
-| `priorDecayPerDay` | 2 | How fast the high-water mark forgets (§2.2) |
+| `priorDecayPerHour` | 2 | How fast the high-water mark forgets (§2.2) |
 | `xpBonus` | 50% | |
 | `groupScaling` | 15% per extra player | |
 | `dimensionMultiplier` | 1.0 Middle-earth, 0.75 overworld | |

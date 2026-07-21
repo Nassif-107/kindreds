@@ -279,7 +279,10 @@ public final class KindredsCommand {
             "xpRateGlobal", "deathPenalty", "deathPercent", "pointSoftCap", "respecItem", "respecCost",
             // added with the cap rework, the grantxp gate and the HUD toggle - a setting that exists
             // but that no command can reach is a setting an operator cannot actually use
-            "pointCapPercent", "allowGrantXp", "hudAnimations");
+            "pointCapPercent", "allowGrantXp", "hudAnimations",
+            // Task 6: enemy-scaling tuning - see KindredsConfig for what each one means.
+            "scalingCurve", "weightCommitment", "weightGear", "weightRenown", "priorDecayPerHour",
+            "maxDamageBonus", "xpBonus", "adaptiveStrength");
 
     private static final SuggestionProvider<ServerCommandSource> CONFIG_KEY_SUGGESTIONS =
             (context, builder) -> CommandSource.suggestMatching(CONFIG_KEYS, builder);
@@ -302,6 +305,14 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("  pointSoftCap = " + c.pointSoftCap), false);
         source.sendFeedback(() -> Text.literal("  respecItem = " + c.respecItem), false);
         source.sendFeedback(() -> Text.literal("  respecCost = " + c.respecCost), false);
+        source.sendFeedback(() -> Text.literal("  scalingCurve = " + c.scalingCurve), false);
+        source.sendFeedback(() -> Text.literal("  weightCommitment = " + c.weightCommitment), false);
+        source.sendFeedback(() -> Text.literal("  weightGear = " + c.weightGear), false);
+        source.sendFeedback(() -> Text.literal("  weightRenown = " + c.weightRenown), false);
+        source.sendFeedback(() -> Text.literal("  priorDecayPerHour = " + c.priorDecayPerHour), false);
+        source.sendFeedback(() -> Text.literal("  maxDamageBonus = " + c.maxDamageBonus), false);
+        source.sendFeedback(() -> Text.literal("  xpBonus = " + c.xpBonus), false);
+        source.sendFeedback(() -> Text.literal("  adaptiveStrength = " + c.adaptiveStrength), false);
         source.sendFeedback(() -> Text.literal("Change with: /kindreds config <key> <value>  (saved to kindreds-server.json)"), false);
         return 1;
     }
@@ -326,6 +337,15 @@ public final class KindredsCommand {
                 case "respecCost" -> c.respecCost = Integer.parseInt(value);
                 case "respecItem" -> c.respecItem = value;
                 case "deathPenalty" -> c.deathPenalty = DeathPenalty.valueOf(value.toUpperCase(Locale.ROOT));
+                case "scalingCurve" -> c.scalingCurve =
+                        com.kindreds.config.ScalingCurve.valueOf(value.toUpperCase(Locale.ROOT));
+                case "weightCommitment" -> c.weightCommitment = Integer.parseInt(value);
+                case "weightGear" -> c.weightGear = Integer.parseInt(value);
+                case "weightRenown" -> c.weightRenown = Integer.parseInt(value);
+                case "priorDecayPerHour" -> c.priorDecayPerHour = Float.parseFloat(value);
+                case "maxDamageBonus" -> c.maxDamageBonus = Integer.parseInt(value);
+                case "xpBonus" -> c.xpBonus = Integer.parseInt(value);
+                case "adaptiveStrength" -> c.adaptiveStrength = Integer.parseInt(value);
                 default -> {
                     source.sendError(Text.literal("Unknown key '" + key + "'. Valid: " + String.join(", ", CONFIG_KEYS)));
                     return 0;
@@ -333,7 +353,8 @@ public final class KindredsCommand {
             }
         } catch (IllegalArgumentException e) {
             source.sendError(Text.literal("Bad value '" + value + "' for " + key
-                    + (key.equals("deathPenalty") ? " (expected KEEP/LOSE_UNSPENT/LOSE_PERCENT/HARDCORE)" : "")));
+                    + (key.equals("deathPenalty") ? " (expected KEEP/LOSE_UNSPENT/LOSE_PERCENT/HARDCORE)" : "")
+                    + (key.equals("scalingCurve") ? " (expected FEEL_STRONGER/EXACT_PACE/LONG_DEFEAT)" : "")));
             return 0;
         }
         c.save(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));

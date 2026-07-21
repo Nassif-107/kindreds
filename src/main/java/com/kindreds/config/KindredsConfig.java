@@ -54,7 +54,8 @@ public class KindredsConfig {
     public boolean allowGrantXp = false;
 
     public boolean allowCrossTraining = true;
-    public boolean enableEnemyScaling = false;
+    /** Enemy scaling is on by default now: the world answering a grown hero is the intended game. */
+    public boolean enableEnemyScaling = true;
     /** §2.6: how much of threat becomes difficulty. See {@link #scalingCurveExponent()}. */
     public ScalingCurve scalingCurve = ScalingCurve.FEEL_STRONGER;
     /** §2.1 prior weights: {@code Wc}, {@code Wg}, {@code Wr}. A server wanting pure skill-based
@@ -66,6 +67,21 @@ public class KindredsConfig {
      * per <b>hour of played time</b> (never wall-clock or in-game-day time - see
      * {@code ThreatMath#decayed}). */
     public float priorDecayPerHour = 2f;
+    /** §2.5-ish: ceiling on how much harder scaled enemies may hit, as a percent bonus over their
+     * unscaled damage. Bounded so even {@code LONG_DEFEAT} at full threat stays survivable rather
+     * than one-shotting a geared player. */
+    public int maxDamageBonus = 60;
+    /** Extra xp awarded for besting a scaled-up foe, as a percent bonus - the world getting harder
+     * should also pay better, or growing stronger becomes a strictly worse trade. */
+    public int xpBonus = 50;
+    /** 100 = the full evidence band; lower narrows it toward 1.0. It can never widen it (spec §2.4). */
+    public int adaptiveStrength = 100;
+
+    // Deliberately NOT config fields: the hardship target, the two EWMA rates, the death penalty,
+    // the gear reference and the danger yardstick. They are calibration rather than difficulty, and
+    // several hold an invariant an operator could break without knowing - the EWMA rates must keep
+    // rise > fall or death-farming returns, and the danger yardstick is what makes a trivial
+    // attacker count for nothing. They live in ThreatTuning.DEFAULTS. See the Global Constraints.
 
     /**
      * Loads config from {@code path}. If the file is missing, unreadable, or

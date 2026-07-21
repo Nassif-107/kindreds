@@ -39,10 +39,13 @@ public record SyncConfigS2C(String json) implements CustomPayload {
         return ID;
     }
 
-    /** The subset of the server config the client is allowed to see and show. */
+    /** The subset of the server config the client is allowed to see and show. {@code scalingCurve}
+     * is carried as its name, matching {@code difficulty}/{@code death} - the client only ever
+     * displays it via a lang key, never re-derives behaviour from it. */
     public record View(String difficulty, double xpRate, String death, double deathPercent, int softCap,
                        int capPercent, int respecCost, boolean enemyScaling, boolean birthTraits,
-                       boolean curses, boolean crossTraining, boolean vision, boolean grantXp) {
+                       boolean curses, boolean crossTraining, boolean vision, boolean grantXp,
+                       String scalingCurve, int maxDamageBonus, int xpBonus) {
     }
 
     public static View snapshot() {
@@ -50,7 +53,7 @@ public record SyncConfigS2C(String json) implements CustomPayload {
         return new View(String.valueOf(c.difficulty), c.xpRateGlobal, String.valueOf(c.deathPenalty),
                 c.deathPercent, c.pointSoftCap, c.pointCapPercent, c.respecCost, c.enableEnemyScaling,
                 c.enableBirthTraits, c.enableCurses, c.allowCrossTraining, c.enableVision,
-                c.allowGrantXp);
+                c.allowGrantXp, String.valueOf(c.scalingCurve), c.maxDamageBonus, c.xpBonus);
     }
 
     public static void sendTo(ServerPlayerEntity player) {

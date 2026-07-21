@@ -12,16 +12,20 @@ package com.kindreds.config;
  * <p>{@link #CUSTOM} applies nothing, leaving every value exactly as written in the config file.
  */
 public enum Difficulty {
-    /** Story pace - twice the xp, no death cost, and no cap on how much of a tree you can master. */
-    FIRESIDE(2.0, DeathPenalty.KEEP, 0.25, 100, 1, false),
-    /** The default: master three or four of your race's lanes, never quite all of them. */
-    ROAD(1.0, DeathPenalty.KEEP, 0.25, 75, 1, false),
-    /** Committed: slower, death costs your unspent points, real specialization pressure, tougher foes. */
-    LONG_DEFEAT(0.7, DeathPenalty.LOSE_UNSPENT, 0.25, 60, 4, true),
-    /** Harsh: a deep specialist's game - death burns a quarter of your progress. */
-    DOOM(0.45, DeathPenalty.LOSE_PERCENT, 0.25, 45, 8, true),
+    /** Story pace - twice the xp, no death cost, and no cap on how much of a tree you can master.
+     * Scaling stays off, so the curve choice is moot - {@code FEEL_STRONGER} is just a sane value. */
+    FIRESIDE(2.0, DeathPenalty.KEEP, 0.25, 100, 1, false, ScalingCurve.FEEL_STRONGER),
+    /** The default: master three or four of your race's lanes, never quite all of them. Scaling is
+     * on, gentle - the world lets a growing hero feel it, then falls behind (spec §6). */
+    ROAD(1.0, DeathPenalty.KEEP, 0.25, 75, 1, true, ScalingCurve.FEEL_STRONGER),
+    /** Committed: slower, death costs your unspent points, real specialization pressure, tougher foes
+     * that keep exact pace with you rather than falling behind. */
+    LONG_DEFEAT(0.7, DeathPenalty.LOSE_UNSPENT, 0.25, 60, 4, true, ScalingCurve.EXACT_PACE),
+    /** Harsh: a deep specialist's game - death burns a quarter of your progress, and the world
+     * outgrows you (spec §6's own {@code LONG_DEFEAT} curve - grim, hardest on a solo player). */
+    DOOM(0.45, DeathPenalty.LOSE_PERCENT, 0.25, 45, 8, true, ScalingCurve.LONG_DEFEAT),
     /** Hand-tuned: the preset system leaves the file alone. */
-    CUSTOM(0, null, 0, 0, 0, false);
+    CUSTOM(0, null, 0, 0, 0, false, ScalingCurve.FEEL_STRONGER);
 
     public final double xpRate;
     public final DeathPenalty death;
@@ -32,15 +36,19 @@ public enum Difficulty {
     public final int capPercent;
     public final int respecCost;
     public final boolean enemyScaling;
+    /** The curve this preset sets when {@link #enemyScaling} is on. Meaningless while scaling is
+     * off (FIRESIDE, CUSTOM), so those two just carry a sane default rather than {@code null}. */
+    public final ScalingCurve curve;
 
     Difficulty(double xpRate, DeathPenalty death, double deathPercent, int capPercent, int respecCost,
-               boolean enemyScaling) {
+               boolean enemyScaling, ScalingCurve curve) {
         this.xpRate = xpRate;
         this.death = death;
         this.deathPercent = deathPercent;
         this.capPercent = capPercent;
         this.respecCost = respecCost;
         this.enemyScaling = enemyScaling;
+        this.curve = curve;
     }
 
     /** Writes this preset's values onto {@code config}. No-op for {@link #CUSTOM}. */
@@ -55,5 +63,6 @@ public enum Difficulty {
         config.pointSoftCap = 0;
         config.respecCost = respecCost;
         config.enableEnemyScaling = enemyScaling;
+        config.scalingCurve = curve;
     }
 }
