@@ -2315,5 +2315,12 @@
   "kindreds.hud.ready": "готово к изучению: %s — %s",
   "kindreds.hud.ready.short": "готово: %s · %s",
   "kindreds.hud.points.short": "очков: %s · %s",
-  "kindreds.hud.capped.short": "предел"
+  "kindreds.hud.capped.short": "предел",
+  "kindreds.hub.title": "О вашем народе",
+  "kindreds.hub.noRace": "народ ещё не выбран",
+  "kindreds.hub.traits": "Черты",
+  "kindreds.hub.traits.desc": "Что даёт вам кровь, не спрашивая: дары и тяготы, с которыми вы рождены.",
+  "kindreds.hub.skills": "Умения",
+  "kindreds.hub.skills.desc": "Что вы сделали из себя сами. Тратьте заработанное и смотрите, что уже в пределах досягаемости.",
+  "kindreds.hub.hint": "T или S  ·  Esc — закрыть"
 }

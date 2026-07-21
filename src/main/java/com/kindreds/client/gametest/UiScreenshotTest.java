@@ -51,6 +51,7 @@ public class UiScreenshotTest implements FabricClientGameTest {
             report(sp, "after race set");
             context.takeScreenshot("01-race-set");
 
+            shoot(context, "01b-hub", com.kindreds.client.screen.KindredHubScreen::new);
             shoot(context, "02-tree-empty", () -> new SkillTreeScreen(ClientKindredData.INSTANCE));
 
             // Fund the tree so it is not an empty grid, then look again.

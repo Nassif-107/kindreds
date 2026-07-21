@@ -2315,5 +2315,12 @@
   "kindreds.hud.ready": "%s ready to learn — %s",
   "kindreds.hud.ready.short": "%s ready · %s",
   "kindreds.hud.points.short": "%s pts · %s",
-  "kindreds.hud.capped.short": "capped"
+  "kindreds.hud.capped.short": "capped",
+  "kindreds.hub.title": "Of Your Kindred",
+  "kindreds.hub.noRace": "no people chosen yet",
+  "kindreds.hub.traits": "Traits",
+  "kindreds.hub.traits.desc": "What your blood grants you without asking: the gifts and the burdens you were born to.",
+  "kindreds.hub.skills": "Skills",
+  "kindreds.hub.skills.desc": "What you have made of yourself. Spend what you have earned, and see what lies within reach.",
+  "kindreds.hub.hint": "T or S  ·  Esc to close"
 }

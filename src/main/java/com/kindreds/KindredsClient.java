@@ -240,7 +240,7 @@ public class KindredsClient implements ClientModInitializer {
                     // Open immediately from whatever ClientKindredData already has cached (see
                     // SkillTreeScreen's javadoc) - no need to block on a round trip - and also ask
                     // the server for a fresh sync in case the client's mirror is stale.
-                    SkillTreeScreen.open(client);
+                    com.kindreds.client.screen.KindredHubScreen.open(client);
                     ClientPlayNetworking.send(new OpenTreeC2S());
                 }
             }

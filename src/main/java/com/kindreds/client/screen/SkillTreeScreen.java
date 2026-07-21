@@ -135,9 +135,26 @@ public class SkillTreeScreen extends Screen {
     private record Placed(SkillNode node, float x, float y, float r, TreeRenderer.NodeState state) {
     }
 
+    /** The screen to return to when this one closes - the hub, when opened from it. */
+    private final Screen parent;
+
     public SkillTreeScreen(KindredData data) {
+        this(data, null);
+    }
+
+    public SkillTreeScreen(KindredData data, Screen parent) {
         super(Text.translatable("kindreds.tree.title"));
         this.initialData = data;
+        this.parent = parent;
+    }
+
+    @Override
+    public void close() {
+        if (this.client != null && this.parent != null) {
+            this.client.setScreen(this.parent);
+            return;
+        }
+        super.close();
     }
 
     /** Opens the screen; it resolves its own race/tree/theme each frame from live synced data. */
