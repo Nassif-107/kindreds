@@ -27,10 +27,10 @@
       "id": "minecraft:crossbow"
     },
     "title": {
-      "text": "The Iron of Isengard"
+      "translate": "kindreds.advancement.renown.uruk.iron_of_isengard.title"
     },
     "description": {
-      "text": "Carry the crossbow and the iron helm - the gear of a soldier who was made, not born."
+      "translate": "kindreds.advancement.renown.uruk.iron_of_isengard.desc"
     },
     "frame": "goal",
     "show_toast": true,

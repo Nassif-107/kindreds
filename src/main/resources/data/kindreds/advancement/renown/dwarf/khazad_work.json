@@ -27,10 +27,10 @@
       "id": "minecraft:anvil"
     },
     "title": {
-      "text": "Khazad-Work"
+      "translate": "kindreds.advancement.renown.dwarf.khazad_work.title"
     },
     "description": {
-      "text": "Raise an anvil in the deep, and bring a diamond-toothed tool off it."
+      "translate": "kindreds.advancement.renown.dwarf.khazad_work.desc"
     },
     "frame": "goal",
     "show_toast": true,

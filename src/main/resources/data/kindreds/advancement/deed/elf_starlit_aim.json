@@ -9,23 +9,42 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "distance": { "horizontal": { "min": 60.0 } }
+              "distance": {
+                "horizontal": {
+                  "min": 60.0
+                }
+              }
             }
           }
         ],
         "killing_blow": {
-          "tags": [ { "expected": true, "id": "minecraft:is_projectile" } ]
+          "tags": [
+            {
+              "expected": true,
+              "id": "minecraft:is_projectile"
+            }
+          ]
         }
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:bow" },
-    "title": { "text": "Starlit Aim" },
-    "description": { "text": "Land a killing blow from 60 blocks or more." },
+    "icon": {
+      "id": "minecraft:bow"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.elf_starlit_aim.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.elf_starlit_aim.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["long_shot"]]
+  "requirements": [
+    [
+      "long_shot"
+    ]
+  ]
 }

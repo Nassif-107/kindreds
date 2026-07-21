@@ -39,10 +39,10 @@
       "id": "minecraft:cherry_sapling"
     },
     "title": {
-      "text": "The Road to Lorien"
+      "translate": "kindreds.advancement.renown.elf.road_to_lorien.title"
     },
     "description": {
-      "text": "Walk beneath the eaves of the great wood, and stand where the blossom falls."
+      "translate": "kindreds.advancement.renown.elf.road_to_lorien.desc"
     },
     "frame": "goal",
     "show_toast": true,

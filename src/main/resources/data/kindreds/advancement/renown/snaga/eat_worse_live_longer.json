@@ -15,10 +15,10 @@
       "id": "minecraft:spider_eye"
     },
     "title": {
-      "text": "Eat Worse, Live Longer"
+      "translate": "kindreds.advancement.renown.snaga.eat_worse_live_longer.title"
     },
     "description": {
-      "text": "Swallow something that would kill a softer creature, and get up again."
+      "translate": "kindreds.advancement.renown.snaga.eat_worse_live_longer.desc"
     },
     "frame": "goal",
     "show_toast": true,

@@ -3,16 +3,32 @@
   "criteria": {
     "burgled": {
       "trigger": "minecraft:inventory_changed",
-      "conditions": { "items": [ { "items": "minecraft:diamond" } ] }
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:diamond"
+          }
+        ]
+      }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:diamond" },
-    "title": { "text": "Thief of Erebor" },
-    "description": { "text": "Come home with treasure worthy of a burglar's tale." },
+    "icon": {
+      "id": "minecraft:diamond"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.hobbit_thief_of_erebor.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.hobbit_thief_of_erebor.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["burgled"]]
+  "requirements": [
+    [
+      "burgled"
+    ]
+  ]
 }

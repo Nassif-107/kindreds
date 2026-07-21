@@ -3,16 +3,30 @@
   "criteria": {
     "endured": {
       "trigger": "minecraft:consume_item",
-      "conditions": { "item": { "items": "minecraft:golden_apple" } }
+      "conditions": {
+        "item": {
+          "items": "minecraft:golden_apple"
+        }
+      }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:golden_apple" },
-    "title": { "text": "Sun-Defiance" },
-    "description": { "text": "Endure what lesser orc-kind cannot - even the Sun itself." },
+    "icon": {
+      "id": "minecraft:golden_apple"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.uruk_sun_defiance.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.uruk_sun_defiance.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["endured"]]
+  "requirements": [
+    [
+      "endured"
+    ]
+  ]
 }

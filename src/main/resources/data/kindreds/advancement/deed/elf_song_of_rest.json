@@ -9,7 +9,9 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "location": { "biomes": "#minecraft:is_forest" }
+              "location": {
+                "biomes": "#minecraft:is_forest"
+              }
             }
           }
         ]
@@ -17,12 +19,22 @@
     }
   },
   "display": {
-    "icon": { "id": "minecraft:oak_sapling" },
-    "title": { "text": "Song of Rest" },
-    "description": { "text": "Dwell in the deep forest, as the Elves of old." },
+    "icon": {
+      "id": "minecraft:oak_sapling"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.elf_song_of_rest.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.elf_song_of_rest.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["in_deep_forest"]]
+  "requirements": [
+    [
+      "in_deep_forest"
+    ]
+  ]
 }

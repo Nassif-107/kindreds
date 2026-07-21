@@ -39,10 +39,10 @@
       "id": "minecraft:dead_bush"
     },
     "title": {
-      "text": "The Scavenger's Road"
+      "translate": "kindreds.advancement.renown.snaga.scavengers_road.title"
     },
     "description": {
-      "text": "Keep to the bogs and the black wood, where the big folk do not think to look for you."
+      "translate": "kindreds.advancement.renown.snaga.scavengers_road.desc"
     },
     "frame": "goal",
     "show_toast": true,

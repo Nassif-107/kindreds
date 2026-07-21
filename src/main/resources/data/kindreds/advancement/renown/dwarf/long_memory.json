@@ -23,10 +23,10 @@
       "id": "minecraft:sculk_catalyst"
     },
     "title": {
-      "text": "The Long Memory"
+      "translate": "kindreds.advancement.renown.dwarf.long_memory.title"
     },
     "description": {
-      "text": "Stand where the delvers woke what should have slept, and do not run."
+      "translate": "kindreds.advancement.renown.dwarf.long_memory.desc"
     },
     "frame": "goal",
     "show_toast": true,

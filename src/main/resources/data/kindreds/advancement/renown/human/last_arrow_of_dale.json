@@ -21,10 +21,10 @@
       "id": "minecraft:spectral_arrow"
     },
     "title": {
-      "text": "The Last Arrow of Dale"
+      "translate": "kindreds.advancement.renown.human.last_arrow_of_dale.title"
     },
     "description": {
-      "text": "Bring down a thing that flies and hunts by night, as Bard brought down the worm."
+      "translate": "kindreds.advancement.renown.human.last_arrow_of_dale.desc"
     },
     "frame": "goal",
     "show_toast": true,

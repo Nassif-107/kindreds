@@ -23,10 +23,10 @@
       "id": "minecraft:ender_eye"
     },
     "title": {
-      "text": "Beyond the Circles of the World"
+      "translate": "kindreds.advancement.renown.elf.beyond_the_circles.title"
     },
     "description": {
-      "text": "Look upon the starless dark outside the world, and come back with your song intact."
+      "translate": "kindreds.advancement.renown.elf.beyond_the_circles.desc"
     },
     "frame": "goal",
     "show_toast": true,

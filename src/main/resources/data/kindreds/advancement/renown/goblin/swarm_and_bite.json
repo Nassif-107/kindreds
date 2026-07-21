@@ -21,10 +21,10 @@
       "id": "minecraft:cobweb"
     },
     "title": {
-      "text": "Swarm and Bite"
+      "translate": "kindreds.advancement.renown.goblin.swarm_and_bite.title"
     },
     "description": {
-      "text": "Kill a small venomous thing in the dark, where the numbers are on your side."
+      "translate": "kindreds.advancement.renown.goblin.swarm_and_bite.desc"
     },
     "frame": "goal",
     "show_toast": true,

@@ -8,19 +8,31 @@
           {
             "condition": "minecraft:entity_properties",
             "entity": "this",
-            "predicate": { "type": "minecraft:pillager" }
+            "predicate": {
+              "type": "minecraft:pillager"
+            }
           }
         ]
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:crossbow" },
-    "title": { "text": "Great Goblin's Horde" },
-    "description": { "text": "Lead the swarm to victory over a rival war-band." },
+    "icon": {
+      "id": "minecraft:crossbow"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.goblin_great_goblins_horde.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.goblin_great_goblins_horde.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["horde_kill"]]
+  "requirements": [
+    [
+      "horde_kill"
+    ]
+  ]
 }

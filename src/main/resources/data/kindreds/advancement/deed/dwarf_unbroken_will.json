@@ -8,19 +8,31 @@
           {
             "condition": "minecraft:entity_properties",
             "entity": "this",
-            "predicate": { "type": "minecraft:wither" }
+            "predicate": {
+              "type": "minecraft:wither"
+            }
           }
         ]
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:nether_star" },
-    "title": { "text": "Unbroken Will" },
-    "description": { "text": "Defeat a great terror of the deep." },
+    "icon": {
+      "id": "minecraft:nether_star"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.dwarf_unbroken_will.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.dwarf_unbroken_will.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["slew_the_terror"]]
+  "requirements": [
+    [
+      "slew_the_terror"
+    ]
+  ]
 }

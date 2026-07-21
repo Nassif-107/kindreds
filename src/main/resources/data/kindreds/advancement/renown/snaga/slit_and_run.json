@@ -21,10 +21,10 @@
       "id": "minecraft:stone_sword"
     },
     "title": {
-      "text": "Slit and Run"
+      "translate": "kindreds.advancement.renown.snaga.slit_and_run.title"
     },
     "description": {
-      "text": "Put down a brewer of foul draughts. Not bravely. It still counts."
+      "translate": "kindreds.advancement.renown.snaga.slit_and_run.desc"
     },
     "frame": "goal",
     "show_toast": true,

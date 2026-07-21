@@ -21,10 +21,10 @@
       "id": "minecraft:iron_sword"
     },
     "title": {
-      "text": "We Are the Fighting Uruk-hai"
+      "translate": "kindreds.advancement.renown.uruk.fighting_uruk_hai.title"
     },
     "description": {
-      "text": "Break something made of iron that stands taller than you."
+      "translate": "kindreds.advancement.renown.uruk.fighting_uruk_hai.desc"
     },
     "frame": "goal",
     "show_toast": true,

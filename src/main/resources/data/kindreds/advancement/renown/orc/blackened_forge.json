@@ -27,10 +27,10 @@
       "id": "minecraft:blast_furnace"
     },
     "title": {
-      "text": "The Blackened Forge"
+      "translate": "kindreds.advancement.renown.orc.blackened_forge.title"
     },
     "description": {
-      "text": "Set a blast furnace roaring and take fire in your hand. Orcs make nothing beautiful, and much that works."
+      "translate": "kindreds.advancement.renown.orc.blackened_forge.desc"
     },
     "frame": "goal",
     "show_toast": true,

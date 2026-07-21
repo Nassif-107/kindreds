@@ -3,16 +3,30 @@
   "criteria": {
     "drank_healing": {
       "trigger": "minecraft:consume_item",
-      "conditions": { "item": { "items": "minecraft:potion" } }
+      "conditions": {
+        "item": {
+          "items": "minecraft:potion"
+        }
+      }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:potion" },
-    "title": { "text": "Hands of the King" },
-    "description": { "text": "The hands of the king are the hands of a healer - work the art of healing." },
+    "icon": {
+      "id": "minecraft:potion"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.human_gondor_hands_of_the_king.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.human_gondor_hands_of_the_king.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["drank_healing"]]
+  "requirements": [
+    [
+      "drank_healing"
+    ]
+  ]
 }

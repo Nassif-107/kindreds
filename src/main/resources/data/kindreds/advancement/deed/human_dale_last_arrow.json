@@ -9,23 +9,42 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "distance": { "horizontal": { "min": 30.0 } }
+              "distance": {
+                "horizontal": {
+                  "min": 30.0
+                }
+              }
             }
           }
         ],
         "killing_blow": {
-          "tags": [ { "expected": true, "id": "minecraft:is_projectile" } ]
+          "tags": [
+            {
+              "expected": true,
+              "id": "minecraft:is_projectile"
+            }
+          ]
         }
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:arrow" },
-    "title": { "text": "The Last Arrow" },
-    "description": { "text": "Land a killing shot at range, guided true like Bard's final arrow." },
+    "icon": {
+      "id": "minecraft:arrow"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.human_dale_last_arrow.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.human_dale_last_arrow.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["the_last_arrow"]]
+  "requirements": [
+    [
+      "the_last_arrow"
+    ]
+  ]
 }

@@ -8,19 +8,31 @@
           {
             "condition": "minecraft:entity_properties",
             "entity": "this",
-            "predicate": { "type": "minecraft:iron_golem" }
+            "predicate": {
+              "type": "minecraft:iron_golem"
+            }
           }
         ]
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:iron_sword" },
-    "title": { "text": "Fighting Uruk-hai" },
-    "description": { "text": "We are the fighting Uruk-hai - prove it against a foe worth the name." },
+    "icon": {
+      "id": "minecraft:iron_sword"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.uruk_fighting_uruk_hai.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.uruk_fighting_uruk_hai.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["earned_the_name"]]
+  "requirements": [
+    [
+      "earned_the_name"
+    ]
+  ]
 }

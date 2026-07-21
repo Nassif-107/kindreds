@@ -27,10 +27,10 @@
       "id": "minecraft:campfire"
     },
     "title": {
-      "text": "The Long Watch"
+      "translate": "kindreds.advancement.renown.human.the_long_watch.title"
     },
     "description": {
-      "text": "Climb to the beacon-hills, high above the world, and keep the watch."
+      "translate": "kindreds.advancement.renown.human.the_long_watch.desc"
     },
     "frame": "goal",
     "show_toast": true,

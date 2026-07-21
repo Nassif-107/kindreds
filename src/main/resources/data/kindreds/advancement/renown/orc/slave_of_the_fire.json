@@ -21,10 +21,10 @@
       "id": "minecraft:blaze_powder"
     },
     "title": {
-      "text": "Slave of the Fire"
+      "translate": "kindreds.advancement.renown.orc.slave_of_the_fire.title"
     },
     "description": {
-      "text": "Kill a burning thing in its own furnace-country."
+      "translate": "kindreds.advancement.renown.orc.slave_of_the_fire.desc"
     },
     "frame": "goal",
     "show_toast": true,

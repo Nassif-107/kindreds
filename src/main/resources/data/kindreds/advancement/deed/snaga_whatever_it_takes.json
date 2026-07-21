@@ -8,19 +8,31 @@
           {
             "condition": "minecraft:entity_properties",
             "entity": "this",
-            "predicate": { "type": "minecraft:evoker" }
+            "predicate": {
+              "type": "minecraft:evoker"
+            }
           }
         ]
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:totem_of_undying" },
-    "title": { "text": "Whatever It Takes" },
-    "description": { "text": "Bring down a foe far above your station - the cornered slave's last stand." },
+    "icon": {
+      "id": "minecraft:totem_of_undying"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.snaga_whatever_it_takes.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.snaga_whatever_it_takes.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["cornered_no_more"]]
+  "requirements": [
+    [
+      "cornered_no_more"
+    ]
+  ]
 }

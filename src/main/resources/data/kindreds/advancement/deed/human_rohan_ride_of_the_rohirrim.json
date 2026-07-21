@@ -8,19 +8,31 @@
           {
             "condition": "minecraft:entity_properties",
             "entity": "this",
-            "predicate": { "vehicle": {} }
+            "predicate": {
+              "vehicle": {}
+            }
           }
         ]
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:saddle" },
-    "title": { "text": "Ride of the Rohirrim" },
-    "description": { "text": "Defeat a foe while mounted - ride now, ride to victory!" },
+    "icon": {
+      "id": "minecraft:saddle"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.human_rohan_ride_of_the_rohirrim.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.human_rohan_ride_of_the_rohirrim.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["mounted_kill"]]
+  "requirements": [
+    [
+      "mounted_kill"
+    ]
+  ]
 }

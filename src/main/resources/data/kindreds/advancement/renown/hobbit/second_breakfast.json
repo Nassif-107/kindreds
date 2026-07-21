@@ -15,10 +15,10 @@
       "id": "minecraft:mushroom_stew"
     },
     "title": {
-      "text": "Second Breakfast"
+      "translate": "kindreds.advancement.renown.hobbit.second_breakfast.title"
     },
     "description": {
-      "text": "Sit down to a proper hot meal in the middle of an adventure. It is a matter of principle."
+      "translate": "kindreds.advancement.renown.hobbit.second_breakfast.desc"
     },
     "frame": "goal",
     "show_toast": true,

@@ -3,16 +3,30 @@
   "criteria": {
     "scavenged": {
       "trigger": "minecraft:consume_item",
-      "conditions": { "item": { "items": "minecraft:rotten_flesh" } }
+      "conditions": {
+        "item": {
+          "items": "minecraft:rotten_flesh"
+        }
+      }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:rotten_flesh" },
-    "title": { "text": "Slit and Run" },
-    "description": { "text": "Live off what the war-band leaves behind, and live to flee another day." },
+    "icon": {
+      "id": "minecraft:rotten_flesh"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.snaga_slit_and_run.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.snaga_slit_and_run.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["scavenged"]]
+  "requirements": [
+    [
+      "scavenged"
+    ]
+  ]
 }

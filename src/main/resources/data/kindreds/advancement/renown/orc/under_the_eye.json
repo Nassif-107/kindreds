@@ -23,10 +23,10 @@
       "id": "minecraft:crimson_fungus"
     },
     "title": {
-      "text": "Under the Eye"
+      "translate": "kindreds.advancement.renown.orc.under_the_eye.title"
     },
     "description": {
-      "text": "Walk in the burning land where the fires are never banked."
+      "translate": "kindreds.advancement.renown.orc.under_the_eye.desc"
     },
     "frame": "goal",
     "show_toast": true,

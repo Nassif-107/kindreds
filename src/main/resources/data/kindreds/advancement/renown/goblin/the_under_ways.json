@@ -39,10 +39,10 @@
       "id": "minecraft:torch"
     },
     "title": {
-      "text": "The Under-Ways"
+      "translate": "kindreds.advancement.renown.goblin.the_under_ways.title"
     },
     "description": {
-      "text": "Learn the wet caves and the stone-fanged ones. Goblin-town is only the biggest tunnel."
+      "translate": "kindreds.advancement.renown.goblin.the_under_ways.desc"
     },
     "frame": "goal",
     "show_toast": true,

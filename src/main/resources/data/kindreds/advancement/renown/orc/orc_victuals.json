@@ -15,10 +15,10 @@
       "id": "minecraft:rotten_flesh"
     },
     "title": {
-      "text": "Orc-Victuals"
+      "translate": "kindreds.advancement.renown.orc.orc_victuals.title"
     },
     "description": {
-      "text": "Eat what the camp gives you. There is never enough, and it is never good."
+      "translate": "kindreds.advancement.renown.orc.orc_victuals.desc"
     },
     "frame": "goal",
     "show_toast": true,

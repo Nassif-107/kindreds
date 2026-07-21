@@ -21,10 +21,10 @@
       "id": "minecraft:arrow"
     },
     "title": {
-      "text": "Marchwarden"
+      "translate": "kindreds.advancement.renown.elf.marchwarden.title"
     },
     "description": {
-      "text": "Break a wielder of shadow-craft at the borders of your wood."
+      "translate": "kindreds.advancement.renown.elf.marchwarden.desc"
     },
     "frame": "goal",
     "show_toast": true,

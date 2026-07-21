@@ -10,10 +10,10 @@
       "id": "minecraft:golden_apple"
     },
     "title": {
-      "text": "Great Deeds"
+      "translate": "kindreds.advancement.renown.root.title"
     },
     "description": {
-      "text": "Renown is not earned by living long, but by doing much. Each Great Deed widens what your kindred may become."
+      "translate": "kindreds.advancement.renown.root.desc"
     },
     "background": "minecraft:gui/advancements/backgrounds/adventure",
     "show_toast": false,

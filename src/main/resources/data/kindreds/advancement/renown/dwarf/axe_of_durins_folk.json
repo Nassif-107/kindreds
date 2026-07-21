@@ -21,10 +21,10 @@
       "id": "minecraft:iron_axe"
     },
     "title": {
-      "text": "The Axe of Durin's Folk"
+      "translate": "kindreds.advancement.renown.dwarf.axe_of_durins_folk.title"
     },
     "description": {
-      "text": "Put down a beast that shakes the ground. Axes are for such work."
+      "translate": "kindreds.advancement.renown.dwarf.axe_of_durins_folk.desc"
     },
     "frame": "goal",
     "show_toast": true,

@@ -43,10 +43,10 @@
       "id": "minecraft:rail"
     },
     "title": {
-      "text": "The Roads of Khazad"
+      "translate": "kindreds.advancement.renown.dwarf.roads_of_khazad.title"
     },
     "description": {
-      "text": "Over the mountain and under it - a Dwarf knows both roads."
+      "translate": "kindreds.advancement.renown.dwarf.roads_of_khazad.desc"
     },
     "frame": "goal",
     "show_toast": true,

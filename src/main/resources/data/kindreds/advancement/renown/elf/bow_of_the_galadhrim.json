@@ -27,10 +27,10 @@
       "id": "minecraft:bow"
     },
     "title": {
-      "text": "Bow of the Galadhrim"
+      "translate": "kindreds.advancement.renown.elf.bow_of_the_galadhrim.title"
     },
     "description": {
-      "text": "Bear a bow, and a song sung over it - the Firstborn do not merely make, they name."
+      "translate": "kindreds.advancement.renown.elf.bow_of_the_galadhrim.desc"
     },
     "frame": "goal",
     "show_toast": true,

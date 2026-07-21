@@ -149,16 +149,16 @@ public final class NodeTooltip {
             return I18n.translate(key);
         }
         if (node.abilities().isEmpty()) {
-            return "An old skill, half-remembered.";
+            return I18n.translate("kindreds.kind.none");
         }
         return switch (node.abilities().get(0)) {
-            case VisionUnlock v -> "A gift of sharper senses, passed down through the blood.";
-            case AttributeMod a -> "Strength earned, not given.";
-            case StatusEffectDef s -> "A quiet blessing that never quite fades.";
-            case ActiveAbilityDef act -> "A trick worth calling on, when the moment demands it.";
-            case CurseDef c -> "Power with a price attached.";
-            case ContextualBoon c -> "Power that wakes with the place and the hour.";
-            case PerkDef p -> "A deed of the blood - called upon in the doing, not the having.";
+            case VisionUnlock v -> I18n.translate("kindreds.kind.vision");
+            case AttributeMod a -> I18n.translate("kindreds.kind.attribute");
+            case StatusEffectDef s -> I18n.translate("kindreds.kind.status");
+            case ActiveAbilityDef act -> I18n.translate("kindreds.kind.active");
+            case CurseDef c -> I18n.translate("kindreds.kind.curse");
+            case ContextualBoon c -> I18n.translate("kindreds.kind.contextual");
+            case PerkDef p -> I18n.translate("kindreds.kind.perk");
         };
     }
 
@@ -172,7 +172,7 @@ public final class NodeTooltip {
                     + (s.durationTicks() < 0 ? " " + I18n.translate("kindreds.effect.while_owned") : "");
             case VisionUnlock v -> I18n.translate("kindreds.effect.vision", visionName(v.visionId()), v.radius());
             case ActiveAbilityDef act -> I18n.translate("kindreds.effect.active",
-                    titleCase(act.abilityId().getPath()), act.cooldownTicks() / 20);
+                    abilityName(act.abilityId()), act.cooldownTicks() / 20);
             case CurseDef c -> "§6" + I18n.translate("kindreds.effect.curse", titleCase(c.curseId()), c.severity());
             case ContextualBoon c -> "§a" + I18n.translate("kindreds.effect.in_context", contextName(c.when()), describe(c.effect()));
             case PerkDef p -> describePerk(p);
@@ -190,6 +190,13 @@ public final class NodeTooltip {
     private static String effectName(Identifier effect) {
         String key = "effect." + effect.getNamespace() + "." + effect.getPath();
         return I18n.hasTranslation(key) ? I18n.translate(key) : titleCase(effect.getPath());
+    }
+
+    /** The ability's own localized name ({@code kindreds.ability.<path>}) rather than a
+     * title-cased id - the keys already exist in every language the mod ships. */
+    private static String abilityName(Identifier abilityId) {
+        String key = "kindreds.ability." + abilityId.getPath();
+        return I18n.hasTranslation(key) ? I18n.translate(key) : titleCase(abilityId.getPath());
     }
 
     private static String visionName(String id) {
@@ -260,7 +267,8 @@ public final class NodeTooltip {
             case "elven_steed" -> "§a" + I18n.translate("kindreds.perk.elven_steed", Math.round(p.param("speed", 0f)) + 1);
             case "war_steed" -> "§a" + I18n.translate("kindreds.perk.war_steed", Math.round(p.param("speed", 0f)) + 1);
             default -> {
-                StringBuilder sb = new StringBuilder("Perk: ").append(titleCase(p.perk()));
+        StringBuilder sb = new StringBuilder(I18n.translate("kindreds.perk.generic"))
+                        .append(' ').append(titleCase(p.perk()));
                 if (!p.params().isEmpty()) {
                     sb.append(" (");
                     boolean first = true;

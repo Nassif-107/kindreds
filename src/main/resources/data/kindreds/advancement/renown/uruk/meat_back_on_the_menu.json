@@ -15,10 +15,10 @@
       "id": "minecraft:beef"
     },
     "title": {
-      "text": "Meat's Back on the Menu"
+      "translate": "kindreds.advancement.renown.uruk.meat_back_on_the_menu.title"
     },
     "description": {
-      "text": "Eat as your kind eats: raw, and without complaint."
+      "translate": "kindreds.advancement.renown.uruk.meat_back_on_the_menu.desc"
     },
     "frame": "goal",
     "show_toast": true,

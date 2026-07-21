@@ -27,10 +27,10 @@
       "id": "minecraft:gold_ingot"
     },
     "title": {
-      "text": "What Isn't Nailed Down"
+      "translate": "kindreds.advancement.renown.snaga.not_nailed_down.title"
     },
     "description": {
-      "text": "Come by gold and gems you certainly did not earn, and keep them well hidden."
+      "translate": "kindreds.advancement.renown.snaga.not_nailed_down.desc"
     },
     "frame": "goal",
     "show_toast": true,

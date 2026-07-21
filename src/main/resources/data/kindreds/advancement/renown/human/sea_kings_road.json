@@ -39,10 +39,10 @@
       "id": "minecraft:map"
     },
     "title": {
-      "text": "The Sea-Kings' Road"
+      "translate": "kindreds.advancement.renown.human.sea_kings_road.title"
     },
     "description": {
-      "text": "Come to the White Mountains, and to the Sea your fathers crossed."
+      "translate": "kindreds.advancement.renown.human.sea_kings_road.desc"
     },
     "frame": "goal",
     "show_toast": true,

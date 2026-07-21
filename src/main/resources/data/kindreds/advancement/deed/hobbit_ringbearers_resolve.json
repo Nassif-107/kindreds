@@ -9,7 +9,13 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "location": { "position": { "y": { "max": -32.0 } } }
+              "location": {
+                "position": {
+                  "y": {
+                    "max": -32.0
+                  }
+                }
+              }
             }
           }
         ]
@@ -17,12 +23,22 @@
     }
   },
   "display": {
-    "icon": { "id": "minecraft:totem_of_undying" },
-    "title": { "text": "Ringbearer's Resolve" },
-    "description": { "text": "Endure the deep dark and come back with heart unbroken." },
+    "icon": {
+      "id": "minecraft:totem_of_undying"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.hobbit_ringbearers_resolve.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.hobbit_ringbearers_resolve.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["faced_the_dark"]]
+  "requirements": [
+    [
+      "faced_the_dark"
+    ]
+  ]
 }

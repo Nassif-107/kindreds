@@ -15,10 +15,10 @@
       "id": "minecraft:poisonous_potato"
     },
     "title": {
-      "text": "Goblin Appetite"
+      "translate": "kindreds.advancement.renown.goblin.goblin_appetite.title"
     },
     "description": {
-      "text": "Eat the thing everyone else throws away."
+      "translate": "kindreds.advancement.renown.goblin.goblin_appetite.desc"
     },
     "frame": "goal",
     "show_toast": true,

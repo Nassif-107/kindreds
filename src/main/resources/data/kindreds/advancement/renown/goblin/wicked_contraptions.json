@@ -27,10 +27,10 @@
       "id": "minecraft:tnt"
     },
     "title": {
-      "text": "Wicked Contraptions"
+      "translate": "kindreds.advancement.renown.goblin.wicked_contraptions.title"
     },
     "description": {
-      "text": "Goblins make no fine things. They make things that go off."
+      "translate": "kindreds.advancement.renown.goblin.wicked_contraptions.desc"
     },
     "frame": "goal",
     "show_toast": true,

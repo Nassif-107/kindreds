@@ -39,10 +39,10 @@
       "id": "minecraft:leather_boots"
     },
     "title": {
-      "text": "The Long March"
+      "translate": "kindreds.advancement.renown.uruk.the_long_march.title"
     },
     "description": {
-      "text": "Cross the burning waste under an open sun. The White Hand's work does not halt at daybreak."
+      "translate": "kindreds.advancement.renown.uruk.the_long_march.desc"
     },
     "frame": "goal",
     "show_toast": true,

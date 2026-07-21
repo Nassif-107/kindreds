@@ -27,10 +27,10 @@
       "id": "minecraft:saddle"
     },
     "title": {
-      "text": "The Muster"
+      "translate": "kindreds.advancement.renown.human.the_muster.title"
     },
     "description": {
-      "text": "Raise a banner and saddle a horse. Men are strongest when they are called."
+      "translate": "kindreds.advancement.renown.human.the_muster.desc"
     },
     "frame": "goal",
     "show_toast": true,

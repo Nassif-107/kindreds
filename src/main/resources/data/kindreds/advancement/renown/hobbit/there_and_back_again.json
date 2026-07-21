@@ -39,10 +39,10 @@
       "id": "minecraft:leather_boots"
     },
     "title": {
-      "text": "There and Back Again"
+      "translate": "kindreds.advancement.renown.hobbit.there_and_back_again.title"
     },
     "description": {
-      "text": "Leave the green country for the Mountain, and - this is the important part - come home."
+      "translate": "kindreds.advancement.renown.hobbit.there_and_back_again.desc"
     },
     "frame": "goal",
     "show_toast": true,

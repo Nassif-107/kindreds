@@ -21,10 +21,10 @@
       "id": "minecraft:string"
     },
     "title": {
-      "text": "Unlooked-For Courage"
+      "translate": "kindreds.advancement.renown.hobbit.unlooked_for_courage.title"
     },
     "description": {
-      "text": "Face the crawling thing in the dark wood, alone, and win."
+      "translate": "kindreds.advancement.renown.hobbit.unlooked_for_courage.desc"
     },
     "frame": "goal",
     "show_toast": true,

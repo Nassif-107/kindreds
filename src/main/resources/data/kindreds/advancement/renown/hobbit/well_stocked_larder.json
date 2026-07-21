@@ -22,10 +22,10 @@
       "id": "minecraft:bread"
     },
     "title": {
-      "text": "A Well-Stocked Larder"
+      "translate": "kindreds.advancement.renown.hobbit.well_stocked_larder.title"
     },
     "description": {
-      "text": "Fill your pockets and your pantry. A Hobbit not carrying food is a Hobbit in trouble."
+      "translate": "kindreds.advancement.renown.hobbit.well_stocked_larder.desc"
     },
     "frame": "goal",
     "show_toast": true,

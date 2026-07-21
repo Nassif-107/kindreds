@@ -9,7 +9,13 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "location": { "position": { "y": { "max": -60.0 } } }
+              "location": {
+                "position": {
+                  "y": {
+                    "max": -60.0
+                  }
+                }
+              }
             }
           }
         ]
@@ -17,12 +23,22 @@
     }
   },
   "display": {
-    "icon": { "id": "minecraft:deepslate" },
-    "title": { "text": "Heart of the Mountain" },
-    "description": { "text": "Delve to the roots of the mountain, near the bedrock itself." },
+    "icon": {
+      "id": "minecraft:deepslate"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.dwarf_heart_of_the_mountain.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.dwarf_heart_of_the_mountain.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["near_bedrock"]]
+  "requirements": [
+    [
+      "near_bedrock"
+    ]
+  ]
 }

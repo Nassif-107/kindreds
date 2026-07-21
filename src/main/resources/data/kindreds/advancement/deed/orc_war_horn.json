@@ -8,19 +8,31 @@
           {
             "condition": "minecraft:entity_properties",
             "entity": "this",
-            "predicate": { "type": "minecraft:vindicator" }
+            "predicate": {
+              "type": "minecraft:vindicator"
+            }
           }
         ]
       }
     }
   },
   "display": {
-    "icon": { "id": "minecraft:goat_horn" },
-    "title": { "text": "War-Horn" },
-    "description": { "text": "Lead the war-band to a kill worth sounding the horn for." },
+    "icon": {
+      "id": "minecraft:goat_horn"
+    },
+    "title": {
+      "translate": "kindreds.advancement.deed.orc_war_horn.title"
+    },
+    "description": {
+      "translate": "kindreds.advancement.deed.orc_war_horn.desc"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },
-  "requirements": [["rallying_kill"]]
+  "requirements": [
+    [
+      "rallying_kill"
+    ]
+  ]
 }
