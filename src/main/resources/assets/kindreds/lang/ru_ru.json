@@ -2127,5 +2127,6 @@
   "kindreds.toast.welcome.body": "Нажмите %s — древо умений",
   "kindreds.welcome.chat": "Вы — %s. %s — древо умений · %s — колесо умений · %s — применить умение.",
   "kindreds.hud.points": "%s оч. · %s",
-  "kindreds.tree.ready": "%s доступно"
+  "kindreds.tree.ready": "%s доступно",
+  "kindreds.tree.search.hint": "введите для поиска…"
 }

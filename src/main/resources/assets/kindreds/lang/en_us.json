@@ -2127,5 +2127,6 @@
   "kindreds.toast.welcome.body": "Press %s to open your skill tree",
   "kindreds.welcome.chat": "You are %s. %s — skill tree · %s — ability wheel · %s — use ability.",
   "kindreds.hud.points": "%s pts · %s",
-  "kindreds.tree.ready": "%s ready"
+  "kindreds.tree.ready": "%s ready",
+  "kindreds.tree.search.hint": "type to search…"
 }

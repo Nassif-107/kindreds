@@ -107,6 +107,12 @@ public class SkillTreeScreen extends Screen {
     private int[] canvas = new int[4];
     private int[] panel = new int[4];
     private int[] unlockButton = new int[4];  // only valid while an unlockable node is selected
+
+    /** Live node search. Hand-rolled rather than a TextFieldWidget because this screen is entirely
+     * custom-drawn with manual hit-testing and no other widgets - typing straight into it keeps that
+     * model (and avoids a widget fighting the canvas for render order and focus). */
+    private String query = "";
+    private int searchMatches;
     private int[] visionButton = new int[4];  // only valid while an owned vision node is selected
     // Assign-to-slot buttons, only valid while an owned active-ability node is selected.
     private final int[][] slotButtons = new int[com.kindreds.client.loadout.ClientLoadout.SLOTS][4];
@@ -153,6 +159,31 @@ public class SkillTreeScreen extends Screen {
     @Override
     public boolean shouldPause() {
         return false;
+    }
+
+    /** Typing anywhere in the tree filters it - no need to click into a box first. */
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (chr >= ' ' && chr != 127) {
+            query += chr;
+            return true;
+        }
+        return super.charTyped(chr, modifiers);
+    }
+
+    /** Backspace edits the query; Esc clears it before it closes the screen, so an active search is
+     * never a trap. */
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE && !query.isEmpty()) {
+            query = query.substring(0, query.length() - 1);
+            return true;
+        }
+        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && !query.isEmpty()) {
+            query = "";
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     /** Re-resolves {@link #tree}/{@link #theme} from the client-mirrored synced registries when the
@@ -454,6 +485,7 @@ public class SkillTreeScreen extends Screen {
 
         boolean showLabels = zoom >= LABEL_ZOOM;
         hovered = null;
+        searchMatches = 0;
         for (Placed p : placed) {
             boolean hover = within(canvas, mouseX, mouseY) && dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 3;
             if (hover) {
@@ -465,6 +497,13 @@ public class SkillTreeScreen extends Screen {
                 int ring = (int) (p.r() + 6 + g * 14);
                 ctx.drawBorder((int) p.x() - ring, (int) p.y() - ring, ring * 2, ring * 2,
                         ThemeAssets.withAlpha(0xFFFFE070, Math.max(0, (int) (200 * (1 - g)))));
+            }
+            // Search hit: ring it brightly so matches stand out even in the zoomed-out map view.
+            if (!query.isEmpty() && NodeTooltip.displayName(p.node().id())
+                    .toLowerCase(java.util.Locale.ROOT).contains(query.toLowerCase(java.util.Locale.ROOT))) {
+                searchMatches++;
+                int ring = (int) (p.r() + 5);
+                ctx.drawBorder((int) p.x() - ring, (int) p.y() - ring, ring * 2, ring * 2, 0xFFFFE070);
             }
             TreeRenderer.drawNode(ctx, p.node(), p.state(), theme, p.x(), p.y(), p.r(), hover || selected);
 
@@ -493,6 +532,19 @@ public class SkillTreeScreen extends Screen {
             }
         }
         ctx.disableScissor();
+
+        // Search box, drawn outside the canvas scissor so it never gets clipped. Shows the hint until
+        // you type, then the query plus a live match count.
+        String label = query.isEmpty()
+                ? Text.translatable("kindreds.tree.search.hint").getString()
+                : query + "  (" + searchMatches + ")";
+        int sw = Math.max(96, textRenderer.getWidth(label) + 12);
+        int sx = canvas[0] + canvas[2] - sw - 6;
+        int sy = canvas[1] + 6;
+        ctx.fill(sx, sy, sx + sw, sy + 14, 0xC0101014);
+        ctx.drawBorder(sx, sy, sw, 14, query.isEmpty() ? 0xFF4A4030 : 0xFFD8B45F);
+        ctx.drawText(textRenderer, Text.literal(label), sx + 5, sy + 3,
+                query.isEmpty() ? 0xFF6E6A60 : 0xFFFFD86B, false);
 
         if (placed.isEmpty()) {
             String none = "No path here yet.";
