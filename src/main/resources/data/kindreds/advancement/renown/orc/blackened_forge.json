@@ -1,0 +1,47 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "furnace": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:blast_furnace"
+          }
+        ]
+      }
+    },
+    "fire": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:flint_and_steel"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:blast_furnace"
+    },
+    "title": {
+      "text": "The Blackened Forge"
+    },
+    "description": {
+      "text": "Set a blast furnace roaring and take fire in your hand. Orcs make nothing beautiful, and much that works."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "furnace"
+    ],
+    [
+      "fire"
+    ]
+  ]
+}

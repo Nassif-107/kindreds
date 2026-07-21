@@ -1,0 +1,38 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "cave_spider": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "minecraft:cave_spider"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:cobweb"
+    },
+    "title": {
+      "text": "Swarm and Bite"
+    },
+    "description": {
+      "text": "Kill a small venomous thing in the dark, where the numbers are on your side."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "cave_spider"
+    ]
+  ]
+}

@@ -22,9 +22,15 @@ import net.minecraft.util.Identifier;
  * comes from deeds, not from time served. Each of the four Great Deeds permanently grants
  * {@link #PERCENT_PER_DEED}% more of your own tree.
  *
- * <p>Deeds are ordinary advancements under {@code kindreds:renown/}, so they are datapack-authorable
- * and vanilla shows them in the advancement screen for free. They are deliberately reachable in normal
- * play - a deed you will never perform is not a ceiling raise, it is decoration.
+ * <p>Deeds are ordinary advancements under {@code kindreds:renown/<race>/}, so they are
+ * datapack-authorable and vanilla shows them in the advancement screen for free. They are deliberately
+ * reachable in normal play - a deed you will never perform is not a ceiling raise, it is decoration.
+ *
+ * <p><b>Every kindred has its own four.</b> A Dwarf's craft-deed is an anvil raised in the deep; an
+ * Elf's is a bow with a song sung over it; a Hobbit's is a full larder. Only deeds belonging to your
+ * own race count toward your cap - which also means renown is something you did <i>as</i> that people.
+ * Deeds performed under a former race are kept on record (so returning to it restores them) but count
+ * for nothing while you wear another face.
  *
  * <p>Once earned, a deed is recorded on {@link KindredData#renown()} and never re-checked against the
  * advancement tracker (see that field's javadoc for why revocation must not claw the cap back).
@@ -33,7 +39,8 @@ public final class RenownService {
     private RenownService() {
     }
 
-    /** Advancement id path prefix that marks an advancement as a Great Deed. */
+    /** Advancement id path prefix that marks an advancement as a Great Deed
+     * ({@code renown/<race>/<deed>}). */
     public static final String RENOWN_PREFIX = "renown/";
 
     /** Cap widening, in percentage points of the player's own tree, per deed performed. */
@@ -58,10 +65,15 @@ public final class RenownService {
         if (player == null || advancement == null || !isRenown(advancement.id())) {
             return;
         }
-        if (!KindredAttachment.get(player).renown().add(advancement.id().getPath())) {
+        KindredData data = KindredAttachment.get(player);
+        if (!data.renown().add(advancement.id().getPath())) {
             return; // already recorded
         }
-        announce(player);
+        // Recorded either way (see the class javadoc on former races), but only announced as a gain
+        // when it is actually one of your own kindred's deeds.
+        if (belongsToRace(advancement.id().getPath(), data.race())) {
+            announce(player, data);
+        }
         SyncKindredDataS2C.sendTo(player);
     }
 
@@ -86,18 +98,49 @@ public final class RenownService {
         }
     }
 
-    /** The cap widening this player has earned, in percentage points. */
+    /** The cap widening this player has earned, in percentage points: their own race's Great Deeds,
+     * plus the Bargain if taken. */
     public static int bonusPercent(KindredData data) {
         if (data == null) {
             return 0;
         }
-        return data.renown().size() * PERCENT_PER_DEED
+        return deedsForRace(data) * PERCENT_PER_DEED
                 + com.kindreds.ability.CorruptionService.bonusPercent(data);
     }
 
+    /** How many of this player's own kindred's Great Deeds are done. */
+    public static int deedsForRace(KindredData data) {
+        if (data == null) {
+            return 0;
+        }
+        int count = 0;
+        for (String path : data.renown()) {
+            if (belongsToRace(path, data.race())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Whether the deed at {@code path} ({@code renown/<race>/<deed>}) belongs to {@code race}.
+     *
+     * <p>A {@code null} race counts <b>everything</b>, deliberately. Race is transient state re-read
+     * from the base mod, and the failure mode of guessing wrong matters enormously: counting nothing
+     * would silently narrow a ceiling the player has already spent points under, leaving them
+     * committed above their own cap. Counting too much merely leaves it a little wide for the moment
+     * before the race resolves.
+     */
+    private static boolean belongsToRace(String path, Identifier race) {
+        if (race == null) {
+            return true;
+        }
+        return path.startsWith(RENOWN_PREFIX + race.getPath() + "/");
+    }
+
     /** Word of a Great Deed spreads: the doer is told what it bought them, and the hall hears of it. */
-    private static void announce(ServerPlayerEntity player) {
-        int total = KindredAttachment.get(player).renown().size() * PERCENT_PER_DEED;
+    private static void announce(ServerPlayerEntity player, KindredData data) {
+        int total = deedsForRace(data) * PERCENT_PER_DEED;
         player.sendMessage(Text.translatable("kindreds.renown.earned", PERCENT_PER_DEED, total)
                 .formatted(Formatting.GOLD), false);
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE,

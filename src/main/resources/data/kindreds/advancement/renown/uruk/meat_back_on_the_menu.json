@@ -1,0 +1,32 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "raw": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:beef"
+        }
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:beef"
+    },
+    "title": {
+      "text": "Meat's Back on the Menu"
+    },
+    "description": {
+      "text": "Eat as your kind eats: raw, and without complaint."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "raw"
+    ]
+  ]
+}

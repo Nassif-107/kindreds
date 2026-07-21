@@ -1,0 +1,59 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "swamp": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "minecraft:swamp"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "dark_wood": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "minecraft:dark_forest"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:dead_bush"
+    },
+    "title": {
+      "text": "The Scavenger's Road"
+    },
+    "description": {
+      "text": "Keep to the bogs and the black wood, where the big folk do not think to look for you."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "swamp"
+    ],
+    [
+      "dark_wood"
+    ]
+  ]
+}

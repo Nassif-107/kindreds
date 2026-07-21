@@ -1,7 +1,7 @@
 {
   "parent": "kindreds:renown/root",
   "criteria": {
-    "deep_dark": {
+    "over": {
       "trigger": "minecraft:location",
       "conditions": {
         "player": [
@@ -10,14 +10,14 @@
             "entity": "this",
             "predicate": {
               "location": {
-                "biomes": "minecraft:deep_dark"
+                "biomes": "#minecraft:is_mountain"
               }
             }
           }
         ]
       }
     },
-    "the_roots": {
+    "under": {
       "trigger": "minecraft:location",
       "conditions": {
         "player": [
@@ -40,13 +40,13 @@
   },
   "display": {
     "icon": {
-      "id": "minecraft:sculk_catalyst"
+      "id": "minecraft:rail"
     },
     "title": {
-      "text": "The Deeps of the World"
+      "text": "The Roads of Khazad"
     },
     "description": {
-      "text": "Go down to the roots of the mountains, where the delvers woke what should have slept."
+      "text": "Over the mountain and under it - a Dwarf knows both roads."
     },
     "frame": "goal",
     "show_toast": true,
@@ -54,10 +54,10 @@
   },
   "requirements": [
     [
-      "deep_dark"
+      "over"
     ],
     [
-      "the_roots"
+      "under"
     ]
   ]
 }

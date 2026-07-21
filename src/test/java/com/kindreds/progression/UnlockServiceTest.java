@@ -279,13 +279,13 @@ class UnlockServiceTest {
     @Test
     void eachGreatDeedWidensTheCap() {
         SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50)); // 100 points total
-        KindredData data = new KindredData();
+        KindredData data = elf();
 
         withCap(50, () -> {
             assertEquals(50, UnlockService.effectiveCap(tree, data));
-            data.renown().add("renown/wandering_days");
+            data.renown().add("renown/elf/road_to_lorien");
             assertEquals(55, UnlockService.effectiveCap(tree, data));
-            data.renown().add("renown/work_of_hands");
+            data.renown().add("renown/elf/marchwarden");
             assertEquals(60, UnlockService.effectiveCap(tree, data));
         });
     }
@@ -293,9 +293,9 @@ class UnlockServiceTest {
     @Test
     void theBargainWidensTheCapOnTopOfDeeds() {
         SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50));
-        KindredData data = new KindredData();
-        data.renown().add("renown/wandering_days"); // +5
-        data.setCorruption(1);                      // +10
+        KindredData data = elf();
+        data.renown().add("renown/elf/road_to_lorien"); // +5
+        data.setCorruption(1);                          // +10
 
         withCap(50, () -> assertEquals(65, UnlockService.effectiveCap(tree, data)));
     }
@@ -303,9 +303,9 @@ class UnlockServiceTest {
     @Test
     void renownCanNeverBuyTheWholeTree() {
         SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50));
-        KindredData data = new KindredData();
+        KindredData data = elf();
         for (String deed : List.of("a", "b", "c", "d")) {
-            data.renown().add("renown/" + deed); // +20
+            data.renown().add("renown/elf/" + deed); // +20
         }
         data.setCorruption(1);                    // +10 -> 105% on Fireside-adjacent settings
 
@@ -316,9 +316,31 @@ class UnlockServiceTest {
     @Test
     void renownDoesNotReviveACapThatIsSwitchedOff() {
         SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50));
-        KindredData data = new KindredData();
-        data.renown().add("renown/wandering_days");
+        KindredData data = elf();
+        data.renown().add("renown/elf/road_to_lorien");
 
         withCap(100, () -> assertEquals(0, UnlockService.effectiveCap(tree, data)));
+    }
+
+    /** A player of the Firstborn - renown only counts for the kindred that performed it. */
+    private static KindredData elf() {
+        KindredData data = new KindredData();
+        data.setRace(Identifier.of("middle-earth", "elf"));
+        return data;
+    }
+
+    @Test
+    void anotherKindredsDeedsDoNotCountForYou() {
+        SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50));
+        KindredData data = elf();
+        data.renown().add("renown/dwarf/khazad_work");   // done in a former life as a Dwarf
+        data.renown().add("renown/dwarf/long_memory");
+        data.renown().add("renown/elf/marchwarden");     // the only one that is actually yours
+
+        withCap(50, () -> assertEquals(55, UnlockService.effectiveCap(tree, data)));
+
+        // ...and they are still on record, so returning to that kindred restores them.
+        data.setRace(Identifier.of("middle-earth", "dwarf"));
+        withCap(50, () -> assertEquals(60, UnlockService.effectiveCap(tree, data)));
     }
 }

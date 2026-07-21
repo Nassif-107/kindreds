@@ -1,0 +1,32 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "eye": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:spider_eye"
+        }
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:spider_eye"
+    },
+    "title": {
+      "text": "Eat Worse, Live Longer"
+    },
+    "description": {
+      "text": "Swallow something that would kill a softer creature, and get up again."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "eye"
+    ]
+  ]
+}

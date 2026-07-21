@@ -1,0 +1,32 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "stew": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:mushroom_stew"
+        }
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:mushroom_stew"
+    },
+    "title": {
+      "text": "Second Breakfast"
+    },
+    "description": {
+      "text": "Sit down to a proper hot meal in the middle of an adventure. It is a matter of principle."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "stew"
+    ]
+  ]
+}

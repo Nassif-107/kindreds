@@ -11,12 +11,12 @@
         ]
       }
     },
-    "named_blade": {
+    "tool": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "minecraft:diamond_sword"
+            "items": "minecraft:diamond_pickaxe"
           }
         ]
       }
@@ -27,10 +27,10 @@
       "id": "minecraft:anvil"
     },
     "title": {
-      "text": "The Work of Hands"
+      "text": "Khazad-Work"
     },
     "description": {
-      "text": "Raise an anvil and forge upon it a blade fit to carry a name."
+      "text": "Raise an anvil in the deep, and bring a diamond-toothed tool off it."
     },
     "frame": "goal",
     "show_toast": true,
@@ -41,7 +41,7 @@
       "anvil"
     ],
     [
-      "named_blade"
+      "tool"
     ]
   ]
 }

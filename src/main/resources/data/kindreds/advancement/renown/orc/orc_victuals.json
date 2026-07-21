@@ -1,0 +1,32 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "flesh": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:rotten_flesh"
+        }
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:rotten_flesh"
+    },
+    "title": {
+      "text": "Orc-Victuals"
+    },
+    "description": {
+      "text": "Eat what the camp gives you. There is never enough, and it is never good."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "flesh"
+    ]
+  ]
+}

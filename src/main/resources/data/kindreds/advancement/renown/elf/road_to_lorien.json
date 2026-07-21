@@ -1,0 +1,59 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "wood": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "#minecraft:is_forest"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "blossom": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "minecraft:cherry_grove"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:cherry_sapling"
+    },
+    "title": {
+      "text": "The Road to Lorien"
+    },
+    "description": {
+      "text": "Walk beneath the eaves of the great wood, and stand where the blossom falls."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "wood"
+    ],
+    [
+      "blossom"
+    ]
+  ]
+}

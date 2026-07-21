@@ -1,7 +1,7 @@
 {
   "parent": "kindreds:renown/root",
   "criteria": {
-    "mountain": {
+    "desert": {
       "trigger": "minecraft:location",
       "conditions": {
         "player": [
@@ -10,14 +10,14 @@
             "entity": "this",
             "predicate": {
               "location": {
-                "biomes": "#minecraft:is_mountain"
+                "biomes": "minecraft:desert"
               }
             }
           }
         ]
       }
     },
-    "ocean": {
+    "badlands": {
       "trigger": "minecraft:location",
       "conditions": {
         "player": [
@@ -26,23 +26,7 @@
             "entity": "this",
             "predicate": {
               "location": {
-                "biomes": "#minecraft:is_ocean"
-              }
-            }
-          }
-        ]
-      }
-    },
-    "taiga": {
-      "trigger": "minecraft:location",
-      "conditions": {
-        "player": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "location": {
-                "biomes": "#minecraft:is_taiga"
+                "biomes": "minecraft:badlands"
               }
             }
           }
@@ -55,10 +39,10 @@
       "id": "minecraft:leather_boots"
     },
     "title": {
-      "text": "The Wandering Days"
+      "text": "The Long March"
     },
     "description": {
-      "text": "Walk until the land itself changes about you - mountain, sea and northern wood."
+      "text": "Cross the burning waste under an open sun. The White Hand's work does not halt at daybreak."
     },
     "frame": "goal",
     "show_toast": true,
@@ -66,13 +50,10 @@
   },
   "requirements": [
     [
-      "mountain"
+      "desert"
     ],
     [
-      "ocean"
-    ],
-    [
-      "taiga"
+      "badlands"
     ]
   ]
 }

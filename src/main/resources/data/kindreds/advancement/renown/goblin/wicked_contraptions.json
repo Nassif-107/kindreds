@@ -1,0 +1,47 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "tnt": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:tnt"
+          }
+        ]
+      }
+    },
+    "piston": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:piston"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:tnt"
+    },
+    "title": {
+      "text": "Wicked Contraptions"
+    },
+    "description": {
+      "text": "Goblins make no fine things. They make things that go off."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "tnt"
+    ],
+    [
+      "piston"
+    ]
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "bow": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:bow"
+          }
+        ]
+      }
+    },
+    "song": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:enchanted_book"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:bow"
+    },
+    "title": {
+      "text": "Bow of the Galadhrim"
+    },
+    "description": {
+      "text": "Bear a bow, and a song sung over it - the Firstborn do not merely make, they name."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "bow"
+    ],
+    [
+      "song"
+    ]
+  ]
+}

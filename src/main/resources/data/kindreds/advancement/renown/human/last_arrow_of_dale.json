@@ -1,0 +1,38 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "phantom": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "minecraft:phantom"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:spectral_arrow"
+    },
+    "title": {
+      "text": "The Last Arrow of Dale"
+    },
+    "description": {
+      "text": "Bring down a thing that flies and hunts by night, as Bard brought down the worm."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "phantom"
+    ]
+  ]
+}

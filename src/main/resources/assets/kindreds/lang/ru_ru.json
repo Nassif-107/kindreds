@@ -2165,7 +2165,7 @@
   "kindreds.hud.capped": "Предел мастерства — вложено %s/%s",
   "kindreds.tree.cap_line": "вложено %s/%s",
   "kindreds.tree.soft_cap_help": "Предел общего числа очков: каждый народ обязан выбрать, кем ему стать. Сбросьте древо, чтобы вложить иначе.",
-  "kindreds.tree.cap_line_renown": "вложено %s/%s  (+%s%% за подвиги)",
+  "kindreds.tree.cap_line_renown": "вложено %s/%s  (+%s%% заслужено)",
   "kindreds.tree.points_to_spend": "очков к трате: %s",
   "kindreds.tree.bargain": "Принять сделку",
   "kindreds.tree.bargain_confirm_title": "Голос предлагает больше",

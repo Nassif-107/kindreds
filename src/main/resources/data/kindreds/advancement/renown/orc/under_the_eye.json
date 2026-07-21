@@ -1,0 +1,40 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "nether": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "dimension": "minecraft:the_nether"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:crimson_fungus"
+    },
+    "title": {
+      "text": "Under the Eye"
+    },
+    "description": {
+      "text": "Walk in the burning land where the fires are never banked."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "nether"
+    ]
+  ]
+}

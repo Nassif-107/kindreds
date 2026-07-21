@@ -1,0 +1,38 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "spider": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "minecraft:spider"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:string"
+    },
+    "title": {
+      "text": "Unlooked-For Courage"
+    },
+    "description": {
+      "text": "Face the crawling thing in the dark wood, alone, and win."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "spider"
+    ]
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "potato": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:poisonous_potato"
+        }
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:poisonous_potato"
+    },
+    "title": {
+      "text": "Goblin Appetite"
+    },
+    "description": {
+      "text": "Eat the thing everyone else throws away."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "potato"
+    ]
+  ]
+}

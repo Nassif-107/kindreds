@@ -1,0 +1,59 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "lush": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "minecraft:lush_caves"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "dripstone": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "minecraft:dripstone_caves"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:torch"
+    },
+    "title": {
+      "text": "The Under-Ways"
+    },
+    "description": {
+      "text": "Learn the wet caves and the stone-fanged ones. Goblin-town is only the biggest tunnel."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "lush"
+    ],
+    [
+      "dripstone"
+    ]
+  ]
+}

@@ -2165,7 +2165,7 @@
   "kindreds.hud.capped": "Mastery capped — %s/%s spent",
   "kindreds.tree.cap_line": "%s/%s committed",
   "kindreds.tree.soft_cap_help": "A cap on the total points one may commit, so every kindred must choose what it becomes. Respec to spend elsewhere.",
-  "kindreds.tree.cap_line_renown": "%s/%s committed  (+%s%% renown)",
+  "kindreds.tree.cap_line_renown": "%s/%s committed  (+%s%% earned)",
   "kindreds.tree.points_to_spend": "%s point(s) to spend",
   "kindreds.tree.bargain": "Accept the Bargain",
   "kindreds.tree.bargain_confirm_title": "A voice offers you more",

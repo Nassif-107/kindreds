@@ -1,0 +1,47 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "crossbow": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:crossbow"
+          }
+        ]
+      }
+    },
+    "helm": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:iron_helmet"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:crossbow"
+    },
+    "title": {
+      "text": "The Iron of Isengard"
+    },
+    "description": {
+      "text": "Carry the crossbow and the iron helm - the gear of a soldier who was made, not born."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "crossbow"
+    ],
+    [
+      "helm"
+    ]
+  ]
+}

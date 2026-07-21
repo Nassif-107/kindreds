@@ -1,0 +1,59 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "mountains": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "#minecraft:is_mountain"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "sea": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "#minecraft:is_ocean"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:map"
+    },
+    "title": {
+      "text": "The Sea-Kings' Road"
+    },
+    "description": {
+      "text": "Come to the White Mountains, and to the Sea your fathers crossed."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "mountains"
+    ],
+    [
+      "sea"
+    ]
+  ]
+}

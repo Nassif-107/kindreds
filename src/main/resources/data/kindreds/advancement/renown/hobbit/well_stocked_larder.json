@@ -1,0 +1,39 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "larder": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "slots": {
+          "occupied": {
+            "min": 20
+          }
+        },
+        "items": [
+          {
+            "items": "minecraft:bread"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:bread"
+    },
+    "title": {
+      "text": "A Well-Stocked Larder"
+    },
+    "description": {
+      "text": "Fill your pockets and your pantry. A Hobbit not carrying food is a Hobbit in trouble."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "larder"
+    ]
+  ]
+}

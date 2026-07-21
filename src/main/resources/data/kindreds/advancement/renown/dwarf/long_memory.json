@@ -1,0 +1,40 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "deep_dark": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "minecraft:deep_dark"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:sculk_catalyst"
+    },
+    "title": {
+      "text": "The Long Memory"
+    },
+    "description": {
+      "text": "Stand where the delvers woke what should have slept, and do not run."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "deep_dark"
+    ]
+  ]
+}
