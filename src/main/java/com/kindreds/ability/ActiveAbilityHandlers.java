@@ -133,11 +133,16 @@ public final class ActiveAbilityHandlers {
     /** A burst of hallowed light: undead nearby take fire and glow, and the light shines out. */
     private static void phialBurst(ServerPlayerEntity p, ServerWorld world, double radius) {
         Box box = p.getBoundingBox().expand(radius);
-        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, box, e -> e != p && e.isAlive());
-        for (LivingEntity e : nearby) {
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box, x -> x != p && x.isAlive())) {
             if (e.getType().isIn(EntityTypeTags.SENSITIVE_TO_SMITE)) {
+                // the light of Earendil burns the undead, as it always has
                 e.setOnFireForTicks(100);
                 e.damage(world, world.getDamageSources().magic(), 4.0f);
+            } else if (Allegiance.isFoe(p, e)) {
+                // and dazzles anything else that meant you harm - the one AoE that used to do
+                // nothing whatsoever to a rival player
+                e.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 60, 0));
+                e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 0));
             }
         }
         world.spawnParticles(ParticleTypes.END_ROD, p.getX(), p.getBodyY(1.0), p.getZ(), 80,
