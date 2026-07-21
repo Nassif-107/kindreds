@@ -12,7 +12,8 @@
       "com.kindreds.KindredsClient"
     ],
     "fabric-client-gametest": [
-      "com.kindreds.client.gametest.UiScreenshotTest"
+      "com.kindreds.client.gametest.UiScreenshotTest",
+      "com.kindreds.client.gametest.KindredsFunctionalTest"
     ]
   },
   "mixins": [
