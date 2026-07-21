@@ -24,7 +24,14 @@ These decide every argument that follows.
    stay weak and hide. Scaled danger pays scaled discipline XP and better loot.
 5. **Visible, like every other build-defining rule in this mod.** The point cap is visible, the deeds
    are visible, an unlock never fails silently. A player can see what the land thinks of them.
-6. **Never touch the spawner.** Transform what arrives; do not change how much arrives.
+6. **Never touch the spawner.** Transform what arrives; do not change the rules of arrival.
+7. **Every input is a high-water mark, never an instantaneous read.** A player may always make
+   themselves weaker - strip their gear, respec their tree, change race - but may never make the
+   world *forget what they were capable of*. Marks decay slowly, over in-game days, and never on
+   demand. This single rule closes most of the exploit surface, and it is the most Tolkien framing
+   available: the Enemy's attention does not lapse because you changed clothes.
+8. **Every evidence signal is asymmetric.** A signal may only move threat in the direction that is
+   not worth faking. Anything a player could stage to soften the world must not soften the world.
 
 ---
 
@@ -40,7 +47,7 @@ prior = 100 * (Wc*commitment + Wg*gear + Wr*renown) / (Wc + Wg + Wr)
 
 | Term | Source | Range |
 |---|---|---|
-| `commitment` | `UnlockService.totalPointsSpent(data, tree) / UnlockService.effectiveCap(tree, data)` | 0..1 |
+| `commitment` | `(totalPointsSpent + pointsAvailableToSpend) / UnlockService.maxSpendable(tree)` | 0..1 |
 | `gear` | armour points + weapon damage, normalised against a full-mithril reference | 0..1 |
 | `renown` | `RenownService.deedsForRace(data) / 4` | 0..1 |
 
@@ -50,16 +57,34 @@ Defaults `Wc = 3`, `Wg = 2`, `Wr = 1`. A server that wants pure skill-based scal
 five do not distort it — and because it weights a 4-point capstone above a 1-point filler, which a
 raw node count does not.
 
+Two details of that formula are exploit fixes, not decoration:
+
+- **The denominator is the tree's full cost, not the player's effective cap.** An earlier draft used
+  `effectiveCap`, which rises with Great Deeds and the Bargain - so earning renown would have *shrunk*
+  the fraction and made the world easier. A perverse incentive wired into the formula. Against a fixed
+  denominator, deeds can only raise threat, through the `renown` term where they belong.
+- **Unspent points count.** Otherwise the cheapest exploit in the mod is to simply not spend: bank the
+  points, keep the world soft, and deploy the reserve the moment power is wanted. A player is as
+  strong as what they could put on the board this second.
+
 **Rejected:** discipline XP *earned* as the spine. It is unstrippable and simpler, but it measures
 time served rather than power held, so a player who banks XP without spending it would face a world
 scaled past what they can actually do.
 
-### 2.2 Gear is gameable — the high-water mark
+### 2.2 Every term is a high-water mark
 
-Read instantly, `gear` invites stripping your armour before going hunting and re-equipping to fight.
-So `gear` is a **slow high-water mark**: it rises to the current reading immediately and decays
-toward it at no more than **2 points per in-game day**. Taking your armour off lowers nothing but
-your own effectiveness for the next while.
+Read instantly, each term of the prior is a difficulty slider:
+
+| Term | Read instantly, the exploit is |
+|---|---|
+| `gear` | strip your armour before going hunting, re-equip to fight |
+| `commitment` | **respec before anything dangerous.** Worst of the three: the respec button sits in the tree panel and costs one item at ROAD. Dump the tree, watch the world go gentle, respec back |
+| `commitment` | change race into a tree you have barely invested in |
+
+So the whole prior is a **slow high-water mark**: it rises to the current reading immediately and
+decays toward it at no more than **2 points per in-game day**. Respec freely - the world remembers
+what you were. This is also why the mark is on the prior as a whole rather than per term: a player
+who respecs *and* strips gear must not be able to stack two collapses.
 
 ### 2.3 The evidence — revealed power
 
@@ -74,16 +99,33 @@ hardship = damageTakenInFight / maxHealth
 
 with a target of `0.25` — a meaningful fight should cost about a quarter of your health.
 
-| Observation | Effect on `competence` |
-|---|---|
-| `hardship < target` (coasting) | rises, EWMA α = 0.10 |
-| `hardship > target` (struggling) | falls, EWMA α = 0.04 |
-| Death to a scaled mob | −0.05, applied once |
-| Dropped below 25% health and survived | −0.01 |
-| Time-to-kill far below expected | rises, folded into the same EWMA |
+| Observation | Effect on `competence` | May it lower threat? |
+|---|---|---|
+| `hardship < target` (coasting) | rises, EWMA α = 0.10 | — |
+| `hardship > target` (struggling) | falls, EWMA α = 0.04 | yes, weighted (below) |
+| Death to a scaled mob | −0.05 × killer weight | yes, weighted |
+| Dropped below 25% health and survived | −0.01 × attacker weight | yes, weighted |
+| Time-to-kill below expected | rises | **no — raise-only** |
 
 Kills are weighted by the target's **base danger** (its unscaled max health × attack damage), so
 deleting a cave troll counts and deleting a chicken does not.
+
+**Every lowering signal is weighted by how dangerous the thing that hurt you actually was**, relative
+to your own threat. Being mauled by a zombie is evidence of carelessness, not of a cruel world. The
+weight is `min(1, killerDanger / expectedDangerAtYourThreat)`, so trivial attackers contribute
+almost nothing.
+
+**Time-to-kill may only raise competence, never lower it.** Otherwise the exploit is to poke a weak
+mob to death over five minutes and let the system conclude you are struggling. A fast kill is hard
+to fake and proves strength; a slow kill proves nothing, because it can be staged.
+
+Together these close the three staged-evidence exploits:
+
+| Staged | Why it fails |
+|---|---|
+| Fight weak monsters for a very long time | TTK is raise-only, so a slow kill is simply ignored |
+| Stand in front of a zombie and take hits | hardship from a trivial attacker is weighted to near zero |
+| Die on purpose, repeatedly, to something weak | the death penalty carries the same weight, and the §2.4 floor bounds the total anyway |
 
 **Asymmetric by design.** Threat rises promptly when a player is coasting and falls slowly when they
 are struggling: a death must never instantly soften the world, but a genuinely stuck player does get
@@ -114,6 +156,12 @@ effective competence against a given mob is:
 So a player who is death on wargs and helpless against trolls meets trolls that press them and wargs
 that have stopped bothering. Families a player has barely fought default to the global figure.
 
+**Hard constraint: per-family competence changes how hard a family is when you meet it, and never
+what you meet.** It must not feed composition, replacement, escorts or spawn choice in any way. A
+world that stopped sending wargs because you got good at wargs would feel arranged rather than
+inhabited, and would rob a player of the pleasure of being good at something. Every family a region
+would naturally offer keeps appearing at its natural rate, whatever your record against it.
+
 ### 2.6 The curve
 
 The curve decides how much of a player's threat becomes world difficulty. One setting, three values:
@@ -139,6 +187,7 @@ All caps below are settings; the values given are defaults.
 | Detection of you | `detection_range` raised toward its 1.0 clamp | see below | **Per-player**, attribute |
 | Elite promotion | `chance = 0.25 * scaledGroup` | 25% | **Shared**, at spawn |
 | Species replacement | `chance = 0.35 * scaledGroup` | 35% | **Shared**, at spawn |
+| Escorts | `chance = 0.30 * scaledGroup`, 1–2 extra | +2 per mob | **Shared**, at spawn |
 | Discipline XP | `× (1 + 0.5 * scaled)` | +50% | **Per-player**, at the kill |
 
 **Damage** extends the existing implementation in `PerkEventHandlers` (currently `+0.5%` per unlocked
@@ -160,6 +209,19 @@ stealth, not an unbounded dial, and must not be planned as one.
 changes: a mob arriving in the world may be swapped for a tougher member of its own family — a
 zombie for a warg, a warg for a cave troll. Replacement respects the family table (§5.2) so it stays
 lore-true, and never replaces a mob whose replacement would not fit the space.
+
+**Escorts** are how the world gets *more numerous* without the spawner being touched: a mob that
+arrives at high threat may not arrive alone. The vanilla spawner still decides where and how often;
+we decide it brought company.
+
+This is the one effect that adds entities the spawner did not ask for, so it is bounded hard, and the
+bounds are not tuning knobs to be loosened casually:
+
+- at most **2** escorts per mob, of the same species, and never escorts of escorts;
+- only on **natural** spawns - never on spawners, spawn eggs, breeding, or `/summon`;
+- suppressed entirely when the dimension is already at **80%** of its mob cap, so escorts can crowd a
+  quiet night but can never be the cause of a runaway population;
+- escorts count as ordinary mobs in every other respect, including despawning.
 
 **Rewards** close the loop: a mob that was scaled up pays proportionally more discipline XP, and
 elites drop better. Growing dangerous must be something a player wants.
@@ -238,6 +300,8 @@ readable by everyone.
 | `maxHealthBonus` | 100% | |
 | `eliteChance` | 25% | 0 disables elites |
 | `replacementChance` | 35% | 0 disables species replacement |
+| `escortChance` | 30% | 0 disables escorts |
+| `priorDecayPerDay` | 2 | How fast the high-water mark forgets (§2.2) |
 | `xpBonus` | 50% | |
 | `groupScaling` | 15% per extra player | |
 | `dimensionMultiplier` | 1.0 Middle-earth, 0.75 overworld | |
@@ -304,9 +368,10 @@ rather than how it behaves.
 
 ## 10. Non-goals
 
-- **Spawn density.** Explicitly cut. It needs spawner surgery, it is the classic cause of lag, it
-  fights the mob cap and other mods, and it is the least interesting axis — "a cave troll instead of
-  a zombie" beats "six zombies instead of three".
+- **Changing the spawn rules.** Explicitly cut: no edits to spawn weights, spawn cost, mob caps or
+  spawn conditions. It is the classic cause of lag and it fights every other mod that touches
+  spawning. "More of them" is delivered by escorts (§3) instead, which is bounded, local, and
+  needs no spawner changes at all.
 - **Scaling bosses.** Out of scope; they are hand-tuned encounters.
 - **Player-versus-player scaling.** Threat never affects what players do to each other.
 - **Difficulty for its own sake.** Every point of added danger must come with added reward.
@@ -318,6 +383,15 @@ rather than how it behaves.
 - **Unit** — the threat maths: prior weighting, the high-water decay, the competence bounds, the
   floor (assert that a long run of deaths cannot push threat below `0.75 × prior`), curve exponents,
   and group resolution with 1, 2 and 5 players.
+- **Unit, one test per known exploit.** These are the tests that must never be deleted as
+  "redundant" - each encodes an attack someone will eventually try:
+  - respec to an empty tree does not drop threat within the same in-game day;
+  - stripping all armour does not drop threat within the same in-game day;
+  - banking 40 unspent points raises commitment as if they were spent;
+  - earning a Great Deed never lowers threat;
+  - a hundred slow kills of a trivial mob do not lower competence;
+  - a hundred deaths to a trivial mob do not push threat below the floor;
+  - mastering one family does not change what spawns.
 - **Gametest** — a scaled mob hits a fresh player and a veteran differently in the same world; an
   elite spawns, is named, and drops its bonus; a replacement respects its family ladder; the settings
   section renders without collision at GUI scales 1–4.
