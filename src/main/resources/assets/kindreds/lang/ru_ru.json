@@ -2308,5 +2308,9 @@
   "kindreds.result.ambiguous_node": "Умение определено неоднозначно — сообщите владельцу сервера.",
   "kindreds.result.respec_ok": "Прежние пути забыты. Очки снова ваши.",
   "kindreds.result.respec_item_invalid": "Стоимость сброса неверно настроена на сервере.",
-  "kindreds.result.respec_insufficient_item": "У вас нет того, что стоит сброс древа."
+  "kindreds.result.respec_insufficient_item": "У вас нет того, что стоит сброс древа.",
+  "kindreds.toast.ready": "Доступно новых умений: %s",
+  "kindreds.toast.ready.one": "%s — ветвь «%s». Нажмите %s, чтобы изучить.",
+  "kindreds.toast.ready.many": "%s и ещё %s готовы к изучению.",
+  "kindreds.hud.ready": "готово к изучению: %s — %s"
 }

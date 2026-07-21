@@ -2308,5 +2308,9 @@
   "kindreds.result.ambiguous_node": "That skill is ambiguous — report it to the server owner.",
   "kindreds.result.respec_ok": "The old ways are unlearned. Your points are yours again.",
   "kindreds.result.respec_item_invalid": "The respec cost is misconfigured on this server.",
-  "kindreds.result.respec_insufficient_item": "You lack what a respec costs."
+  "kindreds.result.respec_insufficient_item": "You lack what a respec costs.",
+  "kindreds.toast.ready": "%s new skill(s) within reach",
+  "kindreds.toast.ready.one": "%s — %s branch. Press %s to learn it.",
+  "kindreds.toast.ready.many": "%s and %s more are ready to learn.",
+  "kindreds.hud.ready": "%s ready to learn — %s"
 }

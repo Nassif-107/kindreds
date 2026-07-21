@@ -6,6 +6,7 @@ import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.playerdata.ClientKindredData;
 import com.kindreds.playerdata.KindredData;
+import com.kindreds.client.screen.TreeRenderer;
 import com.kindreds.progression.ProgressionService;
 import com.kindreds.data.KindredsRegistries;
 import net.fabricmc.loader.api.FabricLoader;
@@ -71,6 +72,7 @@ public final class ClientProgress {
         }
         resolvedRace = race;
         tree = null;
+        resetAnnouncements();
         try {
             Registry<SkillTree> trees = client.world.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
             for (SkillTree candidate : trees) {
@@ -105,6 +107,15 @@ public final class ClientProgress {
     }
 
     private static int cachedUnspent;
+    /** Nodes the player could unlock right now, and the ones they have already been told about. */
+    private static int cachedReady;
+    private static final Set<String> announced = new HashSet<>();
+    private static boolean readyPrimed;
+
+    /** How many skills are unlockable right now - the number worth acting on. */
+    public static int readyTotal() {
+        return cachedReady;
+    }
     private static boolean cachedAtCap;
     private static int cachedSpent;
     private static int cachedCap;
@@ -130,11 +141,58 @@ public final class ClientProgress {
             sum += Math.max(0, ProgressionService.pointsAvailable(data, t, d));
         }
         cachedUnspent = sum;
+        cachedReady = 0;
         cachedCap = com.kindreds.progression.UnlockService.effectiveCap(t, data);
         cachedSpent = com.kindreds.progression.UnlockService.totalPointsSpent(data, t);
         // "At cap" means the cheapest thing left is already unaffordable, not merely that spent==cap:
         // a 1-point node may still fit under the ceiling.
         cachedAtCap = cachedCap > 0 && cachedSpent + cheapestUnowned(t, data) > cachedCap;
+    }
+
+    /**
+     * Notices when a skill becomes unlockable and says so, once.
+     *
+     * <p>The points pip only ever said "you have points", which is not the same as "there is
+     * something you can take" - a player with points but every prerequisite unmet had no way to know
+     * except by opening the tree and hunting. This watches the set of unlockable nodes and speaks the
+     * moment it grows.
+     *
+     * <p>The first pass after joining only records the baseline, or logging in would announce a
+     * whole tree at once. A node already announced is never announced again, so respeccing back and
+     * forth cannot spam.
+     */
+    private static void announceNewlyReady(MinecraftClient client, SkillTree tree, KindredData data) {
+        java.util.List<SkillNode> fresh = new java.util.ArrayList<>();
+        for (SkillNode node : tree.nodes()) {
+            if (TreeRenderer.stateOf(node, data, tree) != TreeRenderer.NodeState.AVAILABLE) {
+                continue;
+            }
+            cachedReady++;
+            if (announced.add(node.id()) && readyPrimed) {
+                fresh.add(node);
+            }
+        }
+        if (fresh.isEmpty()) {
+            readyPrimed = true;
+            return;
+        }
+        readyPrimed = true;
+
+        SkillNode first = fresh.get(0);
+        Text name = Text.translatableWithFallback("kindreds.node." + first.id() + ".name",
+                first.id().substring(first.id().lastIndexOf('.') + 1));
+        Text title = Text.translatable("kindreds.toast.ready", fresh.size()).formatted(Formatting.GREEN);
+        Text body = fresh.size() == 1
+                ? Text.translatable("kindreds.toast.ready.one", name, disciplineName(first.cost().disciplineId()))
+                : Text.translatable("kindreds.toast.ready.many", name, fresh.size() - 1);
+        SystemToast.add(client.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, title, body);
+        client.player.playSound(net.minecraft.sound.SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.5f, 1.4f);
+    }
+
+    /** Forgets what has been announced - used when the tree changes out from under the player. */
+    public static void resetAnnouncements() {
+        announced.clear();
+        readyPrimed = false;
     }
 
     /** Cost of the cheapest node the player does not yet own ({@link Integer#MAX_VALUE} if none). */
@@ -173,6 +231,7 @@ public final class ClientProgress {
         }
         primed = true;
         recomputeUnspent(t, data);
+        announceNewlyReady(client, t, data);
         maybeWelcome(client, data);
     }
 
