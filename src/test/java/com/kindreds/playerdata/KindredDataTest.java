@@ -151,7 +151,9 @@ class KindredDataTest {
         KindredData back = KindredData.PACKET_CODEC.decode(buf);
 
         assertEquals(63.5f, back.threat().priorMark(), 0.001f);
+        assertEquals(24f, back.threat().maxHealthMark(), 0.001f);
         assertEquals(0.9f, back.threat().competence(), 0.001f);
+        assertEquals(4321L, back.threat().playedTicks());
     }
 
     @Test

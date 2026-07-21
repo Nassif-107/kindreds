@@ -5,6 +5,7 @@ import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.progression.LevelCurve;
 import com.kindreds.progression.ProgressionService;
+import com.kindreds.threat.ThreatState;
 import net.minecraft.util.Identifier;
 import org.junit.jupiter.api.Test;
 
@@ -153,6 +154,99 @@ class DeathHandlerTest {
         assertTrue(wiped.unlockedNodes().isEmpty());
         assertTrue(wiped.discoveredBiomes().isEmpty());
         assertEquals(0, wiped.corruption());
+    }
+
+    // --- Threat survives death (the task's central anti-exploit guarantee) ---------------------
+    // ThreatState.priorMark/maxHealthMark are high-water marks; a mark a player could reset by
+    // dying would be a difficulty switch, which is the entire reason DeathHandler.copyOf calls
+    // copy.setThreat(data.threat().copy()) instead of leaving a fresh (default) ThreatState on
+    // the copy. Covered for every branch that goes through copyOf - KEEP, LOSE_UNSPENT and
+    // LOSE_PERCENT. HARDCORE deliberately does NOT go through copyOf (see the class javadoc:
+    // "old data discarded entirely") so it is not covered here.
+
+    private static final float THREAT_PRIOR_MARK = 42.5f;
+    private static final float THREAT_MAX_HEALTH_MARK = 30f;
+    private static final float THREAT_COMPETENCE = 1.35f;
+    private static final long THREAT_PLAYED_TICKS = 12345L;
+    private static final String THREAT_FAMILY = "orcs";
+    private static final float THREAT_FAMILY_COMPETENCE = 0.75f;
+
+    private static void setNonDefaultThreat(KindredData data) {
+        data.threat().setPriorMark(THREAT_PRIOR_MARK);
+        data.threat().setMaxHealthMark(THREAT_MAX_HEALTH_MARK);
+        data.threat().setCompetence(THREAT_COMPETENCE);
+        data.threat().familyCompetence().put(THREAT_FAMILY, THREAT_FAMILY_COMPETENCE);
+        data.threat().addPlayedTicks(THREAT_PLAYED_TICKS);
+    }
+
+    private static void assertNonDefaultThreat(ThreatState threat) {
+        assertEquals(THREAT_PRIOR_MARK, threat.priorMark(), 0.001f);
+        assertEquals(THREAT_MAX_HEALTH_MARK, threat.maxHealthMark(), 0.001f);
+        assertEquals(THREAT_COMPETENCE, threat.competence(), 0.001f);
+        assertEquals(THREAT_PLAYED_TICKS, threat.playedTicks());
+        assertEquals(THREAT_FAMILY_COMPETENCE, threat.familyCompetence().get(THREAT_FAMILY), 0.001f);
+    }
+
+    /** Mutates {@code original}'s threat (scalars and the family map) to different values after a
+     * copy has already been taken, so a shared (rather than deep-copied) ThreatState would be
+     * caught by a subsequent {@link #assertNonDefaultThreat} on the copy. */
+    private static void mutateThreatAfterCopy(KindredData original) {
+        original.threat().setPriorMark(0f);
+        original.threat().setMaxHealthMark(0f);
+        original.threat().setCompetence(0f);
+        original.threat().addPlayedTicks(999L);
+        original.threat().familyCompetence().put(THREAT_FAMILY, 0f);
+        original.threat().familyCompetence().put("trolls", 9f);
+    }
+
+    @Test
+    void keepCarriesThreatAcrossDeathAndCopyIsIndependent() {
+        KindredData original = new KindredData();
+        setNonDefaultThreat(original);
+
+        KindredData copy = DeathHandler.applyDeathPenalty(DeathPenalty.KEEP, 0.0, original, Optional.empty());
+
+        assertNonDefaultThreat(copy.threat());
+
+        mutateThreatAfterCopy(original);
+        assertNonDefaultThreat(copy.threat());
+        assertFalse(copy.threat().familyCompetence().containsKey("trolls"));
+    }
+
+    @Test
+    void loseUnspentCarriesThreatAcrossDeathAndCopyIsIndependent() {
+        KindredData original = new KindredData();
+        setNonDefaultThreat(original);
+        original.addXp(ARCHERY, LevelCurve.xpForLevel(5));
+        original.unlockedNodes().add("archer_1");
+
+        SkillTree tree = new SkillTree(ELF, Identifier.of("kindreds", "elf_theme"), List.of(
+                node("archer_1", ARCHERY, 2)));
+
+        KindredData copy = DeathHandler.applyDeathPenalty(
+                DeathPenalty.LOSE_UNSPENT, 0.0, original, Optional.of(tree));
+
+        assertNonDefaultThreat(copy.threat());
+
+        mutateThreatAfterCopy(original);
+        assertNonDefaultThreat(copy.threat());
+        assertFalse(copy.threat().familyCompetence().containsKey("trolls"));
+    }
+
+    @Test
+    void losePercentCarriesThreatAcrossDeathAndCopyIsIndependent() {
+        KindredData original = new KindredData();
+        setNonDefaultThreat(original);
+        original.addXp(ARCHERY, 100L);
+
+        KindredData copy = DeathHandler.applyDeathPenalty(
+                DeathPenalty.LOSE_PERCENT, 0.5, original, Optional.empty());
+
+        assertNonDefaultThreat(copy.threat());
+
+        mutateThreatAfterCopy(original);
+        assertNonDefaultThreat(copy.threat());
+        assertFalse(copy.threat().familyCompetence().containsKey("trolls"));
     }
 
     private static SkillNode node(String id, Identifier discipline, int cost) {

@@ -1,5 +1,6 @@
 package com.kindreds.playerdata;
 
+import com.kindreds.threat.ThreatState;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -82,12 +83,12 @@ public final class KindredData {
     private Identifier appliedBirthRace;
 
     /**
-     * This player's threat state (see {@link com.kindreds.threat.ThreatState}). Not a constructor
+     * This player's threat state (see {@link ThreatState}). Not a constructor
      * parameter - every existing call site would otherwise have to pass one - so it's always
      * initialised fresh here and mutated in place afterward, the same way {@link #race} is set
      * post-construction rather than threaded through every constructor.
      */
-    private final com.kindreds.threat.ThreatState threat;
+    private final ThreatState threat;
 
     public KindredData() {
         this(new Object2LongOpenHashMap<>(), new HashSet<>(), null, 0, new Object2LongOpenHashMap<>(),
@@ -133,7 +134,7 @@ public final class KindredData {
         this.cooldowns = cooldowns;
         this.discoveredBiomes = discoveredBiomes;
         this.renown = renown;
-        this.threat = new com.kindreds.threat.ThreatState();
+        this.threat = new ThreatState();
     }
 
     public Object2LongMap<Identifier> disciplineXp() {
@@ -194,7 +195,7 @@ public final class KindredData {
     }
 
     /** This player's threat state. Always present; never null. */
-    public com.kindreds.threat.ThreatState threat() {
+    public ThreatState threat() {
         return threat;
     }
 
@@ -205,12 +206,12 @@ public final class KindredData {
      * SyncKindredDataS2C.snapshot}, both in other packages - hence {@code public}, same as {@link
      * #setRace}) restoring a snapshot onto a freshly-constructed {@code KindredData}.
      *
-     * <p>{@link com.kindreds.threat.ThreatState} deliberately exposes no {@code setPlayedTicks} (only
+     * <p>{@link ThreatState} deliberately exposes no {@code setPlayedTicks} (only
      * {@code addPlayedTicks}), so the played-ticks total is transplanted via the delta between the
      * two - correct regardless of this instance's current total, and exact for the fresh (zeroed)
      * instances every call site actually passes.
      */
-    public void setThreat(com.kindreds.threat.ThreatState threat) {
+    public void setThreat(ThreatState threat) {
         this.threat.setPriorMark(threat.priorMark());
         this.threat.setMaxHealthMark(threat.maxHealthMark());
         this.threat.setCompetence(threat.competence());
@@ -283,8 +284,8 @@ public final class KindredData {
                     .forGetter(d -> List.copyOf(d.renown())),
             // optionalFieldOf so worlds written before threat scaling existed load cleanly, with a
             // fresh default ThreatState rather than a failed decode.
-            com.kindreds.threat.ThreatState.CODEC.optionalFieldOf("threat",
-                    new com.kindreds.threat.ThreatState()).forGetter(KindredData::threat)
+            ThreatState.CODEC.optionalFieldOf("threat",
+                    new ThreatState()).forGetter(KindredData::threat)
     ).apply(instance, (xp, nodes, lens, corruption, cooldowns, discoveredBiomes, renown, threat) -> {
         KindredData data = new KindredData(xp, nodes, lens.orElse(null), corruption, cooldowns,
                 new HashSet<>(discoveredBiomes), new HashSet<>(renown));
@@ -303,7 +304,7 @@ public final class KindredData {
     /**
      * Eight fields wide: {@link #race} (see its javadoc) rides along on the wire only - it's
      * deliberately absent from the persistent {@link #CODEC} above. {@link #threat} rides on both
-     * codecs (see {@link com.kindreds.threat.ThreatState#PACKET_CODEC} for what it omits on this
+     * codecs (see {@link ThreatState#PACKET_CODEC} for what it omits on this
      * one). The trailing factory builds the object via the existing six-arg constructor and then sets
      * {@code race} and {@code threat} on it, rather than growing the constructor with parameters that
      * every other (persistence-only) call site would have to pass placeholder values for.
@@ -325,7 +326,7 @@ public final class KindredData {
             KindredData::race,
             STRING_SET_PACKET_CODEC,
             KindredData::renown,
-            com.kindreds.threat.ThreatState.PACKET_CODEC,
+            ThreatState.PACKET_CODEC,
             KindredData::threat,
             (xp, unlockedNodes, lens, corruption, cooldowns, race, renown, threat) -> {
                 KindredData data = new KindredData(xp, unlockedNodes, lens, corruption, cooldowns,
