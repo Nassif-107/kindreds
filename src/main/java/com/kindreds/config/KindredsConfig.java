@@ -30,7 +30,13 @@ public class KindredsConfig {
     public DeathPenalty deathPenalty = DeathPenalty.KEEP;
     public double deathPercent = 0.25;
     public double xpRateGlobal = 1.0;
-    public int pointSoftCap = 60;
+    /** Absolute ceiling on total points spent across the tree; {@code 0} = off. Superseded by
+     * {@link #pointCapPercent} when that is set, which scales fairly across races of different
+     * tree sizes (a flat number stops binding at all for the smallest tree). */
+    public int pointSoftCap = 0;
+    /** Cap expressed as a percentage of the player's own full tree cost (1-99). {@code 0} = use the
+     * absolute {@link #pointSoftCap} instead; {@code >=100} = unlimited. */
+    public int pointCapPercent = 75;
     public String respecItem = "minecraft:amethyst_shard";
     public int respecCost = 1;
     /** Pulsing HUD/tree animations (points pip, unlockable-node halos, "N ready" badges). Set false

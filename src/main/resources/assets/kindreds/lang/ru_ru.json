@@ -2161,5 +2161,8 @@
   "kindreds.settings.flag.enableBirthTraits": "Врождённые черты рас",
   "kindreds.settings.flag.enableCurses": "Расовые слабости (солнце, страх)",
   "kindreds.settings.flag.enableVision": "Расовое зрение",
-  "kindreds.settings.flag.allowCrossTraining": "Смежное обучение (опыт вне расы)"
+  "kindreds.settings.flag.allowCrossTraining": "Смежное обучение (опыт вне расы)",
+  "kindreds.hud.capped": "Предел мастерства — вложено %s/%s",
+  "kindreds.tree.cap_line": "вложено %s/%s",
+  "kindreds.tree.soft_cap_help": "Предел общего числа очков: каждый народ обязан выбрать, кем ему стать. Сбросьте древо, чтобы вложить иначе."
 }

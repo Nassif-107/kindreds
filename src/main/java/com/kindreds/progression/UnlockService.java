@@ -70,14 +70,6 @@ public final class UnlockService {
             return UnlockResult.fail("insufficient_points");
         }
 
-        // Soft cap: a ceiling on TOTAL points spent across the whole tree - the knob that actually
-        // forces a build identity (at 60 you master roughly one discipline and dabble; 0 = off).
-        // Config read defensively so pure unit tests with no loaded config still pass.
-        int cap = com.kindreds.Kindreds.CONFIG != null ? com.kindreds.Kindreds.CONFIG.pointSoftCap : 0;
-        if (cap > 0 && totalPointsSpent(data, tree) + cost.points() > cap) {
-            return UnlockResult.fail("soft_cap");
-        }
-
         for (String prereq : node.prereqs()) {
             if (!data.hasNode(prereq)) {
                 return UnlockResult.fail("missing_prereq");
@@ -102,11 +94,60 @@ public final class UnlockService {
             return UnlockResult.fail("deed_not_earned");
         }
 
+        // The tree-wide cap on TOTAL points - the rule that forces a build identity rather than
+        // eventual omniscience. Checked LAST on purpose: it is the least specific reason to refuse, so
+        // a node that is also missing a prereq or closed off by an exclusive choice reports that
+        // instead. Otherwise "capped" would hide the real answer once a player nears the ceiling.
+        int cap = effectiveCap(tree);
+        if (cap > 0 && totalPointsSpent(data, tree) + cost.points() > cap) {
+            return UnlockResult.fail("soft_cap");
+        }
+
         return UnlockResult.OK;
     }
 
+    /** The most points {@code tree} could ever absorb: every node, except that only the cheapest
+     * member of each exclusive group is ever ownable. This is the denominator the percentage cap
+     * scales against, so a 4-lane race and a 5-lane race are limited proportionally. */
+    public static int maxSpendable(SkillTree tree) {
+        int total = 0;
+        java.util.Map<String, Integer> cheapestExclusive = new java.util.HashMap<>();
+        for (SkillNode n : tree.nodes()) {
+            String group = n.exclusiveGroup().orElse(null);
+            if (group == null) {
+                total += n.cost().points();
+            } else {
+                cheapestExclusive.merge(group, n.cost().points(), Math::min);
+            }
+        }
+        for (int c : cheapestExclusive.values()) {
+            total += c;
+        }
+        return total;
+    }
+
+    /**
+     * The point ceiling that actually applies to {@code tree}: a percentage of its full cost when
+     * {@code pointCapPercent} is set (1-99), otherwise the absolute {@code pointSoftCap}.
+     * {@code 0} means no cap.
+     */
+    public static int effectiveCap(SkillTree tree) {
+        com.kindreds.config.KindredsConfig c = com.kindreds.Kindreds.CONFIG;
+        if (c == null || tree == null) {
+            return 0;
+        }
+        int pct = c.pointCapPercent;
+        if (pct >= 100) {
+            return 0; // unlimited
+        }
+        if (pct > 0) {
+            return Math.max(1, Math.round(maxSpendable(tree) * (pct / 100f)));
+        }
+        return Math.max(0, c.pointSoftCap);
+    }
+
     /** Total points the player has already committed anywhere in {@code tree} - the quantity the
-     * {@code pointSoftCap} limits. */
+     * cap limits. */
     public static int totalPointsSpent(KindredData data, SkillTree tree) {
         int spent = 0;
         for (SkillNode n : tree.nodes()) {

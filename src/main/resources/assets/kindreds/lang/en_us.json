@@ -2161,5 +2161,8 @@
   "kindreds.settings.flag.enableBirthTraits": "Racial birth traits",
   "kindreds.settings.flag.enableCurses": "Racial drawbacks (sun-weakness, dread)",
   "kindreds.settings.flag.enableVision": "Racial vision lenses",
-  "kindreds.settings.flag.allowCrossTraining": "Cross-training (xp outside your race)"
+  "kindreds.settings.flag.allowCrossTraining": "Cross-training (xp outside your race)",
+  "kindreds.hud.capped": "Mastery capped — %s/%s spent",
+  "kindreds.tree.cap_line": "%s/%s committed",
+  "kindreds.tree.soft_cap_help": "A cap on the total points one may commit, so every kindred must choose what it becomes. Respec to spend elsewhere."
 }

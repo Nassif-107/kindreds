@@ -87,7 +87,7 @@ public class KindredsSettingsScreen extends Screen {
         ctx.drawText(this.textRenderer, Text.literal(
                         "xp x" + v.xpRate() + "   ·   " + v.death()
                                 + "   ·   " + Text.translatable("kindreds.settings.cap").getString() + " "
-                                + (v.softCap() > 0 ? v.softCap() : Text.translatable("kindreds.settings.off").getString())
+                                + capText(v)
                                 + "   ·   " + Text.translatable("kindreds.settings.scaling").getString() + " "
                                 + onOff(v.enemyScaling()))
                 .formatted(Formatting.GRAY), x, y + 33, 0xFFB6A888, false);
@@ -154,6 +154,18 @@ public class KindredsSettingsScreen extends Screen {
             case "allowCrossTraining" -> v.crossTraining();
             default -> false;
         };
+    }
+
+    /** The cap as the player experiences it: "75% of your tree", a flat number, or off. */
+    private static String capText(SyncConfigS2C.View v) {
+        if (v.capPercent() >= 100) {
+            return Text.translatable("kindreds.settings.off").getString();
+        }
+        if (v.capPercent() > 0) {
+            return v.capPercent() + "%";
+        }
+        return v.softCap() > 0 ? String.valueOf(v.softCap())
+                : Text.translatable("kindreds.settings.off").getString();
     }
 
     private static String onOff(boolean b) {

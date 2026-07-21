@@ -115,16 +115,23 @@ public final class LoadoutHud {
         // the row, gently pulsing so it reads as new without nagging.
         int unspent = com.kindreds.client.ClientProgress.unspentTotal();
         if (unspent > 0) {
-            Text pip = Text.translatable("kindreds.hud.points", unspent,
-                    com.kindreds.KindredsClient.openTreeKeyName());
+            // At the tree-wide cap those points cannot be spent at all, so the nudge becomes a calm
+            // statement of fact instead: a pulsing "go spend these" that can never be obeyed is nagging.
+            boolean capped = com.kindreds.client.ClientProgress.atCap();
+            Text pip = capped
+                    ? Text.translatable("kindreds.hud.capped", com.kindreds.client.ClientProgress.spent(),
+                            com.kindreds.client.ClientProgress.cap())
+                    : Text.translatable("kindreds.hud.points", unspent,
+                            com.kindreds.KindredsClient.openTreeKeyName());
             int w = tr.getWidth(pip) + 8;
             int px = x0 + barW - w;
             int py = y - 24;
-            double pulse = com.kindreds.Kindreds.CONFIG.hudAnimations ? 0.5 + 0.5 * Math.sin(now / 6.0) : 1.0;
+            double pulse = !capped && com.kindreds.Kindreds.CONFIG.hudAnimations
+                    ? 0.5 + 0.5 * Math.sin(now / 6.0) : 1.0;
             int alpha = (int) (0x60 + 0x40 * pulse) << 24;
-            ctx.fill(px, py, px + w, py + 11, alpha | 0x00332200);
-            ctx.drawBorder(px, py, w, 11, 0xFFD8B45F);
-            ctx.drawText(tr, pip, px + 4, py + 2, 0xFFFFD86B, false);
+            ctx.fill(px, py, px + w, py + 11, alpha | (capped ? 0x00201A14 : 0x00332200));
+            ctx.drawBorder(px, py, w, 11, capped ? 0xFF6E6250 : 0xFFD8B45F);
+            ctx.drawText(tr, pip, px + 4, py + 2, capped ? 0xFFA9997C : 0xFFFFD86B, false);
         }
 
         // Compact key hint under the row (uses the player's actual, possibly rebound, keys).

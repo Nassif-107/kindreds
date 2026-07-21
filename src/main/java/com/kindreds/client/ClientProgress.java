@@ -105,6 +105,24 @@ public final class ClientProgress {
     }
 
     private static int cachedUnspent;
+    private static boolean cachedAtCap;
+    private static int cachedSpent;
+    private static int cachedCap;
+
+    /** True when the player has unspent points but has hit the tree-wide cap - i.e. the points can
+     * never be spent without a respec. The HUD says "capped" instead of nagging. */
+    public static boolean atCap() {
+        return cachedAtCap;
+    }
+
+    /** Points committed so far, and the ceiling ({@code 0} = uncapped) - for the tree's readout. */
+    public static int spent() {
+        return cachedSpent;
+    }
+
+    public static int cap() {
+        return cachedCap;
+    }
 
     private static void recomputeUnspent(SkillTree t, KindredData data) {
         int sum = 0;
@@ -112,6 +130,22 @@ public final class ClientProgress {
             sum += Math.max(0, ProgressionService.pointsAvailable(data, t, d));
         }
         cachedUnspent = sum;
+        cachedCap = com.kindreds.progression.UnlockService.effectiveCap(t);
+        cachedSpent = com.kindreds.progression.UnlockService.totalPointsSpent(data, t);
+        // "At cap" means the cheapest thing left is already unaffordable, not merely that spent==cap:
+        // a 1-point node may still fit under the ceiling.
+        cachedAtCap = cachedCap > 0 && cachedSpent + cheapestUnowned(t, data) > cachedCap;
+    }
+
+    /** Cost of the cheapest node the player does not yet own ({@link Integer#MAX_VALUE} if none). */
+    private static int cheapestUnowned(SkillTree t, KindredData data) {
+        int best = Integer.MAX_VALUE;
+        for (com.kindreds.data.SkillNode n : t.nodes()) {
+            if (!data.hasNode(n.id())) {
+                best = Math.min(best, n.cost().points());
+            }
+        }
+        return best;
     }
 
     // --- per-tick watch -------------------------------------------------------------------------

@@ -391,6 +391,18 @@ public class SkillTreeScreen extends Screen {
         int x = rail[0] + 10;
         ctx.drawText(textRenderer, Text.translatable("kindreds.tree.disciplines").formatted(Formatting.BOLD), x, rail[1] + 10, accent, false);
 
+        // How much of your tree you have committed, against the ceiling. Without this the soft cap is
+        // invisible until it silently refuses a click - the one thing a build-defining rule must not do.
+        int cap = com.kindreds.progression.UnlockService.effectiveCap(tree);
+        if (cap > 0) {
+            int spent = com.kindreds.progression.UnlockService.totalPointsSpent(data, tree);
+            boolean full = spent >= cap;
+            Text capLine = Text.translatable("kindreds.tree.cap_line", spent, cap)
+                    .formatted(full ? Formatting.RED : Formatting.GRAY);
+            ctx.drawText(textRenderer, capLine, rail[0] + rail[2] - 8 - textRenderer.getWidth(capLine),
+                    rail[1] + 10, full ? 0xFFDD8060 : 0xFF9A8F76, false);
+        }
+
         int rowH = 34;
         int listTop = rail[1] + 26;
         int listBottom = rail[1] + rail[3] - 4;

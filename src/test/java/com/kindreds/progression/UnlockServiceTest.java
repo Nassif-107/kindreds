@@ -207,4 +207,69 @@ class UnlockServiceTest {
 
         assertEquals("insufficient_points", result.reason());
     }
+
+    // --- tree-wide point cap ---------------------------------------------------------------------
+
+    /** Runs {@code body} with a temporary config in place, then restores whatever was there. */
+    private static void withCap(int capPercent, Runnable body) {
+        com.kindreds.config.KindredsConfig previous = com.kindreds.Kindreds.CONFIG;
+        com.kindreds.config.KindredsConfig c = new com.kindreds.config.KindredsConfig();
+        c.pointCapPercent = capPercent;
+        c.pointSoftCap = 0;
+        com.kindreds.Kindreds.CONFIG = c;
+        try {
+            body.run();
+        } finally {
+            com.kindreds.Kindreds.CONFIG = previous;
+        }
+    }
+
+    @Test
+    void maxSpendableCountsOnlyTheCheapestOfAnExclusiveGroup() {
+        SkillTree tree = tree(
+                simple("plain", ARCHERY, 4),
+                node("path_a", ARCHERY, 3, List.of(), Optional.of("tip"), Optional.empty()),
+                node("path_b", ARCHERY, 5, List.of(), Optional.of("tip"), Optional.empty()));
+
+        // 4 (plain) + 3 (the cheaper of the two rivals) - never both branches, since owning one
+        // permanently closes the other.
+        assertEquals(7, UnlockService.maxSpendable(tree));
+    }
+
+    @Test
+    void capIsAPercentageOfTheTreesOwnSize() {
+        SkillTree tree = tree(simple("a", ARCHERY, 10), simple("b", MINING, 10));
+        withCap(50, () -> assertEquals(10, UnlockService.effectiveCap(tree)));
+        // 100% means "spend it all" - reported as 0, the no-cap sentinel.
+        withCap(100, () -> assertEquals(0, UnlockService.effectiveCap(tree)));
+    }
+
+    @Test
+    void failsWithSoftCapOnceTheCeilingIsReached() {
+        SkillTree tree = tree(simple("a", ARCHERY, 10), simple("b", MINING, 10));
+        KindredData data = new KindredData();
+        data.unlockedNodes().add("a"); // 10 of a 10-point ceiling already committed
+
+        withCap(50, () -> {
+            UnlockService.UnlockResult result = UnlockService.canUnlock(
+                    data, tree, "b", PLENTY_POINTS, ALL_DEEDS_EARNED);
+            assertFalse(result.ok());
+            assertEquals("soft_cap", result.reason());
+        });
+        // The same purchase is fine when the cap is off.
+        withCap(100, () -> assertTrue(UnlockService.canUnlock(
+                data, tree, "b", PLENTY_POINTS, ALL_DEEDS_EARNED).ok()));
+    }
+
+    @Test
+    void moreSpecificFailuresWinOverTheCap() {
+        SkillTree tree = tree(simple("a", ARCHERY, 10),
+                node("b", MINING, 10, List.of("never_owned"), Optional.empty(), Optional.empty()));
+        KindredData data = new KindredData();
+        data.unlockedNodes().add("a");
+
+        // Both the cap AND a missing prereq block this; the player needs to hear the actionable one.
+        withCap(50, () -> assertEquals("missing_prereq", UnlockService.canUnlock(
+                data, tree, "b", PLENTY_POINTS, ALL_DEEDS_EARNED).reason()));
+    }
 }

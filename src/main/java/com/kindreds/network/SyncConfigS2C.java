@@ -41,14 +41,14 @@ public record SyncConfigS2C(String json) implements CustomPayload {
 
     /** The subset of the server config the client is allowed to see and show. */
     public record View(String difficulty, double xpRate, String death, double deathPercent, int softCap,
-                       int respecCost, boolean enemyScaling, boolean birthTraits, boolean curses,
-                       boolean crossTraining, boolean vision) {
+                       int capPercent, int respecCost, boolean enemyScaling, boolean birthTraits,
+                       boolean curses, boolean crossTraining, boolean vision) {
     }
 
     public static View snapshot() {
         KindredsConfig c = Kindreds.CONFIG;
         return new View(String.valueOf(c.difficulty), c.xpRateGlobal, String.valueOf(c.deathPenalty),
-                c.deathPercent, c.pointSoftCap, c.respecCost, c.enableEnemyScaling,
+                c.deathPercent, c.pointSoftCap, c.pointCapPercent, c.respecCost, c.enableEnemyScaling,
                 c.enableBirthTraits, c.enableCurses, c.allowCrossTraining, c.enableVision);
     }
 
