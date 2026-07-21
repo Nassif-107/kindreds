@@ -114,12 +114,19 @@ public final class LoadoutHud {
             }
         }
 
-        // Only the selected ability is named - right-aligned above the row.
+        // Only the selected ability is named, right-aligned above the row - and only when there IS
+        // one: an "empty" placeholder above an empty slot says nothing worth the pixels. Long Elvish
+        // names are clipped to the width of the bar itself so the label can never run past either
+        // edge of it.
         String selId = ClientLoadout.slot(ClientLoadout.selected());
-        Text name = (selId == null || selId.isEmpty())
-                ? Text.translatable("kindreds.radial.empty").formatted(Formatting.DARK_GRAY)
-                : Text.literal(ClientLoadout.displayName(selId)).formatted(Formatting.GOLD);
-        ctx.drawText(tr, name, x0 + barW - tr.getWidth(name), y - 11, 0xFFE9C979, true);
+        if (selId != null && !selId.isEmpty()) {
+            String label = ClientLoadout.displayName(selId);
+            if (tr.getWidth(label) > barW) {
+                label = tr.trimToWidth(label, barW - tr.getWidth("…")) + "…";
+            }
+            Text name = Text.literal(label).formatted(Formatting.GOLD);
+            ctx.drawText(tr, name, x0 + barW - tr.getWidth(name), y - 11, 0xFFE9C979, true);
+        }
 
         // "You have points to spend" pip - the single best nudge back into the skill tree. Sits above
         // the row, gently pulsing so it reads as new without nagging.
