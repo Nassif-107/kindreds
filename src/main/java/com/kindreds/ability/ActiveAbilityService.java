@@ -1,26 +1,20 @@
 package com.kindreds.ability;
 
-import com.kindreds.Kindreds;
-import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
-import com.kindreds.data.SkillTreeResolver;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.ActiveAbilityDef;
 import com.kindreds.network.SyncKindredDataS2C;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
-import com.kindreds.playerdata.RaceAccess;
+import com.kindreds.progression.UnlockService;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registry;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -30,12 +24,10 @@ import java.util.Optional;
  * handler calls {@link #activate} directly.
  *
  * <h2>Ability resolution</h2>
- * {@link #activate} resolves the requesting player's {@link SkillTree} the same way
- * {@code RequestUnlockC2S} resolves it for unlocks - via {@link RaceAccess#getRace} matched
- * against {@link KindredsRegistries#SKILL_TREE} - then walks that tree's nodes <b>in authored
- * order</b> (not {@link KindredData#unlockedNodes()}'s hash-set iteration order, which isn't
- * stable or meaningful) looking for an unlocked node whose abilities include an
- * {@link ActiveAbilityDef}.
+ * {@link #activate} resolves the requesting player's {@link SkillTree} via
+ * {@link UnlockService#treeFor}, then walks that tree's nodes <b>in authored order</b> (not
+ * {@link KindredData#unlockedNodes()}'s hash-set iteration order, which isn't stable or
+ * meaningful) looking for an unlocked node whose abilities include an {@link ActiveAbilityDef}.
  *
  * <h2>{@code abilityId} matching (P1 client selection)</h2>
  * A blank/empty {@code abilityId} matches the <b>first</b> such ability found in tree order -
@@ -64,12 +56,7 @@ public final class ActiveAbilityService {
 
     public static void activate(ServerPlayerEntity player, String abilityId) {
         KindredData data = KindredAttachment.get(player);
-        MinecraftServer server = player.getServer();
-        if (server == null) {
-            return;
-        }
-
-        Optional<SkillTree> tree = resolveTree(server, player);
+        Optional<SkillTree> tree = UnlockService.treeFor(player);
         ActiveAbilityDef def = findActiveAbility(tree, data, abilityId);
         if (def == null) {
             return;
@@ -129,27 +116,6 @@ public final class ActiveAbilityService {
             sb.append(Character.toUpperCase(w.charAt(0))).append(w.substring(1).toLowerCase(Locale.ROOT));
         }
         return sb.toString();
-    }
-
-    /** Mirrors {@code RequestUnlockC2S}'s race-based tree resolution (including its Task 12 Stage
-     * B ambiguous-race guard, via {@link SkillTreeResolver}), without its node-id-scan fallback: an
-     * active ability can only be resolved once we know which tree "the player's unlocked nodes"
-     * refers to, so an unknown (or ambiguous) race means no active ability is resolvable here
-     * (a silent no-op in {@link #activate}, not an error - though the ambiguous case is still
-     * logged, so a duplicate-race authoring slip doesn't go unnoticed). */
-    private static Optional<SkillTree> resolveTree(MinecraftServer server, ServerPlayerEntity player) {
-        Optional<Identifier> race = RaceAccess.getRace(player);
-        if (race.isEmpty()) {
-            return Optional.empty();
-        }
-        Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
-        SkillTreeResolver.Resolution resolution = SkillTreeResolver.byRace(trees, race.get());
-        if (resolution.matchCount() > 1) {
-            Kindreds.LOGGER.warn(
-                    "[Kindreds] race {} matches {} different skill trees; no active ability can be resolved "
-                            + "unambiguously (fix the duplicate race authoring)", race.get(), resolution.matchCount());
-        }
-        return resolution.tree();
     }
 
     /**

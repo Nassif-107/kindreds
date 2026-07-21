@@ -1,10 +1,18 @@
 package com.kindreds.progression;
 
+import com.kindreds.Kindreds;
+import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
+import com.kindreds.data.SkillTreeResolver;
 import com.kindreds.playerdata.KindredData;
+import com.kindreds.playerdata.RaceAccess;
+import net.minecraft.registry.Registry;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
@@ -104,6 +112,38 @@ public final class UnlockService {
         }
 
         return UnlockResult.OK;
+    }
+
+    /**
+     * The skill tree of {@code player}'s current race, or empty if they have no race yet, their
+     * race matches no authored tree, or - Task 12 Stage B's guard - matches more than one (an
+     * authoring error, logged rather than silently resolved to one of the colliding trees).
+     *
+     * <p>Previously reimplemented three times with only their warning text differing
+     * ({@code ActiveAbilityService.resolveTree}, {@code CurseContextService.resolveTree},
+     * {@code PerkService.resolveTree}); {@code ThreatService} needing the same lookup was the
+     * point past which a fourth private copy stopped being worth it, so all four now delegate
+     * here. {@code RequestUnlockC2S} keeps its own resolution: unlike these callers it also needs
+     * a node-id-scan fallback for when the race is unknown, which this method deliberately does
+     * not provide (returning empty is the correct answer for a raceless player everywhere else).
+     */
+    public static Optional<SkillTree> treeFor(ServerPlayerEntity player) {
+        MinecraftServer server = player.getServer();
+        if (server == null) {
+            return Optional.empty();
+        }
+        Optional<Identifier> race = RaceAccess.getRace(player);
+        if (race.isEmpty()) {
+            return Optional.empty();
+        }
+        Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
+        SkillTreeResolver.Resolution resolution = SkillTreeResolver.byRace(trees, race.get());
+        if (resolution.matchCount() > 1) {
+            Kindreds.LOGGER.warn(
+                    "[Kindreds] race {} matches {} different skill trees; no single tree can be resolved "
+                            + "unambiguously (fix the duplicate race authoring)", race.get(), resolution.matchCount());
+        }
+        return resolution.tree();
     }
 
     /** The most points {@code tree} could ever absorb: every node, except that only the cheapest

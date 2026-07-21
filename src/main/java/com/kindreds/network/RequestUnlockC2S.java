@@ -121,6 +121,7 @@ public record RequestUnlockC2S(String nodeId) implements CustomPayload {
         }
 
         com.kindreds.ability.PerkService.invalidate(player.getUuid());
+        com.kindreds.threat.ThreatService.invalidate(player.getUuid());
         SyncKindredDataS2C.sendTo(player);
         UnlockResultS2C.sendTo(player, true, "ok");
     }

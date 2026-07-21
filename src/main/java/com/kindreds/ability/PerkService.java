@@ -2,13 +2,12 @@ package com.kindreds.ability;
 
 import com.kindreds.data.BirthTrait;
 import com.kindreds.data.KindredsRegistries;
-import com.kindreds.data.SkillTree;
-import com.kindreds.data.SkillTreeResolver;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.PerkDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.playerdata.RaceAccess;
+import com.kindreds.progression.UnlockService;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
@@ -100,7 +99,7 @@ public final class PerkService {
         }
         List<PerkDef> perks = new ArrayList<>();
         birthTraitFor(server, race.get()).ifPresent(bt -> addPerks(perks, bt.traits()));
-        resolveTree(server, race.get()).ifPresent(tree -> {
+        UnlockService.treeFor(player).ifPresent(tree -> {
             KindredData data = KindredAttachment.get(player);
             for (String nodeId : data.unlockedNodes()) {
                 tree.node(nodeId).ifPresent(node -> addPerks(perks, node.abilities()));
@@ -125,10 +124,5 @@ public final class PerkService {
             }
         }
         return Optional.empty();
-    }
-
-    private static Optional<SkillTree> resolveTree(MinecraftServer server, Identifier race) {
-        Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
-        return SkillTreeResolver.byRace(trees, race).tree();
     }
 }

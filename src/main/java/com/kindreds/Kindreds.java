@@ -90,6 +90,7 @@ public class Kindreds implements ModInitializer {
         com.kindreds.ability.CorruptionService.register();
         PerkEventHandlers.register();
         DeathHandler.register();
+        com.kindreds.threat.ThreatService.register();
 
         // Push each player's server-authoritative skill data to their own client as soon as their
         // play session is ready, so client-side UI/HUD has real data from the very first tick

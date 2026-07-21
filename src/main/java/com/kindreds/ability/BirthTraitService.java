@@ -188,6 +188,9 @@ public final class BirthTraitService {
         // Owned perks are partly race-derived (birth-trait perks + which tree's nodes count), so a race
         // change must drop the cached perk list too.
         PerkService.invalidate(player.getUuid());
+        // Threat's commitment term is read from the race's own tree; a race change points it at a
+        // different tree entirely (see UnlockService#treeFor), so the cached figure must go too.
+        com.kindreds.threat.ThreatService.invalidate(player.getUuid());
         return true;
     }
 

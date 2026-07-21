@@ -55,6 +55,17 @@ public class KindredsConfig {
 
     public boolean allowCrossTraining = true;
     public boolean enableEnemyScaling = false;
+    /** §2.6: how much of threat becomes difficulty. See {@link #scalingCurveExponent()}. */
+    public ScalingCurve scalingCurve = ScalingCurve.FEEL_STRONGER;
+    /** §2.1 prior weights: {@code Wc}, {@code Wg}, {@code Wr}. A server wanting pure skill-based
+     * scaling sets {@link #weightGear} to 0. */
+    public int weightCommitment = 3;
+    public int weightGear = 2;
+    public int weightRenown = 1;
+    /** §2.2: the high-water prior mark falls toward the live reading by at most this many points
+     * per <b>hour of played time</b> (never wall-clock or in-game-day time - see
+     * {@code ThreatMath#decayed}). */
+    public float priorDecayPerHour = 2f;
 
     /**
      * Loads config from {@code path}. If the file is missing, unreadable, or
@@ -132,5 +143,15 @@ public class KindredsConfig {
         if (respecItem == null) {
             respecItem = "minecraft:amethyst_shard";
         }
+        if (scalingCurve == null) {
+            scalingCurve = ScalingCurve.FEEL_STRONGER;
+        }
+    }
+
+    /** The exponent {@code ThreatMath#scaled} applies, derived from {@link #scalingCurve}. A
+     * method (not a plain field) so the curve stays the single authored setting - the JSON only
+     * ever stores the named choice, never a raw float that could drift from it. */
+    public float scalingCurveExponent() {
+        return scalingCurve.exponent;
     }
 }

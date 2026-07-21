@@ -53,6 +53,7 @@ public final class RespecService {
         }
         data.unlockedNodes().clear();
         com.kindreds.ability.PerkService.invalidate(target.getUuid());
+        com.kindreds.threat.ThreatService.invalidate(target.getUuid());
         return reversedCount;
     }
 

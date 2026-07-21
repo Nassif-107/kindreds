@@ -4,7 +4,6 @@ import com.kindreds.Kindreds;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
-import com.kindreds.data.SkillTreeResolver;
 import com.kindreds.data.ability.AbilityDef;
 import com.kindreds.data.ability.StatusEffectDef;
 import com.kindreds.data.ability.ContextualBoon;
@@ -12,6 +11,7 @@ import com.kindreds.data.ability.CurseDef;
 import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.playerdata.RaceAccess;
+import com.kindreds.progression.UnlockService;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.registry.Registry;
@@ -132,7 +132,7 @@ public final class CurseContextService {
     }
 
     private static void tickPlayer(MinecraftServer server, ServerPlayerEntity player) {
-        Optional<SkillTree> treeOpt = resolveTree(server, player);
+        Optional<SkillTree> treeOpt = UnlockService.treeFor(player);
         if (treeOpt.isEmpty()) {
             return;
         }
@@ -422,22 +422,4 @@ public final class CurseContextService {
         return world.isSkyVisible(pos) && world.getLightLevel(LightType.SKY, pos) >= 15;
     }
 
-    // --- Tree resolution ---------------------------------------------------------------------------
-
-    /** Mirrors {@code ActiveAbilityService}'s race-based tree resolution, including Task 12 Stage
-     * B's ambiguous-race guard via {@link SkillTreeResolver}. */
-    private static Optional<SkillTree> resolveTree(MinecraftServer server, ServerPlayerEntity player) {
-        Optional<Identifier> race = RaceAccess.getRace(player);
-        if (race.isEmpty()) {
-            return Optional.empty();
-        }
-        Registry<SkillTree> trees = server.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
-        SkillTreeResolver.Resolution resolution = SkillTreeResolver.byRace(trees, race.get());
-        if (resolution.matchCount() > 1) {
-            Kindreds.LOGGER.warn(
-                    "[Kindreds] race {} matches {} different skill trees; contextual curses can't be resolved "
-                            + "unambiguously (fix the duplicate race authoring)", race.get(), resolution.matchCount());
-        }
-        return resolution.tree();
-    }
 }
