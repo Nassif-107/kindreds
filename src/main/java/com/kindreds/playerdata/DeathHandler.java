@@ -189,7 +189,6 @@ public final class DeathHandler {
                 new Object2LongOpenHashMap<>(data.disciplineXp()),
                 new HashSet<>(data.unlockedNodes()),
                 data.activeVisionLens(),
-                new HashSet<>(data.titles()),
                 data.corruption(),
                 new Object2LongOpenHashMap<>(data.cooldowns()),
                 new HashSet<>(data.discoveredBiomes()));

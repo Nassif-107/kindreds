@@ -61,7 +61,6 @@ public record SyncKindredDataS2C(KindredData data) implements CustomPayload {
                 new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>(live.disciplineXp()),
                 new java.util.HashSet<>(live.unlockedNodes()),
                 live.activeVisionLens(),
-                new java.util.HashSet<>(live.titles()),
                 live.corruption(),
                 new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>(live.cooldowns()),
                 new java.util.HashSet<>(live.discoveredBiomes()),

@@ -106,12 +106,14 @@ class KindredDataTest {
         KindredData data = new KindredData();
         data.addXp(archery, 42L);
         data.addXp(mining, 7L);
-        // Deliberately distinct contents in unlockedNodes vs. titles, and distinct in shape
-        // (different sizes/values) so a positional swap between the two PACKET_CODEC entries
-        // would be caught by asserting each set independently below.
+        // Deliberately distinct contents in unlockedNodes vs. renown, and distinct in shape
+        // (different sizes/values) so a positional swap between the two Set<String> entries in
+        // PACKET_CODEC would be caught by asserting each set independently below. (This guarded
+        // unlockedNodes against titles until titles was removed for never being written to;
+        // renown is the other Set<String> on the wire, so the hazard moved rather than went away.)
         data.unlockedNodes().add("elf.keen_sight");
         data.unlockedNodes().add("elf.silent_step");
-        data.titles().add("elf_friend");
+        data.renown().add("renown/elf/starlit_aim");
         data.setActiveVisionLens(lens);
         data.setCorruption(3);
         data.cooldowns().put("shout_of_valor", 12345L);
@@ -127,8 +129,8 @@ class KindredDataTest {
         assertEquals(42L, back.xpIn(archery));
         assertEquals(7L, back.xpIn(mining));
         assertEquals(Set.of("elf.keen_sight", "elf.silent_step"), back.unlockedNodes());
-        assertEquals(Set.of("elf_friend"), back.titles());
-        assertNotEquals(back.unlockedNodes(), back.titles());
+        assertEquals(Set.of("renown/elf/starlit_aim"), back.renown());
+        assertNotEquals(back.unlockedNodes(), back.renown());
         assertEquals(lens, back.activeVisionLens());
         assertEquals(3, back.corruption());
         assertEquals(12345L, back.cooldowns().getLong("shout_of_valor"));
