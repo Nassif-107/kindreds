@@ -66,11 +66,15 @@
     "kindreds.trait.orc.plus.1",
     "kindreds.trait.orc.plus.2",
     "kindreds.trait.orc.plus.3",
-    "kindreds.trait.orc.plus.4",
     "kindreds.trait.orc.plus.5"
   ],
   "minuses": [
-    "kindreds.trait.orc.minus.0",
     "kindreds.trait.orc.minus.1"
+  ],
+  "conditional_pluses": [
+    "kindreds.trait.orc.plus.4"
+  ],
+  "conditional_minuses": [
+    "kindreds.trait.orc.minus.0"
   ]
 }

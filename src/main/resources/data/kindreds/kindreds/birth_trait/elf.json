@@ -94,11 +94,14 @@
     "kindreds.trait.elf.plus.6",
     "kindreds.trait.elf.plus.7",
     "kindreds.trait.elf.plus.8",
-    "kindreds.trait.elf.plus.9",
     "kindreds.trait.elf.plus.10",
     "kindreds.trait.elf.plus.11"
   ],
-  "minuses": [
+  "minuses": [],
+  "conditional_pluses": [
+    "kindreds.trait.elf.plus.9"
+  ],
+  "conditional_minuses": [
     "kindreds.trait.elf.minus.0"
   ]
 }

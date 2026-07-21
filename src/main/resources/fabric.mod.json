@@ -15,7 +15,8 @@
       "com.kindreds.client.gametest.UiScreenshotTest",
       "com.kindreds.client.gametest.KindredsFunctionalTest",
       "com.kindreds.client.gametest.AbilityVisualTest",
-      "com.kindreds.client.gametest.ContextEffectTest"
+      "com.kindreds.client.gametest.ContextEffectTest",
+      "com.kindreds.client.gametest.ScreenIterationTest"
     ]
   },
   "mixins": [

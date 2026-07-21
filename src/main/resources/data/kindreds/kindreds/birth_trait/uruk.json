@@ -56,11 +56,13 @@
     "kindreds.trait.uruk.plus.3",
     "kindreds.trait.uruk.plus.4",
     "kindreds.trait.uruk.plus.5",
-    "kindreds.trait.uruk.plus.6",
     "kindreds.trait.uruk.plus.7",
     "kindreds.trait.uruk.plus.8"
   ],
   "minuses": [
     "kindreds.trait.uruk.minus.0"
+  ],
+  "conditional_pluses": [
+    "kindreds.trait.uruk.plus.6"
   ]
 }

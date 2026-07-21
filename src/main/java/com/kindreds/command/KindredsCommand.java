@@ -147,10 +147,10 @@ public final class KindredsCommand {
         race.flatMap(r -> findBirthTrait(source.getServer(), r)).ifPresent(bt -> {
             source.sendFeedback(() -> Text.literal("Birth traits (applied: "
                     + (data.appliedBirthRace() != null) + "):"), false);
-            for (String plus : bt.pluses()) {
+            for (String plus : bt.allPluses()) {
                 source.sendFeedback(() -> Text.literal("  + ").append(Text.translatable(plus)), false);
             }
-            for (String minus : bt.minuses()) {
+            for (String minus : bt.allMinuses()) {
                 source.sendFeedback(() -> Text.literal("  - ").append(Text.translatable(minus)), false);
             }
         });

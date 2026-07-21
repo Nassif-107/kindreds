@@ -30,12 +30,14 @@
     "kindreds.trait.hobbit.plus.0",
     "kindreds.trait.hobbit.plus.1",
     "kindreds.trait.hobbit.plus.2",
-    "kindreds.trait.hobbit.plus.3",
-    "kindreds.trait.hobbit.plus.4"
+    "kindreds.trait.hobbit.plus.3"
   ],
   "minuses": [
     "kindreds.trait.hobbit.minus.0",
     "kindreds.trait.hobbit.minus.1",
     "kindreds.trait.hobbit.minus.2"
+  ],
+  "conditional_pluses": [
+    "kindreds.trait.hobbit.plus.4"
   ]
 }

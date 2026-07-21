@@ -57,8 +57,15 @@ import java.util.TreeMap;
  * it opens. Unlock attempts get audible + visual feedback via {@link #onUnlockResult}.
  */
 public class SkillTreeScreen extends Screen {
-    private static final int TAB_W = 152;
-    private static final int PANEL_W = 214;
+    // The three columns are elastic, not fixed. A fixed 152 + 214 leaves 29px of canvas in a 427-wide
+    // GUI - which is what an 854x480 window at scale 2 actually gives you, and what most players are
+    // looking at - so the tree the screen exists to show was a slit you could not read or click.
+    private static final int RAIL_W_MAX = 152;
+    private static final int RAIL_W_MIN = 100;
+    private static final int PANEL_W_MAX = 214;
+    private static final int PANEL_W_MIN = 138;
+    /** Narrower than this and three side-by-side columns stop being worth having. */
+    private static final int CANVAS_W_MIN = 200;
     private static final int MARGIN = 8;
     private static final int GAP = 8;
 
@@ -68,10 +75,14 @@ public class SkillTreeScreen extends Screen {
     private static final float LANE_GAP = 70f;      // gap between discipline regions
     private static final int NODE_R = 15;
     private static final int CANVAS_TOP_PAD = 20;
-    private static final float MIN_ZOOM = 0.30f;
+    /** Low enough that the whole map can always be made to fit, however narrow the canvas gets;
+     * the fit only reaches down here on a small window, and scrolling still walks back up. */
+    private static final float MIN_ZOOM = 0.18f;
     private static final float MAX_ZOOM = 1.60f;
-    /** Below this zoom, node labels/badges are hidden to keep the overview clean. */
+    /** Below this zoom, only the nodes that matter are named (see {@link #renderNodeLabels}). */
     private static final float LABEL_ZOOM = 0.62f;
+    /** The kind badge is a single glyph, so it stays readable further out than a name does. */
+    private static final float BADGE_ZOOM = 0.55f;
 
     // Not final: resolved lazily from the live client-synced race (see refreshTreeForRace()).
     private SkillTree tree;
@@ -88,6 +99,8 @@ public class SkillTreeScreen extends Screen {
      * BRANCH = one discipline, focused and readable (pick via the tabs). Both share the camera. */
     private enum ViewMode { MAP, BRANCH }
     private ViewMode viewMode = ViewMode.MAP;
+    /** Set once the player picks a view themselves, so a resize never overrides their choice. */
+    private boolean viewModeChosen;
     private int[] viewToggleButton = new int[4];
 
     // Whole-tree map camera.
@@ -106,6 +119,15 @@ public class SkillTreeScreen extends Screen {
     private int[] rail = new int[4];
     private int[] canvas = new int[4];
     private int[] panel = new int[4];
+    /** Narrow window: the panel floats over the canvas and can be shut to see the whole tree. */
+    private boolean panelOverlay;
+    private boolean panelOpen = true;
+    private int[] panelCloseButton = new int[4];
+    private int[] panelOpenTab = new int[4];
+    /** Scroll offset of the panel's detail region - a node with many effects overran the footer. */
+    private float panelScroll;
+    private int panelContentHeight;
+    private int panelViewHeight = 1;
     private int[] unlockButton = new int[4];  // only valid while an unlockable node is selected
 
     /** Live node search. Hand-rolled rather than a TextFieldWidget because this screen is entirely
@@ -171,10 +193,52 @@ public class SkillTreeScreen extends Screen {
 
     @Override
     protected void init() {
-        rail = new int[]{MARGIN, MARGIN, TAB_W, height - 2 * MARGIN};
-        panel = new int[]{width - PANEL_W - MARGIN, MARGIN, PANEL_W, height - 2 * MARGIN};
+        int usable = width - 2 * MARGIN - 2 * GAP;
+        int railW = clamp(RAIL_W_MIN, RAIL_W_MAX, Math.round(usable * 0.26f));
+        int panelW = clamp(PANEL_W_MIN, PANEL_W_MAX, Math.round(usable * 0.34f));
+
+        // When the three of them cannot all fit, the detail panel stops holding a column open and
+        // floats over the canvas instead, where it can be shut. Shrinking all three together would
+        // only trade one unusable screen for three cramped ones.
+        panelOverlay = usable - railW - panelW < CANVAS_W_MIN;
+
+        rail = new int[]{MARGIN, MARGIN, railW, height - 2 * MARGIN};
         int cx = rail[0] + rail[2] + GAP;
-        canvas = new int[]{cx, MARGIN, panel[0] - GAP - cx, height - 2 * MARGIN};
+        panel = new int[]{width - panelW - MARGIN, MARGIN, panelW, height - 2 * MARGIN};
+        canvas = panelOverlay
+                ? new int[]{cx, MARGIN, width - MARGIN - cx, height - 2 * MARGIN}
+                : new int[]{cx, MARGIN, panel[0] - GAP - cx, height - 2 * MARGIN};
+
+        // A four-lane map shrunk into a narrow canvas is a field of dots with no labels. One branch at
+        // a time is legible at any width, so that is what a small window opens on; the toggle is still
+        // there for anyone who wants the whole constellation.
+        if (panelOverlay && !viewModeChosen) {
+            viewMode = ViewMode.BRANCH;
+        }
+
+        fitted = false;   // a resized canvas needs a fresh fit, or the tree keeps the old window's zoom
+    }
+
+    private static int clamp(int lo, int hi, int v) {
+        return Math.max(lo, Math.min(hi, v));
+    }
+
+    /** True while the detail panel is floating over the canvas rather than holding its own column. */
+    private boolean panelVisible() {
+        return !panelOverlay || panelOpen;
+    }
+
+    /**
+     * The part of the canvas the player can actually see. When the panel floats it hides the canvas's
+     * right-hand end, and everything that centres itself - the fit, the pan origin, the toolbar - has
+     * to reckon with the visible part or it centres the tree half underneath the panel.
+     */
+    private int[] view() {
+        if (!panelOverlay || !panelOpen) {
+            return canvas;
+        }
+        int right = Math.max(canvas[0] + 80, panel[0] - GAP);
+        return new int[]{canvas[0], canvas[1], right - canvas[0], canvas[3]};
     }
 
     @Override
@@ -409,7 +473,9 @@ public class SkillTreeScreen extends Screen {
         TreeRenderer.drawFrame(ctx, theme, rail[0], rail[1], rail[2], rail[3]);
         int accent = ThemeAssets.accent(theme);
         int x = rail[0] + 10;
-        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.disciplines").formatted(Formatting.BOLD), x, rail[1] + 10, accent, false);
+        Text heading = Text.translatable("kindreds.tree.disciplines").formatted(Formatting.BOLD);
+        ctx.drawText(textRenderer, heading, x, rail[1] + 10, accent, false);
+        int headBottom = rail[1] + 26;
 
         // How much of your tree you have committed, against the ceiling. Without this the soft cap is
         // invisible until it silently refuses a click - the one thing a build-defining rule must not do.
@@ -422,12 +488,20 @@ public class SkillTreeScreen extends Screen {
                     ? Text.translatable("kindreds.tree.cap_line_renown", spent, cap, bonus)
                     : Text.translatable("kindreds.tree.cap_line", spent, cap))
                     .formatted(full ? Formatting.RED : Formatting.GRAY);
-            ctx.drawText(textRenderer, capLine, rail[0] + rail[2] - 8 - textRenderer.getWidth(capLine),
-                    rail[1] + 10, full ? 0xFFDD8060 : 0xFF9A8F76, false);
+            int capW = textRenderer.getWidth(capLine);
+            int color = full ? 0xFFDD8060 : 0xFF9A8F76;
+            // Right-aligned beside the heading only while there is room for both; a narrow rail used
+            // to print the two straight through each other ("Disciplines0/66 committed").
+            if (textRenderer.getWidth(heading) + capW + 12 <= rail[2] - 20) {
+                ctx.drawText(textRenderer, capLine, rail[0] + rail[2] - 8 - capW, rail[1] + 10, color, false);
+            } else {
+                ctx.drawText(textRenderer, capLine, x, rail[1] + 21, color, false);
+                headBottom = rail[1] + 36;
+            }
         }
 
         int rowH = 34;
-        int listTop = rail[1] + 26;
+        int listTop = headBottom;
         int listBottom = rail[1] + rail[3] - 4;
         railContentHeight = tabDisciplines.size() * rowH;
         // Clamp scroll (needed since there can now be up to 12 disciplines - more than fit on a tall
@@ -455,29 +529,42 @@ public class SkillTreeScreen extends Screen {
             int textColor = !hasNodes ? 0xFF6E6A60 : (sel ? 0xFFFFFFFF : 0xFFD8D2C0);
             ctx.drawText(textRenderer, Text.literal(titleCase(disc)).formatted(sel ? Formatting.BOLD : Formatting.RESET),
                     r[0] + 8, r[1] + 5, textColor, false);
-            String sub = hasNodes
-                    ? Text.translatable("kindreds.tree.tab.sub", level(data, disc), spent(data, disc)).getString()
-                    : Text.translatable("kindreds.tree.tab.nopath").getString();
-            ctx.drawText(textRenderer, Text.literal(sub), r[0] + 8, r[1] + 17, 0xFF7A756A, false);
             if (hasNodes && avail > 0) {
                 String pts = "+" + avail;
                 int pw = textRenderer.getWidth(pts);
                 ctx.drawText(textRenderer, Text.literal(pts).formatted(Formatting.BOLD),
                         r[0] + r[2] - pw - 8, r[1] + 5, 0xFF66DD66, true);
             }
-            // "N nodes you could take right now" - answers "what do I actually do?" without making
-            // the player open every discipline to find out. Pulses in step with the node halos.
+
+            // Second line: the level/spent summary on the left, and "N nodes you could take right
+            // now" on the right - which answers "what do I actually do?" without opening every
+            // discipline. In a narrow rail the two do not both fit, so the summary gives up its
+            // "spent" half first and the badge is the last thing dropped, being the more actionable.
+            Text badge = null;
+            int badgeW = 0;
             if (hasNodes && tree != null) {
                 int ready = TreeRenderer.availableCount(tree, data, disciplineId(disc));
                 if (ready > 0) {
-                    Text badge = Text.translatable("kindreds.tree.ready", ready);
-                    int bw = textRenderer.getWidth(badge);
-                    double pulse = com.kindreds.Kindreds.CONFIG.hudAnimations
-                            ? 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0) : 1.0;
-                    int a = (int) (170 + 85 * pulse) << 24;
-                    ctx.drawText(textRenderer, badge, r[0] + r[2] - bw - 8, r[1] + 17,
-                            a | 0x00FFD86B, false);
+                    badge = Text.translatable("kindreds.tree.ready", ready);
+                    badgeW = textRenderer.getWidth(badge);
                 }
+            }
+            String sub = hasNodes
+                    ? Text.translatable("kindreds.tree.tab.sub", level(data, disc), spent(data, disc)).getString()
+                    : Text.translatable("kindreds.tree.tab.nopath").getString();
+            int room = r[2] - 16;
+            if (badge != null && textRenderer.getWidth(sub) + badgeW + 6 > room) {
+                sub = hasNodes ? Text.translatable("kindreds.tree.tab.sub_short", level(data, disc)).getString() : sub;
+                if (textRenderer.getWidth(sub) + badgeW + 6 > room) {
+                    badge = null;   // no room for both; the level is the one that must always show
+                }
+            }
+            ctx.drawText(textRenderer, Text.literal(sub), r[0] + 8, r[1] + 17, 0xFF7A756A, false);
+            if (badge != null) {
+                double pulse = com.kindreds.Kindreds.CONFIG.hudAnimations
+                        ? 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0) : 1.0;
+                int a = (int) (170 + 85 * pulse) << 24;
+                ctx.drawText(textRenderer, badge, r[0] + r[2] - badgeW - 8, r[1] + 17, a | 0x00FFD86B, false);
             }
             y += rowH;
         }
@@ -493,11 +580,12 @@ public class SkillTreeScreen extends Screen {
 
         layout(data);
 
-        int left = canvas[0] + 1, right = canvas[0] + canvas[2] - 1;
-        int top = canvas[1] + 1, bottom = canvas[1] + canvas[3] - 1;
+        int[] view = view();
+        int left = view[0] + 1, right = view[0] + view[2] - 1;
+        int top = view[1] + 1, bottom = view[1] + view[3] - 1;
         ctx.enableScissor(left, top, right, bottom);
 
-        float cx = canvas[0] + canvas[2] / 2f;
+        float cx = view[0] + view[2] / 2f;
         // Discipline regions: a faint colored band + a label at the top.
         for (Map.Entry<String, float[]> e : laneBounds.entrySet()) {
             String disc = e.getKey();
@@ -509,7 +597,7 @@ public class SkillTreeScreen extends Screen {
             String label = titleCase(disc);
             int lw = textRenderer.getWidth(label);
             ctx.drawText(textRenderer, Text.literal(label).formatted(Formatting.BOLD),
-                    (int) ((x0 + x1) / 2 - lw / 2f), canvas[1] + 5, dc, true);
+                    (int) ((x0 + x1) / 2 - lw / 2f), view[1] + 5, dc, true);
         }
 
         // Edges (all prereqs, including cross-discipline convergences shown in MAP view).
@@ -523,8 +611,12 @@ public class SkillTreeScreen extends Screen {
         boolean showLabels = zoom >= LABEL_ZOOM;
         hovered = null;
         searchMatches = 0;
+        // A node lying beneath the floating panel is not being pointed at, whatever the cursor's
+        // coordinates say - otherwise its tooltip pops out over the panel you are trying to read.
+        boolean pointable = within(canvas, mouseX, mouseY)
+                && !(panelVisible() && within(panel, mouseX, mouseY));
         for (Placed p : placed) {
-            boolean hover = within(canvas, mouseX, mouseY) && dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 3;
+            boolean hover = pointable && dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 3;
             if (hover) {
                 hovered = p;
             }
@@ -544,62 +636,130 @@ public class SkillTreeScreen extends Screen {
             }
             TreeRenderer.drawNode(ctx, p.node(), p.state(), theme, p.x(), p.y(), p.r(), hover || selected);
 
-            if (showLabels) {
+            if (zoom >= BADGE_ZOOM) {
                 NodeKind kind = kindOf(p.node());
                 int bx = (int) (p.x() + p.r() - 3);
                 int by = (int) (p.y() - p.r() - 7);
                 ctx.fill(bx - 2, by - 1, bx + 9, by + 9, 0xD0101014);
                 ctx.drawText(textRenderer, Text.literal(kind.badge), bx, by, kind.color, false);
-                String name = NodeTooltip.displayName(p.node().id());
-                int nw = textRenderer.getWidth(name);
-                int nameColor = switch (p.state()) {
-                    case OWNED -> 0xFFB9F2B0;
-                    case AVAILABLE -> 0xFFFFF3C0;
-                    case SEALED -> ThemeAssets.WARNING_COLOR;
-                    case LOCKED -> 0xFF8A8478;
-                };
-                int nx = (int) p.x() - nw / 2;
-                int ny = (int) (p.y() + p.r() + 3);
-                // A dark backing pill so a long name stays legible where it overlaps a neighbouring
-                // node or edge (they used to blur together). Drawn only for the selected/hovered node
-                // at full opacity, lighter for the rest, so the focused node's name always reads clearly.
-                boolean focus = hover || selected;
-                ctx.fill(nx - 3, ny - 2, nx + nw + 3, ny + 10, focus ? 0xF0141018 : 0xB0101014);
-                ctx.drawText(textRenderer, Text.literal(name), nx, ny, nameColor, true);
             }
         }
-        ctx.disableScissor();
 
-        // Search box, drawn outside the canvas scissor so it never gets clipped. Shows the hint until
-        // you type, then the query plus a live match count.
-        String label = query.isEmpty()
-                ? Text.translatable("kindreds.tree.search.hint").getString()
-                : query + "  (" + searchMatches + ")";
-        int sw = Math.max(96, textRenderer.getWidth(label) + 12);
-        int sx = canvas[0] + canvas[2] - sw - 6;
-        int sy = canvas[1] + 6;
-        ctx.fill(sx, sy, sx + sw, sy + 14, 0xC0101014);
-        ctx.drawBorder(sx, sy, sw, 14, query.isEmpty() ? 0xFF4A4030 : 0xFFD8B45F);
-        ctx.drawText(textRenderer, Text.literal(label), sx + 5, sy + 3,
-                query.isEmpty() ? 0xFF6E6A60 : 0xFFFFD86B, false);
+        renderNodeLabels(ctx, showLabels);
+        ctx.disableScissor();
 
         if (placed.isEmpty()) {
             String none = Text.translatable("kindreds.tree.empty").getString();
             int w = textRenderer.getWidth(none);
-            ctx.drawText(textRenderer, Text.literal(none), canvas[0] + (canvas[2] - w) / 2, canvas[1] + canvas[3] / 2, 0xFF9A9484, true);
+            ctx.drawText(textRenderer, Text.literal(none), view[0] + (view[2] - w) / 2, view[1] + view[3] / 2, 0xFF9A9484, true);
         }
 
-        // View toggle (top-right) + control hint (bottom-left).
+        // A toolbar along the foot of the canvas. The search box and the view toggle both used to be
+        // pinned to the top-right corner, where they drew over each other and over whichever lane
+        // label happened to fall beneath them; the top strip now belongs to the lane labels alone.
+        int barH = 18;
+        int barY = view[1] + view[3] - barH - 1;
+        int barL = view[0] + 1;
+        int barR = view[0] + view[2] - 1;
+        ctx.fill(barL, barY, barR, barY + barH, 0xB0101014);
+        ctx.fill(barL, barY, barR, barY + 1, ThemeAssets.withAlpha(accent, 60));
+
+        String label = query.isEmpty()
+                ? Text.translatable("kindreds.tree.search.hint").getString()
+                : query + "  (" + searchMatches + ")";
+        int sw = Math.min(Math.max(96, textRenderer.getWidth(label) + 12), Math.max(60, view[2] / 2));
+        int sx = barR - sw - 5;
+        int sy = barY + 2;
+        ctx.fill(sx, sy, sx + sw, sy + 14, 0xC0101014);
+        ctx.drawBorder(sx, sy, sw, 14, query.isEmpty() ? 0xFF4A4030 : 0xFFD8B45F);
+        ctx.enableScissor(sx + 1, sy, sx + sw - 1, sy + 14);
+        ctx.drawText(textRenderer, Text.literal(label), sx + 5, sy + 3,
+                query.isEmpty() ? 0xFF6E6A60 : 0xFFFFD86B, false);
+        ctx.disableScissor();
+
         String toggle = viewMode == ViewMode.MAP ? "◇ Whole map" : "▤ One branch";
         int tw = textRenderer.getWidth(toggle) + 12;
-        viewToggleButton = new int[]{canvas[0] + canvas[2] - tw - 6, canvas[1] + 4, tw, 14};
+        viewToggleButton = new int[]{sx - tw - 5, sy, tw, 14};
         boolean th = within(viewToggleButton, mouseX, mouseY);
         ctx.fill(viewToggleButton[0], viewToggleButton[1], viewToggleButton[0] + tw, viewToggleButton[1] + 14,
                 th ? ThemeAssets.withAlpha(accent, 90) : 0x80000000);
         ctx.drawBorder(viewToggleButton[0], viewToggleButton[1], tw, 14, accent);
         ctx.drawText(textRenderer, Text.literal(toggle), viewToggleButton[0] + 6, viewToggleButton[1] + 3, 0xFFFFFFFF, false);
-        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.pan_hint").formatted(Formatting.DARK_GRAY),
-                canvas[0] + 8, canvas[1] + canvas[3] - 11, 0xFF6E6A60, false);
+
+        // The hint is the first thing to go when the bar runs out of room - it teaches a control the
+        // player learns once, while the toggle and the search are needed every visit.
+        Text hint = Text.translatable("kindreds.tree.pan_hint").formatted(Formatting.DARK_GRAY);
+        if (barL + 8 + textRenderer.getWidth(hint) + 6 < viewToggleButton[0]) {
+            ctx.drawText(textRenderer, hint, barL + 8, barY + 5, 0xFF6E6A60, false);
+        }
+    }
+
+    /**
+     * Names the nodes, in a pass of its own so that priority can decide who gets a name when two
+     * would sit on top of each other.
+     *
+     * <p>Zoomed out, the map used to be a field of unlabelled dots: the only way to learn what any of
+     * them was, was to click it. Naming all of them at that zoom is no better - at 0.4 the columns are
+     * thirty pixels apart and every name overlaps its neighbours. So the ones that matter are named
+     * first (the node you are pointing at, then the ones you could actually take right now, then the
+     * ones you own), and a name is dropped rather than drawn over one already placed.
+     */
+    private void renderNodeLabels(DrawContext ctx, boolean showAll) {
+        List<Placed> order = new ArrayList<>(placed);
+        order.sort(java.util.Comparator.comparingInt(this::labelPriority));
+        List<int[]> taken = new ArrayList<>();
+        for (Placed p : order) {
+            boolean focus = p == hovered
+                    || (selectedNode != null && selectedNode.id().equals(p.node().id()));
+            boolean wanted = showAll || focus
+                    || p.state() == TreeRenderer.NodeState.AVAILABLE
+                    || p.state() == TreeRenderer.NodeState.SEALED;
+            if (!wanted) {
+                continue;
+            }
+            String name = NodeTooltip.displayName(p.node().id());
+            int nw = textRenderer.getWidth(name);
+            int nx = (int) p.x() - nw / 2;
+            int ny = (int) (p.y() + p.r() + 3);
+            int[] box = {nx - 3, ny - 2, nw + 6, 12};
+            // The node being pointed at always gets its name, over anything already there; everything
+            // else gives way, because a half-covered name is worse than no name at all.
+            if (!focus && overlapsAny(box, taken)) {
+                continue;
+            }
+            taken.add(box);
+            int nameColor = switch (p.state()) {
+                case OWNED -> 0xFFB9F2B0;
+                case AVAILABLE -> 0xFFFFF3C0;
+                case SEALED -> ThemeAssets.WARNING_COLOR;
+                case LOCKED -> 0xFF8A8478;
+            };
+            ctx.fill(box[0], box[1], box[0] + box[2], box[1] + box[3], focus ? 0xF0141018 : 0xB0101014);
+            ctx.drawText(textRenderer, Text.literal(name), nx, ny, nameColor, true);
+        }
+    }
+
+    /** Lower sorts earlier, and earlier wins the space. */
+    private int labelPriority(Placed p) {
+        if (p == hovered || (selectedNode != null && selectedNode.id().equals(p.node().id()))) {
+            return 0;
+        }
+        return switch (p.state()) {
+            case AVAILABLE -> 1;
+            case SEALED -> 2;
+            case OWNED -> 3;
+            case LOCKED -> 4;
+        };
+    }
+
+    private static boolean overlapsAny(int[] box, List<int[]> taken) {
+        for (int[] t : taken) {
+            if (box[0] < t[0] + t[2] && t[0] < box[0] + box[2]
+                    && box[1] < t[1] + t[3] && t[1] < box[1] + box[3]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Places the focused discipline's nodes at fixed, readable spacing, centered horizontally, so
@@ -652,8 +812,9 @@ public class SkillTreeScreen extends Screen {
             autoFit(totalW, maxRowY);
             fitted = true;
         }
-        float cx = canvas[0] + canvas[2] / 2f;
-        float cy = canvas[1] + CANVAS_TOP_PAD + (canvas[3] - CANVAS_TOP_PAD) / 2f;
+        int[] view = view();
+        float cx = view[0] + view[2] / 2f;
+        float cy = view[1] + CANVAS_TOP_PAD + (view[3] - CANVAS_TOP_PAD) / 2f;
         for (Map.Entry<SkillNode, float[]> e : nodeWorld.entrySet()) {
             SkillNode node = e.getKey();
             float sx = cx + panX + (e.getValue()[0] - worldCenterX) * zoom;
@@ -665,8 +826,9 @@ public class SkillTreeScreen extends Screen {
 
     /** Fit the current world extent into the canvas with padding. */
     private void autoFit(float worldW, float worldH) {
-        float availW = canvas[2] - 44f;
-        float availH = canvas[3] - CANVAS_TOP_PAD - 44f;
+        int[] view = view();
+        float availW = view[2] - 44f;
+        float availH = view[3] - CANVAS_TOP_PAD - 44f;
         float z = Math.min(availW / (worldW + 2 * NODE_R), availH / (worldH + 2 * NODE_R));
         zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z));
         panX = 0f;
@@ -718,10 +880,33 @@ public class SkillTreeScreen extends Screen {
     // --- Detail panel ----------------------------------------------------------------------------
 
     private void renderPanel(DrawContext ctx, KindredData data, int mouseX, int mouseY) {
+        int accent = ThemeAssets.accent(theme);
+        panelCloseButton = new int[4];
+        panelOpenTab = new int[4];
+
+        if (!panelVisible()) {
+            // Shut: leave a tab on the right edge so the panel is one click away, and nothing else.
+            clearPanelButtons();
+            int tw = 13;
+            panelOpenTab = new int[]{width - MARGIN - tw, canvas[1] + 24, tw, 46};
+            boolean hover = within(panelOpenTab, mouseX, mouseY);
+            ctx.fill(panelOpenTab[0], panelOpenTab[1], panelOpenTab[0] + tw, panelOpenTab[1] + 46,
+                    hover ? ThemeAssets.withAlpha(accent, 110) : 0xC0101014);
+            ctx.drawBorder(panelOpenTab[0], panelOpenTab[1], tw, 46, accent);
+            String glyph = "◀";
+            ctx.drawText(textRenderer, Text.literal(glyph),
+                    panelOpenTab[0] + (tw - textRenderer.getWidth(glyph)) / 2, panelOpenTab[1] + 19,
+                    0xFFFFFFFF, false);
+            return;
+        }
+
         TreeRenderer.drawBackground(ctx, theme, panel[0], panel[1], panel[2], panel[3]);
+        if (panelOverlay) {
+            // Floating over the tree, so it needs to be opaque enough to read against moving nodes.
+            ctx.fill(panel[0], panel[1], panel[0] + panel[2], panel[1] + panel[3], 0xD80A0A0C);
+        }
         TreeRenderer.drawFrame(ctx, theme, panel[0], panel[1], panel[2], panel[3]);
 
-        int accent = ThemeAssets.accent(theme);
         int x = panel[0] + 10;
         int y = panel[1] + 10;
 
@@ -729,41 +914,77 @@ public class SkillTreeScreen extends Screen {
         String raceName = titleCase(tree.race().getPath());
         ctx.fill(x, y, x + 16, y + 16, ThemeAssets.ownedColor(theme));
         ctx.drawBorder(x, y, 16, 16, accent);
+        int nameRight = panel[0] + panel[2] - 10 - (panelOverlay ? 16 : 0);
+        ctx.enableScissor(x + 22, y, nameRight, y + 16);
         ctx.drawText(textRenderer, Text.literal(raceName).formatted(Formatting.BOLD), x + 22, y + 4, 0xFFFFFFFF, true);
+        ctx.disableScissor();
+        if (panelOverlay) {
+            panelCloseButton = new int[]{panel[0] + panel[2] - 22, y + 2, 13, 13};
+            boolean hover = within(panelCloseButton, mouseX, mouseY);
+            ctx.drawBorder(panelCloseButton[0], panelCloseButton[1], 13, 13,
+                    hover ? 0xFFFFFFFF : ThemeAssets.withAlpha(accent, 160));
+            ctx.drawText(textRenderer, Text.literal("✕"), panelCloseButton[0] + 3, panelCloseButton[1] + 3,
+                    hover ? 0xFFFFFFFF : 0xFFB0AAA0, false);
+        }
         y += 26;
         ctx.fill(x, y, panel[0] + panel[2] - 10, y + 1, ThemeAssets.withAlpha(accent, 120));
         y += 6;
 
-        unlockButton = new int[]{0, 0, 0, 0};
-        visionButton = new int[]{0, 0, 0, 0};
-        for (int[] sb : slotButtons) {
-            sb[0] = sb[1] = sb[2] = sb[3] = 0;
+        // The footer is laid out first, from the bottom up, and the flowing detail above it is then
+        // given exactly what is left. It used to be the other way round: the detail ran as long as it
+        // liked and the bottom-anchored blocks were simply drawn on top of it, which is why "Titles"
+        // and the Codex button printed through each other on any window that was not tall.
+        bargainOffered = bargainAvailable(data);
+        // Two buttons abreast need about 64px each before their labels start being clipped; below
+        // that they stack instead, which costs a row of height and keeps both words whole.
+        boolean stackButtons = (panel[2] - 24) / 2 < 64;
+        int cursor = panel[1] + panel[3] - 8 - 22;
+        int respecY = cursor;
+        cursor -= 24;
+        int settingsY = cursor;
+        int codexY = cursor;
+        if (stackButtons) {
+            cursor -= 24;
+            codexY = cursor;
         }
-        if (selectedNode != null) {
-            y = renderNodeDetail(ctx, data, x, y);
-        } else {
-            y = renderDisciplineSummary(ctx, data, x, y);
-        }
+        int bargainY = cursor - 24;
+        int contentBottomEdge = (bargainOffered ? bargainY : cursor) - 6;
 
-        // Vision + titles, anchored lower.
-        int vy = panel[1] + panel[3] - 96;
-        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.section.vision").formatted(Formatting.BOLD), x, vy, accent, false);
-        Identifier lensId = data.activeVisionLens();
-        String lens = lensId != null ? titleCase(lensId.getPath()) : "None equipped";
-        ctx.drawText(textRenderer, Text.literal(lens), x, vy + 12, 0xFFD8D2C0, false);
-        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.section.titles").formatted(Formatting.BOLD), x, vy + 30, accent, false);
-        String titles = data.titles().isEmpty() ? "None earned yet" : String.join(", ", data.titles());
-        for (var line : textRenderer.wrapLines(Text.literal(titles), panel[2] - 20)) {
-            ctx.drawText(textRenderer, line, x, vy + 42, 0xFFD8D2C0, false);
-            break;
+        clearPanelButtons();
+        int contentTop = y;
+        int contentBottom = Math.max(contentTop + 12, contentBottomEdge);
+        panelViewHeight = contentBottom - contentTop;
+        clampPanelScroll();
+        ctx.enableScissor(panel[0] + 1, contentTop, panel[0] + panel[2] - 1, contentBottom);
+        int drawTop = contentTop + (int) panelScroll;
+        int endY = selectedNode != null
+                ? renderNodeDetail(ctx, data, x, drawTop)
+                : renderDisciplineSummary(ctx, data, x, drawTop);
+        endY = renderVisionAndTitles(ctx, data, x, endY + 8, accent);
+        panelContentHeight = endY - drawTop;
+        ctx.disableScissor();
+        // A button scrolled out of the window must stop being clickable, or the player hits an unlock
+        // they cannot see.
+        clipToView(unlockButton, contentTop, contentBottom);
+        clipToView(visionButton, contentTop, contentBottom);
+        for (int[] sb : slotButtons) {
+            clipToView(sb, contentTop, contentBottom);
+        }
+        if (panelContentHeight > panelViewHeight) {
+            int trackH = contentBottom - contentTop;
+            int thumb = Math.max(14, trackH * trackH / panelContentHeight);
+            float frac = -panelScroll / (float) (panelContentHeight - panelViewHeight);
+            int ty = contentTop + (int) ((trackH - thumb) * Math.max(0f, Math.min(1f, frac)));
+            int sbx = panel[0] + panel[2] - 5;
+            ctx.fill(sbx, contentTop, sbx + 2, contentBottom, 0x30FFFFFF);
+            ctx.fill(sbx, ty, sbx + 2, ty + thumb, ThemeAssets.withAlpha(accent, 200));
         }
 
         // The Bargain. Offered only to a player standing at their own ceiling, never before - it is a
         // decision made by someone who has felt the wall. Hidden entirely once taken (it is once-only)
         // and on servers with the cap switched off (there would be nothing to buy).
-        bargainOffered = bargainAvailable(data);
         if (bargainOffered) {
-            bargainButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 80, panel[2] - 20, 20};
+            bargainButton = new int[]{panel[0] + 10, bargainY, panel[2] - 20, 20};
             boolean bHover = within(bargainButton, mouseX, mouseY);
             ctx.fill(bargainButton[0], bargainButton[1], bargainButton[0] + bargainButton[2],
                     bargainButton[1] + bargainButton[3], bHover ? 0xC0601A1A : 0x80300C0C);
@@ -772,40 +993,102 @@ public class SkillTreeScreen extends Screen {
             int btw = textRenderer.getWidth(bt);
             ctx.drawText(textRenderer, bt, bargainButton[0] + (bargainButton[2] - btw) / 2,
                     bargainButton[1] + 6, 0xFFE06060, true);
+        } else {
+            bargainButton = new int[4];
         }
 
         // Codex button (opens the full character/traits menu).
-        int halfW = (panel[2] - 20 - 4) / 2;
-        codexButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 56, halfW, 20};
+        int fullW = panel[2] - 20;
+        int halfW = stackButtons ? fullW : (fullW - 4) / 2;
+        codexButton = new int[]{panel[0] + 10, codexY, halfW, 20};
         boolean cHover = within(codexButton, mouseX, mouseY);
         ctx.fill(codexButton[0], codexButton[1], codexButton[0] + codexButton[2], codexButton[1] + codexButton[3],
                 cHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
         ctx.drawBorder(codexButton[0], codexButton[1], codexButton[2], codexButton[3], accent);
-        Text ct = Text.translatable("kindreds.tree.open_codex");
-        int ctw = textRenderer.getWidth(ct);
-        ctx.drawText(textRenderer, ct, codexButton[0] + (codexButton[2] - ctw) / 2, codexButton[1] + 6, 0xFFFFFFFF, true);
+        drawButtonLabel(ctx, codexButton, Text.translatable("kindreds.tree.open_codex"));
 
         // Server-rules button. Anyone may look; only an operator can change anything (the screen and
         // the server both enforce that), so it is shown to everyone rather than hidden.
-        settingsButton = new int[]{codexButton[0] + halfW + 4, codexButton[1], halfW, 20};
+        settingsButton = stackButtons
+                ? new int[]{panel[0] + 10, settingsY, halfW, 20}
+                : new int[]{codexButton[0] + halfW + 4, settingsY, halfW, 20};
         boolean sHover = within(settingsButton, mouseX, mouseY);
         ctx.fill(settingsButton[0], settingsButton[1], settingsButton[0] + settingsButton[2],
                 settingsButton[1] + settingsButton[3], sHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
         ctx.drawBorder(settingsButton[0], settingsButton[1], settingsButton[2], settingsButton[3], accent);
-        Text st = Text.translatable("kindreds.tree.open_settings");
-        int stw = textRenderer.getWidth(st);
-        ctx.drawText(textRenderer, st, settingsButton[0] + (settingsButton[2] - stw) / 2,
-                settingsButton[1] + 6, 0xFFFFFFFF, true);
+        drawButtonLabel(ctx, settingsButton, Text.translatable("kindreds.tree.open_settings"));
 
         // Respec button.
-        respecButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 30, panel[2] - 20, 22};
+        respecButton = new int[]{panel[0] + 10, respecY, panel[2] - 20, 22};
         boolean rHover = within(respecButton, mouseX, mouseY);
         ctx.fill(respecButton[0], respecButton[1], respecButton[0] + respecButton[2], respecButton[1] + respecButton[3],
                 rHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
         ctx.drawBorder(respecButton[0], respecButton[1], respecButton[2], respecButton[3], accent);
-        Text rt = Text.translatable("kindreds.tree.respec");
-        int rtw = textRenderer.getWidth(rt);
-        ctx.drawText(textRenderer, rt, respecButton[0] + (respecButton[2] - rtw) / 2, respecButton[1] + 7, 0xFFFFFFFF, true);
+        drawButtonLabel(ctx, respecButton, Text.translatable("kindreds.tree.respec"));
+    }
+
+    /**
+     * Centres a label in its button and clips it to the border. Half these labels are translated, and
+     * a language whose word for "Unlearn the old ways" is longer than English used to print straight
+     * out of the button and across its neighbour.
+     */
+    private void drawButtonLabel(DrawContext ctx, int[] r, Text label) {
+        if (r[2] <= 0) {
+            return;
+        }
+        int w = textRenderer.getWidth(label);
+        ctx.enableScissor(r[0] + 2, r[1], r[0] + r[2] - 2, r[1] + r[3]);
+        ctx.drawText(textRenderer, label, r[0] + Math.max(3, (r[2] - w) / 2), r[1] + (r[3] - 8) / 2,
+                0xFFFFFFFF, true);
+        ctx.disableScissor();
+    }
+
+    /**
+     * Vision and titles, at the end of the scrolling content rather than pinned above the footer.
+     * Pinning them meant reserving a fixed 96px of a panel that is not always 240 tall, which is how
+     * the titles line and the Codex button came to be drawn on the same pixels.
+     */
+    private int renderVisionAndTitles(DrawContext ctx, KindredData data, int x, int y, int accent) {
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.section.vision").formatted(Formatting.BOLD),
+                x, y, accent, false);
+        Identifier lensId = data.activeVisionLens();
+        String lens = lensId != null ? titleCase(lensId.getPath()) : I18n.translate("kindreds.tree.vision.none");
+        ctx.drawText(textRenderer, Text.literal(lens), x, y + 12, 0xFFD8D2C0, false);
+        y += 28;
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.section.titles").formatted(Formatting.BOLD),
+                x, y, accent, false);
+        y += 12;
+        String titles = data.titles().isEmpty() ? I18n.translate("kindreds.tree.titles.none")
+                : String.join(", ", data.titles());
+        for (var line : textRenderer.wrapLines(Text.literal(titles), panel[2] - 20)) {
+            ctx.drawText(textRenderer, line, x, y, 0xFFD8D2C0, false);
+            y += 10;
+        }
+        return y;
+    }
+
+    /** Buttons that only exist while some particular thing is selected; stale rects would still hit. */
+    private void clearPanelButtons() {
+        unlockButton = new int[4];
+        visionButton = new int[4];
+        for (int[] sb : slotButtons) {
+            sb[0] = sb[1] = sb[2] = sb[3] = 0;
+        }
+    }
+
+    /** Zeroes a rect that has scrolled out of the panel's visible window, so it cannot be clicked. */
+    private static void clipToView(int[] r, int top, int bottom) {
+        if (r[3] == 0) {
+            return;
+        }
+        if (r[1] < top || r[1] + r[3] > bottom) {
+            r[0] = r[1] = r[2] = r[3] = 0;
+        }
+    }
+
+    private void clampPanelScroll() {
+        float min = Math.min(0, panelViewHeight - panelContentHeight);
+        panelScroll = Math.max(min, Math.min(0, panelScroll));
     }
 
     private int renderDisciplineSummary(DrawContext ctx, KindredData data, int x, int y) {
@@ -1008,6 +1291,19 @@ public class SkillTreeScreen extends Screen {
         if (tree == null || button != 0) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
+        // The floating panel's own two controls come first, then it swallows every click inside it -
+        // otherwise a click on the panel would fall through to whatever node lies under it.
+        if (within(panelOpenTab, mouseX, mouseY)) {
+            panelOpen = true;
+            fitted = false;     // the visible canvas just narrowed - re-fit the tree into what is left
+            return true;
+        }
+        if (within(panelCloseButton, mouseX, mouseY)) {
+            panelOpen = false;
+            fitted = false;
+            return true;
+        }
+        boolean overPanel = panelVisible() && within(panel, mouseX, mouseY);
         // Codex.
         if (within(codexButton, mouseX, mouseY)) {
             KindredCodexScreen.open(MinecraftClient.getInstance());
@@ -1043,6 +1339,7 @@ public class SkillTreeScreen extends Screen {
         // View toggle (whole map <-> one branch).
         if (within(viewToggleButton, mouseX, mouseY)) {
             viewMode = viewMode == ViewMode.MAP ? ViewMode.BRANCH : ViewMode.MAP;
+            viewModeChosen = true;
             fitted = false;
             return true;
         }
@@ -1075,10 +1372,18 @@ public class SkillTreeScreen extends Screen {
                 }
             }
         }
+        if (overPanel) {
+            return true;    // a click inside the panel is the panel's, even where it hit nothing
+        }
         // Canvas nodes.
         for (Placed p : placed) {
             if (dist(mouseX, mouseY, p.x(), p.y()) <= p.r() + 3) {
                 selectedNode = p.node();
+                panelScroll = 0;
+                if (panelOverlay && !panelOpen) {
+                    panelOpen = true;   // picking a node is asking to read about it
+                    fitted = false;
+                }
                 return true;
             }
         }
@@ -1120,11 +1425,16 @@ public class SkillTreeScreen extends Screen {
             railScroll += (float) verticalAmount * 18;   // clamped in renderTabRail
             return true;
         }
+        if (tree != null && panelVisible() && within(panel, mouseX, mouseY)) {
+            panelScroll += (float) verticalAmount * 16;  // clamped in renderPanel
+            return true;
+        }
         if (tree != null && within(canvas, mouseX, mouseY)) {
             float old = zoom;
             zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom * (verticalAmount > 0 ? 1.12f : 0.89f)));
-            float cx = canvas[0] + canvas[2] / 2f;
-            float cy = canvas[1] + CANVAS_TOP_PAD + (canvas[3] - CANVAS_TOP_PAD) / 2f;
+            int[] view = view();
+            float cx = view[0] + view[2] / 2f;
+            float cy = view[1] + CANVAS_TOP_PAD + (view[3] - CANVAS_TOP_PAD) / 2f;
             // Keep the world point under the cursor fixed while zooming.
             float wx = (float) ((mouseX - cx - panX) / old) + worldCenterX;
             float wy = (float) ((mouseY - cy - panY) / old) + worldCenterY;

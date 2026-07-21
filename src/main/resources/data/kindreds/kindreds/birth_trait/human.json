@@ -73,11 +73,13 @@
     "kindreds.trait.human.plus.1",
     "kindreds.trait.human.plus.2",
     "kindreds.trait.human.plus.3",
-    "kindreds.trait.human.plus.4",
-    "kindreds.trait.human.plus.5"
+    "kindreds.trait.human.plus.4"
   ],
   "minuses": [
     "kindreds.trait.human.minus.0",
     "kindreds.trait.human.minus.1"
+  ],
+  "conditional_pluses": [
+    "kindreds.trait.human.plus.5"
   ]
 }

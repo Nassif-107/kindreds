@@ -58,14 +58,18 @@
     "kindreds.trait.goblin.plus.0",
     "kindreds.trait.goblin.plus.1",
     "kindreds.trait.goblin.plus.2",
-    "kindreds.trait.goblin.plus.3",
     "kindreds.trait.goblin.plus.4",
     "kindreds.trait.goblin.plus.5"
   ],
   "minuses": [
     "kindreds.trait.goblin.minus.0",
     "kindreds.trait.goblin.minus.1",
-    "kindreds.trait.goblin.minus.2",
     "kindreds.trait.goblin.minus.3"
+  ],
+  "conditional_pluses": [
+    "kindreds.trait.goblin.plus.3"
+  ],
+  "conditional_minuses": [
+    "kindreds.trait.goblin.minus.2"
   ]
 }

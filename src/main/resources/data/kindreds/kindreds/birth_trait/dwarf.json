@@ -60,11 +60,13 @@
     "kindreds.trait.dwarf.plus.2",
     "kindreds.trait.dwarf.plus.3",
     "kindreds.trait.dwarf.plus.4",
-    "kindreds.trait.dwarf.plus.5",
     "kindreds.trait.dwarf.plus.6",
     "kindreds.trait.dwarf.plus.7"
   ],
   "minuses": [
     "kindreds.trait.dwarf.minus.0"
+  ],
+  "conditional_pluses": [
+    "kindreds.trait.dwarf.plus.5"
   ]
 }

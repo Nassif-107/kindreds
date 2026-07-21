@@ -67,13 +67,17 @@
     "kindreds.trait.snaga.plus.2",
     "kindreds.trait.snaga.plus.3",
     "kindreds.trait.snaga.plus.4",
-    "kindreds.trait.snaga.plus.5",
     "kindreds.trait.snaga.plus.6"
   ],
   "minuses": [
     "kindreds.trait.snaga.minus.0",
     "kindreds.trait.snaga.minus.1",
-    "kindreds.trait.snaga.minus.2",
     "kindreds.trait.snaga.minus.3"
+  ],
+  "conditional_pluses": [
+    "kindreds.trait.snaga.plus.5"
+  ],
+  "conditional_minuses": [
+    "kindreds.trait.snaga.minus.2"
   ]
 }

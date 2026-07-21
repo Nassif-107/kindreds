@@ -117,6 +117,7 @@ public final class BirthTraitService {
                         // Same post-base-mod window: re-assert unlocked-node passives too, which the base
                         // mod's clearModifiers() on login/dimension would otherwise have stripped.
                         NodeReconcileService.reapply(player);
+                        com.kindreds.network.SyncKindredDataS2C.sendTo(player);
                     }
                     it.remove();
                 } else {
@@ -131,6 +132,12 @@ public final class BirthTraitService {
                 // and stack with every reroll. NodeReconcileService prunes anything foreign.
                 if (refreshIfChanged(player)) {
                     NodeReconcileService.reapply(player);
+                    // The client mirror carries the race, and every screen that says "your people"
+                    // reads it from there. Without this push, a kindred chosen mid-session stayed
+                    // invisible to the client until some unrelated packet happened to be sent - an
+                    // unlock, an ability, a grant - so the Codex went on naming the old people, or
+                    // none at all, while the server had already swapped every trait over.
+                    com.kindreds.network.SyncKindredDataS2C.sendTo(player);
                 }
             }
         }
