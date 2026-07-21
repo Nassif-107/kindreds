@@ -396,7 +396,20 @@ public class SkillTreeScreen extends Screen {
                 String pts = "+" + avail;
                 int pw = textRenderer.getWidth(pts);
                 ctx.drawText(textRenderer, Text.literal(pts).formatted(Formatting.BOLD),
-                        r[0] + r[2] - pw - 8, r[1] + 11, 0xFF66DD66, true);
+                        r[0] + r[2] - pw - 8, r[1] + 5, 0xFF66DD66, true);
+            }
+            // "N nodes you could take right now" - answers "what do I actually do?" without making
+            // the player open every discipline to find out. Pulses in step with the node halos.
+            if (hasNodes && tree != null) {
+                int ready = TreeRenderer.availableCount(tree, data, disciplineId(disc));
+                if (ready > 0) {
+                    Text badge = Text.translatable("kindreds.tree.ready", ready);
+                    int bw = textRenderer.getWidth(badge);
+                    double pulse = 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0);
+                    int a = (int) (170 + 85 * pulse) << 24;
+                    ctx.drawText(textRenderer, badge, r[0] + r[2] - bw - 8, r[1] + 17,
+                            a | 0x00FFD86B, false);
+                }
             }
             y += rowH;
         }

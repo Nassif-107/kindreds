@@ -251,9 +251,29 @@ public final class TreeRenderer {
         if (sealed) {
             drawDiamond(ctx, screenX, screenY, radius * 1.25f, ThemeAssets.withAlpha(ThemeAssets.WARNING_COLOR, 160));
         }
+        // "You can take this right now": AVAILABLE nodes breathe a soft outer halo so the eye lands on
+        // them immediately. A colour difference alone was too easy to miss across a whole branch.
+        if (state == NodeState.AVAILABLE) {
+            double pulse = 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0);
+            int alpha = (int) (60 + 80 * pulse);
+            drawDiamondOutline(ctx, screenX, screenY, radius * (1.30f + 0.10f * (float) pulse),
+                    ThemeAssets.withAlpha(ThemeAssets.availableColor(theme), alpha));
+        }
         drawDiamond(ctx, screenX, screenY, radius, color);
         int outline = hovered ? 0xFFFFFFFF : ThemeAssets.withAlpha(ThemeAssets.accent(theme), 200);
         drawDiamondOutline(ctx, screenX, screenY, radius, outline);
+    }
+
+    /** How many nodes of {@code discipline} the player could unlock right now - drives the
+     * "N available" badge on each discipline tab. */
+    public static int availableCount(SkillTree tree, KindredData data, net.minecraft.util.Identifier discipline) {
+        int n = 0;
+        for (SkillNode node : tree.nodes()) {
+            if (node.cost().disciplineId().equals(discipline) && stateOf(node, data, tree) == NodeState.AVAILABLE) {
+                n++;
+            }
+        }
+        return n;
     }
 
     private static void drawDiamond(DrawContext ctx, float cx, float cy, float r, int color) {
