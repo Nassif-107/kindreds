@@ -426,8 +426,7 @@ public final class ActivityHooks {
         if (!Kindreds.CONFIG.allowCrossTraining && !raceCanSpendIn(player, race, discipline)) {
             return; // xp banked into a discipline this race has no nodes for could never be spent
         }
-        KindredData data = KindredAttachment.get(player);
-        ProgressionService.awardXp(data, race, discipline, baseXp, Kindreds.CONFIG.xpRateGlobal);
+        ProgressionService.awardXp(player, race, discipline, baseXp, Kindreds.CONFIG.xpRateGlobal);
         SyncKindredDataS2C.sendTo(player);
     }
 

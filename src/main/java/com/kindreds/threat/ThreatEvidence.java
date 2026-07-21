@@ -111,7 +111,18 @@ public final class ThreatEvidence {
             ThreatState state = data.threat();
             float weight = ThreatMath.attackerWeight(MobDanger.of(killer),
                     MobDanger.expectedAt(ThreatService.threatOf(player)));
-            state.setCompetence(ThreatMath.foldDeath(state.competence(), weight, tuningFor()));
+            ThreatTuning tuning = tuningFor();
+
+            // Mirrors the per-family fold in AFTER_KILLED_OTHER_ENTITY above, so a death is as much
+            // evidence against the killer's family as a kill is for it - without this, per-family
+            // competence could only ever rise, and dying to family X would never record "X is hard
+            // for me" (spec §2.3 symmetry).
+            String family = MobDanger.family(killer);
+            float familyBefore = state.familyCompetence().getOrDefault(family, state.competence());
+
+            state.setCompetence(ThreatMath.foldDeath(state.competence(), weight, tuning));
+            state.familyCompetence().put(family, ThreatMath.foldDeath(familyBefore, weight, tuning));
+
             ThreatService.invalidate(player.getUuid());
         });
     }
