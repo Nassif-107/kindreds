@@ -2628,10 +2628,10 @@
           "type": "contextual_boon",
           "when": "low_health",
           "effect": {
-            "type": "status_effect",
-            "effect": "minecraft:speed",
-            "amplifier": 2,
-            "duration_ticks": -1
+            "type": "attribute",
+            "attribute": "minecraft:attack_damage",
+            "operation": "add_multiplied_total",
+            "amount": 0.3
           }
         },
         {

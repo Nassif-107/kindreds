@@ -33,6 +33,8 @@ public class ScreenIterationTest implements FabricClientGameTest {
                 sp.getServer().runCommand("kindreds grantxp " + disc + " 40000 @p");
             }
             context.waitTicks(40);
+            sp.getServer().runCommand("kindreds doctor");
+            context.waitTicks(10);
 
             for (int scale : SCALES) {
                 setScale(context, scale);

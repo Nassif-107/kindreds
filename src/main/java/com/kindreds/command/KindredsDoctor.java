@@ -390,6 +390,7 @@ public final class KindredsDoctor {
         for (SkillTree tree : trees) {
             Map<String, List<String>> perkSources = new java.util.TreeMap<>();
             Map<String, List<String>> boonSlots = new java.util.TreeMap<>();
+            Map<String, List<String>> attrSlots = new java.util.TreeMap<>();
             Map<String, Set<String>> groupsFor = new java.util.HashMap<>();
 
             for (SkillNode node : tree.nodes()) {
@@ -398,11 +399,27 @@ public final class KindredsDoctor {
                     if (ability instanceof PerkDef perk && BOOLEAN_PERKS.contains(perk.perk())) {
                         perkSources.computeIfAbsent(perk.perk(), k -> new ArrayList<>()).add(node.id());
                         groupsFor.computeIfAbsent("perk/" + perk.perk(), k -> new java.util.HashSet<>()).add(group);
-                    } else if (ability instanceof ContextualBoon boon
-                            && boon.effect() instanceof StatusEffectDef effect) {
-                        String slot = boon.when() + "/" + effect.effect() + "/" + effect.amplifier();
-                        boonSlots.computeIfAbsent(slot, k -> new ArrayList<>()).add(node.id());
-                        groupsFor.computeIfAbsent("boon/" + slot, k -> new java.util.HashSet<>()).add(group);
+                    } else if (ability instanceof AttributeMod mod) {
+                        // A plain attribute modifier is tagged node/<id>/<attr>, so a node touching one
+                        // attribute twice installs the second over the first and loses it in silence.
+                        // (Contextual ones are keyed by ability index and cannot collide this way.)
+                        String slot = "self/" + mod.attribute().getPath();
+                        attrSlots.computeIfAbsent(slot, k -> new ArrayList<>()).add(node.id());
+                        groupsFor.computeIfAbsent("attribute/" + slot, k -> new java.util.HashSet<>()).add(group);
+                    } else {
+                        // A boon and a curse compete for the same status-effect slot, so they are
+                        // counted together: neither stacks with an equal effect at an equal amplifier.
+                        AbilityDef inner = ability instanceof ContextualBoon boon ? boon.effect()
+                                : ability instanceof com.kindreds.data.ability.CurseDef curse
+                                        ? curse.effect().orElse(null) : null;
+                        String when = ability instanceof ContextualBoon boon ? boon.when()
+                                : ability instanceof com.kindreds.data.ability.CurseDef curse
+                                        ? (curse.when().isEmpty() ? "always" : curse.when()) : null;
+                        if (inner instanceof StatusEffectDef effect) {
+                            String slot = when + "/" + effect.effect() + "/" + effect.amplifier();
+                            boonSlots.computeIfAbsent(slot, k -> new ArrayList<>()).add(node.id());
+                            groupsFor.computeIfAbsent("boon/" + slot, k -> new java.util.HashSet<>()).add(group);
+                        }
                     }
                 }
             }
@@ -430,9 +447,44 @@ public final class KindredsDoctor {
                     " - the code reads it as a yes/no, so the extra grants change nothing");
             redundant += flagDuplicates(tree, "boon", boonSlots, groupsFor, problems,
                     " - status effects do not stack, so only one of these is ever felt");
+            // Within a node only: two different nodes raising the same attribute is ordinary stacking,
+            // since their modifier ids differ by node.
+            redundant += flagSelfDuplicates(tree, "attribute", attrSlots, problems,
+                    " - one node's modifiers share an id per attribute, so the later replaces the earlier");
         }
         report(source, "stacking", redundant == 0 ? "nothing redundant" : redundant + " redundant grant(s)",
                 redundant == 0 ? null : "see the log for which nodes");
+    }
+
+    private static Map<String, Integer> countPerNode(List<String> nodes) {
+        Map<String, Integer> perNode = new java.util.LinkedHashMap<>();
+        for (String node : nodes) {
+            perNode.merge(node, 1, Integer::sum);
+        }
+        return perNode;
+    }
+
+    /** Only the within-a-node case, for slots where two <em>different</em> nodes stack quite happily. */
+    private static int flagSelfDuplicates(SkillTree tree, String kind, Map<String, List<String>> sources,
+                                          List<String> problems, String why) {
+        int count = 0;
+        for (Map.Entry<String, List<String>> e : sources.entrySet()) {
+            count += flagSelfDuplicates(tree, kind, e.getKey(), countPerNode(e.getValue()), problems, why);
+        }
+        return count;
+    }
+
+    private static int flagSelfDuplicates(SkillTree tree, String kind, String slot,
+                                          Map<String, Integer> perNode, List<String> problems, String why) {
+        int count = 0;
+        for (Map.Entry<String, Integer> n : perNode.entrySet()) {
+            if (n.getValue() > 1) {
+                count += n.getValue() - 1;
+                problems.add(tree.race().getPath() + ": " + kind + " " + slot + " granted "
+                        + n.getValue() + " times by the one node " + n.getKey() + why);
+            }
+        }
+        return count;
     }
 
     private static int flagDuplicates(SkillTree tree, String kind, Map<String, List<String>> sources,
@@ -443,13 +495,25 @@ public final class KindredsDoctor {
             if (nodes.size() < 2) {
                 continue;
             }
+
+            // A node granting the same thing twice is redundant with itself, and no exclusive group
+            // excuses it - a node is never its own rival. Checked before the group rule, because that
+            // rule was hiding exactly this case: Snaga's lane capstone granted Speed II twice, and
+            // every source being one node in one group read as "mutually exclusive, fine".
+            Map<String, Integer> perNode = countPerNode(nodes);
+            count += flagSelfDuplicates(tree, kind, e.getKey(), perNode, problems, why);
+
+            List<String> distinct = new ArrayList<>(perNode.keySet());
+            if (distinct.size() < 2) {
+                continue;
+            }
             Set<String> groups = groupsFor.getOrDefault(kind + "/" + e.getKey(), Set.of());
             if (groups.size() == 1 && !groups.contains("")) {
                 continue; // mutually exclusive rivals: alternatives, not duplicates
             }
-            count += nodes.size() - 1;
+            count += distinct.size() - 1;
             problems.add(tree.race().getPath() + ": " + kind + " " + e.getKey() + " granted by "
-                    + nodes.size() + " nodes " + nodes + why);
+                    + distinct.size() + " nodes " + distinct + why);
         }
         return count;
     }
