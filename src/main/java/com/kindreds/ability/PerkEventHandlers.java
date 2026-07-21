@@ -112,7 +112,7 @@ public final class PerkEventHandlers {
                 return ActionResult.PASS;
             }
             for (PerkDef perk : PerkService.perksOfType(sp, "strike_effect")) {
-                if (perk.foe().isPresent() && !matchesFoe(target, perk.foe().get())) {
+                if (perk.foe().isPresent() && !matchesFoe(sp, target, perk.foe().get())) {
                     continue;
                 }
                 if (sp.getRandom().nextFloat() >= perk.param("chance", 1f)) {
@@ -259,7 +259,7 @@ public final class PerkEventHandlers {
             int max = Math.max(1, Math.round(perk.param("max", 6f)));
             Box box = player.getBoundingBox().expand(radius);
             int allies = player.getWorld().getEntitiesByClass(LivingEntity.class, box,
-                    m -> m instanceof Monster && m.isAlive() && m.squaredDistanceTo(player) <= radius * radius).size();
+                    m -> Allegiance.isFoe(player, m) && m.squaredDistanceTo(player) <= radius * radius).size();
             float thisBonus = perk.param("per_ally", 0.05f) * Math.min(allies, max);
             if (thisBonus > bonus) {
                 bonus = thisBonus;
@@ -314,13 +314,13 @@ public final class PerkEventHandlers {
         for (PerkDef perk : PerkService.ownedPerks(attacker)) {
             switch (perk.perk()) {
                 case "bane" -> {
-                    if (matchesFoe(target, perk.foe().orElse("any"))) {
+                    if (matchesFoe(attacker, target, perk.foe().orElse("any"))) {
                         multiplier += perk.param("bonus", 0f);
                         foeBonus = true;
                     }
                 }
                 case "arrow_slaying" -> {
-                    if (projectile && matchesFoe(target, perk.foe().orElse("any"))) {
+                    if (projectile && matchesFoe(attacker, target, perk.foe().orElse("any"))) {
                         multiplier += perk.param("bonus", 0f);
                         foeBonus = true;
                     }
@@ -383,9 +383,11 @@ public final class PerkEventHandlers {
     /** Whether {@code target} belongs to a named foe category. Uses vanilla's own smite/bane-of-
      * arthropods entity-type tags where they fit, and an entity-id substring match for the base mod's
      * custom peoples ({@code orc}, {@code troll}) that have no vanilla tag. */
-    static boolean matchesFoe(LivingEntity target, String foe) {
+    static boolean matchesFoe(ServerPlayerEntity attacker, LivingEntity target, String foe) {
         return switch (foe) {
-            case "any" -> target instanceof Monster;
+            // "any" means anything this player may legitimately hurt - which now includes a rival
+            // player where the server allows it, so bane/arrow-slaying are not dead weight in PvP.
+            case "any" -> Allegiance.isFoe(attacker, target);
             case "undead" -> target.getType().isIn(EntityTypeTags.SENSITIVE_TO_SMITE);
             case "spider", "arthropod" -> target.getType().isIn(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS);
             case "illager" -> target instanceof IllagerEntity;

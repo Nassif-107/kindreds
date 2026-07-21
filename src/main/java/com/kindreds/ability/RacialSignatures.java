@@ -53,7 +53,7 @@ public final class RacialSignatures {
         double r2 = radius * radius;
         Box box = player.getBoundingBox().expand(radius);
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != player && x.isAlive() && x instanceof Monster && x.squaredDistanceTo(player) <= r2)) {
+                x -> Allegiance.isFoe(player, x) && x.squaredDistanceTo(player) <= r2)) {
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, HOLD, 0, false, false, false));
         }
     }
@@ -75,7 +75,7 @@ public final class RacialSignatures {
         Box box = player.getBoundingBox().expand(radius);
         boolean any = false;
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != player && x.isAlive() && x instanceof Monster && x.squaredDistanceTo(player) <= r2)) {
+                x -> Allegiance.isFoe(player, x) && x.squaredDistanceTo(player) <= r2)) {
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, HOLD, amp, false, false, true));
             if (amp >= 1) {
                 e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, HOLD, 0, false, false, true));

@@ -14,7 +14,9 @@
     "PlayerAdvancementTrackerMixin"
   ],
   "client": [
-    "MouseScrollMixin"
+    "MouseScrollMixin",
+    "client.InvisibleLabelMixin",
+    "client.InvisibleEquipmentMixin"
   ],
   "server": []
 }

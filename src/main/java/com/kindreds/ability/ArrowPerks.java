@@ -105,7 +105,7 @@ public final class ArrowPerks {
         }
         boolean applied = false;
         for (PerkDef perk : effects) {
-            if (perk.foe().isPresent() && !PerkEventHandlers.matchesFoe(target, perk.foe().get())) {
+            if (perk.foe().isPresent() && !PerkEventHandlers.matchesFoe(owner, target, perk.foe().get())) {
                 continue;
             }
             if (perk.effect().isPresent()) {

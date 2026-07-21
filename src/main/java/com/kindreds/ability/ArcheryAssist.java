@@ -49,7 +49,7 @@ public final class ArcheryAssist {
         double bestDot = CONE;
         Box box = arrow.getBoundingBox().expand(RANGE);
         List<LivingEntity> candidates = world.getEntitiesByClass(LivingEntity.class, box,
-                e -> e != owner && e.isAlive() && e instanceof Monster);
+                e -> Allegiance.isFoe(owner, e));
         for (LivingEntity e : candidates) {
             Vec3d toEye = e.getEyePos().subtract(pos);
             double dist = toEye.length();

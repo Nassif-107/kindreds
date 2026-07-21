@@ -150,7 +150,7 @@ public final class ActiveAbilityHandlers {
         Box box = p.getBoundingBox().expand(radius);
         Vec3d center = p.getPos();
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != p && x.isAlive() && x instanceof Monster)) {
+                x -> Allegiance.isFoe(p, x))) {
             Vec3d push = e.getPos().subtract(center).normalize().multiply(1.3);
             e.addVelocity(push.x, 0.45, push.z);
             e.velocityModified = true;
@@ -166,7 +166,7 @@ public final class ActiveAbilityHandlers {
     private static void enchantSong(ServerPlayerEntity p, ServerWorld world, double radius) {
         Box box = p.getBoundingBox().expand(radius);
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != p && x.isAlive() && x instanceof Monster)) {
+                x -> Allegiance.isFoe(p, x))) {
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 160, 2));
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 160, 1));
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 120, 0));
@@ -182,7 +182,7 @@ public final class ActiveAbilityHandlers {
         p.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 400, 1));
         Box box = p.getBoundingBox().expand(radius);
         for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
-                a -> a != p && a.isAlive())) {
+                a -> Allegiance.isFriend(p, a))) {
             ally.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 160, 1));
             ally.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 400, 1));
         }
@@ -202,7 +202,7 @@ public final class ActiveAbilityHandlers {
             old.discard();
         }
         LivingEntity foe = world.getEntitiesByClass(LivingEntity.class, p.getBoundingBox().expand(16.0),
-                        e -> e != p && e.isAlive() && e instanceof Monster).stream()
+                        e -> Allegiance.isFoe(p, e)).stream()
                 .min((a, b) -> Double.compare(a.squaredDistanceTo(p), b.squaredDistanceTo(p)))
                 .orElse(null);
         for (int i = 0; i < count; i++) {
@@ -241,7 +241,7 @@ public final class ActiveAbilityHandlers {
         Box box = p.getBoundingBox().expand(radius);
         Vec3d centre = p.getPos();
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != p && x.isAlive() && x instanceof Monster)) {
+                x -> Allegiance.isFoe(p, x))) {
             Vec3d push = e.getPos().subtract(centre).normalize().multiply(1.1);
             e.addVelocity(push.x, 0.35, push.z);
             e.velocityModified = true;
@@ -267,13 +267,13 @@ public final class ActiveAbilityHandlers {
         p.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 300, 0, false, false, true));
         Box box = p.getBoundingBox().expand(radius);
         for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
-                a -> a != p && a.isAlive())) {
+                a -> Allegiance.isFriend(p, a))) {
             ally.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 300, 1, false, false, true));
         }
         if (p.hasVehicle()) {
             Vec3d centre = p.getPos();
             for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                    x -> x != p && x.isAlive() && x instanceof Monster)) {
+                    x -> Allegiance.isFoe(p, x))) {
                 Vec3d push = e.getPos().subtract(centre).normalize().multiply(1.2);
                 e.addVelocity(push.x, 0.4, push.z);
                 e.velocityModified = true;
@@ -290,7 +290,7 @@ public final class ActiveAbilityHandlers {
         healAndCure(p);
         Box box = p.getBoundingBox().expand(radius);
         for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
-                a -> a != p && a.isAlive())) {
+                a -> Allegiance.isFriend(p, a))) {
             healAndCure(ally);
         }
         world.spawnParticles(ParticleTypes.HEART, p.getX(), p.getBodyY(1.0), p.getZ(), 12, 0.6, 0.6, 0.6, 0.1);
@@ -319,11 +319,11 @@ public final class ActiveAbilityHandlers {
         Box box = p.getBoundingBox().expand(radius);
         rally(p);
         for (ServerPlayerEntity ally : world.getEntitiesByClass(ServerPlayerEntity.class, box,
-                a -> a != p && a.isAlive())) {
+                a -> Allegiance.isFriend(p, a))) {
             rally(ally);
         }
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != p && x.isAlive() && x instanceof Monster)) {
+                x -> Allegiance.isFoe(p, x))) {
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 160, 0));
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 160, 0));
         }
@@ -343,7 +343,7 @@ public final class ActiveAbilityHandlers {
     private static void anduril(ServerPlayerEntity p, ServerWorld world, double radius) {
         Box box = p.getBoundingBox().expand(radius);
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != p && x.isAlive() && x instanceof Monster)) {
+                x -> Allegiance.isFoe(p, x))) {
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 160, 1));
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 160, 0));
             if (e.getType().isIn(EntityTypeTags.SENSITIVE_TO_SMITE)) {
@@ -370,12 +370,12 @@ public final class ActiveAbilityHandlers {
     private static void goblinBomb(ServerPlayerEntity p, ServerWorld world, double radius, float damage) {
         Vec3d ahead = p.getPos().add(p.getRotationVector().multiply(4.0)).add(0, 0.5, 0);
         LivingEntity foe = world.getEntitiesByClass(LivingEntity.class, p.getBoundingBox().expand(16.0),
-                        e -> e != p && e.isAlive() && e instanceof Monster).stream()
+                        e -> Allegiance.isFoe(p, e)).stream()
                 .min((a, b) -> Double.compare(a.squaredDistanceTo(p), b.squaredDistanceTo(p))).orElse(null);
         Vec3d c = foe != null ? foe.getPos().add(0, 0.5, 0) : ahead;
         Box box = new Box(c.subtract(radius, radius, radius), c.add(radius, radius, radius));
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != p && x.isAlive() && x instanceof Monster)) {
+                x -> Allegiance.isFoe(p, x))) {
             Vec3d push = e.getPos().subtract(c).normalize().multiply(1.2);
             e.addVelocity(push.x, 0.4, push.z);
             e.velocityModified = true;
@@ -423,7 +423,7 @@ public final class ActiveAbilityHandlers {
     private static void dreadNova(ServerPlayerEntity p, ServerWorld world, double radius) {
         Box box = p.getBoundingBox().expand(radius);
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box,
-                x -> x != p && x.isAlive() && x instanceof Monster)) {
+                x -> Allegiance.isFoe(p, x))) {
             e.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
                     net.minecraft.entity.effect.StatusEffects.WEAKNESS, 120, 0));
             e.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
