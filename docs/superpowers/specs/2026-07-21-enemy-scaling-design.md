@@ -249,6 +249,37 @@ elites drop better. Growing dangerous must be something a player wants.
 
 ---
 
+## 3a. How a player reads it
+
+Principle 5 says threat is visible. *How* it is shown matters more than that it is.
+
+**A named rank, not a number.** A raw `Threat: 47/100` reads as a stat screen, invites min-maxing the
+figure itself, and answers no question a player actually has. The land's regard is named instead:
+
+| Threat | Rank |
+|---|---|
+| 0–19 | Unnoticed |
+| 20–39 | Watched |
+| 40–59 | Marked |
+| 60–79 | Hunted |
+| 80–100 | The Shadow is upon you |
+
+**Crossing a rank is an event.** A line of text when the land's regard changes - in either direction -
+turns a counter into a story beat. "The Enemy has taken notice of you" is memorable; 46 becoming 47
+is not. Rank changes are also the natural teaching moment: the message says, once, what changed.
+
+**Per-family competence speaks in the same voice** on the Deeds page - "the wargs have your measure",
+"the trolls no longer trouble you" - which is real, actionable information without a table of numbers.
+
+**In a fight, the question is different**: is *this* thing dangerous? Elites answer it themselves,
+being named and visibly distinct. Ordinary scaled mobs are deliberately left unmarked - their health
+bar is the tell, and naming every zombie is noise.
+
+**The exact figure stays available** in the rules screen, for anyone who wants it. Nothing is hidden;
+the number is simply not the primary way it is worn.
+
+---
+
 ## 4. Multiplayer
 
 The rule that makes this work:
