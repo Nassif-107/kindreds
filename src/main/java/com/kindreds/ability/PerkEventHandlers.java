@@ -1,7 +1,9 @@
 package com.kindreds.ability;
 
+import com.kindreds.Kindreds;
 import com.kindreds.data.ability.PerkDef;
-import com.kindreds.playerdata.KindredAttachment;
+import com.kindreds.threat.MobDanger;
+import com.kindreds.threat.ThreatService;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -17,7 +19,6 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.entity.mob.Monster;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -287,13 +288,16 @@ public final class PerkEventHandlers {
         for (PerkDef perk : PerkService.perksOfType(victim, "foresight")) {
             multiplier *= (1.0f - Math.min(0.8f, perk.param("reduction", 0.1f)));
         }
-        // Enemy scaling (harder difficulties): the world answers a grown hero. Monsters hit harder the
-        // deeper your tree goes - measured by nodes taken, which needs no tree lookup here. Capped at
-        // +50% so it sharpens the late game without turning it into a wall.
-        if (com.kindreds.Kindreds.CONFIG != null && com.kindreds.Kindreds.CONFIG.enableEnemyScaling
-                && source.getAttacker() instanceof Monster) {
-            int nodes = KindredAttachment.get(victim).unlockedNodes().size();
-            multiplier *= 1.0f + Math.min(0.5f, nodes * 0.005f);
+        // The world answers a grown hero. Scaled per victim, so two players fighting one troll each
+        // meet the difficulty they have earned - which is what makes this safe in multiplayer.
+        // Guarded exactly as the node-count version this replaces was: a null/not-yet-loaded config
+        // or scaling switched off must behave as if this block were not here at all.
+        if (Kindreds.CONFIG != null && Kindreds.CONFIG.enableEnemyScaling
+                && victim instanceof ServerPlayerEntity served
+                && source.getAttacker() instanceof LivingEntity attacker
+                && MobDanger.isInScope(attacker)) {
+            float scaled = ThreatService.scaledAgainst(served, attacker);
+            multiplier *= 1.0f + (Kindreds.CONFIG.maxDamageBonus / 100f) * scaled;
         }
         if (multiplier < 1.0f && victim.getWorld() instanceof ServerWorld world) {
             // Dodge: a puff of dust and a whoosh mark the shrugged-off blow.

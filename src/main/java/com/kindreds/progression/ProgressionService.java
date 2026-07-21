@@ -1,8 +1,12 @@
 package com.kindreds.progression;
 
+import com.kindreds.Kindreds;
 import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
+import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
+import com.kindreds.threat.ThreatService;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 /**
@@ -38,6 +42,29 @@ public final class ProgressionService {
     public static void awardXp(KindredData data, Identifier race, Identifier discipline, long baseXp, double globalRate) {
         double scaled = baseXp * RaceScaling.multiplier(race, discipline) * globalRate;
         data.addXp(discipline, Math.round(scaled));
+    }
+
+    /**
+     * As {@link #awardXp(KindredData, Identifier, Identifier, long, double)}, but for a caller that
+     * has the live {@code player} rather than an already-resolved {@link KindredData} - resolved
+     * here via {@link KindredAttachment#get}. {@code baseXp} is additionally scaled by {@code 1 +
+     * (xpBonus/100) * scaled}, {@code scaled} coming from {@link ThreatService#scaledFor}. Design
+     * spec §3, "the world must pay for the danger": a world that gets harder for the same reward
+     * teaches players to stay small, so the xp reward must rise with the danger the player is
+     * actually facing.
+     *
+     * <p>{@link ThreatService#scaledFor} already returns {@code 0} when scaling is off or the config
+     * has not loaded, which collapses this to exactly the unscaled award - no separate null/enabled
+     * guard is needed here on top of that one, other than reading {@link Kindreds#CONFIG}'s {@code
+     * xpBonus} defensively in case the config itself is momentarily null.
+     */
+    public static void awardXp(ServerPlayerEntity player, Identifier race, Identifier discipline,
+                                long baseXp, double globalRate) {
+        KindredData data = KindredAttachment.get(player);
+        double scaled = ThreatService.scaledFor(player);
+        double xpBonusFraction = Kindreds.CONFIG == null ? 0.0 : Kindreds.CONFIG.xpBonus / 100.0;
+        double dangerScaledXp = baseXp * (1.0 + xpBonusFraction * scaled);
+        awardXp(data, race, discipline, Math.round(dangerScaledXp), globalRate);
     }
 
     /** The number of points {@code xp} total experience grants (one per level). */

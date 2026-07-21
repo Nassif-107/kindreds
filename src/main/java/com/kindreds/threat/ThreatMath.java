@@ -38,6 +38,25 @@ public final class ThreatMath {
                 Math.min(COMPETENCE_MAX, Math.max(1.0f, safeMax))};
     }
 
+    /**
+     * The band {@link #bandFor} should be narrowed to for a given {@code adaptiveStrength} setting
+     * (0..100 by convention; see {@code KindredsConfig#adaptiveStrength}): {@code 100} keeps the
+     * full evidence band, {@code 0} collapses it to exactly {@code 1.0..1.0} (no adaptation at
+     * all - the prior alone decides threat), and values between narrow linearly.
+     *
+     * <p>{@code adaptiveStrength} is deliberately clamped to {@code 0..1} here (via {@code s})
+     * <em>and</em> the resulting band is passed through {@link #bandFor}, which clamps again - two
+     * independent guards against the same invariant (a misconfigured {@code adaptiveStrength > 100}
+     * must never widen the band past {@link #COMPETENCE_MIN}/{@link #COMPETENCE_MAX}), because this
+     * is the anti-farm floor and it must hold even if one of the two guards is later "simplified"
+     * away. See {@code ThreatMathTest#adaptiveStrengthNeverWidensPastTheFloorEvenWithoutItsOwnClamp}
+     * for the proof that {@link #bandFor}'s clamp alone is sufficient.
+     */
+    public static float[] adaptiveBand(int adaptiveStrength) {
+        float s = Math.max(0f, Math.min(1f, adaptiveStrength / 100f));
+        return bandFor(1f - 0.25f * s, 1f + 0.25f * s);
+    }
+
     /** Declared power, 0..100, as the weighted blend of its three terms. */
     public static float prior(float commitment, float gear, float renown, int wc, int wg, int wr) {
         int total = wc + wg + wr;

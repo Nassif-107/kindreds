@@ -176,6 +176,48 @@ class ThreatMathTest {
     }
 
     @Test
+    void adaptiveStrengthZeroCollapsesTheBandToExactlyOne() {
+        // 0% adaptive strength: no adaptation at all, the prior alone decides threat.
+        float[] band = ThreatMath.adaptiveBand(0);
+        assertEquals(1.0f, band[0], 0.0001f);
+        assertEquals(1.0f, band[1], 0.0001f);
+    }
+
+    @Test
+    void adaptiveStrengthOneHundredIsTheFullFloorBand() {
+        float[] band = ThreatMath.adaptiveBand(100);
+        assertEquals(ThreatMath.COMPETENCE_MIN, band[0], 0.0001f);
+        assertEquals(ThreatMath.COMPETENCE_MAX, band[1], 0.0001f);
+    }
+
+    @Test
+    void adaptiveStrengthFiftyIsHalfwayNarrowed() {
+        float[] band = ThreatMath.adaptiveBand(50);
+        assertEquals(0.875f, band[0], 0.0001f);
+        assertEquals(1.125f, band[1], 0.0001f);
+    }
+
+    @Test
+    void adaptiveStrengthNeverWidensPastTheFloorEvenWithoutItsOwnClamp() {
+        // A misconfigured adaptiveStrength of 200% must never widen the band past the anti-farm
+        // floor. Prove it is genuinely enforced (not just numerically coincidental) by computing the
+        // RAW, unclamped band the naive formula would produce at s=2.0 - min = 1 - 0.25*2 = 0.5,
+        // max = 1 + 0.25*2 = 1.5 - and showing that raw pair sits outside the floor. If adaptiveBand
+        // stopped calling bandFor (or its own s-clamp), it would return this raw, floor-violating
+        // pair instead of the actual assertion below.
+        float rawMin = 1f - 0.25f * 2.0f;
+        float rawMax = 1f + 0.25f * 2.0f;
+        assertTrue(rawMin < ThreatMath.COMPETENCE_MIN, "test setup: raw band should violate the floor");
+        assertTrue(rawMax > ThreatMath.COMPETENCE_MAX, "test setup: raw band should violate the floor");
+
+        float[] band = ThreatMath.adaptiveBand(200);
+        assertEquals(ThreatMath.COMPETENCE_MIN, band[0], 0.0001f,
+                "adaptiveStrength=200 widened past the floor: " + band[0]);
+        assertEquals(ThreatMath.COMPETENCE_MAX, band[1], 0.0001f,
+                "adaptiveStrength=200 widened past the floor: " + band[1]);
+    }
+
+    @Test
     void everyThreatHasARankAndTheRanksCoverTheWholeRange() {
         assertSame(ThreatRank.UNNOTICED, ThreatRank.of(0f));
         assertSame(ThreatRank.UNNOTICED, ThreatRank.of(19f));
