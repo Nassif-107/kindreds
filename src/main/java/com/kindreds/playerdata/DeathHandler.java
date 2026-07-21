@@ -183,7 +183,12 @@ public final class DeathHandler {
     }
 
     /** Deep-copies every collection so the new player's {@link KindredData} never shares mutable
-     * state with the (about-to-be-discarded) old player's. */
+     * state with the (about-to-be-discarded) old player's. Uses the 7-arg constructor (rather than
+     * the 6-arg one that defaults {@code renown} to empty) so a player's Great Deeds survive death -
+     * {@link com.kindreds.progression.RenownService#reconcile} only re-derives {@code renown} from
+     * advancement state on {@code ServerPlayConnectionEvents.JOIN}, never on respawn, so dropping it
+     * here silently erased every Great Deed (and, via {@code RenownService#bonusPercent}, shrank the
+     * skill-point cap) until the player's next relog. */
     private static KindredData copyOf(KindredData data) {
         KindredData copy = new KindredData(
                 new Object2LongOpenHashMap<>(data.disciplineXp()),
@@ -191,7 +196,8 @@ public final class DeathHandler {
                 data.activeVisionLens(),
                 data.corruption(),
                 new Object2LongOpenHashMap<>(data.cooldowns()),
-                new HashSet<>(data.discoveredBiomes()));
+                new HashSet<>(data.discoveredBiomes()),
+                new HashSet<>(data.renown()));
         copy.setRace(data.race());
         // Threat survives death. A high-water mark a player could reset by dying would be a
         // difficulty switch, which is the whole thing the mark exists to prevent.

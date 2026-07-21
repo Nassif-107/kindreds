@@ -49,6 +49,25 @@ class DeathHandlerTest {
         assertEquals(0L, original.xpIn(MINING));
     }
 
+    /** {@code renown} (Great Deeds) predates Task 3 but shares this exact method: {@code
+     * copyOf} used to build the new {@link KindredData} with the 6-arg constructor, which
+     * defaults {@code renown} to empty, silently erasing every Great Deed on death (and, via
+     * {@code RenownService.bonusPercent}, shrinking the skill-point cap) until the player's next
+     * relog re-derives it on {@code ServerPlayConnectionEvents.JOIN}. */
+    @Test
+    void keepCarriesRenownAcrossDeathAndCopyIsIndependent() {
+        KindredData original = new KindredData();
+        original.renown().add("renown/elf/starlit_aim");
+
+        KindredData copy = DeathHandler.applyDeathPenalty(DeathPenalty.KEEP, 0.0, original, Optional.empty());
+
+        assertTrue(copy.renown().contains("renown/elf/starlit_aim"), "a Great Deed must survive death");
+
+        // Deep copy: mutating the original's renown set afterward must not affect the copy.
+        original.renown().add("renown/elf/second_deed");
+        assertFalse(copy.renown().contains("renown/elf/second_deed"));
+    }
+
     // --- LOSE_UNSPENT ---------------------------------------------------------------------------
 
     @Test
