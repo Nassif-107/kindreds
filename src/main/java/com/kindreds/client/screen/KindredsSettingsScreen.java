@@ -33,7 +33,8 @@ public class KindredsSettingsScreen extends Screen {
     /** The four rule switches, in display order. Kept separate from the difficulty presets on purpose:
      * these are lore/sandbox switches (a Snaga is sun-weak because it is a Snaga), not difficulty. */
     private static final String[] FLAGS = {
-            "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining"
+            "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining",
+            "allowGrantXp"
     };
 
     private final List<int[]> presetRects = new ArrayList<>();
@@ -152,6 +153,7 @@ public class KindredsSettingsScreen extends Screen {
             case "enableCurses" -> v.curses();
             case "enableVision" -> v.vision();
             case "allowCrossTraining" -> v.crossTraining();
+            case "allowGrantXp" -> v.grantXp();
             default -> false;
         };
     }

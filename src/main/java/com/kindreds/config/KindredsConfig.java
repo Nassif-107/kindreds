@@ -45,6 +45,14 @@ public class KindredsConfig {
     public boolean enableVision = true;
     public boolean enableCurses = true;
     public boolean enableBirthTraits = true;
+    /**
+     * Whether {@code /kindreds grantxp} may be used at all. <b>Off by default</b>: it hands out
+     * progression directly, which is a testing tool, not a game mechanic - an operator on a live
+     * server should have to switch it on deliberately rather than find it available by accident.
+     * Being an operator is not the same as intending to cheat.
+     */
+    public boolean allowGrantXp = false;
+
     public boolean allowCrossTraining = true;
     public boolean enableEnemyScaling = false;
 

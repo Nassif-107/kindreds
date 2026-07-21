@@ -45,7 +45,8 @@ public record SetConfigFlagC2S(String key, boolean value) implements CustomPaylo
 
     /** The only fields this endpoint may ever write. */
     public static final Set<String> ALLOWED = Set.of(
-            "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining");
+            "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining",
+            "allowGrantXp");
 
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() {
@@ -98,6 +99,11 @@ public record SetConfigFlagC2S(String key, boolean value) implements CustomPaylo
                 Text.translatable("kindreds.settings.flag." + key),
                 Text.translatable(value ? "kindreds.settings.on" : "kindreds.settings.off"))
                 .formatted(Formatting.GREEN), false);
+        // grantxp's visibility is baked into each client's command tree, so a toggle only takes
+        // effect on tab-complete once the tree is resent.
+        for (ServerPlayerEntity p : server.getPlayerManager().getPlayerList()) {
+            server.getPlayerManager().sendCommandTree(p);
+        }
         SyncConfigS2C.sendToAll(server);
     }
 }

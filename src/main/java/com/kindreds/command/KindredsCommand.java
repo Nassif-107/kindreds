@@ -44,8 +44,9 @@ import java.util.Optional;
  * <ul>
  *   <li>{@code /kindreds inspect [player]} - anyone can inspect themselves (op not required); a
  *       race/discipline/node dump used as the primary play-test tool.</li>
- *   <li>{@code /kindreds grantxp <discipline> <amount> [player]} (op level 2) - awards xp for
- *       testing progression without grinding.</li>
+ *   <li>{@code /kindreds grantxp <discipline> <amount> [player]} (op level 2, and
+ *       <b>disabled by default</b> - see {@code allowGrantXp}) - awards xp for testing progression
+ *       without grinding.</li>
  *   <li>{@code /kindreds doctor} (op level 2) - self-check: are the mixins applied, the payloads
  *       agreed with the client, the deeds loaded, the trees sound, the abilities handled? Prints a
  *       short report and logs the detail.</li>
@@ -83,7 +84,10 @@ public final class KindredsCommand {
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(ctx -> inspect(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))))
                 .then(CommandManager.literal("grantxp")
-                        .requires(source -> source.hasPermissionLevel(2))
+                        // requires() hides it from tab-completion; grantXp() re-checks the flag,
+                        // because a client's command tree can be stale after a config change.
+                        .requires(source -> source.hasPermissionLevel(2)
+                                && Kindreds.CONFIG != null && Kindreds.CONFIG.allowGrantXp)
                         .then(CommandManager.argument("discipline", StringArgumentType.word())
                                 .suggests(DISCIPLINE_SUGGESTIONS)
                                 .then(CommandManager.argument("amount", LongArgumentType.longArg())
@@ -206,6 +210,11 @@ public final class KindredsCommand {
     // --- grantxp -----------------------------------------------------------------------------
 
     private static int grantXp(ServerCommandSource source, ServerPlayerEntity target, String disciplinePath, long amount) {
+        if (Kindreds.CONFIG == null || !Kindreds.CONFIG.allowGrantXp) {
+            source.sendError(Text.literal("grantxp is disabled on this server. An operator can enable it "
+                    + "in the Kindreds rules screen, or set allowGrantXp in kindreds-server.json."));
+            return 0;
+        }
         if (!Disciplines.ALL.contains(disciplinePath)) {
             source.sendError(Text.literal("Unknown discipline '" + disciplinePath + "'. Valid: "
                     + String.join(", ", Disciplines.ALL)));

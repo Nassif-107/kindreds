@@ -2178,5 +2178,6 @@
   "kindreds.result.bargain_not_at_cap": "Ты ещё не исчерпал собственных сил. Возвращайся, когда исчерпаешь.",
   "kindreds.result.bargain_unavailable": "Здесь тебя не держит предел — сделка не купит ничего.",
   "kindreds.ability.mountain_sense": "Камень отвечает: рядом руд — %s (%s)",
-  "kindreds.ability.mountain_sense.empty": "Камень молчит. Ничего ценного поблизости нет."
+  "kindreds.ability.mountain_sense.empty": "Камень молчит. Ничего ценного поблизости нет.",
+  "kindreds.settings.flag.allowGrantXp": "Разрешить /kindreds grantxp (для тестов)"
 }
