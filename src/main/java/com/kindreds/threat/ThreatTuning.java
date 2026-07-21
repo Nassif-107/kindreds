@@ -8,6 +8,11 @@ package com.kindreds.threat;
  * anti-farming floor, not tuning. {@link ThreatMath#bandFor} clamps them so a server may narrow the
  * band but never widen it - a config field that could widen it would hand back the death-farming
  * exploit the band exists to prevent.
+ *
+ * <p>{@code hardshipTarget} must satisfy {@code 0 < hardshipTarget < 1}: {@link ThreatMath#foldHardship}
+ * normalizes the coasting side of the error by dividing by it directly, and the struggling side by
+ * dividing by {@code 1 - hardshipTarget}, so a value of exactly 0 or 1 turns one of those two divisions
+ * into a division by zero.
  */
 public record ThreatTuning(float hardshipTarget, float riseRate, float fallRate, float deathPenalty,
                            float bandMin, float bandMax) {

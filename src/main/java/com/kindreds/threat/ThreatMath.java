@@ -25,11 +25,17 @@ public final class ThreatMath {
     /**
      * The band a server has asked for, clamped to what the floor allows. Clamped here rather than at
      * the call site deliberately: this must hold however a caller was configured or misconfigured.
+     *
+     * <p>A NaN argument is coerced to the hard limit on its side rather than allowed through: NaN
+     * poisons every comparison it touches, so {@code Math.max}/{@code Math.min} would otherwise hand
+     * back a {@code [NaN, NaN]} band - the floor silently gone rather than merely wrong.
      */
     public static float[] bandFor(float min, float max) {
+        float safeMin = Float.isNaN(min) ? COMPETENCE_MIN : min;
+        float safeMax = Float.isNaN(max) ? COMPETENCE_MAX : max;
         return new float[]{
-                Math.max(COMPETENCE_MIN, Math.min(1.0f, min)),
-                Math.min(COMPETENCE_MAX, Math.max(1.0f, max))};
+                Math.max(COMPETENCE_MIN, Math.min(1.0f, safeMin)),
+                Math.min(COMPETENCE_MAX, Math.max(1.0f, safeMax))};
     }
 
     /** Declared power, 0..100, as the weighted blend of its three terms. */
@@ -53,7 +59,8 @@ public final class ThreatMath {
         if (current >= mark) {
             return current;
         }
-        float allowance = perHour * (playedTicks / (float) TICKS_PER_HOUR);
+        long safeTicks = Math.max(0L, playedTicks);
+        float allowance = perHour * (safeTicks / (float) TICKS_PER_HOUR);
         return Math.max(current, mark - allowance);
     }
 
@@ -74,8 +81,15 @@ public final class ThreatMath {
      * denominator would let the struggling side swing further than the coasting side for the same
      * rate, quietly breaking the "rises faster than it falls" guarantee this method is meant to
      * uphold (see {@code ThreatMathTest#hardshipRisesCompetenceWhenCoastingAndLowersItWhenStruggling}).
+     *
+     * <p>{@code hardship} is clamped to 0..1 before anything else: it will later be computed as a
+     * division elsewhere in the mod and is not guaranteed bounded by its caller, and the fall branch's
+     * {@code 1 - hardshipTarget} denominator only stays correct while hardship does not exceed 1 - past
+     * that the fall grows without limit, which is exactly the "tank a fight forever and never die"
+     * exploit this method exists to prevent.
      */
     public static float foldHardship(float competence, float hardship, float attackerWeight, ThreatTuning t) {
+        hardship = clamp01(hardship);
         float error = t.hardshipTarget() - hardship;           // positive = coasting
         float alpha;
         float normalized;
@@ -99,13 +113,44 @@ public final class ThreatMath {
         return band(competence - t.deathPenalty() * clamp01(killerWeight), t);
     }
 
-    /** Half the player's overall record, half their record against this particular family. */
-    public static float effectiveCompetence(float global, float family) {
-        return band(0.5f * global + 0.5f * family, ThreatTuning.DEFAULTS);
+    /**
+     * The competence actually applied to a fight: half the player's overall record, half their record
+     * against this particular family.
+     *
+     * <p>The split is even because both halves matter for a different reason and neither can be let to
+     * dominate. The global record is what stops a player who is simply good at the game from reading as
+     * a novice; the family record is what lets the world notice a player who has specifically mastered
+     * (or is specifically struggling against) one kind of threat. Weighting either above the other would
+     * make the other nearly meaningless - a family record that only nudges the global one is not
+     * tracking anything, and a global record drowned out by one family stops meaning "overall" at all.
+     */
+    public static float effectiveCompetence(float global, float family, ThreatTuning t) {
+        return band(0.5f * global + 0.5f * family, t);
     }
 
+    /** Delegates to {@link #effectiveCompetence(float, float, ThreatTuning)} with the default band. */
+    public static float effectiveCompetence(float global, float family) {
+        return effectiveCompetence(global, family, ThreatTuning.DEFAULTS);
+    }
+
+    /**
+     * The number that actually drives world difficulty: declared power scaled by how well its owner has
+     * been backing that declaration up.
+     *
+     * <p>{@code competence} is banded before it is applied, not merely clamped afterward, so a server's
+     * narrowed band is honoured at the one place a caller would otherwise be tempted to skip it. The
+     * result is defensively NaN-proofed on top of that: {@code competence} cannot come out of
+     * {@link #band} as NaN, but {@code prior} is caller-supplied and not this method's to trust, and a
+     * NaN threat would otherwise poison every difficulty decision downstream of it silently.
+     */
+    public static float threat(float prior, float competence, ThreatTuning t) {
+        float safePrior = Float.isNaN(prior) ? 0f : prior;
+        return Math.max(0f, Math.min(100f, safePrior * band(competence, t)));
+    }
+
+    /** Delegates to {@link #threat(float, float, ThreatTuning)} with the default band. */
     public static float threat(float prior, float competence) {
-        return Math.max(0f, Math.min(100f, prior * band(competence, ThreatTuning.DEFAULTS)));
+        return threat(prior, competence, ThreatTuning.DEFAULTS);
     }
 
     /** How much of a player's threat becomes world difficulty, 0..1. The curve is a server setting. */
@@ -120,6 +165,10 @@ public final class ThreatMath {
     }
 
     private static float band(float competence, ThreatTuning t) {
+        if (Float.isNaN(competence)) {
+            // Neither "farm the floor" nor "farm the ceiling" - NaN reads as untouched, not exploited.
+            return 1.0f;
+        }
         float[] limits = bandFor(t.bandMin(), t.bandMax());
         return Math.max(limits[0], Math.min(limits[1], competence));
     }
