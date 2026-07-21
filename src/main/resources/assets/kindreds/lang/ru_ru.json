@@ -2155,5 +2155,11 @@
   "kindreds.difficulty.doom": "Рок",
   "kindreds.difficulty.doom.desc": "Сурово — смерть сжигает четверть прогресса, предел 30.",
   "kindreds.difficulty.custom": "Свои настройки",
-  "kindreds.difficulty.custom.desc": "Ручная настройка в файле; пресеты её не трогают."
+  "kindreds.difficulty.custom.desc": "Ручная настройка в файле; пресеты её не трогают.",
+  "kindreds.settings.rules": "Правила мира",
+  "kindreds.settings.flag_applied": "%s — теперь %s",
+  "kindreds.settings.flag.enableBirthTraits": "Врождённые черты рас",
+  "kindreds.settings.flag.enableCurses": "Расовые слабости (солнце, страх)",
+  "kindreds.settings.flag.enableVision": "Расовое зрение",
+  "kindreds.settings.flag.allowCrossTraining": "Смежное обучение (опыт вне расы)"
 }

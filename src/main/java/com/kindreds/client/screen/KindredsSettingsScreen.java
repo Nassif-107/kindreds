@@ -30,7 +30,14 @@ public class KindredsSettingsScreen extends Screen {
             Difficulty.FIRESIDE, Difficulty.ROAD, Difficulty.LONG_DEFEAT, Difficulty.DOOM, Difficulty.CUSTOM
     };
 
+    /** The four rule switches, in display order. Kept separate from the difficulty presets on purpose:
+     * these are lore/sandbox switches (a Snaga is sun-weak because it is a Snaga), not difficulty. */
+    private static final String[] FLAGS = {
+            "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining"
+    };
+
     private final List<int[]> presetRects = new ArrayList<>();
+    private final List<int[]> flagRects = new ArrayList<>();
     private final Screen parent;
 
     public KindredsSettingsScreen(Screen parent) {
@@ -51,13 +58,15 @@ public class KindredsSettingsScreen extends Screen {
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         super.render(ctx, mouseX, mouseY, delta);
         presetRects.clear();
+        flagRects.clear();
 
         int panelW = Math.min(420, this.width - 40);
         int x = (this.width - panelW) / 2;
-        int y = Math.max(20, this.height / 2 - 150);
+        int panelH = 54 + PRESETS.length * 38 + 24 + FLAGS.length * 18 + 26;
+        int y = Math.max(12, (this.height - panelH) / 2);
 
-        ctx.fill(x - 8, y - 10, x + panelW + 8, y + 292, 0xE0120F0A);
-        ctx.drawBorder(x - 8, y - 10, panelW + 16, 302, 0xFF4A3D28);
+        ctx.fill(x - 8, y - 10, x + panelW + 8, y + panelH, 0xE0120F0A);
+        ctx.drawBorder(x - 8, y - 10, panelW + 16, panelH + 10, 0xFF4A3D28);
 
         ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.settings.title").formatted(Formatting.GOLD),
@@ -86,7 +95,7 @@ public class KindredsSettingsScreen extends Screen {
         int by = y + 54;
         for (Difficulty d : PRESETS) {
             boolean active = d.name().equalsIgnoreCase(v.difficulty());
-            int h = 40;
+            int h = 34;
             int[] r = {x, by, panelW, h};
             presetRects.add(r);
             boolean hover = isOperator() && within(r, mouseX, mouseY);
@@ -105,11 +114,46 @@ public class KindredsSettingsScreen extends Screen {
             by += h + 4;
         }
 
+        // --- Rule switches (lore/sandbox, not difficulty) ---
+        by += 8;
+        ctx.drawText(this.textRenderer, Text.translatable("kindreds.settings.rules")
+                .formatted(Formatting.GOLD), x, by, 0xFFD8B45F, false);
+        by += 13;
+        for (String flag : FLAGS) {
+            boolean on = flagValue(v, flag);
+            int[] r = {x, by, panelW, 16};
+            flagRects.add(r);
+            boolean hover = isOperator() && within(r, mouseX, mouseY);
+            if (hover) {
+                ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], 0x50201810);
+            }
+            ctx.drawText(this.textRenderer, Text.translatable("kindreds.settings.flag." + flag)
+                    .formatted(Formatting.WHITE), r[0] + 4, r[1] + 4, 0xFFECE3CD, false);
+            Text pill = Text.translatable(on ? "kindreds.settings.on" : "kindreds.settings.off");
+            int pw = this.textRenderer.getWidth(pill) + 10;
+            int px = r[0] + r[2] - pw - 4;
+            ctx.fill(px, r[1] + 2, px + pw, r[1] + 14, on ? 0x804A8036 : 0x80402020);
+            ctx.drawBorder(px, r[1] + 2, pw, 12, on ? 0xFF8FCA79 : 0xFF7A5A5A);
+            ctx.drawText(this.textRenderer, pill, px + 5, r[1] + 4,
+                    on ? 0xFF8FCA79 : 0xFFB08A8A, false);
+            by += 18;
+        }
+
         Text foot = isOperator()
                 ? Text.translatable("kindreds.settings.op").formatted(Formatting.DARK_GRAY)
                 : Text.translatable("kindreds.settings.notop").formatted(Formatting.RED);
         ctx.drawCenteredTextWithShadow(this.textRenderer, foot, this.width / 2, by + 6,
                 isOperator() ? 0xFF8A7C60 : 0xFFDD8060);
+    }
+
+    private static boolean flagValue(SyncConfigS2C.View v, String flag) {
+        return switch (flag) {
+            case "enableBirthTraits" -> v.birthTraits();
+            case "enableCurses" -> v.curses();
+            case "enableVision" -> v.vision();
+            case "allowCrossTraining" -> v.crossTraining();
+            default -> false;
+        };
     }
 
     private static String onOff(boolean b) {
@@ -123,6 +167,14 @@ public class KindredsSettingsScreen extends Screen {
                 if (within(presetRects.get(i), mouseX, mouseY)) {
                     ClientPlayNetworking.send(
                             new SetDifficultyC2S(PRESETS[i].name().toLowerCase(Locale.ROOT)));
+                    return true;
+                }
+            }
+            SyncConfigS2C.View v = ClientConfigMirror.get();
+            for (int i = 0; i < flagRects.size() && i < FLAGS.length; i++) {
+                if (within(flagRects.get(i), mouseX, mouseY) && v != null) {
+                    ClientPlayNetworking.send(new com.kindreds.network.SetConfigFlagC2S(
+                            FLAGS[i], !flagValue(v, FLAGS[i])));
                     return true;
                 }
             }

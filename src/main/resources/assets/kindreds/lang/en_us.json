@@ -2155,5 +2155,11 @@
   "kindreds.difficulty.doom": "Doom",
   "kindreds.difficulty.doom.desc": "Harsh — death burns a quarter of your progress, cap 30.",
   "kindreds.difficulty.custom": "Custom",
-  "kindreds.difficulty.custom.desc": "Hand-tuned config file; presets leave it alone."
+  "kindreds.difficulty.custom.desc": "Hand-tuned config file; presets leave it alone.",
+  "kindreds.settings.rules": "World rules",
+  "kindreds.settings.flag_applied": "%s set to %s",
+  "kindreds.settings.flag.enableBirthTraits": "Racial birth traits",
+  "kindreds.settings.flag.enableCurses": "Racial drawbacks (sun-weakness, dread)",
+  "kindreds.settings.flag.enableVision": "Racial vision lenses",
+  "kindreds.settings.flag.allowCrossTraining": "Cross-training (xp outside your race)"
 }
