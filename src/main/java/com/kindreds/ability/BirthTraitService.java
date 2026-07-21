@@ -126,7 +126,12 @@ public final class BirthTraitService {
         }
         if (++tickCounter % 40 == 0) {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                refreshIfChanged(player);
+                // A mid-session kindred change also has to reverse the former people's NODE
+                // modifiers, not just their birth traits - otherwise they stay installed forever
+                // and stack with every reroll. NodeReconcileService prunes anything foreign.
+                if (refreshIfChanged(player)) {
+                    NodeReconcileService.reapply(player);
+                }
             }
         }
     }

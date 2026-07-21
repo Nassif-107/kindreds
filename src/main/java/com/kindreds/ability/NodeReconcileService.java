@@ -49,6 +49,8 @@ public final class NodeReconcileService {
         if (tree == null) {
             return;
         }
+        pruneForeignNodes(player, data, tree, trees);
+
         for (String nodeId : data.unlockedNodes()) {
             tree.node(nodeId).ifPresent(node -> {
                 for (AbilityDef ability : node.abilities()) {
@@ -56,5 +58,49 @@ public final class NodeReconcileService {
                 }
             });
         }
+    }
+
+    /**
+     * Reverses and drops any unlocked node that does not belong to the player's <b>current</b> tree.
+     *
+     * <p>Changing kindred used to leave the previous people's node modifiers installed forever: the
+     * ids stayed in {@code unlockedNodes}, nothing reversed them, and the new tree simply did not
+     * contain them, so they became invisible permanent bonuses. Cycling all eight races took a Dwarf
+     * from 12 hearts to 33.5 - a player who rerolls a few times becomes absurd. A node from another
+     * people's tree is not a node you own, so it is reversed here and forgotten.
+     *
+     * <p>Deliberately conservative about wiping: it only prunes when this race's tree resolved and
+     * has nodes, so a datapack that fails to load cannot be mistaken for "you own nothing", and it
+     * only reverses ids it can actually find in some registered tree - an unknown id is dropped
+     * without pretending to reverse abilities it cannot see.
+     */
+    private static void pruneForeignNodes(ServerPlayerEntity player, KindredData data, SkillTree tree,
+                                          Registry<SkillTree> trees) {
+        if (tree.nodes().isEmpty()) {
+            return;
+        }
+        java.util.List<String> foreign = new java.util.ArrayList<>();
+        for (String nodeId : data.unlockedNodes()) {
+            if (tree.node(nodeId).isEmpty()) {
+                foreign.add(nodeId);
+            }
+        }
+        if (foreign.isEmpty()) {
+            return;
+        }
+        for (String nodeId : foreign) {
+            for (SkillTree other : trees) {
+                var node = other.node(nodeId);
+                if (node.isPresent()) {
+                    AbilityApplier.removeNode(player, node.get().abilities(), nodeId);
+                    break;
+                }
+            }
+            data.unlockedNodes().remove(nodeId);
+        }
+        com.kindreds.ability.PerkService.invalidate(player.getUuid());
+        com.kindreds.Kindreds.LOGGER.info(
+                "[Kindreds] {} changed kindred: reversed {} node(s) belonging to their former people",
+                player.getGameProfile().getName(), foreign.size());
     }
 }
