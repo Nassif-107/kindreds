@@ -461,7 +461,8 @@ public class SkillTreeScreen extends Screen {
     }
 
     private void renderNoRacePrompt(DrawContext ctx) {
-        Text msg = Text.translatable("kindreds.tree.choose_people");
+        Text msg = Text.translatable("kindreds.tree.choose_people",
+                Text.translatable("item.middle-earth.player_book"));
         int w = textRenderer.getWidth(msg);
         ctx.drawText(textRenderer, msg, (width - w) / 2, height / 2, 0xFFDDDDDD, true);
     }

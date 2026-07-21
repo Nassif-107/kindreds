@@ -22,7 +22,8 @@ Disciplines you can grant xp to: `combat, archery, mining, stealth, smithing, su
 ---
 
 ## 1. Codex & UI (any race)
-- [ ] You **start with a Kindred Codex** book in your inventory. **Right-click it** → the parchment Codex opens. Turn pages with **◄ Prev / Next ►** through all 8 peoples. *Expected:* a book-styled screen, boons in green ✦, banes in red ✖, guidance at the top.
+- [ ] Press **K** → the hub opens (a compass rose: Traits, Skills, Abilities, Deeds, and Rules if you are op). Choose **Traits**. *Expected:* a parchment page, a row of 8 race tabs, your own people marked with a gilt foot, and the traits in three groups — born of the blood, wakes with place and hour, burdens. Boons green ✦, banes red ✖.
+- [ ] From the hub choose **Deeds**. *Expected:* your kindred's four Great Deeds, each with its riddle, a plain “Asks:” line, +5%, and a tally at the top. A deed you have done shows green with “You hold this title.”
 - [ ] Press **J** anywhere in-world → same Codex opens.
 - [ ] Start a NEW character → on the base race-selection screen, a **"⚔ Kindred Traits"** button appears top-right → opens the Codex almanac.
 - [ ] Press **K** → skill tree opens in **Map view** (all disciplines as coloured regions). **Drag** to pan, **scroll** to zoom out/in. Click **◇ Whole map / ▤ One branch** (top-right) to toggle. Left rail shows **only your race's disciplines**. *Expected:* readable, no purple/missing-texture, no clipping.

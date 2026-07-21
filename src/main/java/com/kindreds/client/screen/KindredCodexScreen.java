@@ -251,7 +251,10 @@ public class KindredCodexScreen extends Screen {
             y = ink(ctx, x + 10, y, wrap - 10, I18n.translate("kindreds.codex.guide.skills"));
             y = ink(ctx, x + 10, y, wrap - 10, I18n.translate("kindreds.codex.guide.gifts"));
         } else {
-            y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.choose"));
+            // Named through the base mod's own key, so the sentence is right in every language and
+            // follows the item if it is ever renamed there.
+            y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.choose",
+                    I18n.translate("item.middle-earth.player_book")));
         }
 
         contentHeight = (y - (int) scrollY) - viewTop;

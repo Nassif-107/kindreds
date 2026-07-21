@@ -1,5 +1,9 @@
 # Kindreds — Improvement Backlog (researched)
 
+> Still live. Items 3 and 4 of the execution order are the work that remains, and the research and
+> reasoning behind them is here rather than anywhere else. Statuses below are corrected as things
+> ship, so a stale claim never sends anyone to redo finished work.
+
 Sources: [GDKeys – Meaningful Skill Trees](https://gdkeys.com/keys-to-meaningful-skill-trees/),
 [Project MMO](https://www.curseforge.com/minecraft/mc-mods/project-mmo),
 [Middle-earth peoples (Wikipedia)](https://en.wikipedia.org/wiki/Middle-earth_peoples).
@@ -35,14 +39,21 @@ race. No filler.**
   — real craftable items per race, lore-first. No mod does this.
 
 ## Execution order (agreed)
-1. **Per-discipline redesign, race by race, discipline by discipline — Elf DONE (all 5). Dwarf next.** ← ACTIVE
-2. Meta-systems: costed respec + Paths/identity + level-up milestones.
-3. Fellowship/synergy system.
-4. Race-craft (lembas, elven-cloak, mithril, Dwarf-smithing).
+1. ~~Per-discipline redesign, race by race~~ — **done**, all 8 kindreds, 603 nodes. The doctor
+   enforces the no-filler rule now: it fails on a node whose grant is already made pointless by
+   another (`/kindreds doctor`, the `stacking` line).
+2. Meta-systems — **mostly done**: costed respec, the soft cap as a share of your own tree, Great
+   Deeds and the Bargain to widen it, and titles (the name of each deed you have done, shown on the
+   Deeds page and the tree panel). **Paths remain unbuilt** — the named identity per branch.
+3. **Fellowship/synergy system** ← NEXT. The hook is in place and unused:
+   `Allegiance.addAllyRule(BiPredicate<ServerPlayerEntity, ServerPlayerEntity>)`. Every aura, AoE and
+   friend/foe check in the mod already routes through `Allegiance`, so the bond itself — forming it,
+   persisting it, breaking it, showing it — is the only new work.
+4. Race-craft (lembas, elven-cloak, mithril, Dwarf-smithing) — unbuilt.
 
 ---
 
-### Elf discipline order & status
+### Elf discipline order & status (historical — every kindred is built now)
 1. **Archery** — ✅ built (real arrow engine, 17 nodes).
 2. **Survival** — ✅ built (Wood-elf ranger: Silvan-shadow stealth, woodcraft, snow/cold, elven-rope/climb,
    lembas endurance, forest-speed).
