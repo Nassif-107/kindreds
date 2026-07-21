@@ -6,7 +6,7 @@ drift from the game; the prose is written.
 import json, glob, os
 
 RES = 'C:/dev/minecraft_mods/new-mod/src/main/resources'
-OUT = 'C:/Users/basma/AppData/Local/Temp/claude/C--Users-basma-Desktop-middle-earth/490ec692-6124-42a6-80c9-4c1ab8046bcf/scratchpad/kindreds-dossier.json'
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'kindreds-dossier.json')
 
 ATTR_EN = {
     'minecraft:max_health': 'maximum health', 'minecraft:attack_damage': 'melee damage',

@@ -4,3 +4,8 @@ run/
 *.class
 .idea/
 *.iml
+
+# Explorer build intermediates - regenerate with docs/tree-redesign/build_*.py
+docs/tree-redesign/kindreds-data.json
+docs/tree-redesign/kindreds-dossier.json
+docs/tree-redesign/kindreds-branches.json
