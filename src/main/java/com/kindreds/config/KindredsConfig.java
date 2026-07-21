@@ -21,6 +21,12 @@ import java.util.Locale;
 public class KindredsConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    /** Difficulty preset. Applied over the tuning fields below whenever it is not {@link
+     * Difficulty#CUSTOM}, so picking a feel beats hand-balancing six numbers. Defaults to
+     * {@link Difficulty#ROAD}, whose values are exactly what this mod shipped with - so adding
+     * presets changes nothing for an existing world until you choose otherwise. */
+    public Difficulty difficulty = Difficulty.ROAD;
+
     public DeathPenalty deathPenalty = DeathPenalty.KEEP;
     public double deathPercent = 0.25;
     public double xpRateGlobal = 1.0;
@@ -47,6 +53,9 @@ public class KindredsConfig {
                 KindredsConfig loaded = GSON.fromJson(reader, KindredsConfig.class);
                 if (loaded != null) {
                     loaded.fillMissingWithDefaults();
+                    if (loaded.difficulty != null) {
+                        loaded.difficulty.applyTo(loaded);
+                    }
                     return loaded;
                 }
             } catch (IOException | JsonSyntaxException e) {
@@ -77,44 +86,27 @@ public class KindredsConfig {
     }
 
     /**
-     * Applies a named difficulty bundle: {@code "casual"}, {@code "normal"}, or
-     * {@code "legendary"}. Unknown preset names are ignored.
+     * Applies a named difficulty bundle by its legacy string name ({@code "casual"}, {@code "normal"},
+     * {@code "legendary"}) - kept so older configs/commands keep working, but it now delegates to the
+     * typed {@link Difficulty} presets so there is exactly one table to maintain.
+     *
+     * <p>Note that difficulty no longer touches {@code enableCurses}: racial drawbacks are identity,
+     * not difficulty (see {@link Difficulty}). Unknown names are ignored.
      */
     public void applyPreset(String preset) {
         if (preset == null) {
             return;
         }
-        switch (preset.toLowerCase(Locale.ROOT)) {
-            case "casual" -> {
-                deathPenalty = DeathPenalty.KEEP;
-                deathPercent = 0.10;
-                xpRateGlobal = 1.5;
-                pointSoftCap = 80;
-                enableCurses = false;
-                enableEnemyScaling = false;
-                allowCrossTraining = true;
-            }
-            case "normal" -> {
-                deathPenalty = DeathPenalty.LOSE_UNSPENT;
-                deathPercent = 0.25;
-                xpRateGlobal = 1.0;
-                pointSoftCap = 60;
-                enableCurses = true;
-                enableEnemyScaling = false;
-                allowCrossTraining = true;
-            }
-            case "legendary" -> {
-                deathPenalty = DeathPenalty.LOSE_PERCENT;
-                deathPercent = 0.5;
-                xpRateGlobal = 0.75;
-                pointSoftCap = 40;
-                enableCurses = true;
-                enableEnemyScaling = true;
-                allowCrossTraining = false;
-            }
-            default -> {
-                // Unrecognized preset name: leave current settings untouched.
-            }
+        Difficulty d = switch (preset.toLowerCase(Locale.ROOT)) {
+            case "casual", "fireside" -> Difficulty.FIRESIDE;
+            case "normal", "road", "default" -> Difficulty.ROAD;
+            case "hard", "long_defeat" -> Difficulty.LONG_DEFEAT;
+            case "legendary", "doom" -> Difficulty.DOOM;
+            default -> null;
+        };
+        if (d != null) {
+            difficulty = d;
+            d.applyTo(this);
         }
     }
 

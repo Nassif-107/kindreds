@@ -420,9 +420,36 @@ public final class ActivityHooks {
     /** Awards using an already-resolved race (tick-driven hooks, which cache it — see
      * {@link #cachedRace}), then re-syncs to the client. */
     private static void award(ServerPlayerEntity player, Identifier race, Identifier discipline, long baseXp) {
+        if (!Kindreds.CONFIG.allowCrossTraining && !raceCanSpendIn(player, race, discipline)) {
+            return; // xp banked into a discipline this race has no nodes for could never be spent
+        }
         KindredData data = KindredAttachment.get(player);
         ProgressionService.awardXp(data, race, discipline, baseXp, Kindreds.CONFIG.xpRateGlobal);
         SyncKindredDataS2C.sendTo(player);
+    }
+
+    /** Whether {@code race}'s tree actually has nodes in {@code discipline} - i.e. whether points
+     * earned there could ever be spent. Only consulted when cross-training is disabled. */
+    private static boolean raceCanSpendIn(ServerPlayerEntity player, Identifier race, Identifier discipline) {
+        if (player.getServer() == null) {
+            return true;
+        }
+        try {
+            for (com.kindreds.data.SkillTree tree : player.getServer().getRegistryManager()
+                    .getOrThrow(com.kindreds.data.KindredsRegistries.SKILL_TREE)) {
+                if (tree.race().equals(race)) {
+                    for (com.kindreds.data.SkillNode n : tree.nodes()) {
+                        if (n.cost().disciplineId().equals(discipline)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+        } catch (RuntimeException ignored) {
+            // registries unavailable - fail open rather than silently eat progression
+        }
+        return true;
     }
 
     /** Per-player, in-memory (not persisted — resets on server restart/rejoin) tick bookkeeping

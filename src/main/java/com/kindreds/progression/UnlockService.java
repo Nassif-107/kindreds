@@ -70,6 +70,14 @@ public final class UnlockService {
             return UnlockResult.fail("insufficient_points");
         }
 
+        // Soft cap: a ceiling on TOTAL points spent across the whole tree - the knob that actually
+        // forces a build identity (at 60 you master roughly one discipline and dabble; 0 = off).
+        // Config read defensively so pure unit tests with no loaded config still pass.
+        int cap = com.kindreds.Kindreds.CONFIG != null ? com.kindreds.Kindreds.CONFIG.pointSoftCap : 0;
+        if (cap > 0 && totalPointsSpent(data, tree) + cost.points() > cap) {
+            return UnlockResult.fail("soft_cap");
+        }
+
         for (String prereq : node.prereqs()) {
             if (!data.hasNode(prereq)) {
                 return UnlockResult.fail("missing_prereq");
@@ -95,6 +103,18 @@ public final class UnlockService {
         }
 
         return UnlockResult.OK;
+    }
+
+    /** Total points the player has already committed anywhere in {@code tree} - the quantity the
+     * {@code pointSoftCap} limits. */
+    public static int totalPointsSpent(KindredData data, SkillTree tree) {
+        int spent = 0;
+        for (SkillNode n : tree.nodes()) {
+            if (data.hasNode(n.id())) {
+                spent += n.cost().points();
+            }
+        }
+        return spent;
     }
 
     /** Marks {@code nodeId} as unlocked on {@code data}. Assumes {@link #canUnlock} already passed. */

@@ -84,7 +84,15 @@ public final class TreeRenderer {
         }
         SkillNode.Cost cost = node.cost();
         int available = ProgressionService.pointsAvailable(data, tree, cost.disciplineId());
-        return available >= cost.points();
+        if (available < cost.points()) {
+            return false;
+        }
+        // Mirror the server's total-points soft cap so the halo / "N ready" badge can never promise a
+        // node the server will refuse. (In multiplayer the client's own config may differ; the server
+        // stays authoritative and its rejection toast explains.)
+        int cap = com.kindreds.Kindreds.CONFIG != null ? com.kindreds.Kindreds.CONFIG.pointSoftCap : 0;
+        return cap <= 0
+                || com.kindreds.progression.UnlockService.totalPointsSpent(data, tree) + cost.points() <= cap;
     }
 
     /**

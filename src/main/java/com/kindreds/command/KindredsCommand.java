@@ -102,6 +102,18 @@ public final class KindredsCommand {
                                 .executes(ctx -> respec(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))))
                 .then(CommandManager.literal("codex")
                         .executes(ctx -> giveCodex(ctx.getSource(), ctx.getSource().getPlayerOrThrow())))
+                .then(CommandManager.literal("difficulty")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .executes(ctx -> difficultyShow(ctx.getSource()))
+                        .then(CommandManager.argument("preset", StringArgumentType.word())
+                                .suggests((c, b) -> {
+                                    for (com.kindreds.config.Difficulty d : com.kindreds.config.Difficulty.values()) {
+                                        b.suggest(d.name().toLowerCase(Locale.ROOT));
+                                    }
+                                    return b.buildFuture();
+                                })
+                                .executes(ctx -> difficultySet(ctx.getSource(),
+                                        StringArgumentType.getString(ctx, "preset")))))
                 .then(CommandManager.literal("config")
                         .requires(source -> source.hasPermissionLevel(2))
                         .executes(ctx -> configList(ctx.getSource()))
@@ -207,6 +219,37 @@ public final class KindredsCommand {
     }
 
     // --- reload ------------------------------------------------------------------------------
+
+    /** Shows the active difficulty and the values it implies. */
+    private static int difficultyShow(ServerCommandSource source) {
+        KindredsConfig c = Kindreds.CONFIG;
+        source.sendFeedback(() -> Text.literal("Difficulty: " + c.difficulty), false);
+        source.sendFeedback(() -> Text.literal("  xpRate " + c.xpRateGlobal + " · death " + c.deathPenalty
+                + " · softCap " + (c.pointSoftCap > 0 ? c.pointSoftCap : "off")
+                + " · enemyScaling " + c.enableEnemyScaling + " · respecCost " + c.respecCost), false);
+        source.sendFeedback(() -> Text.literal("  presets: "
+                + java.util.Arrays.stream(com.kindreds.config.Difficulty.values())
+                        .map(d -> d.name().toLowerCase(Locale.ROOT))
+                        .collect(java.util.stream.Collectors.joining(", "))), false);
+        return 1;
+    }
+
+    /** Applies a difficulty preset and persists it. */
+    private static int difficultySet(ServerCommandSource source, String preset) {
+        com.kindreds.config.Difficulty d;
+        try {
+            d = com.kindreds.config.Difficulty.valueOf(preset.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            source.sendError(Text.literal("Unknown difficulty '" + preset + "'"));
+            return 0;
+        }
+        KindredsConfig c = Kindreds.CONFIG;
+        c.difficulty = d;
+        d.applyTo(c);
+        c.save(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));
+        source.sendFeedback(() -> Text.literal("Kindreds difficulty set to " + d), true);
+        return difficultyShow(source);
+    }
 
     private static int reload(ServerCommandSource source) {
         Kindreds.CONFIG = KindredsConfig.load(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));

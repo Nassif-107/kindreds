@@ -1,6 +1,7 @@
 package com.kindreds.ability;
 
 import com.kindreds.data.ability.PerkDef;
+import com.kindreds.playerdata.KindredAttachment;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -263,6 +264,14 @@ public final class PerkEventHandlers {
         // Foresight: the Eldar sense the blow ere it falls and turn its edge - a steady damage cut.
         for (PerkDef perk : PerkService.perksOfType(victim, "foresight")) {
             multiplier *= (1.0f - Math.min(0.8f, perk.param("reduction", 0.1f)));
+        }
+        // Enemy scaling (harder difficulties): the world answers a grown hero. Monsters hit harder the
+        // deeper your tree goes - measured by nodes taken, which needs no tree lookup here. Capped at
+        // +50% so it sharpens the late game without turning it into a wall.
+        if (com.kindreds.Kindreds.CONFIG != null && com.kindreds.Kindreds.CONFIG.enableEnemyScaling
+                && source.getAttacker() instanceof Monster) {
+            int nodes = KindredAttachment.get(victim).unlockedNodes().size();
+            multiplier *= 1.0f + Math.min(0.5f, nodes * 0.005f);
         }
         if (multiplier < 1.0f && victim.getWorld() instanceof ServerWorld world) {
             // Dodge: a puff of dust and a whoosh mark the shrugged-off blow.

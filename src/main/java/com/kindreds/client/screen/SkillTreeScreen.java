@@ -1119,6 +1119,7 @@ public class SkillTreeScreen extends Screen {
             case "exclusive_conflict" -> "You've committed to a different path — this one is closed.";
             case "already_owned" -> "You already know this.";
             case "deed_not_earned" -> "Earn its deed first to break the seal.";
+            case "soft_cap" -> "You have committed all you can — respec to spend elsewhere.";
             case "no_tree_for_race", "no_such_node", "ambiguous_node" -> "This skill isn't available.";
             default -> titleCase(reason);
         };
