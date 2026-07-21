@@ -27,7 +27,15 @@ import java.util.List;
  * turning leaves. Purely client-side.
  */
 public class KindredCodexScreen extends Screen {
-    private static final int PAGE_W = 400;
+    /** The page never wants to be wider than this - long lines of prose are tiring to read. */
+    private static final int PAGE_W_MAX = 400;
+
+    /** The page as actually drawn: capped for readability, but shrunk when the window is narrower
+     * than the cap, which a fixed 400 could not do - it simply ran off both edges at small sizes
+     * and at high GUI scales, taking the margin and the scrollbar with it. */
+    private int pageWidth() {
+        return Math.min(PAGE_W_MAX, Math.max(180, this.width - 40));
+    }
     private static final int LINE = 11;
 
     // Parchment palette (dark ink on aged paper - readable, book-like).
@@ -125,13 +133,13 @@ public class KindredCodexScreen extends Screen {
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ctx.fill(0, 0, width, height, 0xC0000000);
 
-        int px = (width - PAGE_W) / 2;
+        int px = (width - pageWidth()) / 2;
         int py = 16;
         int ph = height - 32;
-        drawBook(ctx, px, py, PAGE_W, ph);
+        drawBook(ctx, px, py, pageWidth(), ph);
 
         boolean isOwn = browseRace().equals(playerRace);
-        int cx = px + PAGE_W / 2;
+        int cx = px + pageWidth() / 2;
 
         // Title.
         String raceName = I18n.translate("kindreds.race." + browseRace().getPath())
@@ -139,14 +147,14 @@ public class KindredCodexScreen extends Screen {
         int tw = textRenderer.getWidth(raceName);
         ctx.drawText(textRenderer, Text.literal(raceName).formatted(Formatting.BOLD, Formatting.UNDERLINE),
                 cx - tw / 2, py + 14, INK_HEADER, false);
-        ctx.fill(px + 30, py + 26, px + PAGE_W - 30, py + 27, RULE);
+        ctx.fill(px + 30, py + 26, px + pageWidth() - 30, py + 27, RULE);
 
         int viewTop = py + 32;
         int viewBottom = py + ph - 22;
-        ctx.enableScissor(px + 14, viewTop, px + PAGE_W - 14, viewBottom);
+        ctx.enableScissor(px + 14, viewTop, px + pageWidth() - 14, viewBottom);
         int x = px + 26;
         int y = viewTop + (int) scrollY;
-        int wrap = PAGE_W - 52;
+        int wrap = pageWidth() - 52;
 
         y = section(ctx, x, y, I18n.translate("kindreds.codex.section.ways"));
         y = ink(ctx, x, y, wrap, I18n.translate("kindreds.codex.guide.tree"));
@@ -212,7 +220,7 @@ public class KindredCodexScreen extends Screen {
 
         // Page-turn corners + hint.
         prevBtn = new int[]{px + 14, py + ph - 20, 58, 15};
-        nextBtn = new int[]{px + PAGE_W - 72, py + ph - 20, 58, 15};
+        nextBtn = new int[]{px + pageWidth() - 72, py + ph - 20, 58, 15};
         drawTurn(ctx, prevBtn, "◄ " + I18n.translate("kindreds.codex.prev"), within(prevBtn, mouseX, mouseY));
         drawTurn(ctx, nextBtn, I18n.translate("kindreds.codex.next") + " ►", within(nextBtn, mouseX, mouseY));
         String pageNo = (browseIndex + 1) + " / " + ALL_RACES.size();
@@ -233,7 +241,7 @@ public class KindredCodexScreen extends Screen {
 
     private int section(DrawContext ctx, int x, int y, String label) {
         ctx.drawText(textRenderer, Text.literal(label).formatted(Formatting.BOLD), x - 4, y, INK_HEADER, false);
-        ctx.fill(x - 4, y + 10, x + PAGE_W - 52, y + 11, RULE);
+        ctx.fill(x - 4, y + 10, x + pageWidth() - 52, y + 11, RULE);
         return y + 15;
     }
 

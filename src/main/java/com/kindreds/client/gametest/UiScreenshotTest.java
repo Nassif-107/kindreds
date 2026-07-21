@@ -72,6 +72,9 @@ public class UiScreenshotTest implements FabricClientGameTest {
             shoot(context, "05-settings", () -> new KindredsSettingsScreen(null));
             shoot(context, "06-radial", AbilityRadialScreen::new);
 
+            shoot(context, "08-traits", () -> new com.kindreds.client.screen.KindredCodexScreen(
+                    ClientKindredData.INSTANCE, null));
+
             context.setScreen(() -> null);
             context.waitTicks(20);
             context.takeScreenshot("07-hud");
