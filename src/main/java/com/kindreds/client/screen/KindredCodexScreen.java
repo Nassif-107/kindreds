@@ -233,8 +233,11 @@ public class KindredCodexScreen extends Screen {
                 lens = I18n.translate("kindreds.codex.vision.none");
             }
             y = ink(ctx, x + 10, y, wrap - 10, I18n.translate("kindreds.codex.vision", lens));
-            String titles = data.titles().isEmpty()
-                    ? I18n.translate("kindreds.codex.titles.none") : String.join(", ", data.titles());
+            java.util.List<String> titleKeys =
+                    com.kindreds.progression.RenownService.titleKeys(data);
+            String titles = titleKeys.isEmpty()
+                    ? I18n.translate("kindreds.codex.titles.none")
+                    : titleKeys.stream().map(I18n::translate).collect(java.util.stream.Collectors.joining(", "));
             y = ink(ctx, x + 10, y, wrap - 10, I18n.translate("kindreds.codex.titles", titles));
             y = ink(ctx, x + 10, y, wrap - 10,
                     I18n.translate("kindreds.codex.skills_learned", data.unlockedNodes().size()));

@@ -28,11 +28,20 @@ public class ScreenIterationTest implements FabricClientGameTest {
                     .assignNewRace(Identifier.of("middle-earth", "dwarf")));
             // A singleplayer test server has no console player, so anything that reads "the player who
             // ran this" has to be told which one - and there is no /op here to grant with either.
+            // Operator, so the hub shows its fifth point (Server rules) and the rose has to hold five.
+            sp.getServer().runOnServer(server -> {
+                var player = server.getPlayerManager().getPlayerList().get(0);
+                server.getPlayerManager().addToOperators(player.getGameProfile());
+            });
             sp.getServer().runCommand("kindreds config allowGrantXp true");
             for (String disc : new String[]{"mining", "combat", "smithing", "archery", "stealth"}) {
                 sp.getServer().runCommand("kindreds grantxp " + disc + " 40000 @p");
             }
             context.waitTicks(40);
+            // Grant one Great Deed so the page shows both a done and an undone deed. The advancement
+            // is the real one, so RenownService records it exactly as it would in play.
+            sp.getServer().runCommand("advancement grant @p only kindreds:renown/dwarf/khazad_work");
+            context.waitTicks(20);
             sp.getServer().runCommand("kindreds doctor");
             context.waitTicks(10);
 
@@ -48,6 +57,15 @@ public class ScreenIterationTest implements FabricClientGameTest {
                 context.runOnClient(mc -> mc.currentScreen.keyPressed(262, 0, 0));
                 context.waitTicks(8);
                 context.takeScreenshot("traits-other-s" + scale);
+
+                context.setScreen(() -> new com.kindreds.client.screen.KindredDeedsScreen(
+                        ClientKindredData.INSTANCE, null));
+                context.waitTicks(10);
+                context.takeScreenshot("deeds-s" + scale);
+
+                context.setScreen(() -> new com.kindreds.client.screen.KindredHubScreen());
+                context.waitTicks(8);
+                context.takeScreenshot("hub-s" + scale);
 
                 context.setScreen(() -> new SkillTreeScreen(ClientKindredData.INSTANCE));
                 context.waitTicks(12);

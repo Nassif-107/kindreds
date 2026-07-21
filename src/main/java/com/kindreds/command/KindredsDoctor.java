@@ -226,6 +226,21 @@ public final class KindredsDoctor {
         }
         report(source, "deeds", loaded.size() + "/" + shipped.size() + " loaded",
                 rejected.isEmpty() ? null : "rejected: " + String.join(", ", rejected));
+
+        // A deed the Deeds page cannot describe is a deed the player is told to do and not told how.
+        // The decoder returns nothing rather than a guess for a criterion shape it does not know, so
+        // this is where that silence gets a voice.
+        java.util.Map<String, net.minecraft.text.Text> described =
+                com.kindreds.progression.DeedIndex.requirements(server);
+        List<String> mute = new ArrayList<>(loaded);
+        mute.removeAll(described.keySet());
+        for (String m : mute) {
+            problems.add("deed has no readable requirement: kindreds:" + m
+                    + " - its criteria use a shape DeedIndex cannot describe, so the Deeds page"
+                    + " shows its riddle with no plain line beneath");
+        }
+        report(source, "deed hints", described.size() + "/" + loaded.size() + " describable",
+                mute.isEmpty() ? null : "mute: " + String.join(", ", mute));
     }
 
     /** Per-race tree health: node counts, dangling prereqs, and the cap the tree resolves to. */

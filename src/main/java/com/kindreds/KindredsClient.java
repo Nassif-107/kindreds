@@ -162,6 +162,10 @@ public class KindredsClient implements ClientModInitializer {
                         com.kindreds.client.screen.ClientConfigMirror.set(
                                 com.kindreds.network.SyncConfigS2C.parse(payload.json()))));
 
+        ClientPlayNetworking.registerGlobalReceiver(com.kindreds.network.SyncDeedsS2C.ID,
+                (payload, context) -> context.client().execute(() ->
+                        com.kindreds.client.ClientDeeds.accept(payload.requirements())));
+
         ClientPlayNetworking.registerGlobalReceiver(UnlockResultS2C.ID, (payload, context) ->
                 context.client().execute(() ->
                         SkillTreeScreen.handleUnlockResult(context.client(), payload.ok(), payload.reason())));

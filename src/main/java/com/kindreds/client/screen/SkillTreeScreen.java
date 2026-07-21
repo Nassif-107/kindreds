@@ -1058,8 +1058,9 @@ public class SkillTreeScreen extends Screen {
         ctx.drawText(textRenderer, Text.translatable("kindreds.tree.section.titles").formatted(Formatting.BOLD),
                 x, y, accent, false);
         y += 12;
-        String titles = data.titles().isEmpty() ? I18n.translate("kindreds.tree.titles.none")
-                : String.join(", ", data.titles());
+        java.util.List<String> titleKeys = com.kindreds.progression.RenownService.titleKeys(data);
+        String titles = titleKeys.isEmpty() ? I18n.translate("kindreds.tree.titles.none")
+                : titleKeys.stream().map(I18n::translate).collect(java.util.stream.Collectors.joining(", "));
         for (var line : textRenderer.wrapLines(Text.literal(titles), panel[2] - 20)) {
             ctx.drawText(textRenderer, line, x, y, 0xFFD8D2C0, false);
             y += 10;

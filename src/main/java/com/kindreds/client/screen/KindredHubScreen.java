@@ -40,6 +40,7 @@ public class KindredHubScreen extends Screen {
             case SKILLS -> client.setScreen(new SkillTreeScreen(ClientKindredData.INSTANCE, hub));
             case ABILITIES -> client.setScreen(
                     new com.kindreds.client.loadout.KindredLoadoutScreen(hub));
+            case DEEDS -> client.setScreen(new KindredDeedsScreen(ClientKindredData.INSTANCE, hub));
             default -> client.setScreen(hub);
         }
     }
@@ -58,6 +59,7 @@ public class KindredHubScreen extends Screen {
         list.add(new Entry("T", "traits", this::openTraits, false));
         list.add(new Entry("S", "skills", this::openSkills, false));
         list.add(new Entry("A", "abilities", this::openAbilities, false));
+        list.add(new Entry("D", "deeds", this::openDeeds, false));
         // Server rules are offered to an operator only. Not for secrecy - the server re-checks every
         // change regardless - but because a page nobody else can act on is a locked door on a menu.
         if (isOperator()) {
@@ -110,7 +112,8 @@ public class KindredHubScreen extends Screen {
         ctx.drawCenteredTextWithShadow(this.textRenderer, sub, cx, cy - plate - arm - 18, 0xFF9A8F76);
 
         hits.clear();
-        int[][] slots = rose ? rosePoints(cx, cy, plate, arm) : gridPoints(cx, cy, plate, arm);
+        int[][] slots = rose ? rosePoints(cx, cy, plate, arm, entries.size())
+                : gridPoints(cx, cy, plate, arm, entries.size());
         for (int i = 0; i < entries.size(); i++) {
             int[] r = {slots[i][0], slots[i][1], plate, plate};
             hits.add(r);
@@ -141,30 +144,53 @@ public class KindredHubScreen extends Screen {
                     cx, footY, 0xFF9A8F76);
         }
         ctx.drawCenteredTextWithShadow(this.textRenderer,
-                Text.translatable("kindreds.hub.hint").formatted(Formatting.DARK_GRAY),
+                Text.translatable("kindreds.hub.hint", entries.size()).formatted(Formatting.DARK_GRAY),
                 cx, footY + 12, 0xFF6E6250);
     }
 
-    /** North, east, west, south - Traits above, Skills to the right, Abilities left, Rules below. */
-    private static int[][] rosePoints(int cx, int cy, int plate, int arm) {
+    /**
+     * {@code count} points spaced evenly around the rose, the first due north.
+     *
+     * <p>At four this is still a diamond, and Traits still sits due north with Skills to its east -
+     * the two positions worth protecting. Abilities moves from west to south, which is the price of
+     * a fifth page: spacing by angle is what lets one join without the figure going lopsided, and no
+     * arrangement of five keeps all four of the old places.
+     */
+    private static int[][] rosePoints(int cx, int cy, int plate, int arm, int count) {
         int half = plate / 2;
-        return new int[][]{
-                {cx - half, cy - arm - plate},          // Traits, north
-                {cx + arm, cy - half},                  // Skills, east
-                {cx - arm - plate, cy - half},          // Abilities, west
-                {cx - half, cy + arm},                  // Rules, south
-        };
+        // Far enough out that neighbouring plates cannot touch, whatever the count: the chord between
+        // two adjacent points must clear a plate's width. At four to six this is inside the distance
+        // the cardinals already used, so nothing moves; beyond that the rose widens rather than
+        // letting the plates grind into each other.
+        double clearance = count < 2 ? 0 : plate / (2 * Math.sin(Math.PI / count)) + 4;
+        double radius = Math.max(arm + half, clearance);
+        int[][] out = new int[Math.max(1, count)][2];
+        for (int i = 0; i < out.length; i++) {
+            double angle = -Math.PI / 2 + i * (2 * Math.PI / out.length);   // -90 degrees is north
+            out[i][0] = (int) Math.round(cx + Math.cos(angle) * radius) - half;
+            out[i][1] = (int) Math.round(cy + Math.sin(angle) * radius) - half;
+        }
+        return out;
     }
 
-    /** Fallback for a window too small for a rose: the same plates in a plain 2x2. */
-    private static int[][] gridPoints(int cx, int cy, int plate, int gap) {
-        int x0 = cx - plate - gap / 2;
-        int y0 = cy - plate - gap / 2;
-        int centred = cx - plate / 2; // a lone third plate belongs under the middle, not the left
-        return new int[][]{
-                {x0, y0}, {x0 + plate + gap, y0},
-                {centred, y0 + plate + gap}, {x0 + plate + gap, y0 + plate + gap},
-        };
+    /**
+     * Fallback for a window too small for a rose: the same plates in rows of two, centred. A short
+     * last row is centred rather than left-aligned, so three or five plates still look composed.
+     */
+    private static int[][] gridPoints(int cx, int cy, int plate, int gap, int count) {
+        int cols = Math.min(2, Math.max(1, count));
+        int rows = (count + cols - 1) / cols;
+        int totalH = rows * plate + (rows - 1) * gap;
+        int y0 = cy - totalH / 2;
+        int[][] out = new int[Math.max(0, count)][2];
+        for (int i = 0; i < count; i++) {
+            int row = i / cols;
+            int inRow = Math.min(cols, count - row * cols);   // the last row may be short
+            int rowW = inRow * plate + (inRow - 1) * gap;
+            out[i][0] = cx - rowW / 2 + (i % cols) * (plate + gap);
+            out[i][1] = y0 + row * (plate + gap);
+        }
+        return out;
     }
 
     /** One point of the rose: a bordered plate, a large initial, and a single word beneath it. */
@@ -185,10 +211,14 @@ public class KindredHubScreen extends Screen {
                 0, -this.textRenderer.fontHeight / 2, hover ? 0xFFFFE9A8 : 0xFFD8B45F);
         m.popMatrix();
 
+        // One word per plate is the design, but a translation is not obliged to honour it - clipped
+        // to the plate so a long word is cut rather than printed out over the rose.
         Text name = Text.translatable("kindreds.hub." + e.key())
                 .copy().formatted(hover ? Formatting.WHITE : Formatting.GRAY);
+        ctx.enableScissor(r[0] + 2, r[1], r[0] + r[2] - 2, r[1] + r[3]);
         ctx.drawCenteredTextWithShadow(this.textRenderer, name, cx, r[1] + r[3] - 20,
                 hover ? 0xFFFFFFFF : 0xFFBBB0A0);
+        ctx.disableScissor();
 
         String num = String.valueOf(number);
         ctx.drawText(this.textRenderer, Text.literal(num),
@@ -234,6 +264,11 @@ public class KindredHubScreen extends Screen {
         com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.ABILITIES);
         MinecraftClient.getInstance().setScreen(
                 new com.kindreds.client.loadout.KindredLoadoutScreen(this));
+    }
+
+    private void openDeeds() {
+        com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.DEEDS);
+        MinecraftClient.getInstance().setScreen(new KindredDeedsScreen(ClientKindredData.INSTANCE, this));
     }
 
     private void openRules() {

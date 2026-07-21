@@ -51,6 +51,8 @@ public class Kindreds implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(UnlockResultS2C.ID, UnlockResultS2C.CODEC);
         PayloadTypeRegistry.playS2C().register(com.kindreds.network.SyncConfigS2C.ID,
                 com.kindreds.network.SyncConfigS2C.CODEC);
+        PayloadTypeRegistry.playS2C().register(com.kindreds.network.SyncDeedsS2C.ID,
+                com.kindreds.network.SyncDeedsS2C.CODEC);
         com.kindreds.network.SetDifficultyC2S.registerServerHandler();
         com.kindreds.network.SetConfigFlagC2S.registerServerHandler();
         RequestUnlockC2S.registerServerHandler();
@@ -96,6 +98,8 @@ public class Kindreds implements ModInitializer {
             SyncKindredDataS2C.sendTo(handler.player);
             // The client needs the server's rules to display them (settings screen, soft cap).
             com.kindreds.network.SyncConfigS2C.sendTo(handler.player);
+            // What each Great Deed asks for. Static datapack data, so once is enough.
+            com.kindreds.network.SyncDeedsS2C.sendTo(handler.player);
         });
 
         LOGGER.info("[Kindreds] initialized");

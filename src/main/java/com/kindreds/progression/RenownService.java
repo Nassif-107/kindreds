@@ -132,6 +132,32 @@ public final class RenownService {
     }
 
     /**
+     * The titles a player wears: the name of every Great Deed of their own kindred that they have
+     * done, as lang keys for the caller to translate.
+     *
+     * <p>Derived, never stored. {@code KindredData} carries a {@code titles} set that nothing in the
+     * mod ever wrote to, so the two screens that showed it read "None earned yet" forever. A title is
+     * not a separate award to be kept in step with anything - it is the name of a deed you have done,
+     * so it is read off the deeds and cannot disagree with them.
+     *
+     * <p>Own kindred only, matching the rule the cap already follows: renown belongs to the people
+     * you earned it as.
+     */
+    public static java.util.List<String> titleKeys(KindredData data) {
+        if (data == null) {
+            return java.util.List.of();
+        }
+        java.util.List<String> keys = new java.util.ArrayList<>();
+        for (String path : data.renown()) {
+            if (belongsToRace(path, data.race())) {
+                keys.add("kindreds.advancement." + path.replace('/', '.') + ".title");
+            }
+        }
+        java.util.Collections.sort(keys);
+        return keys;
+    }
+
+    /**
      * Whether the deed at {@code path} ({@code renown/<race>/<deed>}) belongs to {@code race}.
      *
      * <p>A {@code null} race counts <b>everything</b>, deliberately. Race is transient state re-read
