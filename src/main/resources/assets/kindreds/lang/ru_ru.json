@@ -2,7 +2,7 @@
   "kindreds.name": "Народы Средиземья",
   "key.category.kindreds": "Народы Средиземья",
   "key.kindreds.use_ability": "Использовать выбранную способность",
-  "key.kindreds.cycle_ability": "Переключить слот способности",
+  "key.kindreds.cycle_ability": "Колесо умений (быстрый выбор)",
   "key.kindreds.open_loadout": "Открыть набор способностей",
   "key.kindreds.cycle_vision": "Переключить зрение",
   "key.kindreds.open_tree": "Открыть древо навыков",
@@ -1004,7 +1004,7 @@
   "kindreds.node.uruk.shadow.dread_of_isengard.flavor": "Одно твоё имя обращает вражеский строй в бегство прежде первого удара.",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.name": "Ужас Белой Руки",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.flavor": "Кровь и страх воедино — знак Белой Руки, воплощённый в войне.",
-  "kindreds.hud.switch": "смена",
+  "kindreds.hud.switch": "колесо",
   "kindreds.hud.use": "применить",
   "kindreds.perk.arrow_damage": "Мастерство лука: +%d%% урона стрел",
   "kindreds.perk.long_shot": "Дальний выстрел: +%d%% урона за блок дистанции (до +%d%%)",
@@ -2111,5 +2111,14 @@
   "kindreds.perk.prey_sense": "Чутьё добычи: живые враги поблизости светятся, видны сквозь стены и тьму (в пределах %d блоков)",
   "kindreds.perk.dread_aura": "Ужас Ока: враги поблизости слабеют, лишь стоя пред вами (в пределах %d блоков)",
   "kindreds.perk.unyielding": "Несгибаемый: вас нельзя замедлить — ни Замедление, ни Усталость не коснутся вас",
-  "kindreds.ability.blasting_fire": "Взрывной огонь Ортханка"
+  "kindreds.ability.blasting_fire": "Взрывной огонь Ортханка",
+  "kindreds.radial.title": "Выбор умения",
+  "kindreds.radial.hint": "мышь / 1-4 / колёсико · Esc — отмена",
+  "kindreds.radial.empty": "— пусто —",
+  "kindreds.radial.ready": "готово",
+  "kindreds.hud.selected": "Слот %s: %s",
+  "key.kindreds.select_slot_1": "Выбрать слот умения 1",
+  "key.kindreds.select_slot_2": "Выбрать слот умения 2",
+  "key.kindreds.select_slot_3": "Выбрать слот умения 3",
+  "key.kindreds.select_slot_4": "Выбрать слот умения 4"
 }

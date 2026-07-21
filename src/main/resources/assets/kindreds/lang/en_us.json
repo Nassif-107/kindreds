@@ -2,7 +2,7 @@
   "kindreds.name": "Kindreds of Middle-earth",
   "key.category.kindreds": "Kindreds of Middle-earth",
   "key.kindreds.use_ability": "Use selected ability",
-  "key.kindreds.cycle_ability": "Cycle ability slot",
+  "key.kindreds.cycle_ability": "Ability wheel (quick-select)",
   "key.kindreds.open_loadout": "Open ability loadout",
   "key.kindreds.cycle_vision": "Cycle vision",
   "key.kindreds.open_tree": "Open skill tree",
@@ -1004,7 +1004,7 @@
   "kindreds.node.uruk.shadow.dread_of_isengard.flavor": "Your name alone unmans the enemy's line before the first blow falls.",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.name": "Terror of the White Hand",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.flavor": "Blood and fear together — the mark of the White Hand made flesh in war.",
-  "kindreds.hud.switch": "switch",
+  "kindreds.hud.switch": "wheel",
   "kindreds.hud.use": "use",
   "kindreds.perk.arrow_damage": "Bow mastery: +%d%% arrow damage",
   "kindreds.perk.long_shot": "Long-shot: +%d%% damage per block of range (max +%d%%)",
@@ -2111,5 +2111,14 @@
   "kindreds.perk.prey_sense": "Prey-sense: nearby living foes glow, seen through wall and dark (within %d blocks)",
   "kindreds.perk.dread_aura": "Dread of the Eye: nearby foes are weakened just for facing you (within %d blocks)",
   "kindreds.perk.unyielding": "Unyielding: you cannot be slowed — no Slowness or Mining Fatigue can touch you",
-  "kindreds.ability.blasting_fire": "Blasting-fire of Orthanc"
+  "kindreds.ability.blasting_fire": "Blasting-fire of Orthanc",
+  "kindreds.radial.title": "Choose ability",
+  "kindreds.radial.hint": "mouse / 1-4 / scroll · Esc to cancel",
+  "kindreds.radial.empty": "— empty —",
+  "kindreds.radial.ready": "ready",
+  "kindreds.hud.selected": "Slot %s: %s",
+  "key.kindreds.select_slot_1": "Select ability slot 1",
+  "key.kindreds.select_slot_2": "Select ability slot 2",
+  "key.kindreds.select_slot_3": "Select ability slot 3",
+  "key.kindreds.select_slot_4": "Select ability slot 4"
 }

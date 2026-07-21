@@ -96,6 +96,36 @@ public class KindredsClient implements ClientModInitializer {
             GLFW.GLFW_KEY_L,
             "key.category.kindreds"));
 
+    /**
+     * Per-slot "select ability N" keybinds - the power-user path that skips the radial entirely
+     * (the pattern Ars Nouveau and Iron's Spells both offer alongside their wheels). Deliberately
+     * <b>unbound</b> by default: 1-{@value com.kindreds.client.loadout.ClientLoadout#SLOTS} would
+     * collide with the vanilla hotbar, and silently stealing those would be worse than asking the
+     * player to bind them in Controls if they want them.
+     */
+    private static final KeyBinding[] SELECT_SLOT_KEYS = new KeyBinding[
+            com.kindreds.client.loadout.ClientLoadout.SLOTS];
+    static {
+        for (int i = 0; i < SELECT_SLOT_KEYS.length; i++) {
+            SELECT_SLOT_KEYS[i] = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    "key.kindreds.select_slot_" + (i + 1),
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_UNKNOWN,
+                    "key.category.kindreds"));
+        }
+    }
+
+    /** Selects a loadout slot and echoes it on the action bar, so a switch is always confirmed. */
+    private static void selectSlot(net.minecraft.client.MinecraftClient client, int slot) {
+        com.kindreds.client.loadout.ClientLoadout.setSelected(slot);
+        if (client.player != null) {
+            String id = com.kindreds.client.loadout.ClientLoadout.slot(slot);
+            client.player.sendMessage(net.minecraft.text.Text.translatable("kindreds.hud.selected",
+                    slot + 1, com.kindreds.client.loadout.ClientLoadout.displayName(id))
+                    .formatted(net.minecraft.util.Formatting.AQUA), true);
+        }
+    }
+
     @Override
     public void onInitializeClient() {
         // Store the latest server-authoritative skill data for client-side UI/HUD to read; hop
@@ -125,12 +155,20 @@ public class KindredsClient implements ClientModInitializer {
                             com.kindreds.client.loadout.ClientLoadout.selectedAbilityId()));
                 }
             }
+            // Switching used to be "tap R to advance one slot", which meant mashing the key blind to
+            // reach slot 4. It now opens the radial quick-select instead - one tap, see everything
+            // (names + live cooldowns), pick with the mouse/number keys/scroll.
             while (CYCLE_ABILITY_KEY.wasPressed()) {
-                if (client.player != null) {
-                    int slot = com.kindreds.client.loadout.ClientLoadout.cycleSelected();
-                    String id = com.kindreds.client.loadout.ClientLoadout.slot(slot);
-                    client.player.sendMessage(net.minecraft.text.Text.literal("Ability slot " + (slot + 1)
-                            + ": " + com.kindreds.client.loadout.ClientLoadout.displayName(id)), true);
+                if (client.player != null && client.currentScreen == null) {
+                    client.setScreen(new com.kindreds.client.loadout.AbilityRadialScreen());
+                }
+            }
+            // Direct per-slot selection (unbound by default; see SELECT_SLOT_KEYS).
+            for (int i = 0; i < SELECT_SLOT_KEYS.length; i++) {
+                while (SELECT_SLOT_KEYS[i].wasPressed()) {
+                    if (client.player != null) {
+                        selectSlot(client, i);
+                    }
                 }
             }
             while (OPEN_LOADOUT_KEY.wasPressed()) {

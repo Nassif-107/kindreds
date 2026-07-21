@@ -131,6 +131,15 @@ public final class ClientLoadout {
         return selected;
     }
 
+    /** Selects slot {@code i} directly (the radial menu and the per-slot keybinds), ignoring an
+     * out-of-range index. Returns the slot actually selected. */
+    public static int setSelected(int i) {
+        if (i >= 0 && i < SLOTS) {
+            selected = i;
+        }
+        return selected;
+    }
+
     /** The ability id of the selected slot, or "" if that slot is empty. */
     public static String selectedAbilityId() {
         return slot(selected);
