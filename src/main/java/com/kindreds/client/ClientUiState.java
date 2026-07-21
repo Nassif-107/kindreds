@@ -19,7 +19,7 @@ public final class ClientUiState {
     private ClientUiState() {
     }
 
-    public enum Page { HUB, TRAITS, SKILLS }
+    public enum Page { HUB, TRAITS, SKILLS, ABILITIES }
 
     private static Page lastPage;
     private static boolean loaded;

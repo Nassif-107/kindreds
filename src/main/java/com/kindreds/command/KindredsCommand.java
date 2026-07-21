@@ -110,8 +110,6 @@ public final class KindredsCommand {
                         .executes(ctx -> respec(ctx.getSource(), ctx.getSource().getPlayerOrThrow()))
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(ctx -> respec(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))))
-                .then(CommandManager.literal("codex")
-                        .executes(ctx -> giveCodex(ctx.getSource(), ctx.getSource().getPlayerOrThrow())))
                 .then(CommandManager.literal("difficulty")
                         .requires(source -> source.hasPermissionLevel(2))
                         .executes(ctx -> difficultyShow(ctx.getSource()))
@@ -271,18 +269,6 @@ public final class KindredsCommand {
         KindredsConfig config = Kindreds.CONFIG;
         source.sendFeedback(() -> Text.literal("Kindreds config reloaded (xpRateGlobal=" + config.xpRateGlobal
                 + ", deathPenalty=" + config.deathPenalty + ")"), true);
-        return 1;
-    }
-
-    // --- codex -------------------------------------------------------------------------------
-
-    private static int giveCodex(ServerCommandSource source, ServerPlayerEntity player) {
-        net.minecraft.item.ItemStack stack = new net.minecraft.item.ItemStack(
-                com.kindreds.item.KindredsItems.CODEX);
-        if (!player.getInventory().insertStack(stack)) {
-            player.dropItem(stack, false);
-        }
-        source.sendFeedback(() -> Text.literal("You receive a Kindred Codex."), false);
         return 1;
     }
 

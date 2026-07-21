@@ -2322,5 +2322,11 @@
   "kindreds.hub.traits.desc": "Что даёт вам кровь, не спрашивая: дары и тяготы, с которыми вы рождены.",
   "kindreds.hub.skills": "Умения",
   "kindreds.hub.skills.desc": "Что вы сделали из себя сами. Тратьте заработанное и смотрите, что уже в пределах досягаемости.",
-  "kindreds.hub.hint": "T или S  ·  Esc — закрыть"
+  "kindreds.hub.hint": "1-4 — выбрать  ·  Esc — закрыть",
+  "kindreds.hub.traits.short": "дары и тяготы вашей крови",
+  "kindreds.hub.skills.short": "тратьте заработанное",
+  "kindreds.hub.abilities": "Умения",
+  "kindreds.hub.abilities.short": "назначьте, что творят ваши четыре слота",
+  "kindreds.hub.rules": "Правила сервера",
+  "kindreds.hub.rules.short": "сложность и правила — только для операторов"
 }

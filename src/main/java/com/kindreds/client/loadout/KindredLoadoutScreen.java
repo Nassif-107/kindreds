@@ -17,6 +17,24 @@ import java.util.List;
  * under Sodium/Iris (same reason {@code KindredCodexScreen}/{@code SkillTreeScreen} do).
  */
 public final class KindredLoadoutScreen extends Screen {
+    /** Where Esc returns to - the hub, when opened from it. */
+    private net.minecraft.client.gui.screen.Screen parent;
+
+    public KindredLoadoutScreen(net.minecraft.client.gui.screen.Screen parent) {
+        this();
+        this.parent = parent;
+    }
+
+    @Override
+    public void close() {
+        if (this.client != null && this.parent != null) {
+            this.client.setScreen(this.parent);
+            return;
+        }
+        super.close();
+    }
+
+
 
     /** {@code ""} (empty) followed by each unlocked active id - the options each slot cycles through. */
     private List<String> options = List.of("");

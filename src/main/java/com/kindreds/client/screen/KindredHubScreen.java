@@ -21,8 +21,8 @@ import net.minecraft.util.Identifier;
  * tree canvas. This is a title page, not a chart.
  */
 public class KindredHubScreen extends Screen {
-    private int[] traitsPlate = new int[4];
-    private int[] skillsPlate = new int[4];
+    /** Screen-space rect per rendered entry, rebuilt each frame alongside the rows it describes. */
+    private final java.util.List<int[]> hits = new java.util.ArrayList<>();
 
     public KindredHubScreen() {
         super(Text.translatable("kindreds.hub.title"));
@@ -38,6 +38,8 @@ public class KindredHubScreen extends Screen {
         switch (com.kindreds.client.ClientUiState.lastPage()) {
             case TRAITS -> client.setScreen(new KindredCodexScreen(ClientKindredData.INSTANCE, hub));
             case SKILLS -> client.setScreen(new SkillTreeScreen(ClientKindredData.INSTANCE, hub));
+            case ABILITIES -> client.setScreen(
+                    new com.kindreds.client.loadout.KindredLoadoutScreen(hub));
             default -> client.setScreen(hub);
         }
     }
@@ -47,100 +49,122 @@ public class KindredHubScreen extends Screen {
         return false;
     }
 
+    /** One choice on the page. {@code op} entries are only offered to an operator. */
+    private record Entry(String initial, String key, Runnable action, boolean op) {
+    }
+
+    private java.util.List<Entry> entries() {
+        java.util.List<Entry> list = new java.util.ArrayList<>();
+        list.add(new Entry("T", "traits", this::openTraits, false));
+        list.add(new Entry("S", "skills", this::openSkills, false));
+        list.add(new Entry("A", "abilities", this::openAbilities, false));
+        // Server rules are offered to an operator only. Not for secrecy - the server re-checks every
+        // change regardless - but because a page nobody else can act on is a locked door on a menu.
+        if (isOperator()) {
+            list.add(new Entry("R", "rules", this::openRules, true));
+        }
+        return list;
+    }
+
+    private boolean isOperator() {
+        return this.client != null && this.client.player != null
+                && this.client.player.hasPermissionLevel(
+                        com.kindreds.network.SetDifficultyC2S.OPERATOR_LEVEL);
+    }
+
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         super.render(ctx, mouseX, mouseY, delta);
         KindredData data = ClientKindredData.INSTANCE;
         Identifier race = data == null ? null : data.race();
+        java.util.List<Entry> entries = entries();
 
-        // Everything scales off the window, so the page reads the same at any GUI scale: two plates
-        // side by side when there is width for them, stacked when there is not.
-        boolean narrow = this.width < 420;
-        int plateW = narrow ? Math.min(300, this.width - 40) : Math.min(210, (this.width - 60) / 2);
-        int plateH = narrow ? 74 : Math.min(150, this.height - 130);
-        int gap = narrow ? 10 : 18;
-        int totalW = narrow ? plateW : plateW * 2 + gap;
+        // Sleeker than the first cut: low, wide rows instead of tall text panels, so four choices fit
+        // without shouting and the eye runs straight down the initials. Two columns when there is
+        // width for them, one when there is not, so the page reads the same at any GUI scale.
+        int cols = this.width >= 560 ? 2 : 1;
+        int rowW = cols == 2 ? Math.min(240, (this.width - 70) / 2) : Math.min(300, this.width - 44);
+        int rowH = 34;
+        int gapX = 14;
+        int gapY = 8;
+        int rows = (entries.size() + cols - 1) / cols;
+        int totalW = cols == 2 ? rowW * 2 + gapX : rowW;
+        int totalH = rows * rowH + (rows - 1) * gapY;
         int x0 = (this.width - totalW) / 2;
-        int y0 = Math.max(52, (this.height - (narrow ? plateH * 2 + gap : plateH)) / 2 + 8);
+        int y0 = Math.max(46, (this.height - totalH) / 2);
 
-        // page
         ctx.fill(0, 0, this.width, this.height, 0xC0140F0A);
         ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.hub.title").formatted(Formatting.GOLD),
-                this.width / 2, y0 - 34, 0xFFD8B45F);
+                this.width / 2, y0 - 30, 0xFFD8B45F);
         Text sub = race == null
                 ? Text.translatable("kindreds.hub.noRace").formatted(Formatting.GRAY)
                 : Text.translatableWithFallback("kindreds.race." + race.getPath(), race.getPath())
                         .copy().formatted(Formatting.ITALIC, Formatting.GRAY);
-        ctx.drawCenteredTextWithShadow(this.textRenderer, sub, this.width / 2, y0 - 20, 0xFF9A8F76);
-        // a ruled line under the heading, as in the codex
-        ctx.fill(x0, y0 - 8, x0 + totalW, y0 - 7, 0x40D8B45F);
+        ctx.drawCenteredTextWithShadow(this.textRenderer, sub, this.width / 2, y0 - 18, 0xFF9A8F76);
+        ctx.fill(x0, y0 - 7, x0 + totalW, y0 - 6, 0x40D8B45F);
 
-        traitsPlate = new int[]{x0, y0, plateW, plateH};
-        skillsPlate = narrow ? new int[]{x0, y0 + plateH + gap, plateW, plateH}
-                : new int[]{x0 + plateW + gap, y0, plateW, plateH};
-
-        plate(ctx, traitsPlate, "T", "kindreds.hub.traits", "kindreds.hub.traits.desc", mouseX, mouseY);
-        plate(ctx, skillsPlate, "S", "kindreds.hub.skills", "kindreds.hub.skills.desc", mouseX, mouseY);
+        hits.clear();
+        for (int i = 0; i < entries.size(); i++) {
+            int col = cols == 2 ? i % 2 : 0;
+            int row = cols == 2 ? i / 2 : i;
+            int[] r = {x0 + col * (rowW + gapX), y0 + row * (rowH + gapY), rowW, rowH};
+            hits.add(r);
+            row(ctx, r, entries.get(i), i + 1, mouseX, mouseY);
+        }
 
         ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.hub.hint").formatted(Formatting.DARK_GRAY),
-                this.width / 2, y0 + (narrow ? plateH * 2 + gap : plateH) + 12, 0xFF6E6250);
+                this.width / 2, y0 + totalH + 10, 0xFF6E6250);
     }
 
-    /** One illuminated choice: a bordered leaf with a large initial, a name and a line of purpose. */
-    private void plate(DrawContext ctx, int[] r, String initial, String titleKey, String descKey,
-                       int mouseX, int mouseY) {
+    /** A single row: a numbered initial, the name, and a quiet line of purpose beneath it. */
+    private void row(DrawContext ctx, int[] r, Entry e, int number, int mouseX, int mouseY) {
         boolean hover = within(r, mouseX, mouseY);
-        ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], hover ? 0xE02A2010 : 0xC01A1510);
-        ctx.drawBorder(r[0], r[1], r[2], r[3], hover ? 0xFFD8B45F : 0xFF4A3D28);
-        ctx.drawBorder(r[0] + 3, r[1] + 3, r[2] - 6, r[3] - 6, 0x33D8B45F);
-
-        // illuminated initial
-        int capSize = Math.min(34, r[3] / 3);
-        int capX = r[0] + 12;
-        int capY = r[1] + 12;
-        ctx.fill(capX, capY, capX + capSize, capY + capSize, hover ? 0x66D8B45F : 0x33D8B45F);
-        ctx.drawBorder(capX, capY, capSize, capSize, 0xFFD8B45F);
-        ctx.drawText(this.textRenderer, Text.literal(initial),
-                capX + capSize / 2 - 2, capY + capSize / 2 - 4, 0xFFFFE9A8, true);
-
-        ctx.drawText(this.textRenderer, Text.translatable(titleKey).formatted(Formatting.BOLD),
-                capX + capSize + 10, capY + 4, hover ? 0xFFFFE9A8 : 0xFFE6DCC4, true);
-
-        int textY = capY + capSize + 10;
-        for (var line : this.textRenderer.wrapLines(
-                Text.translatable(descKey).formatted(Formatting.GRAY), r[2] - 24)) {
-            if (textY > r[1] + r[3] - 12) {
-                break;
-            }
-            ctx.drawText(this.textRenderer, line, r[0] + 12, textY, 0xFF9A8F76, false);
-            textY += 10;
+        ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], hover ? 0xD82A2010 : 0xB01A1510);
+        ctx.drawBorder(r[0], r[1], r[2], r[3], hover ? 0xFFD8B45F : 0xFF3A3020);
+        if (hover) { // a gold rule down the leading edge, as the codex marks a chosen entry
+            ctx.fill(r[0], r[1], r[0] + 2, r[1] + r[3], 0xFFD8B45F);
         }
+
+        int capX = r[0] + 8;
+        int capY = r[1] + (r[3] - 18) / 2;
+        ctx.fill(capX, capY, capX + 18, capY + 18, hover ? 0x66D8B45F : 0x2AD8B45F);
+        ctx.drawBorder(capX, capY, 18, 18, hover ? 0xFFD8B45F : 0xFF6A5A38);
+        ctx.drawText(this.textRenderer, Text.literal(e.initial()), capX + 6, capY + 5, 0xFFFFE9A8, true);
+
+        ctx.drawText(this.textRenderer,
+                Text.translatable("kindreds.hub." + e.key()).formatted(Formatting.BOLD),
+                capX + 26, r[1] + 7, hover ? 0xFFFFE9A8 : 0xFFE6DCC4, true);
+        ctx.drawText(this.textRenderer,
+                Text.translatable("kindreds.hub." + e.key() + ".short").formatted(Formatting.GRAY),
+                capX + 26, r[1] + 19, 0xFF8A7F68, false);
+
+        String num = String.valueOf(number);
+        ctx.drawText(this.textRenderer, Text.literal(num),
+                r[0] + r[2] - this.textRenderer.getWidth(num) - 7, r[1] + 13,
+                hover ? 0xFFD8B45F : 0xFF5A5040, false);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (within(traitsPlate, mouseX, mouseY)) {
-            openTraits();
-            return true;
-        }
-        if (within(skillsPlate, mouseX, mouseY)) {
-            openSkills();
-            return true;
+        java.util.List<Entry> entries = entries();
+        for (int i = 0; i < hits.size() && i < entries.size(); i++) {
+            if (within(hits.get(i), mouseX, mouseY)) {
+                entries.get(i).action().run();
+                return true;
+            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // 1/2 and T/S, because a hub you have to aim at with a mouse is slower than the tree it fronts
-        if (keyCode == 49 || keyCode == 84) {
-            openTraits();
-            return true;
-        }
-        if (keyCode == 50 || keyCode == 83) {
-            openSkills();
+        // Numbers pick a row - a menu you have to aim at is slower than the pages it fronts.
+        java.util.List<Entry> entries = entries();
+        int index = keyCode - 49; // GLFW '1'
+        if (index >= 0 && index < entries.size()) {
+            entries.get(index).action().run();
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -154,6 +178,16 @@ public class KindredHubScreen extends Screen {
     private void openSkills() {
         com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.SKILLS);
         MinecraftClient.getInstance().setScreen(new SkillTreeScreen(ClientKindredData.INSTANCE, this));
+    }
+
+    private void openAbilities() {
+        com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.ABILITIES);
+        MinecraftClient.getInstance().setScreen(
+                new com.kindreds.client.loadout.KindredLoadoutScreen(this));
+    }
+
+    private void openRules() {
+        MinecraftClient.getInstance().setScreen(new KindredsSettingsScreen(this));
     }
 
     private static boolean within(int[] r, double x, double y) {

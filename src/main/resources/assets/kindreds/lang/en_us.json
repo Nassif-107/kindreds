@@ -2322,5 +2322,11 @@
   "kindreds.hub.traits.desc": "What your blood grants you without asking: the gifts and the burdens you were born to.",
   "kindreds.hub.skills": "Skills",
   "kindreds.hub.skills.desc": "What you have made of yourself. Spend what you have earned, and see what lies within reach.",
-  "kindreds.hub.hint": "T or S  ·  Esc to close"
+  "kindreds.hub.hint": "1-4 to choose  ·  Esc to close",
+  "kindreds.hub.traits.short": "the gifts and burdens of your blood",
+  "kindreds.hub.skills.short": "spend what you have earned",
+  "kindreds.hub.abilities": "Abilities",
+  "kindreds.hub.abilities.short": "set what your four slots cast",
+  "kindreds.hub.rules": "Server Rules",
+  "kindreds.hub.rules.short": "difficulty and rules — operators only"
 }

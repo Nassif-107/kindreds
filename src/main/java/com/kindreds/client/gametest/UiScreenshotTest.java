@@ -42,6 +42,7 @@ public class UiScreenshotTest implements FabricClientGameTest {
             report(sp, "on join");
             context.takeScreenshot("00-join");
 
+            sp.getServer().runCommand("op @p");
             sp.getServer().runCommand("kindreds doctor");
             context.waitTicks(5);
 
@@ -63,7 +64,7 @@ public class UiScreenshotTest implements FabricClientGameTest {
             report(sp, "after xp");
             shoot(context, "03-tree-funded", () -> new SkillTreeScreen(ClientKindredData.INSTANCE));
 
-            shoot(context, "04-loadout", KindredLoadoutScreen::new);
+            shoot(context, "04-abilities", KindredLoadoutScreen::new);
             shoot(context, "05-settings", () -> new KindredsSettingsScreen(null));
             shoot(context, "06-radial", AbilityRadialScreen::new);
 

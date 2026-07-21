@@ -61,8 +61,10 @@ public class KindredsClient implements ClientModInitializer {
     }
 
     /** The localized name of the "Open ability loadout" key (for the empty-radial hint + welcome). */
+    /** The loadout no longer has a key of its own: it is a page of the hub, so anything that told
+     * the player "press L" must now send them to the hub key instead. */
     public static net.minecraft.text.Text openLoadoutKeyName() {
-        return OPEN_LOADOUT_KEY.getBoundKeyLocalizedText();
+        return OPEN_TREE_KEY.getBoundKeyLocalizedText();
     }
 
     public static net.minecraft.text.Text cycleAbilityKeyName() {
@@ -84,26 +86,12 @@ public class KindredsClient implements ClientModInitializer {
             GLFW.GLFW_KEY_K,
             "key.category.kindreds"));
 
-    /** "Open Kindred Codex" - the browsable character/traits menu (defaults to {@code J}). */
-    private static final KeyBinding OPEN_CODEX_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.kindreds.open_codex",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_J,
-            "key.category.kindreds"));
-
     /** "Cycle ability slot" - advances which loadout slot the use-ability key fires (defaults to
      * {@code R}). The selected slot is highlighted in the HUD ability bar. */
     private static final KeyBinding CYCLE_ABILITY_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.kindreds.cycle_ability",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_R,
-            "key.category.kindreds"));
-
-    /** "Open ability loadout" - the slot-assignment screen (defaults to {@code L}). */
-    private static final KeyBinding OPEN_LOADOUT_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.kindreds.open_loadout",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_L,
             "key.category.kindreds"));
 
     /**
@@ -227,11 +215,6 @@ public class KindredsClient implements ClientModInitializer {
                     }
                 }
             }
-            while (OPEN_LOADOUT_KEY.wasPressed()) {
-                if (client.player != null) {
-                    client.setScreen(new com.kindreds.client.loadout.KindredLoadoutScreen());
-                }
-            }
             while (CYCLE_VISION_KEY.wasPressed()) {
                 VisionManager.cycle(client);
             }
@@ -247,12 +230,6 @@ public class KindredsClient implements ClientModInitializer {
             while (OPEN_SETTINGS_KEY.wasPressed()) {
                 if (client.player != null) {
                     com.kindreds.client.screen.KindredsSettingsScreen.open(client);
-                }
-            }
-            while (OPEN_CODEX_KEY.wasPressed()) {
-                if (client.player != null) {
-                    com.kindreds.client.screen.KindredCodexScreen.open(client);
-                    ClientPlayNetworking.send(new OpenTreeC2S()); // refresh the client's data mirror
                 }
             }
         });
