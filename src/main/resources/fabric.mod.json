@@ -13,7 +13,8 @@
     ],
     "fabric-client-gametest": [
       "com.kindreds.client.gametest.UiScreenshotTest",
-      "com.kindreds.client.gametest.KindredsFunctionalTest"
+      "com.kindreds.client.gametest.KindredsFunctionalTest",
+      "com.kindreds.client.gametest.AbilityVisualTest"
     ]
   },
   "mixins": [
