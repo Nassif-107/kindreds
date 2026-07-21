@@ -1,0 +1,74 @@
+[CTX] dwarf   daylight    expect=[]                                     gained=[]                                 mods 41->41  clean (nothing authored)
+[CTX] dwarf   starlight   expect=[]                                     gained=[]                                 mods 41->41  clean (nothing authored)
+[CTX] dwarf   darkness    expect=[]                                     gained=[]                                 mods 41->41  clean (nothing authored)
+[CTX] dwarf   dawn_dusk   expect=[]                                     gained=[]                                 mods 41->41  clean (nothing authored)
+[CTX] dwarf   underground expect=[haste, night_vision, regeneration, resistance, strength] gained=[haste, night_vision, regeneration, resistance, strength] mods 41->41  OK
+[CTX] dwarf   deep_dark   expect=[]                                     gained=[haste, night_vision, regeneration, resistance, strength] mods 41->41  unexpected change: [haste, night_vision, regeneration, resistance, strength]
+[CTX] dwarf   low_health  expect=[resistance, speed, strength]          gained=[resistance, speed, strength]      mods 41->41  OK
+[CTX] elf     daylight    expect=[]                                     gained=[]                                 mods 25->25  clean (nothing authored)
+[CTX] elf     starlight   expect=[absorption, regeneration, resistance, speed] gained=[absorption]                       mods 25->30  MISSING [regeneration, resistance, speed]
+[CTX] elf     darkness    expect=[]                                     gained=[absorption]                       mods 25->30  OK
+[CTX] elf     dawn_dusk   expect=[speed]                                gained=[absorption]                       mods 25->31  MISSING [speed]
+[CTX] elf     underground expect=[]                                     gained=[weakness]                         mods 25->27  unexpected change: [weakness]
+[CTX] elf     deep_dark   expect=[resistance]                           gained=[weakness]                         mods 25->27  MISSING [resistance]
+[CTX] elf     low_health  expect=[regeneration, resistance]             gained=[]                                 mods 25->25  MISSING [regeneration, resistance]
+[CTX] human   daylight    expect=[]                                     gained=[]                                 mods 44->44  clean (nothing authored)
+[CTX] human   starlight   expect=[]                                     gained=[]                                 mods 44->44  clean (nothing authored)
+[CTX] human   darkness    expect=[]                                     gained=[]                                 mods 44->44  clean (nothing authored)
+[CTX] human   dawn_dusk   expect=[regeneration, resistance, speed, strength] gained=[]                                 mods 44->44  MISSING [regeneration, resistance, speed, strength]
+[CTX] human   underground expect=[]                                     gained=[]                                 mods 44->44  clean (nothing authored)
+[CTX] human   deep_dark   expect=[]                                     gained=[]                                 mods 44->44  clean (nothing authored)
+[CTX] human   low_health  expect=[resistance, speed, strength]          gained=[]                                 mods 44->45  MISSING [resistance, speed, strength]
+[CTX] hobbit  daylight    expect=[]                                     gained=[]                                 mods 24->24  clean (nothing authored)
+[CTX] hobbit  starlight   expect=[]                                     gained=[]                                 mods 24->24  clean (nothing authored)
+[CTX] hobbit  darkness    expect=[]                                     gained=[]                                 mods 24->24  clean (nothing authored)
+[CTX] hobbit  dawn_dusk   expect=[]                                     gained=[]                                 mods 24->24  clean (nothing authored)
+[CTX] hobbit  underground expect=[]                                     gained=[]                                 mods 24->24  clean (nothing authored)
+[CTX] hobbit  deep_dark   expect=[]                                     gained=[]                                 mods 24->24  clean (nothing authored)
+[CTX] hobbit  low_health  expect=[invisibility, regeneration, resistance, speed, strength] gained=[invisibility]                     mods 24->24  MISSING [regeneration, resistance, speed, strength]
+[CTX] uruk    daylight    expect=[speed, strength]                      gained=[]                                 mods 56->56  MISSING [speed, strength]
+[CTX] uruk    starlight   expect=[]                                     gained=[]                                 mods 56->55  unexpected change: []
+[CTX] uruk    darkness    expect=[]                                     gained=[]                                 mods 56->55  unexpected change: []
+[CTX] uruk    dawn_dusk   expect=[]                                     gained=[]                                 mods 56->55  unexpected change: []
+[CTX] uruk    underground expect=[]                                     gained=[]                                 mods 56->55  unexpected change: []
+[CTX] uruk    deep_dark   expect=[]                                     gained=[]                                 mods 56->55  unexpected change: []
+[CTX] uruk    low_health  expect=[regeneration, resistance, speed, strength] gained=[regeneration]                     mods 56->56  MISSING [resistance, speed, strength]
+[CTX] orc     daylight    expect=[]                                     gained=[]                                 mods 43->43  clean (nothing authored)
+[CTX] orc     starlight   expect=[]                                     gained=[haste, regeneration]              mods 43->43  unexpected change: [haste, regeneration]
+[CTX] orc     darkness    expect=[haste, regeneration, resistance, speed, strength] gained=[haste, regeneration]              mods 43->43  MISSING [resistance, speed, strength]
+[CTX] orc     dawn_dusk   expect=[]                                     gained=[haste, regeneration]              mods 43->43  unexpected change: [haste, regeneration]
+[CTX] orc     underground expect=[]                                     gained=[haste, regeneration]              mods 43->43  unexpected change: [haste, regeneration]
+[CTX] orc     deep_dark   expect=[resistance, speed, strength]          gained=[haste, regeneration]              mods 43->43  MISSING [resistance, speed, strength]
+[CTX] orc     low_health  expect=[resistance, strength]                 gained=[]                                 mods 43->43  MISSING [resistance, strength]
+[CTX] snaga   daylight    expect=[]                                     gained=[]                                 mods 29->29  clean (nothing authored)
+[CTX] snaga   starlight   expect=[]                                     gained=[resistance, speed, strength]      mods 29->30  unexpected change: [resistance, speed, strength]
+[CTX] snaga   darkness    expect=[resistance, speed, strength]          gained=[resistance, speed, strength]      mods 29->30  OK
+[CTX] snaga   dawn_dusk   expect=[]                                     gained=[resistance, speed, strength]      mods 29->30  unexpected change: [resistance, speed, strength]
+[CTX] snaga   underground expect=[]                                     gained=[resistance, speed, strength]      mods 29->30  unexpected change: [resistance, speed, strength]
+[CTX] snaga   deep_dark   expect=[speed]                                gained=[resistance, speed, strength]      mods 29->30  OK
+[CTX] snaga   low_health  expect=[absorption, regeneration, resistance, speed, strength] gained=[absorption, regeneration, resistance, speed, strength] mods 29->33  OK
+[CTX] goblin  daylight    expect=[]                                     gained=[]                                 mods 35->35  clean (nothing authored)
+[CTX] goblin  starlight   expect=[]                                     gained=[resistance, speed, strength]      mods 35->35  unexpected change: [resistance, speed, strength]
+[CTX] goblin  darkness    expect=[resistance, speed, strength]          gained=[resistance, speed, strength]      mods 35->35  OK
+[CTX] goblin  dawn_dusk   expect=[]                                     gained=[resistance, speed, strength]      mods 35->35  unexpected change: [resistance, speed, strength]
+[CTX] goblin  underground expect=[haste, resistance]                    gained=[haste, resistance, speed, strength] mods 35->35  OK
+[CTX] goblin  deep_dark   expect=[speed, strength]                      gained=[haste, resistance, speed, strength] mods 35->35  OK
+[CTX] goblin  low_health  expect=[resistance, speed, strength]          gained=[resistance, speed, strength]      mods 35->35  OK
+[CTX] difficulty fireside     xp x2.0  death=KEEP           cap%=100  respec=1  scaling=false | elf cap 0 of 191
+[CTX] difficulty road         xp x1.0  death=KEEP           cap%=75   respec=1  scaling=false | elf cap 143 of 191
+[CTX] difficulty long_defeat  xp x0.7  death=LOSE_UNSPENT   cap%=60   respec=4  scaling=true  | elf cap 115 of 191
+[CTX] difficulty doom         xp x0.45 death=LOSE_PERCENT   cap%=45   respec=8  scaling=true  | elf cap 86 of 191
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] ================ SUMMARY ================
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL elf/starlight: expected [absorption, regeneration, resistance, speed] and 2 attribute boon(s), missing [regeneration, resistance, speed]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL elf/dawn_dusk: expected [speed] and 1 attribute boon(s), missing [speed]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL elf/deep_dark: expected [resistance], missing [resistance]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL elf/low_health: expected [regeneration, resistance], missing [regeneration, resistance]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL human/dawn_dusk: expected [regeneration, resistance, speed, strength], missing [regeneration, resistance, speed, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL human/low_health: expected [resistance, speed, strength], missing [resistance, speed, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL hobbit/low_health: expected [invisibility, regeneration, resistance, speed, strength], missing [regeneration, resistance, speed, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL uruk/daylight: expected [speed, strength], missing [speed, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL uruk/low_health: expected [regeneration, resistance, speed, strength], missing [resistance, speed, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL orc/darkness: expected [haste, regeneration, resistance, speed, strength], missing [resistance, speed, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL orc/deep_dark: expected [resistance, speed, strength], missing [resistance, speed, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] FAIL orc/low_health: expected [resistance, strength], missing [resistance, strength]
+[19:03:08] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] 12 problem(s)

@@ -29,9 +29,18 @@ public final class LoadoutHud {
     private LoadoutHud() {
     }
 
-    private static final int SLOT = 22;
-    private static final int GAP = 3;
-    private static final int MARGIN = 6;
+    // Sized against the window rather than fixed: at 22px the slots crowded the corner and pushed
+    // the key hint off the bottom of a small screen, and a size that suits a 1080p window is wrong
+    // for someone playing at GUI scale 4 in a 480px-tall one.
+    private static final int SLOT_LARGE = 18;
+    private static final int SLOT_SMALL = 13;
+    private static final int GAP = 2;
+    private static final int MARGIN = 5;
+
+    /** Slot size for the current window - compact when there is little vertical room to spare. */
+    private static int slotSize(DrawContext ctx) {
+        return ctx.getScaledWindowHeight() < 260 ? SLOT_SMALL : SLOT_LARGE;
+    }
     private static final int FLASH_TICKS = 12;
 
     /** ability id -> the full cooldown length of the current cycle, so the sweep has a denominator
@@ -56,6 +65,7 @@ public final class LoadoutHud {
 
         TextRenderer tr = mc.textRenderer;
         long now = mc.world.getTime();
+        final int SLOT = slotSize(ctx);
         int barW = ClientLoadout.SLOTS * SLOT + (ClientLoadout.SLOTS - 1) * GAP;
         int x0 = ctx.getScaledWindowWidth() - barW - MARGIN;
         int y = ctx.getScaledWindowHeight() - SLOT - MARGIN;
@@ -118,10 +128,16 @@ public final class LoadoutHud {
             // At the tree-wide cap those points cannot be spent at all, so the nudge becomes a calm
             // statement of fact instead: a pulsing "go spend these" that can never be obeyed is nagging.
             boolean capped = com.kindreds.client.ClientProgress.atCap();
+            // "2 ready to learn" is something to act on; "2 points" is only a number. Falls back to
+            // the point count when the points cannot buy anything yet (prerequisites unmet).
+            int ready = com.kindreds.client.ClientProgress.readyTotal();
             Text pip = capped
                     ? Text.translatable("kindreds.hud.capped", com.kindreds.client.ClientProgress.spent(),
                             com.kindreds.client.ClientProgress.cap())
-                    : Text.translatable("kindreds.hud.points", unspent,
+                    : ready > 0
+                        ? Text.translatable("kindreds.hud.ready", ready,
+                            com.kindreds.KindredsClient.openTreeKeyName())
+                        : Text.translatable("kindreds.hud.points", unspent,
                             com.kindreds.KindredsClient.openTreeKeyName());
             int w = tr.getWidth(pip) + 8;
             int px = x0 + barW - w;
@@ -134,12 +150,24 @@ public final class LoadoutHud {
             ctx.drawText(tr, pip, px + 4, py + 2, capped ? 0xFFA9997C : 0xFFFFD86B, false);
         }
 
-        // Compact key hint under the row (uses the player's actual, possibly rebound, keys).
-        Text hint = Text.literal(com.kindreds.KindredsClient.cycleAbilityKeyName().getString() + " "
-                + Text.translatable("kindreds.hud.switch").getString() + "  ·  "
-                + com.kindreds.KindredsClient.useAbilityKeyName().getString() + " "
-                + Text.translatable("kindreds.hud.use").getString());
-        ctx.drawText(tr, hint, x0 + barW - tr.getWidth(hint), y + SLOT + 2, 0xFF8A7C60, false);
+        // The key hint is onboarding, not permanent furniture: it ran under the slots every second of
+        // play, was the first thing clipped off the bottom at small window sizes, and told a veteran
+        // nothing. Shown only while no ability is bound - the one time it is actually needed.
+        boolean nothingBound = true;
+        for (int i = 0; i < ClientLoadout.SLOTS; i++) {
+            String bound = ClientLoadout.slot(i);
+            if (bound != null && !bound.isEmpty()) {
+                nothingBound = false;
+                break;
+            }
+        }
+        if (nothingBound) {
+            Text hint = Text.literal(com.kindreds.KindredsClient.cycleAbilityKeyName().getString() + " "
+                    + Text.translatable("kindreds.hud.switch").getString() + "  ·  "
+                    + com.kindreds.KindredsClient.useAbilityKeyName().getString() + " "
+                    + Text.translatable("kindreds.hud.use").getString());
+            ctx.drawText(tr, hint, x0 + barW - tr.getWidth(hint), y - 22, 0xFF8A7C60, false);
+        }
     }
 
     /** Remembers each cooldown's full length (for the sweep) and when it ended (for the flash). */

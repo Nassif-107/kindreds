@@ -139,13 +139,20 @@ public final class CurseContextService {
         KindredData data = KindredAttachment.get(player);
         Set<String> active = ACTIVE.computeIfAbsent(player.getUuid(), id -> new HashSet<>());
 
+        // Which status effects does ANYTHING still want, right now? Removal used to be blind: when
+        // one node's boon left its context it stripped the effect from the player outright, even
+        // though another node's boon - live, in a different context - was still granting it.
+        // Strength, Speed and Resistance are authored by the most nodes across the most contexts, so
+        // they were the ones that kept vanishing. Nothing still wanted may be stripped.
+        Set<net.minecraft.util.Identifier> wanted = wantedEffects(player, treeOpt.get(), data);
+
         for (SkillNode node : treeOpt.get().nodes()) {
             // Ownership re-derived every tick (not cached): losing a node to a respec must drive the
             // same off-transition that a context ending does, or a persistent contextual effect would
             // be orphaned (it doesn't self-expire).
             boolean owned = data.hasNode(node.id());
             List<AbilityDef> abilities = node.abilities();
-            for (int i = 0; i < abilities.size(); i++) {
+        for (int i = 0; i < abilities.size(); i++) {
                 AbilityDef ability = abilities.get(i);
                 // Unique per (node, ability index) so a node can carry more than one contextual
                 // effect (e.g. a boon and a bane) without their bookkeeping colliding.
@@ -154,14 +161,51 @@ public final class CurseContextService {
                     // enableCurses gate: treating "off" as never-in-context routes an already-applied
                     // contextual curse through REMOVE, so flipping the flag can't strand a modifier.
                     processContextual(player, curse.when(), curse.effect().get(), key, owned,
-                            Kindreds.CONFIG.enableCurses, active);
+                            Kindreds.CONFIG.enableCurses, active, wanted);
                 } else if (ability instanceof ContextualBoon boon) {
-                    processContextual(player, boon.when(), boon.effect(), key, owned, true, active);
+                    processContextual(player, boon.when(), boon.effect(), key, owned, true, active, wanted);
                 }
             }
         }
 
-        tickBirthContextual(server, player, active);
+        tickBirthContextual(server, player, active, wanted);
+    }
+
+    /** Every status effect an owned, in-context grant is providing this pass - nodes and birth
+     * traits alike. A removal may not strip anything in this set. */
+    private static Set<net.minecraft.util.Identifier> wantedEffects(ServerPlayerEntity player,
+                                                                    SkillTree tree, KindredData data) {
+        Set<net.minecraft.util.Identifier> wanted = new java.util.HashSet<>();
+        if (tree != null) {
+            for (SkillNode node : tree.nodes()) {
+                if (!data.hasNode(node.id())) {
+                    continue;
+                }
+                for (AbilityDef ability : node.abilities()) {
+                    collectWanted(player, ability, wanted);
+                }
+            }
+        }
+        return wanted;
+    }
+
+    private static void collectWanted(ServerPlayerEntity player, AbilityDef ability,
+                                      Set<net.minecraft.util.Identifier> wanted) {
+        String when = null;
+        AbilityDef inner = null;
+        if (ability instanceof CurseDef c && !c.when().isEmpty() && c.effect().isPresent()) {
+            when = c.when();
+            inner = c.effect().get();
+            if (!Kindreds.CONFIG.enableCurses) {
+                return;
+            }
+        } else if (ability instanceof ContextualBoon b) {
+            when = b.when();
+            inner = b.effect();
+        }
+        if (inner instanceof StatusEffectDef s && when != null && matchesContext(when, player)) {
+            wanted.add(s.effect());
+        }
     }
 
     /**
@@ -171,7 +215,8 @@ public final class CurseContextService {
      * true for boons) - when false, an already-active effect transitions out.
      */
     private static void processContextual(ServerPlayerEntity player, String when, AbilityDef effect,
-                                          String key, boolean owned, boolean gate, Set<String> active) {
+                                          String key, boolean owned, boolean gate, Set<String> active,
+                                          Set<net.minecraft.util.Identifier> wanted) {
         boolean wasActive = active.contains(key);
         boolean contextMatches = owned && gate && matchesContext(when, player);
         switch (decideTransition(owned, contextMatches, wasActive)) {
@@ -183,7 +228,13 @@ public final class CurseContextService {
                 active.add(key);
             }
             case REMOVE -> {
-                AbilityApplier.removeNode(player, List.of(effect), key);
+                // Only take it off the player if nothing else is still granting it. Bookkeeping is
+                // cleared either way, so this grant stops claiming ownership of the effect.
+                boolean stillWanted = effect instanceof StatusEffectDef s
+                        && wanted.contains(s.effect());
+                if (!stillWanted) {
+                    AbilityApplier.removeNode(player, List.of(effect), key);
+                }
                 active.remove(key);
             }
             case NONE -> {
@@ -211,14 +262,16 @@ public final class CurseContextService {
      * on {@code enableBirthTraits}. Birth traits are always "owned" for the player's current race,
      * so ownership is fixed true and only the context (and the config flag) drives the transition.
      */
-    private static void tickBirthContextual(MinecraftServer server, ServerPlayerEntity player, Set<String> active) {
+    private static void tickBirthContextual(MinecraftServer server, ServerPlayerEntity player,
+                                            Set<String> active,
+                                            Set<net.minecraft.util.Identifier> wanted) {
         Optional<Identifier> race = RaceAccess.getRace(player);
         if (race.isEmpty()) {
             return; // race unknown - leave any applied birth effect as-is until it resolves
         }
         boolean enabled = Kindreds.CONFIG.enableBirthTraits;
         birthTraitFor(server, race.get()).ifPresent(bt ->
-                reconcileBirthContextual(player, bt.traits(), race.get(), active, enabled));
+                reconcileBirthContextual(player, bt.traits(), race.get(), active, enabled, wanted));
     }
 
     /** Drives a race's innate contextual traits - both contextual curses (Dread of the Sun) and
@@ -226,14 +279,21 @@ public final class CurseContextService {
      * always "owned" for the current race, so the config flag ({@code enableBirthTraits}) is the only
      * extra gate; flipping it off transitions any active effect out. */
     private static void reconcileBirthContextual(ServerPlayerEntity player, List<AbilityDef> traits, Identifier race,
-                                                  Set<String> active, boolean enabled) {
+                                                  Set<String> active, boolean enabled,
+                                                  Set<net.minecraft.util.Identifier> wanted) {
+        // A race's innate contextual traits count toward "still wanted" exactly like node grants do.
+        if (enabled) {
+            for (AbilityDef trait : traits) {
+                collectWanted(player, trait, wanted);
+            }
+        }
         for (int i = 0; i < traits.size(); i++) {
             AbilityDef ability = traits.get(i);
             String key = "birthctx/" + race.getPath() + "/" + i;
             if (ability instanceof CurseDef curse && !curse.when().isEmpty() && curse.effect().isPresent()) {
-                processContextual(player, curse.when(), curse.effect().get(), key, true, enabled, active);
+                processContextual(player, curse.when(), curse.effect().get(), key, true, enabled, active, wanted);
             } else if (ability instanceof ContextualBoon boon) {
-                processContextual(player, boon.when(), boon.effect(), key, true, enabled, active);
+                processContextual(player, boon.when(), boon.effect(), key, true, enabled, active, wanted);
             }
         }
     }
