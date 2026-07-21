@@ -1200,24 +1200,17 @@ public class SkillTreeScreen extends Screen {
         SystemToast.add(client.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, title, body);
     }
 
+    /**
+     * The player-facing answer to "why not?". Every reason the server can send has its own key, so
+     * this is one lookup rather than a switch that has to be taught each new reason - and a reason
+     * with no key falls back to a plain sentence rather than a title-cased id like "Respec Ok".
+     */
     private static String humanizeReason(String reason) {
-        if (reason == null) {
-            return "Not allowed right now.";
+        if (reason == null || reason.isBlank()) {
+            return I18n.translate("kindreds.result.unknown");
         }
-        return switch (reason) {
-            case "insufficient_points" -> "Not enough points in that discipline.";
-            case "missing_prereq" -> "Unlock its prerequisite first.";
-            case "exclusive_conflict" -> "You've committed to a different path — this one is closed.";
-            case "already_owned" -> "You already know this.";
-            case "deed_not_earned" -> "Earn its deed first to break the seal.";
-            case "bargain_ok" -> I18n.translate("kindreds.result.bargain_ok");
-            case "bargain_already" -> I18n.translate("kindreds.result.bargain_already");
-            case "bargain_not_at_cap" -> I18n.translate("kindreds.result.bargain_not_at_cap");
-            case "bargain_unavailable" -> I18n.translate("kindreds.result.bargain_unavailable");
-            case "soft_cap" -> "You have committed all you can — respec to spend elsewhere.";
-            case "no_tree_for_race", "no_such_node", "ambiguous_node" -> "This skill isn't available.";
-            default -> titleCase(reason);
-        };
+        String key = "kindreds.result." + reason;
+        return I18n.hasTranslation(key) ? I18n.translate(key) : I18n.translate("kindreds.result.unknown");
     }
 
     // --- Small helpers ---------------------------------------------------------------------------

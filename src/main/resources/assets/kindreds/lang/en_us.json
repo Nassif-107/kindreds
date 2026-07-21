@@ -2292,5 +2292,21 @@
   "kindreds.kind.curse": "Power with a price attached.",
   "kindreds.kind.contextual": "Power that wakes with the place and the hour.",
   "kindreds.kind.perk": "A deed of the blood - called upon in the doing, not the having.",
-  "kindreds.perk.generic": "Perk:"
+  "kindreds.perk.generic": "Perk:",
+  "kindreds.result.unknown": "That is not allowed right now.",
+  "kindreds.result.ok": "Learned.",
+  "kindreds.result.insufficient_points": "Not enough points in that discipline.",
+  "kindreds.result.missing_prereq": "Unlock what comes before it first.",
+  "kindreds.result.exclusive_conflict": "You committed to a different path — this one is closed.",
+  "kindreds.result.already_unlocked": "You already know this.",
+  "kindreds.result.already_owned": "You already know this.",
+  "kindreds.result.deed_not_earned": "Earn its deed first to break the seal.",
+  "kindreds.result.soft_cap": "You have committed all you can. Respec, or earn a Great Deed to widen your reach.",
+  "kindreds.result.unknown_node": "No such skill in your tree.",
+  "kindreds.result.no_such_node": "No such skill in your tree.",
+  "kindreds.result.no_tree_for_race": "Your kindred has no tree on this server.",
+  "kindreds.result.ambiguous_node": "That skill is ambiguous — report it to the server owner.",
+  "kindreds.result.respec_ok": "The old ways are unlearned. Your points are yours again.",
+  "kindreds.result.respec_item_invalid": "The respec cost is misconfigured on this server.",
+  "kindreds.result.respec_insufficient_item": "You lack what a respec costs."
 }

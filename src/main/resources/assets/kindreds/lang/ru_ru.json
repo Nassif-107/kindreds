@@ -2292,5 +2292,21 @@
   "kindreds.kind.curse": "Сила с назначенной ценой.",
   "kindreds.kind.contextual": "Сила, что просыпается от места и часа.",
   "kindreds.kind.perk": "Деяние крови — оно в делании, а не во владении.",
-  "kindreds.perk.generic": "Перк:"
+  "kindreds.perk.generic": "Перк:",
+  "kindreds.result.unknown": "Сейчас это невозможно.",
+  "kindreds.result.ok": "Изучено.",
+  "kindreds.result.insufficient_points": "Недостаточно очков в этой дисциплине.",
+  "kindreds.result.missing_prereq": "Сначала откройте то, что идёт до него.",
+  "kindreds.result.exclusive_conflict": "Вы выбрали иной путь — этот закрыт.",
+  "kindreds.result.already_unlocked": "Вы уже знаете это.",
+  "kindreds.result.already_owned": "Вы уже знаете это.",
+  "kindreds.result.deed_not_earned": "Сначала свершите деяние, чтобы снять печать.",
+  "kindreds.result.soft_cap": "Вы вложили всё, что могли. Сбросьте древо или свершите Великое деяние, чтобы раздвинуть предел.",
+  "kindreds.result.unknown_node": "В вашем древе нет такого умения.",
+  "kindreds.result.no_such_node": "В вашем древе нет такого умения.",
+  "kindreds.result.no_tree_for_race": "У вашего народа нет древа на этом сервере.",
+  "kindreds.result.ambiguous_node": "Умение определено неоднозначно — сообщите владельцу сервера.",
+  "kindreds.result.respec_ok": "Прежние пути забыты. Очки снова ваши.",
+  "kindreds.result.respec_item_invalid": "Стоимость сброса неверно настроена на сервере.",
+  "kindreds.result.respec_insufficient_item": "У вас нет того, что стоит сброс древа."
 }
