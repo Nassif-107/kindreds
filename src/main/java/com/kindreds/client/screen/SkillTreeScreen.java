@@ -117,6 +117,7 @@ public class SkillTreeScreen extends Screen {
     // Assign-to-slot buttons, only valid while an owned active-ability node is selected.
     private final int[][] slotButtons = new int[com.kindreds.client.loadout.ClientLoadout.SLOTS][4];
     private int[] codexButton = new int[4];
+    private int[] settingsButton = new int[4];
     private int[] respecButton = new int[4];
 
     private final List<int[]> tabRects = new ArrayList<>();   // parallel to tabDisciplines: x,y,w,h
@@ -723,7 +724,8 @@ public class SkillTreeScreen extends Screen {
         }
 
         // Codex button (opens the full character/traits menu).
-        codexButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 56, panel[2] - 20, 20};
+        int halfW = (panel[2] - 20 - 4) / 2;
+        codexButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 56, halfW, 20};
         boolean cHover = within(codexButton, mouseX, mouseY);
         ctx.fill(codexButton[0], codexButton[1], codexButton[0] + codexButton[2], codexButton[1] + codexButton[3],
                 cHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
@@ -731,6 +733,18 @@ public class SkillTreeScreen extends Screen {
         Text ct = Text.translatable("kindreds.tree.open_codex");
         int ctw = textRenderer.getWidth(ct);
         ctx.drawText(textRenderer, ct, codexButton[0] + (codexButton[2] - ctw) / 2, codexButton[1] + 6, 0xFFFFFFFF, true);
+
+        // Server-rules button. Anyone may look; only an operator can change anything (the screen and
+        // the server both enforce that), so it is shown to everyone rather than hidden.
+        settingsButton = new int[]{codexButton[0] + halfW + 4, codexButton[1], halfW, 20};
+        boolean sHover = within(settingsButton, mouseX, mouseY);
+        ctx.fill(settingsButton[0], settingsButton[1], settingsButton[0] + settingsButton[2],
+                settingsButton[1] + settingsButton[3], sHover ? ThemeAssets.withAlpha(accent, 80) : 0x50000000);
+        ctx.drawBorder(settingsButton[0], settingsButton[1], settingsButton[2], settingsButton[3], accent);
+        Text st = Text.translatable("kindreds.tree.open_settings");
+        int stw = textRenderer.getWidth(st);
+        ctx.drawText(textRenderer, st, settingsButton[0] + (settingsButton[2] - stw) / 2,
+                settingsButton[1] + 6, 0xFFFFFFFF, true);
 
         // Respec button.
         respecButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 30, panel[2] - 20, 22};
@@ -949,6 +963,10 @@ public class SkillTreeScreen extends Screen {
             return true;
         }
         // Respec.
+        if (within(settingsButton, mouseX, mouseY)) {
+            KindredsSettingsScreen.open(MinecraftClient.getInstance());
+            return true;
+        }
         if (within(respecButton, mouseX, mouseY)) {
             openRespecConfirm();
             return true;

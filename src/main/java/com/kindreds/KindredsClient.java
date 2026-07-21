@@ -125,6 +125,14 @@ public class KindredsClient implements ClientModInitializer {
         }
     }
 
+    /** "Open Kindreds settings" - the server-rules screen (unbound by default; also reachable from
+     * the skill tree's Settings button). */
+    private static final KeyBinding OPEN_SETTINGS_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.kindreds.open_settings",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            "key.category.kindreds"));
+
     /** Ticks the wheel key has been held; past {@link #HOLD_TICKS} it opens the radial instead of
      * counting as a tap-cycle. ~250ms is long enough not to trip on a quick tap, short enough that a
      * deliberate hold feels instant. */
@@ -159,6 +167,13 @@ public class KindredsClient implements ClientModInitializer {
         // Surfaces a rejected unlock/respec (or accepted respec) as a toast on whatever screen is
         // currently open; a no-op if the tree screen never asked for anything (nothing else sends
         // RequestUnlockC2S/RespecC2S yet).
+        // The server's rule settings, for the settings screen (display only - changes go back to the
+        // server, which re-checks operator permission).
+        ClientPlayNetworking.registerGlobalReceiver(com.kindreds.network.SyncConfigS2C.ID,
+                (payload, context) -> context.client().execute(() ->
+                        com.kindreds.client.screen.ClientConfigMirror.set(
+                                com.kindreds.network.SyncConfigS2C.parse(payload.json()))));
+
         ClientPlayNetworking.registerGlobalReceiver(UnlockResultS2C.ID, (payload, context) ->
                 context.client().execute(() ->
                         SkillTreeScreen.handleUnlockResult(context.client(), payload.ok(), payload.reason())));
@@ -227,6 +242,11 @@ public class KindredsClient implements ClientModInitializer {
                     // the server for a fresh sync in case the client's mirror is stale.
                     SkillTreeScreen.open(client);
                     ClientPlayNetworking.send(new OpenTreeC2S());
+                }
+            }
+            while (OPEN_SETTINGS_KEY.wasPressed()) {
+                if (client.player != null) {
+                    com.kindreds.client.screen.KindredsSettingsScreen.open(client);
                 }
             }
             while (OPEN_CODEX_KEY.wasPressed()) {

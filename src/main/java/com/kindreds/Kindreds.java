@@ -51,6 +51,9 @@ public class Kindreds implements ModInitializer {
 
         PayloadTypeRegistry.playS2C().register(SyncKindredDataS2C.ID, SyncKindredDataS2C.CODEC);
         PayloadTypeRegistry.playS2C().register(UnlockResultS2C.ID, UnlockResultS2C.CODEC);
+        PayloadTypeRegistry.playS2C().register(com.kindreds.network.SyncConfigS2C.ID,
+                com.kindreds.network.SyncConfigS2C.CODEC);
+        com.kindreds.network.SetDifficultyC2S.registerServerHandler();
         RequestUnlockC2S.registerServerHandler();
         ActivateAbilityC2S.registerServerHandler();
         SetVisionLensC2S.registerServerHandler();
@@ -89,6 +92,8 @@ public class Kindreds implements ModInitializer {
         // rather than the empty default.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             SyncKindredDataS2C.sendTo(handler.player);
+            // The client needs the server's rules to display them (settings screen, soft cap).
+            com.kindreds.network.SyncConfigS2C.sendTo(handler.player);
             giveCodexIfFirstTime(handler.player);
         });
 
