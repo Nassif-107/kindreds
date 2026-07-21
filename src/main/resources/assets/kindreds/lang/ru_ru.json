@@ -1004,7 +1004,7 @@
   "kindreds.node.uruk.shadow.dread_of_isengard.flavor": "Одно твоё имя обращает вражеский строй в бегство прежде первого удара.",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.name": "Ужас Белой Руки",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.flavor": "Кровь и страх воедино — знак Белой Руки, воплощённый в войне.",
-  "kindreds.hud.switch": "колесо",
+  "kindreds.hud.switch": "колесо / тап+прокрутка",
   "kindreds.hud.use": "применить",
   "kindreds.perk.arrow_damage": "Мастерство лука: +%d%% урона стрел",
   "kindreds.perk.long_shot": "Дальний выстрел: +%d%% урона за блок дистанции (до +%d%%)",
@@ -2125,8 +2125,12 @@
   "kindreds.toast.levelup.body": "+%s очко умений",
   "kindreds.toast.welcome": "Вы — %s",
   "kindreds.toast.welcome.body": "Нажмите %s — древо умений",
-  "kindreds.welcome.chat": "Вы — %s. %s — древо умений · %s — колесо умений · %s — применить умение.",
+  "kindreds.welcome.chat": "Вы — %s. %s — древо умений · %s — колесо умений · %s — применить · %s — снарядить умения.",
   "kindreds.hud.points": "%s оч. · %s",
   "kindreds.tree.ready": "%s доступно",
-  "kindreds.tree.search.hint": "введите для поиска…"
+  "kindreds.tree.search.hint": "введите для поиска…",
+  "kindreds.tree.tab.sub": "Ур. %s   %s вложено",
+  "kindreds.tree.tab.nopath": "Нет пути для этой расы",
+  "kindreds.tree.empty": "Здесь пока нет пути.",
+  "kindreds.radial.assign": "Умения не назначены — нажмите %s, чтобы снарядить"
 }

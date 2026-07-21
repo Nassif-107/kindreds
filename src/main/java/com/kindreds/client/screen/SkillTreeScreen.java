@@ -420,8 +420,8 @@ public class SkillTreeScreen extends Screen {
             ctx.drawText(textRenderer, Text.literal(titleCase(disc)).formatted(sel ? Formatting.BOLD : Formatting.RESET),
                     r[0] + 8, r[1] + 5, textColor, false);
             String sub = hasNodes
-                    ? "Lv " + level(data, disc) + "   " + spent(data, disc) + " spent"
-                    : "No path for this race";
+                    ? Text.translatable("kindreds.tree.tab.sub", level(data, disc), spent(data, disc)).getString()
+                    : Text.translatable("kindreds.tree.tab.nopath").getString();
             ctx.drawText(textRenderer, Text.literal(sub), r[0] + 8, r[1] + 17, 0xFF7A756A, false);
             if (hasNodes && avail > 0) {
                 String pts = "+" + avail;
@@ -436,7 +436,8 @@ public class SkillTreeScreen extends Screen {
                 if (ready > 0) {
                     Text badge = Text.translatable("kindreds.tree.ready", ready);
                     int bw = textRenderer.getWidth(badge);
-                    double pulse = 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0);
+                    double pulse = com.kindreds.Kindreds.CONFIG.hudAnimations
+                            ? 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0) : 1.0;
                     int a = (int) (170 + 85 * pulse) << 24;
                     ctx.drawText(textRenderer, badge, r[0] + r[2] - bw - 8, r[1] + 17,
                             a | 0x00FFD86B, false);
@@ -547,7 +548,7 @@ public class SkillTreeScreen extends Screen {
                 query.isEmpty() ? 0xFF6E6A60 : 0xFFFFD86B, false);
 
         if (placed.isEmpty()) {
-            String none = "No path here yet.";
+            String none = Text.translatable("kindreds.tree.empty").getString();
             int w = textRenderer.getWidth(none);
             ctx.drawText(textRenderer, Text.literal(none), canvas[0] + (canvas[2] - w) / 2, canvas[1] + canvas[3] / 2, 0xFF9A9484, true);
         }

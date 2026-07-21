@@ -92,18 +92,26 @@ public final class ClientProgress {
         return tree;
     }
 
-    /** Total unspent discipline points across every discipline in the player's tree. */
+    /**
+     * Total unspent discipline points across the player's tree - <b>cached</b>.
+     *
+     * <p>The HUD pip asks for this every frame, and the underlying {@code pointsSpent} walks every
+     * node in the tree per discipline (~400 node visits for a 5-discipline race). Recomputing that at
+     * 60fps was pure waste, so the value is refreshed once per {@link #tick} instead and simply read
+     * back here.
+     */
     public static int unspentTotal() {
-        SkillTree t = tree();
-        if (t == null) {
-            return 0;
-        }
-        KindredData data = ClientKindredData.INSTANCE;
+        return cachedUnspent;
+    }
+
+    private static int cachedUnspent;
+
+    private static void recomputeUnspent(SkillTree t, KindredData data) {
         int sum = 0;
         for (Identifier d : disciplines) {
             sum += Math.max(0, ProgressionService.pointsAvailable(data, t, d));
         }
-        return sum;
+        cachedUnspent = sum;
     }
 
     // --- per-tick watch -------------------------------------------------------------------------
@@ -130,6 +138,7 @@ public final class ClientProgress {
             }
         }
         primed = true;
+        recomputeUnspent(t, data);
         maybeWelcome(client, data);
     }
 
@@ -162,7 +171,8 @@ public final class ClientProgress {
         client.player.sendMessage(Text.translatable("kindreds.welcome.chat", raceName,
                 com.kindreds.KindredsClient.openTreeKeyName(),
                 com.kindreds.KindredsClient.cycleAbilityKeyName(),
-                com.kindreds.KindredsClient.useAbilityKeyName()).formatted(Formatting.GRAY), false);
+                com.kindreds.KindredsClient.useAbilityKeyName(),
+                com.kindreds.KindredsClient.openLoadoutKeyName()).formatted(Formatting.GRAY), false);
     }
 
     private static Path file() {

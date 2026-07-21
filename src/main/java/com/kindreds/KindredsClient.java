@@ -60,6 +60,11 @@ public class KindredsClient implements ClientModInitializer {
         return OPEN_TREE_KEY.getBoundKeyLocalizedText();
     }
 
+    /** The localized name of the "Open ability loadout" key (for the empty-radial hint + welcome). */
+    public static net.minecraft.text.Text openLoadoutKeyName() {
+        return OPEN_LOADOUT_KEY.getBoundKeyLocalizedText();
+    }
+
     public static net.minecraft.text.Text cycleAbilityKeyName() {
         return CYCLE_ABILITY_KEY.getBoundKeyLocalizedText();
     }
@@ -120,8 +125,20 @@ public class KindredsClient implements ClientModInitializer {
         }
     }
 
+    /** Ticks the wheel key has been held; past {@link #HOLD_TICKS} it opens the radial instead of
+     * counting as a tap-cycle. ~250ms is long enough not to trip on a quick tap, short enough that a
+     * deliberate hold feels instant. */
+    private static final int HOLD_TICKS = 5;
+    private static int cycleHeldTicks;
+    private static boolean radialOpened;
+
+    /** Whether the "ability wheel" key is currently held - drives scroll-to-switch (MouseScrollMixin). */
+    public static boolean cycleAbilityHeld() {
+        return CYCLE_ABILITY_KEY.isPressed();
+    }
+
     /** Selects a loadout slot and echoes it on the action bar, so a switch is always confirmed. */
-    private static void selectSlot(net.minecraft.client.MinecraftClient client, int slot) {
+    public static void selectSlot(net.minecraft.client.MinecraftClient client, int slot) {
         com.kindreds.client.loadout.ClientLoadout.setSelected(slot);
         if (client.player != null) {
             String id = com.kindreds.client.loadout.ClientLoadout.slot(slot);
@@ -163,13 +180,29 @@ public class KindredsClient implements ClientModInitializer {
                             com.kindreds.client.loadout.ClientLoadout.selectedAbilityId()));
                 }
             }
-            // Switching used to be "tap R to advance one slot", which meant mashing the key blind to
-            // reach slot 4. It now opens the radial quick-select instead - one tap, see everything
-            // (names + live cooldowns), pick with the mouse/number keys/scroll.
+            // Three ways to switch, so nobody is forced into a menu mid-fight (the mistake of making
+            // the radial the *only* route): TAP = advance one slot instantly, HOLD = open the radial,
+            // and holding the key while scrolling walks the bar (see MouseScrollMixin).
             while (CYCLE_ABILITY_KEY.wasPressed()) {
-                if (client.player != null && client.currentScreen == null) {
+                // drained so a queued press can't fire again after the hold/tap handling below
+            }
+            if (client.currentScreen != null) {
+                cycleHeldTicks = 0; // a screen owns the keyboard; never track holds through one
+                radialOpened = false;
+            } else if (CYCLE_ABILITY_KEY.isPressed()) {
+                cycleHeldTicks++;
+                if (cycleHeldTicks == HOLD_TICKS && client.player != null) {
                     client.setScreen(new com.kindreds.client.loadout.AbilityRadialScreen());
+                    radialOpened = true;
                 }
+            } else {
+                if (cycleHeldTicks > 0 && cycleHeldTicks < HOLD_TICKS && !radialOpened
+                        && client.player != null) {
+                    selectSlot(client, (com.kindreds.client.loadout.ClientLoadout.selected() + 1)
+                            % com.kindreds.client.loadout.ClientLoadout.SLOTS);
+                }
+                cycleHeldTicks = 0;
+                radialOpened = false;
             }
             // Direct per-slot selection (unbound by default; see SELECT_SLOT_KEYS).
             for (int i = 0; i < SELECT_SLOT_KEYS.length; i++) {

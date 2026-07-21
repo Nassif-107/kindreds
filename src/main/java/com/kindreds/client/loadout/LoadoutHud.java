@@ -120,7 +120,7 @@ public final class LoadoutHud {
             int w = tr.getWidth(pip) + 8;
             int px = x0 + barW - w;
             int py = y - 24;
-            double pulse = 0.5 + 0.5 * Math.sin(now / 6.0);
+            double pulse = com.kindreds.Kindreds.CONFIG.hudAnimations ? 0.5 + 0.5 * Math.sin(now / 6.0) : 1.0;
             int alpha = (int) (0x60 + 0x40 * pulse) << 24;
             ctx.fill(px, py, px + w, py + 11, alpha | 0x00332200);
             ctx.drawBorder(px, py, w, 11, 0xFFD8B45F);

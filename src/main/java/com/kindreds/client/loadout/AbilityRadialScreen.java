@@ -62,6 +62,22 @@ public class AbilityRadialScreen extends Screen {
         ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.radial.hint").formatted(Formatting.DARK_GRAY), cx, cy + 6, 0xFF8A7C60);
 
+        // Dead end guard: unlocked actives but nothing assigned means four empty wedges and no clue
+        // what to do. Say where to assign them, using the player's actual loadout key.
+        boolean anyAssigned = false;
+        for (int i = 0; i < ClientLoadout.SLOTS; i++) {
+            if (!ClientLoadout.slot(i).isEmpty()) {
+                anyAssigned = true;
+                break;
+            }
+        }
+        if (!anyAssigned) {
+            ctx.drawCenteredTextWithShadow(this.textRenderer,
+                    Text.translatable("kindreds.radial.assign",
+                            com.kindreds.KindredsClient.openLoadoutKeyName()).formatted(Formatting.YELLOW),
+                    cx, cy + RADIUS + 34, 0xFFFFD86B);
+        }
+
         for (int i = 0; i < ClientLoadout.SLOTS; i++) {
             double angle = Math.toRadians(i * (360.0 / ClientLoadout.SLOTS) - 90.0);
             int bx = cx + (int) Math.round(Math.cos(angle) * RADIUS) - BOX_W / 2;

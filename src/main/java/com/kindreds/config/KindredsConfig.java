@@ -27,6 +27,9 @@ public class KindredsConfig {
     public int pointSoftCap = 60;
     public String respecItem = "minecraft:amethyst_shard";
     public int respecCost = 1;
+    /** Pulsing HUD/tree animations (points pip, unlockable-node halos, "N ready" badges). Set false
+     * for a completely static UI - motion sensitivity, or just preference. */
+    public boolean hudAnimations = true;
     public boolean enableVision = true;
     public boolean enableCurses = true;
     public boolean enableBirthTraits = true;

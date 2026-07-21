@@ -1004,7 +1004,7 @@
   "kindreds.node.uruk.shadow.dread_of_isengard.flavor": "Your name alone unmans the enemy's line before the first blow falls.",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.name": "Terror of the White Hand",
   "kindreds.node.uruk.grand.terror_of_the_white_hand.flavor": "Blood and fear together — the mark of the White Hand made flesh in war.",
-  "kindreds.hud.switch": "wheel",
+  "kindreds.hud.switch": "wheel / tap+scroll",
   "kindreds.hud.use": "use",
   "kindreds.perk.arrow_damage": "Bow mastery: +%d%% arrow damage",
   "kindreds.perk.long_shot": "Long-shot: +%d%% damage per block of range (max +%d%%)",
@@ -2125,8 +2125,12 @@
   "kindreds.toast.levelup.body": "+%s skill point to spend",
   "kindreds.toast.welcome": "You are %s",
   "kindreds.toast.welcome.body": "Press %s to open your skill tree",
-  "kindreds.welcome.chat": "You are %s. %s — skill tree · %s — ability wheel · %s — use ability.",
+  "kindreds.welcome.chat": "You are %s. %s — skill tree · %s — ability wheel · %s — use ability · %s — equip abilities.",
   "kindreds.hud.points": "%s pts · %s",
   "kindreds.tree.ready": "%s ready",
-  "kindreds.tree.search.hint": "type to search…"
+  "kindreds.tree.search.hint": "type to search…",
+  "kindreds.tree.tab.sub": "Lv %s   %s spent",
+  "kindreds.tree.tab.nopath": "No path for this race",
+  "kindreds.tree.empty": "No path here yet.",
+  "kindreds.radial.assign": "No abilities assigned — press %s to equip them"
 }

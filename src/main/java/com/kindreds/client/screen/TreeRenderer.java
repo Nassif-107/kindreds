@@ -254,7 +254,8 @@ public final class TreeRenderer {
         // "You can take this right now": AVAILABLE nodes breathe a soft outer halo so the eye lands on
         // them immediately. A colour difference alone was too easy to miss across a whole branch.
         if (state == NodeState.AVAILABLE) {
-            double pulse = 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0);
+            double pulse = com.kindreds.Kindreds.CONFIG.hudAnimations
+                    ? 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 260.0) : 1.0;
             int alpha = (int) (60 + 80 * pulse);
             drawDiamondOutline(ctx, screenX, screenY, radius * (1.30f + 0.10f * (float) pulse),
                     ThemeAssets.withAlpha(ThemeAssets.availableColor(theme), alpha));
