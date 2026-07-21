@@ -1,0 +1,47 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "anvil": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:anvil"
+          }
+        ]
+      }
+    },
+    "named_blade": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:diamond_sword"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:anvil"
+    },
+    "title": {
+      "text": "The Work of Hands"
+    },
+    "description": {
+      "text": "Raise an anvil and forge upon it a blade fit to carry a name."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "anvil"
+    ],
+    [
+      "named_blade"
+    ]
+  ]
+}

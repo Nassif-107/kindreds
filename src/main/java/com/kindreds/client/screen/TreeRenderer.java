@@ -90,7 +90,7 @@ public final class TreeRenderer {
         // Mirror the server's total-points soft cap so the halo / "N ready" badge can never promise a
         // node the server will refuse. (In multiplayer the client's own config may differ; the server
         // stays authoritative and its rejection toast explains.)
-        int cap = com.kindreds.progression.UnlockService.effectiveCap(tree);
+        int cap = com.kindreds.progression.UnlockService.effectiveCap(tree, data);
         return cap <= 0
                 || com.kindreds.progression.UnlockService.totalPointsSpent(data, tree) + cost.points() <= cap;
     }

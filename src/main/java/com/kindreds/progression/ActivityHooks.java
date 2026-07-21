@@ -281,6 +281,9 @@ public final class ActivityHooks {
     /** Called by {@code com.kindreds.mixin.PlayerAdvancementTrackerMixin} when a player newly
      * completes an advancement (all criteria granted). */
     public static void onAdvancementCompleted(ServerPlayerEntity player, AdvancementEntry advancement) {
+        // Checked before the eligibility gate: a Great Deed is renown, not discipline xp, and it counts
+        // for every kindred regardless of whether this player can currently earn xp.
+        RenownService.onAdvancementCompleted(player, advancement);
         if (player == null || !isEligible(player)) {
             return;
         }

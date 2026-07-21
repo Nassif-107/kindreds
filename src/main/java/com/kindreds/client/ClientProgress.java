@@ -130,7 +130,7 @@ public final class ClientProgress {
             sum += Math.max(0, ProgressionService.pointsAvailable(data, t, d));
         }
         cachedUnspent = sum;
-        cachedCap = com.kindreds.progression.UnlockService.effectiveCap(t);
+        cachedCap = com.kindreds.progression.UnlockService.effectiveCap(t, data);
         cachedSpent = com.kindreds.progression.UnlockService.totalPointsSpent(data, t);
         // "At cap" means the cheapest thing left is already unaffordable, not merely that spent==cap:
         // a 1-point node may still fit under the ceiling.

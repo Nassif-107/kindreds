@@ -33,6 +33,18 @@ public final class KindredData {
     private Identifier activeVisionLens;
     private final Set<String> titles;
     private int corruption;
+
+    /**
+     * Great Deeds of renown this player has performed (advancement ids under {@code kindreds:renown/},
+     * stored by path). Each one permanently widens the tree-wide point cap - see
+     * {@link com.kindreds.progression.RenownService}.
+     *
+     * <p>Persisted rather than re-derived from the advancement tracker on demand, deliberately:
+     * renown is a deed <i>done</i>, and an operator running {@code /advancement revoke} must not be
+     * able to retroactively narrow a cap the player has already spent points under (which would leave
+     * them committed above their own ceiling, a state no other code expects).
+     */
+    private final Set<String> renown;
     private final Object2LongMap<String> cooldowns;
 
     /**
@@ -69,7 +81,7 @@ public final class KindredData {
 
     public KindredData() {
         this(new Object2LongOpenHashMap<>(), new HashSet<>(), null, new HashSet<>(), 0, new Object2LongOpenHashMap<>(),
-                new HashSet<>());
+                new HashSet<>(), new HashSet<>());
     }
 
     /** Six-arg convenience constructor: {@link #discoveredBiomes} is persistence-only (see its
@@ -82,7 +94,8 @@ public final class KindredData {
             Set<String> titles,
             int corruption,
             Object2LongMap<String> cooldowns) {
-        this(disciplineXp, unlockedNodes, activeVisionLens, titles, corruption, cooldowns, new HashSet<>());
+        this(disciplineXp, unlockedNodes, activeVisionLens, titles, corruption, cooldowns, new HashSet<>(),
+                new HashSet<>());
     }
 
     public KindredData(
@@ -93,6 +106,19 @@ public final class KindredData {
             int corruption,
             Object2LongMap<String> cooldowns,
             Set<Identifier> discoveredBiomes) {
+        this(disciplineXp, unlockedNodes, activeVisionLens, titles, corruption, cooldowns, discoveredBiomes,
+                new HashSet<>());
+    }
+
+    public KindredData(
+            Object2LongMap<Identifier> disciplineXp,
+            Set<String> unlockedNodes,
+            Identifier activeVisionLens,
+            Set<String> titles,
+            int corruption,
+            Object2LongMap<String> cooldowns,
+            Set<Identifier> discoveredBiomes,
+            Set<String> renown) {
         this.disciplineXp = disciplineXp;
         this.unlockedNodes = unlockedNodes;
         this.activeVisionLens = activeVisionLens;
@@ -100,6 +126,7 @@ public final class KindredData {
         this.corruption = corruption;
         this.cooldowns = cooldowns;
         this.discoveredBiomes = discoveredBiomes;
+        this.renown = renown;
     }
 
     public Object2LongMap<Identifier> disciplineXp() {
@@ -128,6 +155,11 @@ public final class KindredData {
 
     public void setCorruption(int corruption) {
         this.corruption = corruption;
+    }
+
+    /** Great Deeds performed - see the {@link #renown} field. */
+    public Set<String> renown() {
+        return renown;
     }
 
     public Object2LongMap<String> cooldowns() {
@@ -216,9 +248,14 @@ public final class KindredData {
             // fresh HashSet per decode, so distinct players' KindredData never end up sharing one
             // mutable Set instance (which a shared mutable-Set default would risk).
             Identifier.CODEC.listOf().optionalFieldOf("discovered_biomes", List.of())
-                    .forGetter(d -> List.copyOf(d.discoveredBiomes()))
-    ).apply(instance, (xp, nodes, lens, titles, corruption, cooldowns, discoveredBiomes) ->
-            new KindredData(xp, nodes, lens.orElse(null), titles, corruption, cooldowns, new HashSet<>(discoveredBiomes))));
+                    .forGetter(d -> List.copyOf(d.discoveredBiomes())),
+            // optionalFieldOf for the same save-compatibility reason as discovered_biomes above:
+            // worlds written before Great Deeds existed simply load with no renown.
+            Codec.STRING.listOf().optionalFieldOf("renown", List.of())
+                    .forGetter(d -> List.copyOf(d.renown()))
+    ).apply(instance, (xp, nodes, lens, titles, corruption, cooldowns, discoveredBiomes, renown) ->
+            new KindredData(xp, nodes, lens.orElse(null), titles, corruption, cooldowns,
+                    new HashSet<>(discoveredBiomes), new HashSet<>(renown))));
 
     // --- Network codec (S2C sync) --------------------------------------------------------------
 
@@ -229,7 +266,7 @@ public final class KindredData {
             PacketCodecs.optional(Identifier.PACKET_CODEC).xmap(opt -> opt.orElse(null), Optional::ofNullable);
 
     /**
-     * Seven fields wide: {@link #race} (see its javadoc) rides along on the wire only - it's
+     * Eight fields wide: {@link #race} (see its javadoc) rides along on the wire only - it's
      * deliberately absent from the persistent {@link #CODEC} above. The trailing factory builds the
      * object via the existing six-arg constructor and then sets {@code race} on it, rather than
      * adding a seventh constructor parameter that every other (persistence-only) call site would
@@ -252,8 +289,11 @@ public final class KindredData {
             KindredData::cooldowns,
             NULLABLE_IDENTIFIER_PACKET_CODEC,
             KindredData::race,
-            (xp, unlockedNodes, lens, titles, corruption, cooldowns, race) -> {
-                KindredData data = new KindredData(xp, unlockedNodes, lens, titles, corruption, cooldowns);
+            STRING_SET_PACKET_CODEC,
+            KindredData::renown,
+            (xp, unlockedNodes, lens, titles, corruption, cooldowns, race, renown) -> {
+                KindredData data = new KindredData(xp, unlockedNodes, lens, titles, corruption, cooldowns,
+                        new HashSet<>(), renown);
                 data.setRace(race);
                 return data;
             });

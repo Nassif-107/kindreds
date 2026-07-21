@@ -239,9 +239,10 @@ class UnlockServiceTest {
     @Test
     void capIsAPercentageOfTheTreesOwnSize() {
         SkillTree tree = tree(simple("a", ARCHERY, 10), simple("b", MINING, 10));
-        withCap(50, () -> assertEquals(10, UnlockService.effectiveCap(tree)));
+        KindredData data = new KindredData();
+        withCap(50, () -> assertEquals(10, UnlockService.effectiveCap(tree, data)));
         // 100% means "spend it all" - reported as 0, the no-cap sentinel.
-        withCap(100, () -> assertEquals(0, UnlockService.effectiveCap(tree)));
+        withCap(100, () -> assertEquals(0, UnlockService.effectiveCap(tree, data)));
     }
 
     @Test
@@ -271,5 +272,53 @@ class UnlockServiceTest {
         // Both the cap AND a missing prereq block this; the player needs to hear the actionable one.
         withCap(50, () -> assertEquals("missing_prereq", UnlockService.canUnlock(
                 data, tree, "b", PLENTY_POINTS, ALL_DEEDS_EARNED).reason()));
+    }
+
+    // --- renown widens the cap -------------------------------------------------------------------
+
+    @Test
+    void eachGreatDeedWidensTheCap() {
+        SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50)); // 100 points total
+        KindredData data = new KindredData();
+
+        withCap(50, () -> {
+            assertEquals(50, UnlockService.effectiveCap(tree, data));
+            data.renown().add("renown/wandering_days");
+            assertEquals(55, UnlockService.effectiveCap(tree, data));
+            data.renown().add("renown/work_of_hands");
+            assertEquals(60, UnlockService.effectiveCap(tree, data));
+        });
+    }
+
+    @Test
+    void theBargainWidensTheCapOnTopOfDeeds() {
+        SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50));
+        KindredData data = new KindredData();
+        data.renown().add("renown/wandering_days"); // +5
+        data.setCorruption(1);                      // +10
+
+        withCap(50, () -> assertEquals(65, UnlockService.effectiveCap(tree, data)));
+    }
+
+    @Test
+    void renownCanNeverBuyTheWholeTree() {
+        SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50));
+        KindredData data = new KindredData();
+        for (String deed : List.of("a", "b", "c", "d")) {
+            data.renown().add("renown/" + deed); // +20
+        }
+        data.setCorruption(1);                    // +10 -> 105% on Fireside-adjacent settings
+
+        // Clamped: every deed done AND the bargain struck still leaves something ungrasped.
+        withCap(90, () -> assertEquals(95, UnlockService.effectiveCap(tree, data)));
+    }
+
+    @Test
+    void renownDoesNotReviveACapThatIsSwitchedOff() {
+        SkillTree tree = tree(simple("a", ARCHERY, 50), simple("b", MINING, 50));
+        KindredData data = new KindredData();
+        data.renown().add("renown/wandering_days");
+
+        withCap(100, () -> assertEquals(0, UnlockService.effectiveCap(tree, data)));
     }
 }

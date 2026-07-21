@@ -2164,5 +2164,17 @@
   "kindreds.settings.flag.allowCrossTraining": "Cross-training (xp outside your race)",
   "kindreds.hud.capped": "Mastery capped — %s/%s spent",
   "kindreds.tree.cap_line": "%s/%s committed",
-  "kindreds.tree.soft_cap_help": "A cap on the total points one may commit, so every kindred must choose what it becomes. Respec to spend elsewhere."
+  "kindreds.tree.soft_cap_help": "A cap on the total points one may commit, so every kindred must choose what it becomes. Respec to spend elsewhere.",
+  "kindreds.tree.cap_line_renown": "%s/%s committed  (+%s%% renown)",
+  "kindreds.tree.points_to_spend": "%s point(s) to spend",
+  "kindreds.tree.bargain": "Accept the Bargain",
+  "kindreds.tree.bargain_confirm_title": "A voice offers you more",
+  "kindreds.tree.bargain_confirm_body": "You have gone as far as your own strength allows. There is another way — older, and never freely given.\n\nYou gain +%s%% of your tree, at once and forever.\nYou surrender %s hearts of your life, at once and forever.\n\nThis cannot be undone by any respec, cleansing, or death. Take it?",
+  "kindreds.renown.earned": "A Great Deed is done. Your reach widens by %s%% (renown: +%s%%).",
+  "kindreds.corruption.taken": "The bargain is struck. +%s%% — and something of you is spent that will not return.",
+  "kindreds.corruption.broadcast": "%s has taken the Bargain. A shadow lies on them now.",
+  "kindreds.result.bargain_ok": "It is done. You are lessened, and you are freer.",
+  "kindreds.result.bargain_already": "You have bargained once. There is nothing left to sell.",
+  "kindreds.result.bargain_not_at_cap": "You have not yet spent all your own strength. Return when you have.",
+  "kindreds.result.bargain_unavailable": "No ceiling binds you here — the bargain would buy you nothing."
 }

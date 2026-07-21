@@ -98,7 +98,7 @@ public final class UnlockService {
         // eventual omniscience. Checked LAST on purpose: it is the least specific reason to refuse, so
         // a node that is also missing a prereq or closed off by an exclusive choice reports that
         // instead. Otherwise "capped" would hide the real answer once a player nears the ceiling.
-        int cap = effectiveCap(tree);
+        int cap = effectiveCap(tree, data);
         if (cap > 0 && totalPointsSpent(data, tree) + cost.points() > cap) {
             return UnlockResult.fail("soft_cap");
         }
@@ -127,24 +127,37 @@ public final class UnlockService {
     }
 
     /**
-     * The point ceiling that actually applies to {@code tree}: a percentage of its full cost when
-     * {@code pointCapPercent} is set (1-99), otherwise the absolute {@code pointSoftCap}.
-     * {@code 0} means no cap.
+     * The point ceiling that actually applies to {@code tree} for {@code data}'s owner: a percentage of
+     * the tree's full cost, widened by any renown the player has earned. {@code 0} means no cap.
+     *
+     * <p>The base percentage comes from the difficulty preset ({@code pointCapPercent}, 1-99), or from
+     * the legacy absolute {@code pointSoftCap} when the percentage is off. On top of it,
+     * {@link RenownService#bonusPercent} adds each Great Deed performed and the Bargain, if taken.
+     *
+     * <p>The total is clamped to {@link #MAX_EARNED_PERCENT}: a player who has done every deed AND sold
+     * themselves still gives something up. Becoming all things at once is the one outcome the cap
+     * exists to prevent, and no amount of renown should buy it.
      */
-    public static int effectiveCap(SkillTree tree) {
+    public static int effectiveCap(SkillTree tree, KindredData data) {
         com.kindreds.config.KindredsConfig c = com.kindreds.Kindreds.CONFIG;
         if (c == null || tree == null) {
             return 0;
         }
-        int pct = c.pointCapPercent;
-        if (pct >= 100) {
-            return 0; // unlimited
+        int base = c.pointCapPercent;
+        if (base >= 100) {
+            return 0; // the cap is switched off entirely - renown has nothing to widen
         }
-        if (pct > 0) {
-            return Math.max(1, Math.round(maxSpendable(tree) * (pct / 100f)));
+        if (base <= 0) {
+            // Legacy absolute cap: widen it proportionally so deeds still mean something.
+            int flat = Math.max(0, c.pointSoftCap);
+            return flat <= 0 ? 0 : flat + Math.round(flat * (RenownService.bonusPercent(data) / 100f));
         }
-        return Math.max(0, c.pointSoftCap);
+        int percent = Math.min(MAX_EARNED_PERCENT, base + RenownService.bonusPercent(data));
+        return Math.max(1, Math.round(maxSpendable(tree) * (percent / 100f)));
     }
+
+    /** The most of your own tree renown can ever open up. See {@link #effectiveCap}. */
+    public static final int MAX_EARNED_PERCENT = 95;
 
     /** Total points the player has already committed anywhere in {@code tree} - the quantity the
      * cap limits. */

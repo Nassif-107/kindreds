@@ -60,6 +60,7 @@ public class Kindreds implements ModInitializer {
         SetVisionLensC2S.registerServerHandler();
         OpenTreeC2S.registerServerHandler();
         RespecC2S.registerServerHandler();
+        com.kindreds.network.TakeBargainC2S.registerServerHandler();
 
         KindredsCommand.register();
 
@@ -85,6 +86,8 @@ public class Kindreds implements ModInitializer {
         BirthTraitService.register();
         RacialNatureService.register();
         PerkService.register();
+        com.kindreds.progression.RenownService.register();
+        com.kindreds.ability.CorruptionService.register();
         PerkEventHandlers.register();
         DeathHandler.register();
 

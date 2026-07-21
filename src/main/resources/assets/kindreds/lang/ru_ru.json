@@ -2164,5 +2164,17 @@
   "kindreds.settings.flag.allowCrossTraining": "Смежное обучение (опыт вне расы)",
   "kindreds.hud.capped": "Предел мастерства — вложено %s/%s",
   "kindreds.tree.cap_line": "вложено %s/%s",
-  "kindreds.tree.soft_cap_help": "Предел общего числа очков: каждый народ обязан выбрать, кем ему стать. Сбросьте древо, чтобы вложить иначе."
+  "kindreds.tree.soft_cap_help": "Предел общего числа очков: каждый народ обязан выбрать, кем ему стать. Сбросьте древо, чтобы вложить иначе.",
+  "kindreds.tree.cap_line_renown": "вложено %s/%s  (+%s%% за подвиги)",
+  "kindreds.tree.points_to_spend": "очков к трате: %s",
+  "kindreds.tree.bargain": "Принять сделку",
+  "kindreds.tree.bargain_confirm_title": "Голос предлагает больше",
+  "kindreds.tree.bargain_confirm_body": "Ты дошёл до предела собственных сил. Есть иной путь — древнее, и даром его не дают.\n\nТы получишь +%s%% древа — сразу и навсегда.\nТы отдашь %s сердца своей жизни — сразу и навсегда.\n\nЭтого не отменит ни сброс древа, ни очищение, ни смерть. Принять?",
+  "kindreds.renown.earned": "Великое деяние свершено. Предел раздвинут на %s%% (за подвиги: +%s%%).",
+  "kindreds.corruption.taken": "Сделка заключена. +%s%% — и нечто в тебе истрачено безвозвратно.",
+  "kindreds.corruption.broadcast": "%s принял Сделку. Тень легла на него.",
+  "kindreds.result.bargain_ok": "Свершилось. Ты умалён — и ты свободнее.",
+  "kindreds.result.bargain_already": "Ты уже торговался однажды. Продавать больше нечего.",
+  "kindreds.result.bargain_not_at_cap": "Ты ещё не исчерпал собственных сил. Возвращайся, когда исчерпаешь.",
+  "kindreds.result.bargain_unavailable": "Здесь тебя не держит предел — сделка не купит ничего."
 }

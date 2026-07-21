@@ -1,0 +1,78 @@
+{
+  "parent": "kindreds:renown/root",
+  "criteria": {
+    "mountain": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "#minecraft:is_mountain"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "ocean": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "#minecraft:is_ocean"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "taiga": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "#minecraft:is_taiga"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:leather_boots"
+    },
+    "title": {
+      "text": "The Wandering Days"
+    },
+    "description": {
+      "text": "Walk until the land itself changes about you - mountain, sea and northern wood."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "requirements": [
+    [
+      "mountain"
+    ],
+    [
+      "ocean"
+    ],
+    [
+      "taiga"
+    ]
+  ]
+}

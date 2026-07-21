@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:golden_apple"
+    },
+    "title": {
+      "text": "Great Deeds"
+    },
+    "description": {
+      "text": "Renown is not earned by living long, but by doing much. Each Great Deed widens what your kindred may become."
+    },
+    "background": "minecraft:gui/advancements/backgrounds/adventure",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "requirements": [
+    [
+      "tick"
+    ]
+  ]
+}

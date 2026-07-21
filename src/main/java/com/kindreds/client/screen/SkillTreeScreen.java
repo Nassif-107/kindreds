@@ -119,6 +119,9 @@ public class SkillTreeScreen extends Screen {
     private int[] codexButton = new int[4];
     private int[] settingsButton = new int[4];
     private int[] respecButton = new int[4];
+    /** Only valid (and only hit-tested) while {@link #bargainOffered} is true. */
+    private int[] bargainButton = new int[4];
+    private boolean bargainOffered;
 
     private final List<int[]> tabRects = new ArrayList<>();   // parallel to tabDisciplines: x,y,w,h
     private final List<Placed> placed = new ArrayList<>();
@@ -393,11 +396,14 @@ public class SkillTreeScreen extends Screen {
 
         // How much of your tree you have committed, against the ceiling. Without this the soft cap is
         // invisible until it silently refuses a click - the one thing a build-defining rule must not do.
-        int cap = com.kindreds.progression.UnlockService.effectiveCap(tree);
+        int cap = com.kindreds.progression.UnlockService.effectiveCap(tree, data);
         if (cap > 0) {
             int spent = com.kindreds.progression.UnlockService.totalPointsSpent(data, tree);
             boolean full = spent >= cap;
-            Text capLine = Text.translatable("kindreds.tree.cap_line", spent, cap)
+            int bonus = com.kindreds.progression.RenownService.bonusPercent(data);
+            Text capLine = (bonus > 0
+                    ? Text.translatable("kindreds.tree.cap_line_renown", spent, cap, bonus)
+                    : Text.translatable("kindreds.tree.cap_line", spent, cap))
                     .formatted(full ? Formatting.RED : Formatting.GRAY);
             ctx.drawText(textRenderer, capLine, rail[0] + rail[2] - 8 - textRenderer.getWidth(capLine),
                     rail[1] + 10, full ? 0xFFDD8060 : 0xFF9A8F76, false);
@@ -735,6 +741,22 @@ public class SkillTreeScreen extends Screen {
             break;
         }
 
+        // The Bargain. Offered only to a player standing at their own ceiling, never before - it is a
+        // decision made by someone who has felt the wall. Hidden entirely once taken (it is once-only)
+        // and on servers with the cap switched off (there would be nothing to buy).
+        bargainOffered = bargainAvailable(data);
+        if (bargainOffered) {
+            bargainButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 80, panel[2] - 20, 20};
+            boolean bHover = within(bargainButton, mouseX, mouseY);
+            ctx.fill(bargainButton[0], bargainButton[1], bargainButton[0] + bargainButton[2],
+                    bargainButton[1] + bargainButton[3], bHover ? 0xC0601A1A : 0x80300C0C);
+            ctx.drawBorder(bargainButton[0], bargainButton[1], bargainButton[2], bargainButton[3], 0xFF9E3B3B);
+            Text bt = Text.translatable("kindreds.tree.bargain").formatted(Formatting.DARK_RED);
+            int btw = textRenderer.getWidth(bt);
+            ctx.drawText(textRenderer, bt, bargainButton[0] + (bargainButton[2] - btw) / 2,
+                    bargainButton[1] + 6, 0xFFE06060, true);
+        }
+
         // Codex button (opens the full character/traits menu).
         int halfW = (panel[2] - 20 - 4) / 2;
         codexButton = new int[]{panel[0] + 10, panel[1] + panel[3] - 56, halfW, 20};
@@ -782,7 +804,7 @@ public class SkillTreeScreen extends Screen {
         y += 14;
         ctx.drawText(textRenderer, Text.translatable("kindreds.tree.level_line", lvl, sp), x, y, 0xFFD8D2C0, false);
         y += 12;
-        ctx.drawText(textRenderer, Text.literal(av + " point(s) to spend").formatted(av > 0 ? Formatting.GREEN : Formatting.GRAY),
+        ctx.drawText(textRenderer, Text.translatable("kindreds.tree.points_to_spend", av).formatted(av > 0 ? Formatting.GREEN : Formatting.GRAY),
                 x, y, av > 0 ? 0xFF66DD66 : 0xFF9A9484, false);
         y += 16;
 
@@ -983,6 +1005,10 @@ public class SkillTreeScreen extends Screen {
             openRespecConfirm();
             return true;
         }
+        if (bargainOffered && within(bargainButton, mouseX, mouseY)) {
+            openBargainConfirm();
+            return true;
+        }
         // Unlock button.
         if (selectedNode != null && within(unlockButton, mouseX, mouseY)) {
             attemptUnlock(selectedNode);
@@ -1098,6 +1124,41 @@ public class SkillTreeScreen extends Screen {
         ClientPlayNetworking.send(new RequestUnlockC2S(node.id()));
     }
 
+    /** Whether to offer the Bargain: a real cap is in force, it hasn't been taken, and the cheapest
+     * remaining node no longer fits under the ceiling. Mirrors the server check in
+     * {@code TakeBargainC2S} - the server stays authoritative, this only decides what is drawn. */
+    private boolean bargainAvailable(KindredData data) {
+        if (tree == null || com.kindreds.ability.CorruptionService.hasBargained(data)) {
+            return false;
+        }
+        int cap = com.kindreds.progression.UnlockService.effectiveCap(tree, data);
+        if (cap <= 0) {
+            return false;
+        }
+        int spent = com.kindreds.progression.UnlockService.totalPointsSpent(data, tree);
+        int cheapest = Integer.MAX_VALUE;
+        for (SkillNode node : tree.nodes()) {
+            if (!data.hasNode(node.id())) {
+                cheapest = Math.min(cheapest, node.cost().points());
+            }
+        }
+        return cheapest != Integer.MAX_VALUE && spent + cheapest > cap;
+    }
+
+    /** Irreversible, so it gets a confirm dialog that says the price in plain words. */
+    private void openBargainConfirm() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        client.setScreen(new ConfirmScreen(confirmed -> {
+            if (confirmed) {
+                ClientPlayNetworking.send(new com.kindreds.network.TakeBargainC2S());
+            }
+            client.setScreen(this);
+        }, Text.translatable("kindreds.tree.bargain_confirm_title").formatted(Formatting.DARK_RED),
+                Text.translatable("kindreds.tree.bargain_confirm_body",
+                        com.kindreds.ability.CorruptionService.BARGAIN_PERCENT,
+                        (int) (com.kindreds.ability.CorruptionService.HEALTH_PRICE / 2))));
+    }
+
     private void openRespecConfirm() {
         MinecraftClient client = MinecraftClient.getInstance();
         client.setScreen(new ConfirmScreen(confirmed -> {
@@ -1149,6 +1210,10 @@ public class SkillTreeScreen extends Screen {
             case "exclusive_conflict" -> "You've committed to a different path — this one is closed.";
             case "already_owned" -> "You already know this.";
             case "deed_not_earned" -> "Earn its deed first to break the seal.";
+            case "bargain_ok" -> I18n.translate("kindreds.result.bargain_ok");
+            case "bargain_already" -> I18n.translate("kindreds.result.bargain_already");
+            case "bargain_not_at_cap" -> I18n.translate("kindreds.result.bargain_not_at_cap");
+            case "bargain_unavailable" -> I18n.translate("kindreds.result.bargain_unavailable");
             case "soft_cap" -> "You have committed all you can — respec to spend elsewhere.";
             case "no_tree_for_race", "no_such_node", "ambiguous_node" -> "This skill isn't available.";
             default -> titleCase(reason);
