@@ -79,70 +79,120 @@ public class KindredHubScreen extends Screen {
         Identifier race = data == null ? null : data.race();
         java.util.List<Entry> entries = entries();
 
-        // Sleeker than the first cut: low, wide rows instead of tall text panels, so four choices fit
-        // without shouting and the eye runs straight down the initials. Two columns when there is
-        // width for them, one when there is not, so the page reads the same at any GUI scale.
-        int cols = this.width >= 560 ? 2 : 1;
-        int rowW = cols == 2 ? Math.min(240, (this.width - 70) / 2) : Math.min(300, this.width - 44);
-        int rowH = 34;
-        int gapX = 14;
-        int gapY = 8;
-        int rows = (entries.size() + cols - 1) / cols;
-        int totalW = cols == 2 ? rowW * 2 + gapX : rowW;
-        int totalH = rows * rowH + (rows - 1) * gapY;
-        int x0 = (this.width - totalW) / 2;
-        int y0 = Math.max(46, (this.height - totalH) / 2);
-
         ctx.fill(0, 0, this.width, this.height, 0xC0140F0A);
+
+        // A compass rose, not a list. Four points in fixed places become muscle memory - you stop
+        // reading and simply move to where Skills is - and the layout stays symmetrical whether or
+        // not the Rules point is there for you, instead of reflowing the moment it appears.
+        // Sized so the rose actually fits the windows people play in: at GUI scale 2 a 854x480
+        // window is only 427x240 in these units, which the first threshold shut out entirely and
+        // dropped everyone into the plain grid.
+        // For a rose that does not collide with itself the arm must clear half a plate: the north
+        // plate's bottom edge sits at cy-arm, the east and west tops at cy-plate/2. With a shorter
+        // arm they overlap and eat each other's labels. Everything else follows from that: the whole
+        // figure spans 3*plate + 2*armPad, so the plate is sized from the room actually available
+        // once the heading and footer have taken theirs.
+        int room = Math.max(120, Math.min(this.width - 40, this.height - 78));
+        int plate = Math.max(40, Math.min(68, (room - 16) / 3));
+        int arm = plate / 2 + 5;
+        boolean rose = this.width >= 260 && this.height >= 170;
+
+        int cx = this.width / 2;
+        int cy = Math.max(plate + arm + 40, this.height / 2 - 4);
+
         ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.hub.title").formatted(Formatting.GOLD),
-                this.width / 2, y0 - 30, 0xFFD8B45F);
+                cx, cy - plate - arm - 30, 0xFFD8B45F);
         Text sub = race == null
                 ? Text.translatable("kindreds.hub.noRace").formatted(Formatting.GRAY)
                 : Text.translatableWithFallback("kindreds.race." + race.getPath(), race.getPath())
                         .copy().formatted(Formatting.ITALIC, Formatting.GRAY);
-        ctx.drawCenteredTextWithShadow(this.textRenderer, sub, this.width / 2, y0 - 18, 0xFF9A8F76);
-        ctx.fill(x0, y0 - 7, x0 + totalW, y0 - 6, 0x40D8B45F);
+        ctx.drawCenteredTextWithShadow(this.textRenderer, sub, cx, cy - plate - arm - 18, 0xFF9A8F76);
 
         hits.clear();
+        int[][] slots = rose ? rosePoints(cx, cy, plate, arm) : gridPoints(cx, cy, plate, arm);
         for (int i = 0; i < entries.size(); i++) {
-            int col = cols == 2 ? i % 2 : 0;
-            int row = cols == 2 ? i / 2 : i;
-            int[] r = {x0 + col * (rowW + gapX), y0 + row * (rowH + gapY), rowW, rowH};
+            int[] r = {slots[i][0], slots[i][1], plate, plate};
             hits.add(r);
-            row(ctx, r, entries.get(i), i + 1, mouseX, mouseY);
         }
 
+        // the ornament at the centre of the rose
+        if (rose) {
+            ctx.drawCenteredTextWithShadow(this.textRenderer, Text.literal("\u2726").formatted(Formatting.GOLD),
+                    cx, cy - 4, 0x88D8B45F);
+        }
+
+        Entry hovered = null;
+        for (int i = 0; i < hits.size() && i < entries.size(); i++) {
+            boolean hover = within(hits.get(i), mouseX, mouseY);
+            if (hover) {
+                hovered = entries.get(i);
+            }
+            point(ctx, hits.get(i), entries.get(i), i + 1, hover);
+        }
+
+        // One word on each plate keeps the rose clean; the sentence appears only when the mouse asks
+        // for it, so a new player still gets told what a page is without it living on screen forever.
+        int footY = (rose ? cy + plate + arm + 14 : cy + plate + arm + 44);
+        footY = Math.min(footY, this.height - 22);
+        if (hovered != null) {
+            ctx.drawCenteredTextWithShadow(this.textRenderer,
+                    Text.translatable("kindreds.hub." + hovered.key() + ".short").formatted(Formatting.GRAY),
+                    cx, footY, 0xFF9A8F76);
+        }
         ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.hub.hint").formatted(Formatting.DARK_GRAY),
-                this.width / 2, y0 + totalH + 10, 0xFF6E6250);
+                cx, footY + 12, 0xFF6E6250);
     }
 
-    /** A single row: a numbered initial, the name, and a quiet line of purpose beneath it. */
-    private void row(DrawContext ctx, int[] r, Entry e, int number, int mouseX, int mouseY) {
-        boolean hover = within(r, mouseX, mouseY);
-        ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], hover ? 0xD82A2010 : 0xB01A1510);
+    /** North, east, west, south - Traits above, Skills to the right, Abilities left, Rules below. */
+    private static int[][] rosePoints(int cx, int cy, int plate, int arm) {
+        int half = plate / 2;
+        return new int[][]{
+                {cx - half, cy - arm - plate},          // Traits, north
+                {cx + arm, cy - half},                  // Skills, east
+                {cx - arm - plate, cy - half},          // Abilities, west
+                {cx - half, cy + arm},                  // Rules, south
+        };
+    }
+
+    /** Fallback for a window too small for a rose: the same plates in a plain 2x2. */
+    private static int[][] gridPoints(int cx, int cy, int plate, int gap) {
+        int x0 = cx - plate - gap / 2;
+        int y0 = cy - plate - gap / 2;
+        int centred = cx - plate / 2; // a lone third plate belongs under the middle, not the left
+        return new int[][]{
+                {x0, y0}, {x0 + plate + gap, y0},
+                {centred, y0 + plate + gap}, {x0 + plate + gap, y0 + plate + gap},
+        };
+    }
+
+    /** One point of the rose: a bordered plate, a large initial, and a single word beneath it. */
+    private void point(DrawContext ctx, int[] r, Entry e, int number, boolean hover) {
+        ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], hover ? 0xE0332612 : 0xB01A1510);
         ctx.drawBorder(r[0], r[1], r[2], r[3], hover ? 0xFFD8B45F : 0xFF3A3020);
-        if (hover) { // a gold rule down the leading edge, as the codex marks a chosen entry
-            ctx.fill(r[0], r[1], r[0] + 2, r[1] + r[3], 0xFFD8B45F);
-        }
+        ctx.drawBorder(r[0] + 3, r[1] + 3, r[2] - 6, r[3] - 6,
+                hover ? 0x66FFE9A8 : 0x22D8B45F);
 
-        int capX = r[0] + 8;
-        int capY = r[1] + (r[3] - 18) / 2;
-        ctx.fill(capX, capY, capX + 18, capY + 18, hover ? 0x66D8B45F : 0x2AD8B45F);
-        ctx.drawBorder(capX, capY, 18, 18, hover ? 0xFFD8B45F : 0xFF6A5A38);
-        ctx.drawText(this.textRenderer, Text.literal(e.initial()), capX + 6, capY + 5, 0xFFFFE9A8, true);
+        int cx = r[0] + r[2] / 2;
+        // the initial, drawn large by scaling the matrix - the page has no bigger font to reach for
+        var m = ctx.getMatrices();
+        m.pushMatrix();
+        float scale = 2.0f;
+        m.translate(cx, r[1] + r[3] * 0.30f);
+        m.scale(scale, scale);
+        ctx.drawCenteredTextWithShadow(this.textRenderer, Text.literal(e.initial()),
+                0, -this.textRenderer.fontHeight / 2, hover ? 0xFFFFE9A8 : 0xFFD8B45F);
+        m.popMatrix();
 
-        ctx.drawText(this.textRenderer,
-                Text.translatable("kindreds.hub." + e.key()).formatted(Formatting.BOLD),
-                capX + 26, r[1] + 7, hover ? 0xFFFFE9A8 : 0xFFE6DCC4, true);
-        ctx.drawText(this.textRenderer,
-                Text.translatable("kindreds.hub." + e.key() + ".short").formatted(Formatting.GRAY),
-                capX + 26, r[1] + 19, 0xFF8A7F68, false);
+        Text name = Text.translatable("kindreds.hub." + e.key())
+                .copy().formatted(hover ? Formatting.WHITE : Formatting.GRAY);
+        ctx.drawCenteredTextWithShadow(this.textRenderer, name, cx, r[1] + r[3] - 20,
+                hover ? 0xFFFFFFFF : 0xFFBBB0A0);
 
         String num = String.valueOf(number);
         ctx.drawText(this.textRenderer, Text.literal(num),
-                r[0] + r[2] - this.textRenderer.getWidth(num) - 7, r[1] + 13,
+                r[0] + r[2] - this.textRenderer.getWidth(num) - 5, r[1] + 5,
                 hover ? 0xFFD8B45F : 0xFF5A5040, false);
     }
 
