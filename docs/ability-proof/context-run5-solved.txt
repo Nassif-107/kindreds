@@ -1,0 +1,62 @@
+[CTX] dwarf   daylight    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 41->41  clean (nothing authored)
+[CTX] dwarf   starlight   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 41->41  clean (nothing authored)
+[CTX] dwarf   darkness    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 41->41  clean (nothing authored)
+[CTX] dwarf   dawn_dusk   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 41->41  clean (nothing authored)
+[CTX] dwarf   underground expect=[haste, night_vision, regeneration, resistance, strength] gained=[haste, night_vision, regeneration, resistance, strength] alreadyHeld=[]                         mods 41->41  OK
+[CTX] dwarf   deep_dark   expect=[]                                     gained=[haste, night_vision, regeneration, resistance, strength] alreadyHeld=[]                         mods 41->41  unexpected change: [haste, night_vision, regeneration, resistance, strength]
+[CTX] dwarf   low_health  expect=[resistance, speed, strength]          gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 41->41  OK
+[CTX] elf     daylight    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 25->25  clean (nothing authored)
+[CTX] elf     starlight   expect=[absorption, regeneration, resistance, speed] gained=[absorption]                   alreadyHeld=[regeneration, resistance, speed] mods 25->30  OK
+[CTX] elf     darkness    expect=[]                                     gained=[absorption]                   alreadyHeld=[]                         mods 25->30  OK
+[CTX] elf     dawn_dusk   expect=[speed]                                gained=[absorption]                   alreadyHeld=[speed]                    mods 25->31  OK
+[CTX] elf     underground expect=[]                                     gained=[weakness]                     alreadyHeld=[]                         mods 25->27  unexpected change: [weakness]
+[CTX] elf     deep_dark   expect=[resistance]                           gained=[weakness]                     alreadyHeld=[resistance]               mods 25->27  OK
+[CTX] elf     low_health  expect=[regeneration, resistance]             gained=[]                             alreadyHeld=[regeneration, resistance] mods 25->25  OK
+[CTX] human   daylight    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 44->44  clean (nothing authored)
+[CTX] human   starlight   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 44->44  clean (nothing authored)
+[CTX] human   darkness    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 44->44  clean (nothing authored)
+[CTX] human   dawn_dusk   expect=[regeneration, resistance, speed, strength] gained=[]                             alreadyHeld=[regeneration, resistance, speed, strength] mods 44->44  OK
+[CTX] human   underground expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 44->44  clean (nothing authored)
+[CTX] human   deep_dark   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 44->44  clean (nothing authored)
+[CTX] human   low_health  expect=[resistance, speed, strength]          gained=[]                             alreadyHeld=[resistance, speed, strength] mods 44->45  OK
+[CTX] hobbit  daylight    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 24->24  clean (nothing authored)
+[CTX] hobbit  starlight   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 24->24  clean (nothing authored)
+[CTX] hobbit  darkness    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 24->24  clean (nothing authored)
+[CTX] hobbit  dawn_dusk   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 24->24  clean (nothing authored)
+[CTX] hobbit  underground expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 24->24  clean (nothing authored)
+[CTX] hobbit  deep_dark   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 24->24  clean (nothing authored)
+[CTX] hobbit  low_health  expect=[invisibility, regeneration, resistance, speed, strength] gained=[invisibility]                 alreadyHeld=[regeneration, resistance, speed, strength] mods 24->24  OK
+[CTX] uruk    daylight    expect=[speed, strength]                      gained=[]                             alreadyHeld=[speed, strength]          mods 56->56  OK
+[CTX] uruk    starlight   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 56->55  unexpected change: []
+[CTX] uruk    darkness    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 56->55  unexpected change: []
+[CTX] uruk    dawn_dusk   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 56->55  unexpected change: []
+[CTX] uruk    underground expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 56->55  unexpected change: []
+[CTX] uruk    deep_dark   expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 56->55  unexpected change: []
+[CTX] uruk    low_health  expect=[regeneration, resistance, speed, strength] gained=[regeneration]                 alreadyHeld=[resistance, speed, strength] mods 56->56  OK
+[CTX] orc     daylight    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 43->43  clean (nothing authored)
+[CTX] orc     starlight   expect=[]                                     gained=[haste, regeneration]          alreadyHeld=[]                         mods 43->43  unexpected change: [haste, regeneration]
+[CTX] orc     darkness    expect=[haste, regeneration, resistance, speed, strength] gained=[haste, regeneration]          alreadyHeld=[resistance, speed, strength] mods 43->43  OK
+[CTX] orc     dawn_dusk   expect=[]                                     gained=[haste, regeneration]          alreadyHeld=[]                         mods 43->43  unexpected change: [haste, regeneration]
+[CTX] orc     underground expect=[]                                     gained=[haste, regeneration]          alreadyHeld=[]                         mods 43->43  unexpected change: [haste, regeneration]
+[CTX] orc     deep_dark   expect=[resistance, speed, strength]          gained=[haste, regeneration]          alreadyHeld=[resistance, speed, strength] mods 43->43  OK
+[CTX] orc     low_health  expect=[resistance, strength]                 gained=[]                             alreadyHeld=[resistance, strength]     mods 43->43  OK
+[CTX] snaga   daylight    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 29->29  clean (nothing authored)
+[CTX] snaga   starlight   expect=[]                                     gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 29->30  unexpected change: [resistance, speed, strength]
+[CTX] snaga   darkness    expect=[resistance, speed, strength]          gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 29->30  OK
+[CTX] snaga   dawn_dusk   expect=[]                                     gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 29->30  unexpected change: [resistance, speed, strength]
+[CTX] snaga   underground expect=[]                                     gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 29->30  unexpected change: [resistance, speed, strength]
+[CTX] snaga   deep_dark   expect=[speed]                                gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 29->30  OK
+[CTX] snaga   low_health  expect=[absorption, regeneration, resistance, speed, strength] gained=[absorption, regeneration, resistance, speed, strength] alreadyHeld=[]                         mods 29->33  OK
+[CTX] goblin  daylight    expect=[]                                     gained=[]                             alreadyHeld=[]                         mods 35->35  clean (nothing authored)
+[CTX] goblin  starlight   expect=[]                                     gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 35->35  unexpected change: [resistance, speed, strength]
+[CTX] goblin  darkness    expect=[resistance, speed, strength]          gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 35->35  OK
+[CTX] goblin  dawn_dusk   expect=[]                                     gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 35->35  unexpected change: [resistance, speed, strength]
+[CTX] goblin  underground expect=[haste, resistance]                    gained=[haste, resistance, speed, strength] alreadyHeld=[]                         mods 35->35  OK
+[CTX] goblin  deep_dark   expect=[speed, strength]                      gained=[haste, resistance, speed, strength] alreadyHeld=[]                         mods 35->35  OK
+[CTX] goblin  low_health  expect=[resistance, speed, strength]          gained=[resistance, speed, strength]  alreadyHeld=[]                         mods 35->35  OK
+[CTX] difficulty fireside     xp x2.0  death=KEEP           cap%=100  respec=1  scaling=false | elf cap 0 of 191
+[CTX] difficulty road         xp x1.0  death=KEEP           cap%=75   respec=1  scaling=false | elf cap 143 of 191
+[CTX] difficulty long_defeat  xp x0.7  death=LOSE_UNSPENT   cap%=60   respec=4  scaling=true  | elf cap 115 of 191
+[CTX] difficulty doom         xp x0.45 death=LOSE_PERCENT   cap%=45   respec=8  scaling=true  | elf cap 86 of 191
+[19:22:46] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] ================ SUMMARY ================
+[19:22:46] [Server thread/INFO] (Minecraft) [STDOUT]: [CTX] every context applied and lifted correctly

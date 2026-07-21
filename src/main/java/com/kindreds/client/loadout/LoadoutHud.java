@@ -32,8 +32,8 @@ public final class LoadoutHud {
     // Sized against the window rather than fixed: at 22px the slots crowded the corner and pushed
     // the key hint off the bottom of a small screen, and a size that suits a 1080p window is wrong
     // for someone playing at GUI scale 4 in a 480px-tall one.
-    private static final int SLOT_LARGE = 18;
-    private static final int SLOT_SMALL = 13;
+    private static final int SLOT_LARGE = 20;
+    private static final int SLOT_SMALL = 15;
     private static final int GAP = 2;
     private static final int MARGIN = 5;
 
@@ -114,19 +114,9 @@ public final class LoadoutHud {
             }
         }
 
-        // Only the selected ability is named, right-aligned above the row - and only when there IS
-        // one: an "empty" placeholder above an empty slot says nothing worth the pixels. Long Elvish
-        // names are clipped to the width of the bar itself so the label can never run past either
-        // edge of it.
-        String selId = ClientLoadout.slot(ClientLoadout.selected());
-        if (selId != null && !selId.isEmpty()) {
-            String label = ClientLoadout.displayName(selId);
-            if (tr.getWidth(label) > barW) {
-                label = tr.trimToWidth(label, barW - tr.getWidth("…")) + "…";
-            }
-            Text name = Text.literal(label).formatted(Formatting.GOLD);
-            ctx.drawText(tr, name, x0 + barW - tr.getWidth(name), y - 11, 0xFFE9C979, true);
-        }
+        // No name above the row. It was the widest thing on screen, ran off to the left, and told
+        // you what the highlighted slot already shows - the radial and the tree are where names
+        // belong. The bar is just the bar.
 
         // "You have points to spend" pip - the single best nudge back into the skill tree. Sits above
         // the row, gently pulsing so it reads as new without nagging.
@@ -138,13 +128,14 @@ public final class LoadoutHud {
             // "2 ready to learn" is something to act on; "2 points" is only a number. Falls back to
             // the point count when the points cannot buy anything yet (prerequisites unmet).
             int ready = com.kindreds.client.ClientProgress.readyTotal();
+            // Kept terse on purpose: this sits over the world, so it says the number and the key
+            // and nothing else. "3 ready - K", not a sentence.
             Text pip = capped
-                    ? Text.translatable("kindreds.hud.capped", com.kindreds.client.ClientProgress.spent(),
-                            com.kindreds.client.ClientProgress.cap())
+                    ? Text.translatable("kindreds.hud.capped.short")
                     : ready > 0
-                        ? Text.translatable("kindreds.hud.ready", ready,
+                        ? Text.translatable("kindreds.hud.ready.short", ready,
                             com.kindreds.KindredsClient.openTreeKeyName())
-                        : Text.translatable("kindreds.hud.points", unspent,
+                        : Text.translatable("kindreds.hud.points.short", unspent,
                             com.kindreds.KindredsClient.openTreeKeyName());
             int w = tr.getWidth(pip) + 8;
             int px = x0 + barW - w;

@@ -2312,5 +2312,8 @@
   "kindreds.toast.ready": "Доступно новых умений: %s",
   "kindreds.toast.ready.one": "%s — ветвь «%s». Нажмите %s, чтобы изучить.",
   "kindreds.toast.ready.many": "%s и ещё %s готовы к изучению.",
-  "kindreds.hud.ready": "готово к изучению: %s — %s"
+  "kindreds.hud.ready": "готово к изучению: %s — %s",
+  "kindreds.hud.ready.short": "готово: %s · %s",
+  "kindreds.hud.points.short": "очков: %s · %s",
+  "kindreds.hud.capped.short": "предел"
 }

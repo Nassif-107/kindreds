@@ -165,8 +165,11 @@ public class ContextEffectTest implements FabricClientGameTest {
         int authoredAttrs = authoredAttributeCount(server, race, ctx);
         // Measured against what was GAINED, not what is merely present: an effect the player
         // already held proves nothing about the context that was supposed to grant it.
+        // Satisfied if the context granted it, OR if it was already held by a permanent grant - in
+        // which case the context had nothing left to add and its absence from "gained" proves nothing.
         Set<String> missing = new TreeSet<>(expected);
         missing.removeAll(gained);
+        missing.removeAll(before);
 
         String verdict;
         if (expected.isEmpty() && authoredAttrs == 0) {
@@ -180,8 +183,14 @@ public class ContextEffectTest implements FabricClientGameTest {
                     + (authoredAttrs > 0 ? " and " + authoredAttrs + " attribute boon(s)" : "")
                     + ", missing " + missing);
         }
-        System.out.printf("%s %-7s %-11s expect=%-38s gained=%-34s mods %d->%d  %s%n",
-                TAG, race, ctx, expected.toString(), gained.toString(), modsBefore, mods, verdict);
+        // The baseline matters as much as the gain: if an effect is already on the player from a
+        // PERMANENT node grant, the context adding it too cannot show up as "gained", and the check
+        // would call a working boon missing. Printing both is what tells the two apart.
+        Set<String> alreadyHeld = new TreeSet<>(expected);
+        alreadyHeld.retainAll(before);
+        System.out.printf("%s %-7s %-11s expect=%-38s gained=%-30s alreadyHeld=%-26s mods %d->%d  %s%n",
+                TAG, race, ctx, expected.toString(), gained.toString(), alreadyHeld.toString(),
+                modsBefore, mods, verdict);
     }
 
     /** And did it lift again when the context ended? */

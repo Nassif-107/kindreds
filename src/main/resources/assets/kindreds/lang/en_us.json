@@ -2312,5 +2312,8 @@
   "kindreds.toast.ready": "%s new skill(s) within reach",
   "kindreds.toast.ready.one": "%s — %s branch. Press %s to learn it.",
   "kindreds.toast.ready.many": "%s and %s more are ready to learn.",
-  "kindreds.hud.ready": "%s ready to learn — %s"
+  "kindreds.hud.ready": "%s ready to learn — %s",
+  "kindreds.hud.ready.short": "%s ready · %s",
+  "kindreds.hud.points.short": "%s pts · %s",
+  "kindreds.hud.capped.short": "capped"
 }
