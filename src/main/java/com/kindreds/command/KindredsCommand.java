@@ -290,7 +290,10 @@ public final class KindredsCommand {
 
     private static final List<String> CONFIG_KEYS = List.of(
             "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining", "enableEnemyScaling",
-            "xpRateGlobal", "deathPenalty", "deathPercent", "pointSoftCap", "respecItem", "respecCost");
+            "xpRateGlobal", "deathPenalty", "deathPercent", "pointSoftCap", "respecItem", "respecCost",
+            // added with the cap rework, the grantxp gate and the HUD toggle - a setting that exists
+            // but that no command can reach is a setting an operator cannot actually use
+            "pointCapPercent", "allowGrantXp", "hudAnimations");
 
     private static final SuggestionProvider<ServerCommandSource> CONFIG_KEY_SUGGESTIONS =
             (context, builder) -> CommandSource.suggestMatching(CONFIG_KEYS, builder);
@@ -303,6 +306,9 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("  enableCurses = " + c.enableCurses), false);
         source.sendFeedback(() -> Text.literal("  enableVision = " + c.enableVision), false);
         source.sendFeedback(() -> Text.literal("  allowCrossTraining = " + c.allowCrossTraining), false);
+        source.sendFeedback(() -> Text.literal("  allowGrantXp = " + c.allowGrantXp), false);
+        source.sendFeedback(() -> Text.literal("  pointCapPercent = " + c.pointCapPercent), false);
+        source.sendFeedback(() -> Text.literal("  hudAnimations = " + c.hudAnimations), false);
         source.sendFeedback(() -> Text.literal("  enableEnemyScaling = " + c.enableEnemyScaling), false);
         source.sendFeedback(() -> Text.literal("  xpRateGlobal = " + c.xpRateGlobal), false);
         source.sendFeedback(() -> Text.literal("  deathPenalty = " + c.deathPenalty), false);
@@ -328,6 +334,9 @@ public final class KindredsCommand {
                 case "xpRateGlobal" -> c.xpRateGlobal = Double.parseDouble(value);
                 case "deathPercent" -> c.deathPercent = Double.parseDouble(value);
                 case "pointSoftCap" -> c.pointSoftCap = Integer.parseInt(value);
+                case "pointCapPercent" -> c.pointCapPercent = Integer.parseInt(value);
+                case "allowGrantXp" -> c.allowGrantXp = parseBool(value);
+                case "hudAnimations" -> c.hudAnimations = parseBool(value);
                 case "respecCost" -> c.respecCost = Integer.parseInt(value);
                 case "respecItem" -> c.respecItem = value;
                 case "deathPenalty" -> c.deathPenalty = DeathPenalty.valueOf(value.toUpperCase(Locale.ROOT));

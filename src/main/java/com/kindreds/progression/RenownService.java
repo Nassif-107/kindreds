@@ -52,9 +52,18 @@ public final class RenownService {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> reconcile(handler.player));
     }
 
-    /** Whether {@code advancement} is one of the Great Deeds. */
+    /**
+     * Whether {@code advancement} is one of the Great Deeds.
+     *
+     * <p>Excludes {@code renown/root}, which is the advancement-tree container: it completes on a
+     * plain tick trigger the moment anyone joins, so counting it handed every player a free +5% cap
+     * before they had done anything at all. (The doctor already excluded it from its tally, which is
+     * how the two disagreed - the tally was fixed and the rule it was tallying was not.)
+     */
     public static boolean isRenown(Identifier id) {
-        return Kindreds.MOD_ID.equals(id.getNamespace()) && id.getPath().startsWith(RENOWN_PREFIX);
+        return Kindreds.MOD_ID.equals(id.getNamespace())
+                && id.getPath().startsWith(RENOWN_PREFIX)
+                && !id.getPath().equals(RENOWN_PREFIX + "root");
     }
 
     /**

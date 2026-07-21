@@ -18,3 +18,15 @@ test { useJUnitPlatform() }
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) }; withSourcesJar() }
 tasks.withType(JavaCompile).configureEach { options.release = 21 }
 processResources { inputs.property "version", project.version; filesMatching("fabric.mod.json") { expand "version": project.version } }
+
+
+// Renders every screen in a real client and photographs it - see UiScreenshotTest.
+loom {
+    runs {
+        clientGameTest {
+            client()
+            name = "Client Game Test"
+            property "fabric.client.gametest"
+        }
+    }
+}

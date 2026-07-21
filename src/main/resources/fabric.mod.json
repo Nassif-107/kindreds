@@ -1,6 +1,34 @@
-{ "schemaVersion": 1, "id": "kindreds", "version": "${version}", "name": "Kindreds of Middle-earth",
+{
+  "schemaVersion": 1,
+  "id": "kindreds",
+  "version": "${version}",
+  "name": "Kindreds of Middle-earth",
   "environment": "*",
-  "entrypoints": { "main": ["com.kindreds.Kindreds"], "client": ["com.kindreds.KindredsClient"] },
-  "mixins": ["kindreds.mixins.json", {"config":"kindreds.client.mixins.json","environment":"client"}],
-  "depends": { "fabricloader": ">=0.16.0", "minecraft": "~1.21.8", "java": ">=21", "fabric-api": "*" },
-  "suggests": { "middle-earth": "*" } }
+  "entrypoints": {
+    "main": [
+      "com.kindreds.Kindreds"
+    ],
+    "client": [
+      "com.kindreds.KindredsClient"
+    ],
+    "fabric-client-gametest": [
+      "com.kindreds.client.gametest.UiScreenshotTest"
+    ]
+  },
+  "mixins": [
+    "kindreds.mixins.json",
+    {
+      "config": "kindreds.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.8",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "middle-earth": "*"
+  }
+}
