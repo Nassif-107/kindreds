@@ -18,6 +18,18 @@ instead of counting nodes. Nothing in phase 1 touches mobs at spawn — that is 
 
 ## Global Constraints
 
+- **Every tuning constant is a server setting, with one guarded exception.** No magic number may be
+  left in Java where a server owner might reasonably want it different: the hardship target, both
+  EWMA rates, the death penalty, the gear reference values, the danger yardstick, the group bonus and
+  its cap. Each is read from `KindredsConfig`, each has the default given in the spec, and each is
+  reachable from `/kindreds config` and the rules screen.
+- **The exception is the competence band.** `COMPETENCE_MIN`/`COMPETENCE_MAX` are the anti-farming
+  floor (spec §2.4), not tuning. A server may make the band *tighter* - `adaptiveStrength` below 100%
+  narrows it toward 1.0 - but the code clamps it so it can never be *widened* past `0.75..1.25`. A
+  config field that could widen it would hand back the death-farming exploit whole. `ThreatMath` must
+  clamp its own inputs rather than trusting the caller, and a unit test must assert that asking for a
+  band of `0.0..2.0` still yields `0.75..1.25`.
+
 - **Everything the player can read must be localized**, in **both** `en_us.json` and `ru_ru.json`.
   No user-facing English string may be built in Java. Use `Text.translatable` / `I18n.translate`.
 - **A literal `%` in a lang value must be written `%%`**, or the game renders `Format error`. This has
@@ -169,6 +181,17 @@ class ThreatMathTest {
         assertEquals(0.5f, ThreatMath.group(0.5f, 1, 0.15f, 0.45f), 0.001f);
         assertEquals(0.5f * 1.15f, ThreatMath.group(0.5f, 2, 0.15f, 0.45f), 0.001f);
         assertEquals(0.5f * 1.45f, ThreatMath.group(0.5f, 9, 0.15f, 0.45f), 0.001f);
+    }
+
+    @Test
+    void aServerMayTightenTheBandButNeverWidenIt() {
+        // asking for a wider band than the floor allows is silently refused - this is the exploit
+        // guard, not a preference, so ThreatMath clamps its own inputs rather than trusting callers
+        assertEquals(ThreatMath.COMPETENCE_MIN, ThreatMath.bandFor(0.0f, 2.0f)[0], 0.001f);
+        assertEquals(ThreatMath.COMPETENCE_MAX, ThreatMath.bandFor(0.0f, 2.0f)[1], 0.001f);
+        // but a tighter band is honoured
+        assertEquals(0.9f, ThreatMath.bandFor(0.9f, 1.1f)[0], 0.001f);
+        assertEquals(1.1f, ThreatMath.bandFor(0.9f, 1.1f)[1], 0.001f);
     }
 
     @Test
@@ -1067,6 +1090,20 @@ In `KindredsConfig.java`, beside `enableEnemyScaling`:
     public float priorDecayPerHour = 2f;
     public int maxDamageBonus = 60;
     public int xpBonus = 50;
+    /** 100 = the full evidence band; lower narrows it toward 1.0. It can never widen it (spec §2.4). */
+    public int adaptiveStrength = 100;
+    /** What fraction of your health a meaningful fight should cost. */
+    public float hardshipTarget = 0.25f;
+    /** How fast competence rises when coasting, and falls when struggling. Rise is faster by design. */
+    public float competenceRiseRate = 0.10f;
+    public float competenceFallRate = 0.04f;
+    public float deathPenalty = 0.05f;
+    /** The gear reference: armour and attack damage that read as "fully equipped". */
+    public double gearArmourReference = 25.0;
+    public double gearDamageReference = 12.0;
+    /** The danger yardstick: what a threat-0 and a threat-100 player should be handling. */
+    public double dangerFloor = 60.0;
+    public double dangerCeiling = 600.0;
 
     /** The curve as an exponent on how much of a player's threat becomes world difficulty. */
     public float scalingCurveExponent() {
