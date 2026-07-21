@@ -116,6 +116,11 @@ public class ContextEffectTest implements FabricClientGameTest {
     private static void neutral(TestSingleplayerContext sp) {
         sp.getServer().runCommand("time set noon");
         sp.getServer().runCommand("tp @p ~ 120 ~");
+        // Wipe what is lingering: without this a boon left over from the previous context is still
+        // on the player and silently satisfies the next check. Anything the mod re-asserts every
+        // tick (permanent birth traits) comes straight back and lands in the baseline, where it
+        // belongs; anything contextual does not, which is the whole point.
+        sp.getServer().runCommand("effect clear @p");
         sp.getServer().runOnServer(server -> player(server).setHealth(player(server).getMaxHealth()));
     }
 
@@ -158,8 +163,10 @@ public class ContextEffectTest implements FabricClientGameTest {
 
         Set<String> expected = authoredEffects(server, race, ctx);
         int authoredAttrs = authoredAttributeCount(server, race, ctx);
+        // Measured against what was GAINED, not what is merely present: an effect the player
+        // already held proves nothing about the context that was supposed to grant it.
         Set<String> missing = new TreeSet<>(expected);
-        missing.removeAll(now);
+        missing.removeAll(gained);
 
         String verdict;
         if (expected.isEmpty() && authoredAttrs == 0) {

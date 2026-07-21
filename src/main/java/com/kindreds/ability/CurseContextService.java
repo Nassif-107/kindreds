@@ -6,6 +6,7 @@ import com.kindreds.data.SkillNode;
 import com.kindreds.data.SkillTree;
 import com.kindreds.data.SkillTreeResolver;
 import com.kindreds.data.ability.AbilityDef;
+import com.kindreds.data.ability.StatusEffectDef;
 import com.kindreds.data.ability.ContextualBoon;
 import com.kindreds.data.ability.CurseDef;
 import com.kindreds.playerdata.KindredAttachment;
@@ -186,7 +187,18 @@ public final class CurseContextService {
                 active.remove(key);
             }
             case NONE -> {
-                // Already in the right state.
+                // Bookkeeping says applied - but a STATUS EFFECT can be taken off the player by
+                // things this service never sees: a milk bucket, a death, an operator's /effect
+                // clear. Because APPLY only fires on the transition into the context, such a loss
+                // used to be permanent until the player left the context and came back - a Dwarf
+                // who drank milk underground had to climb out and return to get his Haste again.
+                // Re-asserting a status effect is cheap and idempotent (addStatusEffect replaces an
+                // equal-or-weaker instance), so it is done every pass while the context holds.
+                // Attribute modifiers are deliberately NOT re-added: they carry a fixed id and a
+                // duplicate would throw.
+                if (owned && contextMatches && effect instanceof StatusEffectDef) {
+                    AbilityApplier.applyContextual(player, effect, key);
+                }
             }
         }
     }
