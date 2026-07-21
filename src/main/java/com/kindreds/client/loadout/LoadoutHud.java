@@ -111,6 +111,22 @@ public final class LoadoutHud {
                 : Text.literal(ClientLoadout.displayName(selId)).formatted(Formatting.GOLD);
         ctx.drawText(tr, name, x0 + barW - tr.getWidth(name), y - 11, 0xFFE9C979, true);
 
+        // "You have points to spend" pip - the single best nudge back into the skill tree. Sits above
+        // the row, gently pulsing so it reads as new without nagging.
+        int unspent = com.kindreds.client.ClientProgress.unspentTotal();
+        if (unspent > 0) {
+            Text pip = Text.translatable("kindreds.hud.points", unspent,
+                    com.kindreds.KindredsClient.openTreeKeyName());
+            int w = tr.getWidth(pip) + 8;
+            int px = x0 + barW - w;
+            int py = y - 24;
+            double pulse = 0.5 + 0.5 * Math.sin(now / 6.0);
+            int alpha = (int) (0x60 + 0x40 * pulse) << 24;
+            ctx.fill(px, py, px + w, py + 11, alpha | 0x00332200);
+            ctx.drawBorder(px, py, w, 11, 0xFFD8B45F);
+            ctx.drawText(tr, pip, px + 4, py + 2, 0xFFFFD86B, false);
+        }
+
         // Compact key hint under the row (uses the player's actual, possibly rebound, keys).
         Text hint = Text.literal(com.kindreds.KindredsClient.cycleAbilityKeyName().getString() + " "
                 + Text.translatable("kindreds.hud.switch").getString() + "  ·  "

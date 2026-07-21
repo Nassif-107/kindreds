@@ -1,0 +1,194 @@
+package com.kindreds.client;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.kindreds.data.SkillNode;
+import com.kindreds.data.SkillTree;
+import com.kindreds.playerdata.ClientKindredData;
+import com.kindreds.playerdata.KindredData;
+import com.kindreds.progression.ProgressionService;
+import com.kindreds.data.KindredsRegistries;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Client-side <b>progression feedback</b>: the part that tells the player something happened.
+ *
+ * <p>Progress used to be invisible - xp accrued silently and you only learned you had points by
+ * opening the tree on a hunch. This watches the server-synced mirror each tick and:
+ * <ul>
+ *   <li>toasts a <b>discipline level-up</b> (with the point it just granted),</li>
+ *   <li>exposes {@link #unspentTotal()} so the HUD can show a "spend me" pip,</li>
+ *   <li>shows a one-time <b>welcome</b> naming your race and the keys that matter.</li>
+ * </ul>
+ * All of it derives from data the client already has, so nothing new goes over the wire.
+ */
+public final class ClientProgress {
+    private ClientProgress() {
+    }
+
+    private static final Gson GSON = new Gson();
+    private static final Type SET_TYPE = new TypeToken<Set<String>>() { }.getType();
+
+    private static SkillTree tree;
+    private static Identifier resolvedRace;
+    private static Set<Identifier> disciplines = Set.of();
+
+    /** discipline -> last seen level, so we only toast on an actual increase. */
+    private static final Map<Identifier, Integer> lastLevel = new HashMap<>();
+    private static boolean primed; // first sync just records the baseline (no toast spam on login)
+    private static Set<String> welcomedRaces;
+
+    // --- tree resolution (mirrors SkillTreeScreen's, cached per race) --------------------------
+
+    public static SkillTree tree() {
+        KindredData data = ClientKindredData.INSTANCE;
+        Identifier race = data.race();
+        if (race == null) {
+            return null;
+        }
+        if (tree != null && race.equals(resolvedRace)) {
+            return tree;
+        }
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world == null) {
+            return null;
+        }
+        resolvedRace = race;
+        tree = null;
+        try {
+            Registry<SkillTree> trees = client.world.getRegistryManager().getOrThrow(KindredsRegistries.SKILL_TREE);
+            for (SkillTree candidate : trees) {
+                if (candidate.race().equals(race)) {
+                    tree = candidate;
+                    break;
+                }
+            }
+            if (tree != null) {
+                Set<Identifier> ds = new LinkedHashSet<>();
+                for (SkillNode n : tree.nodes()) {
+                    ds.add(n.cost().disciplineId());
+                }
+                disciplines = ds;
+            }
+        } catch (RuntimeException ignored) {
+            // registries not synced yet - retried next call
+        }
+        return tree;
+    }
+
+    /** Total unspent discipline points across every discipline in the player's tree. */
+    public static int unspentTotal() {
+        SkillTree t = tree();
+        if (t == null) {
+            return 0;
+        }
+        KindredData data = ClientKindredData.INSTANCE;
+        int sum = 0;
+        for (Identifier d : disciplines) {
+            sum += Math.max(0, ProgressionService.pointsAvailable(data, t, d));
+        }
+        return sum;
+    }
+
+    // --- per-tick watch -------------------------------------------------------------------------
+
+    public static void tick(MinecraftClient client) {
+        if (client.player == null || client.world == null) {
+            return;
+        }
+        SkillTree t = tree();
+        if (t == null) {
+            return;
+        }
+        KindredData data = ClientKindredData.INSTANCE;
+
+        // Level-up toasts. The first pass after joining only primes the baseline.
+        for (Identifier d : disciplines) {
+            int level = ProgressionService.pointsForLevel(data.xpIn(d));
+            Integer prev = lastLevel.put(d, level);
+            if (primed && prev != null && level > prev) {
+                SystemToast.add(client.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION,
+                        Text.translatable("kindreds.toast.levelup", disciplineName(d), level)
+                                .formatted(Formatting.GOLD),
+                        Text.translatable("kindreds.toast.levelup.body", level - prev));
+            }
+        }
+        primed = true;
+        maybeWelcome(client, data);
+    }
+
+    /** A localized discipline name, falling back to a tidied id path if a pack adds a new one. */
+    public static Text disciplineName(Identifier d) {
+        String path = d.getPath();
+        String fallback = Character.toUpperCase(path.charAt(0)) + path.substring(1).replace('_', ' ');
+        return Text.translatableWithFallback("kindreds.discipline." + path, fallback);
+    }
+
+    // --- one-time welcome -----------------------------------------------------------------------
+
+    private static void maybeWelcome(MinecraftClient client, KindredData data) {
+        Identifier race = data.race();
+        if (race == null) {
+            return;
+        }
+        if (welcomedRaces == null) {
+            welcomedRaces = readWelcomed();
+        }
+        if (!welcomedRaces.add(race.getPath())) {
+            return; // already greeted for this race
+        }
+        writeWelcomed();
+        Text raceName = Text.translatableWithFallback("kindreds.race." + race.getPath(), race.getPath());
+        SystemToast.add(client.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION,
+                Text.translatable("kindreds.toast.welcome", raceName).formatted(Formatting.GOLD),
+                Text.translatable("kindreds.toast.welcome.body",
+                        com.kindreds.KindredsClient.openTreeKeyName()));
+        client.player.sendMessage(Text.translatable("kindreds.welcome.chat", raceName,
+                com.kindreds.KindredsClient.openTreeKeyName(),
+                com.kindreds.KindredsClient.cycleAbilityKeyName(),
+                com.kindreds.KindredsClient.useAbilityKeyName()).formatted(Formatting.GRAY), false);
+    }
+
+    private static Path file() {
+        return FabricLoader.getInstance().getConfigDir().resolve("kindreds-client.json");
+    }
+
+    private static Set<String> readWelcomed() {
+        try {
+            Path p = file();
+            if (Files.exists(p)) {
+                Set<String> s = GSON.fromJson(Files.readString(p, StandardCharsets.UTF_8), SET_TYPE);
+                if (s != null) {
+                    return new HashSet<>(s);
+                }
+            }
+        } catch (Exception ignored) {
+            // unreadable/corrupt - treat as "never greeted", which only costs one extra toast
+        }
+        return new HashSet<>();
+    }
+
+    private static void writeWelcomed() {
+        try {
+            Files.writeString(file(), GSON.toJson(welcomedRaces, SET_TYPE), StandardCharsets.UTF_8);
+        } catch (Exception ignored) {
+            // non-fatal: the greeting simply shows again next launch
+        }
+    }
+}

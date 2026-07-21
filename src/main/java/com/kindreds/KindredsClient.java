@@ -55,6 +55,11 @@ public class KindredsClient implements ClientModInitializer {
     }
 
     /** The localized name of the "Cycle ability slot" key (for the HUD ability-bar hint). */
+    /** The localized name of the currently-bound "Open skill tree" key (for hints and the welcome). */
+    public static net.minecraft.text.Text openTreeKeyName() {
+        return OPEN_TREE_KEY.getBoundKeyLocalizedText();
+    }
+
     public static net.minecraft.text.Text cycleAbilityKeyName() {
         return CYCLE_ABILITY_KEY.getBoundKeyLocalizedText();
     }
@@ -147,6 +152,9 @@ public class KindredsClient implements ClientModInitializer {
         // dropping any. abilityId is always sent blank; see ActivateAbilityC2S's javadoc for why
         // the server (not the client) resolves which ability that activates in P1.
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            // Watches the synced mirror for discipline level-ups / first-join, and feeds the HUD's
+            // unspent-points pip. Cheap: a few map lookups per tick.
+            com.kindreds.client.ClientProgress.tick(client);
             while (USE_ABILITY_KEY.wasPressed()) {
                 if (client.player != null) {
                     // Fire the selected loadout slot's ability (blank if empty - the server treats a

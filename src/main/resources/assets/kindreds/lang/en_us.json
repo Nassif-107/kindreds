@@ -2120,5 +2120,11 @@
   "key.kindreds.select_slot_1": "Select ability slot 1",
   "key.kindreds.select_slot_2": "Select ability slot 2",
   "key.kindreds.select_slot_3": "Select ability slot 3",
-  "key.kindreds.select_slot_4": "Select ability slot 4"
+  "key.kindreds.select_slot_4": "Select ability slot 4",
+  "kindreds.toast.levelup": "%s — level %s",
+  "kindreds.toast.levelup.body": "+%s skill point to spend",
+  "kindreds.toast.welcome": "You are %s",
+  "kindreds.toast.welcome.body": "Press %s to open your skill tree",
+  "kindreds.welcome.chat": "You are %s. %s — skill tree · %s — ability wheel · %s — use ability.",
+  "kindreds.hud.points": "%s pts · %s"
 }
