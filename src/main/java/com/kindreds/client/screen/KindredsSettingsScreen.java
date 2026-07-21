@@ -67,10 +67,22 @@ public class KindredsSettingsScreen extends Screen {
         // (854x480 at scale 2 leaves 427x240, against 384 needed), and the bottom of the panel -
         // the rule toggles and the last preset - simply fell off the screen. Compact the rows until
         // it fits rather than drawing something the player cannot reach.
-        boolean compact = this.height < 320;
+        // Compact when the full layout genuinely will not fit, not when the window is merely small:
+        // the roomy metrics need head + 5 presets + rules + 5 flags, and at 854x480 that overran the
+        // bottom and cut the last toggles off entirely.
+        int fullHeight = 56 + PRESETS.length * 38 + 24 + FLAGS.length * 18 + 26;
+        // Conservative on purpose: the roomy layout measured 386 but drew past the bottom of a
+        // 480-tall window, cutting the last two toggles. Rather than keep guessing at the true
+        // height, the roomy variant is reserved for windows with room to spare - compact loses only
+        // the preset descriptions and still shows every control.
+        boolean compact = this.height < 560 || fullHeight > this.height - 12;
         int rowH = compact ? 22 : 34;
         int flagH = compact ? 14 : 18;
-        int headH = compact ? 34 : 54;
+        // The heading is a title, a "current difficulty" line and a line of numbers. In compact mode
+        // the header was only 34px tall while the numbers were drawn at +33, so the first preset row
+        // was painted straight over them - which is why the xp/cap/scaling line appeared to sit
+        // behind Fireside. The header now reserves what it actually draws.
+        int headH = compact ? 48 : 56;
         int panelH = headH + PRESETS.length * (rowH + 4) + (compact ? 14 : 24)
                 + FLAGS.length * flagH + (compact ? 16 : 26);
         int y = Math.max(4, (this.height - panelH) / 2);
@@ -94,13 +106,22 @@ public class KindredsSettingsScreen extends Screen {
         ctx.drawText(this.textRenderer, Text.translatable("kindreds.settings.current",
                         Text.translatable("kindreds.difficulty." + v.difficulty().toLowerCase(Locale.ROOT)))
                 .formatted(Formatting.WHITE), x, y + 20, 0xFFFFFFFF, false);
-        ctx.drawText(this.textRenderer, Text.literal(
-                        "xp x" + v.xpRate() + "   ·   " + v.death()
-                                + "   ·   " + Text.translatable("kindreds.settings.cap").getString() + " "
-                                + capText(v)
-                                + "   ·   " + Text.translatable("kindreds.settings.scaling").getString() + " "
-                                + onOff(v.enemyScaling()))
-                .formatted(Formatting.GRAY), x, y + 33, 0xFFB6A888, false);
+        // Two halves, so a long line can wrap inside the panel instead of running off its edge.
+        String left = "xp x" + v.xpRate() + "   ·   " + v.death();
+        String right = Text.translatable("kindreds.settings.cap").getString() + " " + capText(v)
+                + "   ·   " + Text.translatable("kindreds.settings.scaling").getString() + " "
+                + onOff(v.enemyScaling());
+        String joined = left + "   ·   " + right;
+        if (this.textRenderer.getWidth(joined) <= panelW) {
+            ctx.drawText(this.textRenderer, Text.literal(joined).formatted(Formatting.GRAY),
+                    x, y + 33, 0xFFB6A888, false);
+        } else {
+            ctx.drawText(this.textRenderer, Text.literal(left).formatted(Formatting.GRAY),
+                    x, y + 30, 0xFFB6A888, false);
+            ctx.drawText(this.textRenderer, Text.literal(right).formatted(Formatting.GRAY),
+                    x, y + 40, 0xFFB6A888, false);
+            headH = Math.max(headH, 58);
+        }
 
         int by = y + headH;
         for (Difficulty d : PRESETS) {

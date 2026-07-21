@@ -43,6 +43,10 @@ public class UiScreenshotTest implements FabricClientGameTest {
             context.takeScreenshot("00-join");
 
             sp.getServer().runCommand("op @p");
+            sp.getServer().runOnServer(server -> net.sevenstars.middleearth.resources.StateSaverAndLoader
+                    .getPlayerState(server.getPlayerManager().getPlayerList().get(0))
+                    .assignNewRace(net.minecraft.util.Identifier.of("middle-earth", "dwarf")));
+            context.waitTicks(40);
             sp.getServer().runCommand("kindreds doctor");
             context.waitTicks(5);
 
