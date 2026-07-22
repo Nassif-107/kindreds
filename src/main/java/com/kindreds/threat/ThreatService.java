@@ -13,9 +13,13 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -100,6 +104,54 @@ public final class ThreatService {
         float competence = ThreatMath.effectiveCompetence(global, family);
         float threat = ThreatMath.threat(data.threat().priorMark(), competence);
         return ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
+    }
+
+    /** The +45%% group-size cap is a bound, not a dial (spec §4) - it is what keeps a full server
+     * from multiplying a mob past recognition. */
+    private static final float GROUP_CAP = 0.45f;
+    /** "Nearby" for a spawn decision, blocks (spec §4). */
+    private static final double GROUP_RADIUS = 128.0;
+
+    /** Pure core: the strongest figure carries the group bonus. Package-private for the unit test. */
+    static float groupOf(List<Float> scaledValues, float perPlayer) {
+        float strongest = 0f;
+        for (float s : scaledValues) {
+            strongest = Math.max(strongest, s);
+        }
+        return ThreatMath.group(strongest, scaledValues.size(), perPlayer, GROUP_CAP);
+    }
+
+    /** Pure core: middle-earth paces at its own multiplier; everywhere else is the old world. */
+    static float dimensionMultiplier(String dimensionNamespace, float middleEarth, float overworld) {
+        return "middle-earth".equals(dimensionNamespace) ? middleEarth : overworld;
+    }
+
+    /**
+     * The SHARED difficulty for a mob entering the world at {@code pos} (spec §4): the strongest
+     * player within 128 blocks carries the group bonus; a spawn with no player in range uses the
+     * strongest player in the dimension, undecayed - an AFK farm 130 blocks out must not be a
+     * difficulty switch. No players in the dimension at all -> 0 (an unwitnessed mob costs nothing).
+     */
+    public static float scaledGroupAt(ServerWorld world, BlockPos pos) {
+        if (Kindreds.CONFIG == null || !Kindreds.CONFIG.enableEnemyScaling) {
+            return 0f;
+        }
+        List<Float> near = new ArrayList<>();
+        float strongestInDimension = 0f;
+        double radiusSq = GROUP_RADIUS * GROUP_RADIUS;
+        for (ServerPlayerEntity p : world.getPlayers()) {
+            float s = scaledFor(p);
+            strongestInDimension = Math.max(strongestInDimension, s);
+            if (p.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= radiusSq) {
+                near.add(s);
+            }
+        }
+        float group = near.isEmpty()
+                ? strongestInDimension
+                : groupOf(near, Kindreds.CONFIG.groupScalingPercent / 100f);
+        return group * dimensionMultiplier(world.getRegistryKey().getValue().getNamespace(),
+                Kindreds.CONFIG.dimensionMultiplierMiddleEarth,
+                Kindreds.CONFIG.dimensionMultiplierOverworld);
     }
 
     /** The {@link ThreatTuning} every fold and re-band in the mod uses: {@link ThreatTuning#DEFAULTS}
