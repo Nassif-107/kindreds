@@ -430,6 +430,11 @@ with the same rules the existing fields follow:
 - carried in `PACKET_CODEC` only as the **resolved threat number and its three components**, which is
   all the client needs to display it. The ring buffer and the per-family table stay server-side.
 
+**Reconciling with §3a:** the per-family table stays server-side per the rule above; §3a's Deeds-page
+voice lines ride the wire only as an at-most-three, already-decided list of derived translation keys
+(`ThreatState.familyVoiceKeys`, computed from that table at copy time - see `ThreatState#copy()`),
+never the raw per-family numbers themselves.
+
 **A caution from this codebase's own history:** the sync packet must send a snapshot, not the live
 collections, or netty encodes them on its own thread while the server thread is still editing.
 

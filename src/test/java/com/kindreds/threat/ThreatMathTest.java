@@ -2,7 +2,12 @@ package com.kindreds.threat;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -264,5 +269,58 @@ class ThreatMathTest {
         assertSame(ThreatRank.SHADOW, ThreatRank.of(80f));
         assertSame(ThreatRank.SHADOW, ThreatRank.of(100f));
         assertEquals("kindreds.threat.rank.hunted", ThreatRank.HUNTED.translationKey());
+    }
+
+    // --- familyVoiceKeys (spec §3a's Deeds-page voice, derived - see ThreatState#copy()) ----------
+
+    @Test
+    void familyVoiceLinesRequireStrictlyMoreThanOneTenthDivergence() {
+        float global = 1.0f;
+        Map<String, Float> family = new HashMap<>();
+        family.put("trolls", global + 0.10f);   // exactly +0.10 - must say nothing
+        family.put("wargs", global - 0.10f);    // exactly -0.10 - must say nothing
+        assertTrue(ThreatMath.familyVoiceKeys(family, global).isEmpty(),
+                "a divergence of exactly 0.1 must not voice a line");
+
+        family.put("trolls", global + 0.11f);   // clearly past +0.10
+        family.put("wargs", global - 0.11f);    // clearly past -0.10
+        List<String> keys = ThreatMath.familyVoiceKeys(family, global);
+        assertTrue(keys.contains("kindreds.family.mastered.trolls"), keys.toString());
+        assertTrue(keys.contains("kindreds.family.feared.wargs"), keys.toString());
+    }
+
+    @Test
+    void familyVoiceLinesCapAtThreeStrongestDivergenceFirst() {
+        // Magnitudes deliberately spaced well apart (0.40/0.35/0.20/0.15, plus a below-threshold
+        // 0.05) so the ordering is unambiguous even after float rounding - a near-tie belongs to a
+        // dedicated float-precision test, not this one, which is only about the cap and the ordering.
+        Map<String, Float> family = new HashMap<>();
+        family.put("spiders", 1.40f);  // +0.40 mastered - strongest
+        family.put("wargs", 0.65f);    // -0.35 feared - second strongest
+        family.put("trolls", 1.20f);   // +0.20 mastered - third strongest, makes the cut
+        family.put("undead", 0.85f);   // -0.15 feared - the weakest qualifier, dropped by the cap
+        family.put("orc_kin", 1.05f);  // +0.05 - under threshold, never appears
+        List<String> keys = ThreatMath.familyVoiceKeys(family, 1.0f);
+
+        assertEquals(3, keys.size(), "four families qualify but at most three lines: " + keys);
+        assertEquals(List.of("kindreds.family.mastered.spiders", "kindreds.family.feared.wargs",
+                "kindreds.family.mastered.trolls"), keys);
+        assertFalse(keys.contains("kindreds.family.mastered.orc_kin"), "0.05 is under threshold: " + keys);
+        assertFalse(keys.contains("kindreds.family.feared.undead"), "the weakest qualifier is dropped: " + keys);
+    }
+
+    @Test
+    void onlyTheFiveNamedFamiliesEverVoiceAnOpinion() {
+        Map<String, Float> family = new HashMap<>();
+        family.put("other", 5.0f); // wildly divergent, but "other" is not one of the five named families
+        assertTrue(ThreatMath.familyVoiceKeys(family, 1.0f).isEmpty(),
+                "an 'other' entry must never produce a voice line");
+    }
+
+    @Test
+    void aFamilyWithNoEvidenceRecordedSaysNothing() {
+        // familyCompetence has no entry at all for this family (never fought it) - must not be read
+        // as "diverges by the full global-vs-zero amount".
+        assertTrue(ThreatMath.familyVoiceKeys(Map.of(), 1.0f).isEmpty());
     }
 }

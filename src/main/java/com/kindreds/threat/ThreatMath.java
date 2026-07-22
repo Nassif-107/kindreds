@@ -1,5 +1,9 @@
 package com.kindreds.threat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Every formula behind enemy scaling, and nothing else - no Minecraft types, no state, no side
  * effects. Kept pure so the rules can be proved by unit test rather than argued about, which matters
@@ -11,6 +15,81 @@ package com.kindreds.threat;
  */
 public final class ThreatMath {
     private ThreatMath() {
+    }
+
+    /**
+     * The five families {@code MobDanger.family(String)} ever returns other than {@code "other"} -
+     * the fixed set spec §3a's per-family voice is ever allowed to speak about. Kept as its own list
+     * here rather than referenced from {@code MobDanger} so this file stays what its own class
+     * javadoc promises (no Minecraft types, no dependency on any other class in the package) -
+     * {@code MobDanger.family} is the source of truth for what a mob's family string IS, this is
+     * only the fixed set {@link #familyVoiceKeys} is ever asked to voice an opinion about, which
+     * already duplicates the same five names the elite-name and family-voice lang tables both
+     * hardcode.
+     */
+    private static final String[] NAMED_FAMILIES = {"trolls", "spiders", "wargs", "orc_kin", "undead"};
+
+    /** How far a family's competence must sit from the player's global record before the world says
+     * anything about it (spec §3a) - exactly {@code 0.1} says nothing, only strictly past it does. */
+    private static final float VOICE_THRESHOLD = 0.1f;
+
+    /** Absorbs float representation noise around {@link #VOICE_THRESHOLD}: both values on either side
+     * of {@code diff > VOICE_THRESHOLD} are ordinary {@code float}s built by ordinary arithmetic
+     * elsewhere (evidence folds, EWMA blends), so a value a caller genuinely intends as "exactly 0.1"
+     * can land a few ULPs on either side of the literal - without this, "exactly 0.1 says nothing"
+     * would depend on which direction that noise happened to fall, rather than the rule itself. */
+    private static final float VOICE_EPSILON = 1e-4f;
+
+    /** At most this many voice lines at once - a wall of text is not "a few words". */
+    private static final int MAX_VOICE_LINES = 3;
+
+    /**
+     * The per-family voice lines for the Deeds page (spec §3a), as translation keys - never the raw
+     * numbers behind them. At most {@value #MAX_VOICE_LINES}, strongest divergence first: a family
+     * whose synced competence sits more than {@value #VOICE_THRESHOLD} above the player's global
+     * record is "mastered", more than {@value #VOICE_THRESHOLD} below is "feared"; a family sitting
+     * within that band, or with no evidence recorded for it at all ({@code familyCompetence} has no
+     * entry), says nothing. Only the five {@link #NAMED_FAMILIES} are ever eligible - "other" never
+     * voices an opinion.
+     *
+     * <p><b>Why this exists at all (the §3a/§7 reconciliation).</b> Spec §7 keeps the raw per-family
+     * table server-side - it is never meant to ride the wire in full. Spec §3a nonetheless promises
+     * the Deeds page speaks in that table's voice. The two are reconciled by derivation, not
+     * exposure: this pure function is the ONE place that table is ever read to produce something
+     * bounded enough to sync - see {@code ThreatState#copy()}, which calls this at the moment a
+     * {@link ThreatState} is copied for the network snapshot, and {@code ThreatState#familyVoiceKeys}
+     * for what actually rides {@code PACKET_CODEC}. The raw map itself is never part of that codec.
+     *
+     * <p>Package-private, no Minecraft types on its signature, so the selection (threshold, cap,
+     * ordering) can be proved by unit test with no server running - see {@code ThreatMathTest}.
+     */
+    private record Divergence(String family, boolean mastered, float magnitude) {
+    }
+
+    static List<String> familyVoiceKeys(Map<String, Float> familyCompetence, float global) {
+        List<Divergence> divergent = new ArrayList<>();
+        for (String family : NAMED_FAMILIES) {
+            Float value = familyCompetence.get(family);
+            if (value == null) {
+                continue; // no evidence recorded for this family: nothing to say
+            }
+            float diff = value - global;
+            if (diff > VOICE_THRESHOLD + VOICE_EPSILON) {
+                divergent.add(new Divergence(family, true, diff));
+            } else if (diff < -VOICE_THRESHOLD - VOICE_EPSILON) {
+                divergent.add(new Divergence(family, false, -diff));
+            }
+        }
+        // Stable sort by magnitude descending: ties keep NAMED_FAMILIES order (the loop above's
+        // insertion order), a deterministic tie-break rather than one that depends on HashMap
+        // iteration order.
+        divergent.sort((a, b) -> Float.compare(b.magnitude(), a.magnitude()));
+        List<String> keys = new ArrayList<>();
+        for (int i = 0; i < divergent.size() && i < MAX_VOICE_LINES; i++) {
+            Divergence d = divergent.get(i);
+            keys.add("kindreds.family." + (d.mastered() ? "mastered" : "feared") + "." + d.family());
+        }
+        return keys;
     }
 
     /**

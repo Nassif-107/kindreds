@@ -68,7 +68,9 @@ public record SyncKindredDataS2C(KindredData data) implements CustomPayload {
         copy.setRace(live.race());
         // ThreatState.copy() deep-copies familyCompetence rather than sharing the reference - the
         // same ConcurrentModificationException hazard this whole method exists to avoid (see the
-        // class javadoc) applies equally to that map.
+        // class javadoc) applies equally to that map. copy() is also where familyVoiceKeys (spec
+        // §3a's Deeds-page voice lines) is freshly derived from that same live map, right before it
+        // is thrown away here - see ThreatState#copy()'s javadoc for the full §3a/§7 reconciliation.
         copy.setThreat(live.threat().copy());
         return copy;
     }

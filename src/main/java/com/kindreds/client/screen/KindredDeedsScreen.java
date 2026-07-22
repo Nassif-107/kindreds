@@ -131,6 +131,18 @@ public class KindredDeedsScreen extends Screen {
         ctx.drawText(textRenderer, rank, cx - rw / 2, headY, INK_MUTE, false);
         headY += LINE + 1;
 
+        // Per-family voice (spec §3a): at most three translation keys, strongest divergence first,
+        // already decided and ordered server-side (see ThreatState#copy()/ThreatMath#familyVoiceKeys)
+        // - this screen renders them verbatim and carries no family logic of its own. Flowed from the
+        // running Y exactly like the rank line above it, so zero/one/two/three lines all fit without
+        // a gap or an overlap.
+        for (String key : data.threat().familyVoiceKeys()) {
+            Text line = Text.translatable(key);
+            int lw = textRenderer.getWidth(line);
+            ctx.drawText(textRenderer, line, cx - lw / 2, headY, INK_MUTE, false);
+            headY += LINE + 1;
+        }
+
         ctx.fill(px + 30, headY, px + pw - 30, headY + 1, RULE);
         int viewTop = headY + 6;
         int viewBottom = py + ph - 20;

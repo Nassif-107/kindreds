@@ -83,8 +83,10 @@ public final class MobScaler {
      * else up to 2. cap = capacity * spawningChunks / 289 (17x17 = SpawnHelper.CHUNK_AREA - that
      * constant and the cap check itself are package-private in vanilla, so the formula is
      * reproduced here; if a Minecraft update changes CHUNK_AREA this number silently drifts, which
-     * is why the doctor asserts it against a sane range rather than trusting it forever). */
-    static int escortBudget(int currentMonsters, int capacity, int spawningChunks) {
+     * is why the doctor asserts it against a sane range rather than trusting it forever). Public
+     * (not package-private) specifically so {@code KindredsDoctor}, in another package, can recompute
+     * {@code escortBudget(56, 70, 289)} itself as the 289 tripwire this comment describes. */
+    public static int escortBudget(int currentMonsters, int capacity, int spawningChunks) {
         int cap = capacity * spawningChunks / 289;
         return currentMonsters >= 0.8 * cap ? 0 : 2;
     }

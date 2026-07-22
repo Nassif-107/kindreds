@@ -210,6 +210,13 @@ public final class KindredData {
      * {@code addPlayedTicks}), so the played-ticks total is transplanted via the delta between the
      * two - correct regardless of this instance's current total, and exact for the fresh (zeroed)
      * instances every call site actually passes.
+     *
+     * <p>{@code familyVoiceKeys} is transplanted too (a plain reference swap - it is wire-only
+     * display data, not something another thread is ever mutating concurrently, unlike
+     * {@code familyCompetence}). Without this, the keys {@link ThreatState#PACKET_CODEC} just
+     * decoded off the wire would be silently dropped the moment this method runs - which is exactly
+     * the path {@code SyncKindredDataS2C}'s client-side receiver takes to build the
+     * {@code ClientKindredData} the Deeds page reads.
      */
     public void setThreat(ThreatState threat) {
         this.threat.setPriorMark(threat.priorMark());
@@ -218,6 +225,7 @@ public final class KindredData {
         this.threat.familyCompetence().clear();
         this.threat.familyCompetence().putAll(threat.familyCompetence());
         this.threat.addPlayedTicks(threat.playedTicks() - this.threat.playedTicks());
+        this.threat.setFamilyVoiceKeys(threat.familyVoiceKeys());
     }
 
     /** Accumulates {@code amount} xp into {@code discipline} (creating the entry if absent). */

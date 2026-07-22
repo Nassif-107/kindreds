@@ -40,6 +40,27 @@ public record MobMark(String spawnReason, boolean scaled, String eliteAbility, S
     public static final AttachmentType<MobMark> KEY =
             AttachmentRegistry.createPersistent(Identifier.of(Kindreds.MOD_ID, "mob_mark"), CODEC);
 
+    /**
+     * Forces this class to load (and thus registers {@link #KEY}) during mod initialization.
+     * {@code KEY} is a lazy {@code static final} - exactly the same shape {@code KindredAttachment
+     * .TYPE} was before it gained its own {@code init()} for the identical reason. Without an
+     * explicit touch here, nothing references {@link #of}/{@link #set} (and so nothing loads this
+     * class) until the first {@code MobEntityInitializeMixin} injection or {@code MobScaler}/{@code
+     * EliteMobs} {@code ENTITY_LOAD} handler actually fires at runtime - both of which run AFTER a
+     * reloading mob's saved NBT (including any previously-stored {@code kindreds:mob_mark} tag) has
+     * already been deserialized by vanilla's own entity-loading code. A server restarting with
+     * already-scaled or already-elite mobs on disk would silently drop every one of those marks on
+     * the very first chunk load of a fresh session - "unknown attachment type kindreds:mob_mark",
+     * the same failure {@code KindredAttachment}'s own history already suffered once. Call once from
+     * {@link Kindreds#onInitialize()}, before any world can load.
+     */
+    public static AttachmentType<MobMark> init() {
+        // Returning KEY forces this class to load (running the static initializer that registers the
+        // attachment). Callers ignore the return; it exists only to make the reference a genuine use
+        // the compiler/JIT can't elide.
+        return KEY;
+    }
+
     /** The stored mark, or {@link #DEFAULT} - never null, never creates storage for unmarked mobs. */
     public static MobMark of(Entity entity) {
         MobMark mark = entity.getAttached(KEY);

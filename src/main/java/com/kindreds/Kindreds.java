@@ -44,6 +44,12 @@ public class Kindreds implements ModInitializer {
         // already loaded player NBT and dropped the unknown "kindreds:player" attachment, wiping
         // saved progress. Forcing the class to load here registers it before any world loads.
         KindredAttachment.init();
+        // Same lazy-static-final hazard, same fix, for the per-mob mark (Task 7 found this while
+        // wiring the doctor's "MobMark.KEY registered" check: nothing before this line forced
+        // MobMark to load, so a server restarting with already-scaled/elite mobs on disk would have
+        // silently dropped every kindreds:mob_mark tag on the very first chunk load of a fresh
+        // session - see MobMark#init()'s javadoc).
+        com.kindreds.threat.MobMark.init();
 
         KindredsRegistries.register();
 
