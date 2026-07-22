@@ -123,10 +123,22 @@ class ThreatMathTest {
 
     @Test
     void hardshipRisesCompetenceWhenCoastingAndLowersItWhenStruggling() {
-        float coasting = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, ThreatTuning.DEFAULTS);
-        float struggling = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float coasting = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float struggling = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
         assertTrue(coasting > 1.0f, "an untouched win should read as coasting");
         assertTrue(struggling < 1.0f, "a near-death should read as struggling");
+    }
+
+    @Test
+    void killShareScalesTheRiseAndOnlyTheRise() {
+        float fullShare = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float tinyShare = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, 0.01f, ThreatTuning.DEFAULTS);
+        assertTrue(fullShare > 1.0f);
+        assertTrue(tinyShare < 1.0f + (fullShare - 1.0f) * 0.02f, "a 1% share must earn ~1% of the rise");
+        // THE ASYMMETRY: a struggling fold is untouched by share
+        float fallFull = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float fallTiny = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, 0.01f, ThreatTuning.DEFAULTS);
+        assertEquals(fallFull, fallTiny, 1e-6f, "share must never gate the falling branch");
     }
 
     @Test
@@ -142,7 +154,7 @@ class ThreatMathTest {
         float largestFallMagnitude = 0f;
         for (float hardship : hardships) {
             for (float attackerWeight : attackerWeights) {
-                float result = ThreatMath.foldHardship(1.0f, hardship, attackerWeight, ThreatTuning.DEFAULTS);
+                float result = ThreatMath.foldHardship(1.0f, hardship, attackerWeight, 1.0f, ThreatTuning.DEFAULTS);
                 float delta = result - 1.0f;
                 if (delta > 0f) {
                     largestRise = Math.max(largestRise, delta);

@@ -42,12 +42,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * </ul>
  *
  * <h2>Time-to-kill</h2>
- * {@code AFTER_DAMAGE} also captures, per player, which in-scope mob they first struck and when
- * (see {@link #ENGAGEMENTS}) - the fight's start. {@code AFTER_KILLED_OTHER_ENTITY} closes the
- * loop: a kill of that same mob, fast enough relative to its danger (see {@link #isFastKill}),
- * folds through {@link ThreatMath#foldFastKill} the same way a coasting hardship fold does -
- * raise-only, and weighted by the same {@code dangerRatio}, so killing a trivial mob quickly
- * proves as little as killing it slowly (spec §2.3).
+ * {@code ALLOW_DAMAGE} captures, per player, which in-scope mob they first struck and when (see
+ * {@link #ENGAGEMENTS}) - the fight's start. {@code AFTER_KILLED_OTHER_ENTITY} closes the loop: a
+ * kill of that same mob, fast enough relative to its danger (see {@link #isFastKill}), folds
+ * through {@link ThreatMath#foldFastKill} the same way a coasting hardship fold does - raise-only,
+ * and weighted by the same {@code dangerRatio} (now also by {@code killShare}, see below), so
+ * killing a trivial mob quickly proves as little as killing it slowly (spec §2.3).
+ *
+ * <h2>Kill credit is earned, not just witnessed</h2>
+ * Both the coasting rise in {@link ThreatMath#foldHardship} and the fast-kill raise in
+ * {@link ThreatMath#foldFastKill} used to be weighted only by the mob's danger, never by how much
+ * of the actual fight the killer fought. That left a kill-steal channel open even after the
+ * danger-weighting fix: a friend whittles a dangerous mob to 1 HP over several minutes: an
+ * opportunist tags it and lands the last hit within a couple of ticks, and walks away with the
+ * <em>same</em> full, danger-weighted rise as someone who fought the whole thing. {@code
+ * killShare} - the killer's own damage dealt to the mob, as a fraction of its max health - closes
+ * this structurally rather than merely bounding it: see {@link #ENGAGEMENTS} and the {@code
+ * ALLOW_DAMAGE}/{@code AFTER_DAMAGE} pair below for how it is tracked, and
+ * {@code ThreatExploitTest#lastHittingAFriendsWhittledMobPaysAlmostNothing} for the regression.
  */
 public final class ThreatEvidence {
     private ThreatEvidence() {
@@ -59,15 +71,37 @@ public final class ThreatEvidence {
      * it, even a death this class does not treat as evidence). */
     private static final Map<UUID, Float> ACCUMULATED_DAMAGE = new ConcurrentHashMap<>();
 
-    /** One player's current fight, for the time-to-kill signal: which mob they first struck, and
-     * when. First hit wins for a given mob - a re-hit on the same mob does not reset the clock, so
-     * a fight that runs long cannot quietly restart its own timer. Cleared on kill (its purpose
-     * served), on player death, and on disconnect - the same three moments {@link #ACCUMULATED_DAMAGE}
-     * clears on - so a stale engagement can never bleed into an unrelated later fight. */
+    /** One player's current fight: which mob they first struck, when, how much of it they have
+     * personally dealt so far, and (for the in-flight hit) the mob's health the instant before that
+     * hit lands - see {@link Engagement} for what each field is for and why there are two damage
+     * signals rather than one. First hit against a mob wins for {@code firstHitTick} - a re-hit on
+     * the same mob does not reset the clock, so a fight that runs long cannot make itself look fast
+     * by restarting its own timer; an owner who overwrites the whole entry every hit (as
+     * {@code ALLOW_DAMAGE} below does) can still restage {@code firstHitTick} by walking away and
+     * striking a *different* mob, but with {@code killShare} weighting that restaged kill only ever
+     * earns what an honest solo kill of that same mob would earn anyway - there is no longer a
+     * reward for pretending a fight is younger than it is. Cleared on kill (its purpose served), on
+     * player death, and on disconnect - the same three moments {@link #ACCUMULATED_DAMAGE} clears
+     * on - so a stale engagement can never bleed into an unrelated later fight. */
     private static final Map<UUID, Engagement> ENGAGEMENTS = new ConcurrentHashMap<>();
 
-    /** A player's in-progress fight: the mob first struck, and the world tick that first hit landed. */
-    private record Engagement(UUID mob, long firstHitTick) {
+    /**
+     * A player's in-progress fight against {@code mob}, first struck at {@code firstHitTick}.
+     *
+     * <p>{@code damageDealt} and {@code healthBeforeHit} are two separate signals for two separate
+     * moments, not the same number twice: {@code damageDealt} is the running total of every
+     * <em>non-lethal</em> hit this player has already landed on {@code mob} - accurate, because
+     * {@code AFTER_DAMAGE} reports the real post-mitigation damage for those. {@code
+     * healthBeforeHit} is {@code mob}'s health the instant before whichever hit is <em>currently in
+     * flight</em>, refreshed on every {@code ALLOW_DAMAGE} call - it exists because {@code
+     * AFTER_DAMAGE} never fires for the hit that actually kills the mob (see the class javadoc), so
+     * there is no "accurate post-mitigation damage" figure available for that one hit. Using {@code
+     * healthBeforeHit} instead of the raw (pre-mitigation, potentially wildly overkill) hit amount is
+     * what clamps a 50-damage killing blow against a 1-HP mob down to the 1 HP of real work it
+     * actually did - see {@code ALLOW_DAMAGE}'s registration below for why this, not {@code
+     * ALLOW_DEATH}, is where that clamp has to be taken.
+     */
+    private record Engagement(UUID mob, long firstHitTick, float damageDealt, float healthBeforeHit) {
     }
 
     /** 8 seconds - the internal yardstick an at-level, full-weight kill is judged against. Not a
@@ -75,7 +109,7 @@ public final class ThreatEvidence {
      * {@link MobDanger#expectedAt}, which is the one place "at-level" is defined. */
     private static final long TTK_BASE_TICKS = 160;
 
-    /** Registers the four listeners. Call once from {@link Kindreds#onInitialize()}. */
+    /** Registers the five listeners. Call once from {@link Kindreds#onInitialize()}. */
     public static void register() {
         // Mirrors ThreatService#register's own disconnect handler: without this, a player who logs
         // out mid-fight carries that accumulation into a fight days later, and the map itself grows
@@ -83,6 +117,41 @@ public final class ThreatEvidence {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ACCUMULATED_DAMAGE.remove(handler.player.getUuid());
             ENGAGEMENTS.remove(handler.player.getUuid());
+        });
+
+        // ALLOW_DAMAGE, not ALLOW_DEATH, is where the kill-credit engagement is created and kept
+        // current. This was originally meant to be ALLOW_DEATH (capture the lethal blow right as it
+        // lands), but ALLOW_DEATH fires from a @Redirect around LivingEntity#damage's *second*
+        // isDead() check - by which point LivingEntity#applyDamage has already run and setHealth has
+        // already clamped health to 0, so entity.getHealth() there is always 0, never the mob's
+        // pre-blow remaining health (verified by disassembling fabric-entity-events-v1 2.1.1's
+        // LivingEntityMixin against yarn 1.21.8's named LivingEntity#damage bytecode - see the task-6
+        // report). ALLOW_DAMAGE fires earlier in the same method, before applyDamage touches health
+        // at all, and - unlike AFTER_DAMAGE - fires for every hit including the one that kills the
+        // mob, which is exactly the pre-application read the clamp needs. We only ever observe here;
+        // the return value must stay `true` always, or this would start cancelling damage.
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+            if (scalingEnabled() && entity instanceof LivingEntity mob
+                    && source.getAttacker() instanceof ServerPlayerEntity player
+                    && MobDanger.isInScope(mob, player)) {
+                Engagement current = ENGAGEMENTS.get(player.getUuid());
+                float healthBeforeHit = mob.getHealth();
+                if (current != null && current.mob().equals(mob.getUuid())) {
+                    // Same fight, next hit: keep firstHitTick and damageDealt so far (see the
+                    // Engagement javadoc for why re-hitting the same mob must not push the TTK
+                    // clock forward), refresh only the pre-hit health snapshot.
+                    ENGAGEMENTS.put(player.getUuid(),
+                            new Engagement(current.mob(), current.firstHitTick(), current.damageDealt(),
+                                    healthBeforeHit));
+                } else {
+                    // A new mob - or this player's first hit of any fight: the clock starts now, no
+                    // damage banked yet. If this very hit turns out to be lethal (a genuine one-shot
+                    // of a full-health mob), healthBeforeHit alone already gives it share ~= 1.0.
+                    ENGAGEMENTS.put(player.getUuid(),
+                            new Engagement(mob.getUuid(), player.getWorld().getTime(), 0f, healthBeforeHit));
+                }
+            }
+            return true; // observe only - never cancel a hit
         });
 
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
@@ -96,15 +165,19 @@ public final class ThreatEvidence {
                 ACCUMULATED_DAMAGE.merge(player.getUuid(), damageTaken, Float::sum);
                 return;
             }
-            // Attacker side: capture when a fight against a NEW in-scope mob started, for the
-            // time-to-kill signal. First hit wins - a re-hit on the same mob (still the current
-            // engagement) must not push the clock forward, or a fight that runs long would keep
-            // resetting its own timer and could never be judged "slow".
+            // Attacker side: bank this (non-lethal - see the class javadoc for why AFTER_DAMAGE never
+            // fires for the killing hit) hit's real, post-mitigation damage into damageDealt. The
+            // engagement itself - which mob, when the fight started - is ALLOW_DAMAGE's job, above,
+            // which always runs first for this same hit; if it didn't create/refresh one (scaling was
+            // off, or the mob fell out of scope between the two events), there is nothing to bank
+            // onto and this hit contributes nothing to kill-share, same as before this fix existed.
             if (entity instanceof LivingEntity mob && source.getAttacker() instanceof ServerPlayerEntity player
                     && MobDanger.isInScope(mob, player)) {
                 Engagement current = ENGAGEMENTS.get(player.getUuid());
-                if (current == null || !current.mob().equals(mob.getUuid())) {
-                    ENGAGEMENTS.put(player.getUuid(), new Engagement(mob.getUuid(), player.getWorld().getTime()));
+                if (current != null && current.mob().equals(mob.getUuid())) {
+                    ENGAGEMENTS.put(player.getUuid(),
+                            new Engagement(current.mob(), current.firstHitTick(),
+                                    current.damageDealt() + damageTaken, current.healthBeforeHit()));
                 }
             }
         });
@@ -133,16 +206,29 @@ public final class ThreatEvidence {
                     MobDanger.expectedAt(ThreatService.threatOf(player)));
             ThreatTuning tuning = tuningFor();
 
-            // Time-to-kill: evidence a fight started AND ended fast - see class javadoc and spec
-            // §2.3. Checked, and the engagement cleared, before the hardship fold below so a kill
-            // that qualifies folds both signals in the same pass.
+            // Kill credit is earned, not just witnessed: killShare is this player's own damage dealt
+            // to `killed`, as a fraction of its max health - see the class javadoc and the
+            // Engagement javadoc. Checked, and the engagement cleared, before the hardship fold below
+            // so a kill that qualifies folds both signals (TTK and hardship) from the same evidence.
             Engagement engagement = ENGAGEMENTS.remove(player.getUuid());
+            float killShare = 1f;
             if (engagement != null && engagement.mob().equals(killed.getUuid())) {
+                float contribution = engagement.damageDealt() + Math.max(0f, engagement.healthBeforeHit());
+                killShare = clamp01(contribution / Math.max(1f, killed.getMaxHealth()));
+
                 long ttk = world.getTime() - engagement.firstHitTick();
                 if (isFastKill(ttk, TTK_BASE_TICKS, dangerRatio)) {
-                    state.setCompetence(ThreatMath.foldFastKill(state.competence(), dangerRatio, tuning));
+                    state.setCompetence(
+                            ThreatMath.foldFastKill(state.competence(), clamp01(dangerRatio * killShare), tuning));
                 }
             }
+            // No engagement (or one for a different mob) at this point should only happen if scope
+            // itself changed between the lethal hit and this event firing (MobDanger's own documented
+            // caveat: a provoked-friendly's target can already be cleared by the time death is
+            // processed) - ALLOW_DAMAGE above always runs for the killer's own lethal hit first, in
+            // the same call. Falling back to killShare = 1 keeps that rare edge case behaving exactly
+            // as it did before this fix, rather than silently crediting nothing for a kill that did
+            // qualify as evidence.
 
             String family = MobDanger.family(killed);
             // A family never seen before starts from the player's overall record, not a neutral
@@ -150,8 +236,9 @@ public final class ThreatEvidence {
             // absent, so a family's very first fold does not look like a fresh start.
             float familyBefore = state.familyCompetence().getOrDefault(family, state.competence());
 
-            state.setCompetence(ThreatMath.foldHardship(state.competence(), hardship, dangerRatio, tuning));
-            state.familyCompetence().put(family, ThreatMath.foldHardship(familyBefore, hardship, dangerRatio, tuning));
+            state.setCompetence(ThreatMath.foldHardship(state.competence(), hardship, dangerRatio, killShare, tuning));
+            state.familyCompetence().put(family,
+                    ThreatMath.foldHardship(familyBefore, hardship, dangerRatio, killShare, tuning));
 
             ThreatService.invalidate(player.getUuid());
         });

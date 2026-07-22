@@ -121,18 +121,37 @@ public final class ThreatMath {
      * it untouched, collect a full unweighted rise every time (see {@code ThreatExploitTest}). The
      * asymmetry (rise EWMA α = 0.10 vs fall α = 0.04) survives, since both are scaled by the same
      * weight at equal attacker danger.
+     *
+     * <p>The rise branch is <em>also</em> weighted by {@code killShare}: {@code attackerWeight} says
+     * how dangerous the kill was, but says nothing about who actually fought it. Without this, a
+     * kill-steal exploit stays open even after the {@code attackerWeight} fix above - a friend
+     * whittles a dangerous mob to 1 HP over minutes, a third player tags it and lands the last hit
+     * within ticks, and collects the same full, danger-weighted rise as if they had fought the whole
+     * thing themselves. {@code killShare} is the killer's own fraction of the kill (their damage
+     * dealt over the mob's max health, clamped 0..1 by the caller - see {@code ThreatEvidence}); a 1%
+     * share earns roughly 1% of the rise a full share would (see
+     * {@code ThreatMathTest#killShareScalesTheRiseAndOnlyTheRise}).
+     *
+     * <p><b>The fall (struggling) branch is deliberately left untouched by {@code killShare}.</b>
+     * Taking a mauling is honest evidence of how hard a fight was regardless of who happens to land
+     * the finishing blow - a player who tanks 90% of a fight's damage and lets a friend finish it off
+     * still genuinely struggled, and gating the fall by kill-share would let that same friend-assist
+     * pattern be used to blunt legitimate softening (deliberately let someone else finish every kill
+     * to keep the fall from ever landing at full weight). Hardship the player actually took is not
+     * staged the way a kill credit is, so it does not need the same defence.
      */
-    public static float foldHardship(float competence, float hardship, float attackerWeight, ThreatTuning t) {
+    public static float foldHardship(float competence, float hardship, float attackerWeight, float killShare,
+                                      ThreatTuning t) {
         hardship = clamp01(hardship);
         float error = t.hardshipTarget() - hardship;           // positive = coasting
         float weight = clamp01(attackerWeight);
         float alpha;
         float normalized;
         if (error >= 0) {
-            alpha = t.riseRate() * weight;
+            alpha = t.riseRate() * weight * clamp01(killShare);
             normalized = error / t.hardshipTarget();
         } else {
-            alpha = t.fallRate() * weight;
+            alpha = t.fallRate() * weight;                     // NOT scaled by killShare - see above
             normalized = error / (1f - t.hardshipTarget());
         }
         return band(competence + alpha * normalized * 0.25f, t);
@@ -140,7 +159,11 @@ public final class ThreatMath {
 
     /** A fast kill is evidence of strength - raise-only (a slow kill proves nothing, it can be
      * staged), and weighted by how dangerous the victim actually was: one-shotting a provoked hen
-     * proves as little as taking five minutes over it. */
+     * proves as little as taking five minutes over it. Unlike {@link #foldHardship}, {@code
+     * killShare} is not a separate parameter here - a caller who also wants to weight by the
+     * killer's own share of the kill folds it into {@code attackerWeight} itself (see {@code
+     * ThreatEvidence}, which passes {@code clamp01(dangerRatio * killShare)}); the shape stays
+     * 3-arg because this method has never had any use for more than one combined weight. */
     public static float foldFastKill(float competence, float attackerWeight, ThreatTuning t) {
         return band(competence + t.riseRate() * 0.05f * clamp01(attackerWeight), t);
     }

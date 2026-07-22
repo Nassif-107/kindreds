@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Covers {@link ThreatEvidence#hardshipOf}, the one piece of {@link ThreatEvidence}'s arithmetic
  * that does not need a running game to prove. The rest of the class (accumulating per-player damage,
- * reading/writing {@code KindredData.threat()}, the three Fabric event registrations) is exercised
+ * reading/writing {@code KindredData.threat()}, the five Fabric event registrations) is exercised
  * in-game instead - see the class javadoc's note on the testability boundary.
  */
 class ThreatEvidenceTest {

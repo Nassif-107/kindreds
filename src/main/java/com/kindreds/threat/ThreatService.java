@@ -169,6 +169,14 @@ public final class ThreatService {
         return ThreatTuning.withAdaptiveStrength(Kindreds.CONFIG.adaptiveStrength);
     }
 
+    /** Whether scaling is on at all - the same null-safe shape {@link ThreatEvidence} checks with
+     * before it accrues any evidence. {@link #refresh} uses this to gate the detection-erosion
+     * modifier below, so a server that flips {@code enableEnemyScaling} off mid-session stops
+     * eroding stealth on the very next refresh, not just for players who reconnect afterward. */
+    private static boolean scalingEnabled() {
+        return Kindreds.CONFIG != null && Kindreds.CONFIG.enableEnemyScaling;
+    }
+
     /**
      * Re-clamps a stored competence value into the band the given {@code adaptiveStrength} implies.
      * Pulled out as a pure function, provable without a running game, because it is the one piece of
@@ -227,9 +235,18 @@ public final class ThreatService {
         // the counter (+0.9) cancels the deepest stealth build exactly, and can never exceed
         // baseline. setDynamicModifier resolves the attribute generically and no-ops when the base
         // mod is absent.
+        //
+        // Gated on scalingEnabled() - not just on this method being reached at all - because a
+        // server can flip enableEnemyScaling off mid-session without every player reconnecting or
+        // invalidating their cache; refresh still runs on the tick timer regardless. Without this
+        // gate, threat computed while scaling was on would keep eroding stealth forever after it was
+        // turned off. amount = 0.0 when disabled: setDynamicModifier's remove-then-skip-add (see its
+        // javadoc) removes any modifier already installed and adds nothing back, so toggling off
+        // mid-session immediately restores full stealth rather than leaving a stale counter in place.
         float scaled = ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
+        double detectionAmount = scalingEnabled() ? 0.9 * scaled : 0.0;
         AbilityApplier.setDynamicModifier(player, DETECTION_RANGE_ID, "threat/detection",
-                0.9 * scaled, EntityAttributeModifier.Operation.ADD_VALUE);
+                detectionAmount, EntityAttributeModifier.Operation.ADD_VALUE);
 
         announceRankChange(player, threat);
         return threat;
