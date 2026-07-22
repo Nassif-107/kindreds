@@ -28,5 +28,15 @@ loom {
             name = "Client Game Test"
             property "fabric.client.gametest"
         }
+        // Task 8a: server-side gametests with mock players fighting real mobs through real event
+        // hooks - see the com.kindreds.gametest package. "fabric-api.gametest" is the real system
+        // property (net.fabricmc.fabric.impl.gametest.GameTestSystemProperties.ENABLED, verified by
+        // javap against fabric-gametest-api-v1 3.1.9 - NOT "fabric.gametest" or "fabric-api.gametest"
+        // with a different separator, both of which would silently no-op this run).
+        gametest {
+            server()
+            name = "Game Test"
+            property "fabric-api.gametest"
+        }
     }
 }

@@ -17,6 +17,11 @@
    "com.kindreds.client.gametest.AbilityVisualTest",
    "com.kindreds.client.gametest.ContextEffectTest",
    "com.kindreds.client.gametest.ScreenIterationTest"
+  ],
+  "fabric-gametest": [
+   "com.kindreds.gametest.SpawnScalingProvingGround",
+   "com.kindreds.gametest.EvidenceProvingGround",
+   "com.kindreds.gametest.MarkAndRankProvingGround"
   ]
  },
  "mixins": [
