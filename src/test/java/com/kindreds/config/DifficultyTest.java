@@ -20,6 +20,12 @@ class DifficultyTest {
     private static final int SENTINEL_MAX_DMG = 777;
     private static final int SENTINEL_XP = 444;
     private static final int SENTINEL_ADAPTIVE = 55;
+    private static final int SENTINEL_MAX_HEALTH_BONUS = 61;
+    private static final int SENTINEL_ELITE_CHANCE = 62;
+    private static final int SENTINEL_ESCORT_CHANCE = 63;
+    private static final int SENTINEL_GROUP_SCALING_PERCENT = 64;
+    private static final float SENTINEL_DIM_MULT_MIDDLE_EARTH = 0.65f;
+    private static final float SENTINEL_DIM_MULT_OVERWORLD = 0.66f;
 
     private static KindredsConfig sentinelConfig() {
         KindredsConfig c = new KindredsConfig();
@@ -30,6 +36,12 @@ class DifficultyTest {
         c.maxDamageBonus = SENTINEL_MAX_DMG;
         c.xpBonus = SENTINEL_XP;
         c.adaptiveStrength = SENTINEL_ADAPTIVE;
+        c.maxHealthBonus = SENTINEL_MAX_HEALTH_BONUS;
+        c.eliteChance = SENTINEL_ELITE_CHANCE;
+        c.escortChance = SENTINEL_ESCORT_CHANCE;
+        c.groupScalingPercent = SENTINEL_GROUP_SCALING_PERCENT;
+        c.dimensionMultiplierMiddleEarth = SENTINEL_DIM_MULT_MIDDLE_EARTH;
+        c.dimensionMultiplierOverworld = SENTINEL_DIM_MULT_OVERWORLD;
         return c;
     }
 
@@ -41,6 +53,14 @@ class DifficultyTest {
         assertEquals(SENTINEL_MAX_DMG, c.maxDamageBonus, label + ": maxDamageBonus");
         assertEquals(SENTINEL_XP, c.xpBonus, label + ": xpBonus");
         assertEquals(SENTINEL_ADAPTIVE, c.adaptiveStrength, label + ": adaptiveStrength");
+        assertEquals(SENTINEL_MAX_HEALTH_BONUS, c.maxHealthBonus, label + ": maxHealthBonus");
+        assertEquals(SENTINEL_ELITE_CHANCE, c.eliteChance, label + ": eliteChance");
+        assertEquals(SENTINEL_ESCORT_CHANCE, c.escortChance, label + ": escortChance");
+        assertEquals(SENTINEL_GROUP_SCALING_PERCENT, c.groupScalingPercent, label + ": groupScalingPercent");
+        assertEquals(SENTINEL_DIM_MULT_MIDDLE_EARTH, c.dimensionMultiplierMiddleEarth, 0.0001f,
+                label + ": dimensionMultiplierMiddleEarth");
+        assertEquals(SENTINEL_DIM_MULT_OVERWORLD, c.dimensionMultiplierOverworld, 0.0001f,
+                label + ": dimensionMultiplierOverworld");
     }
 
     private static void assertPreset(Difficulty d, boolean expectedScaling, ScalingCurve expectedCurve) {

@@ -45,7 +45,8 @@ public record SyncConfigS2C(String json) implements CustomPayload {
     public record View(String difficulty, double xpRate, String death, double deathPercent, int softCap,
                        int capPercent, int respecCost, boolean enemyScaling, boolean birthTraits,
                        boolean curses, boolean crossTraining, boolean vision, boolean grantXp,
-                       String scalingCurve, int maxDamageBonus, int xpBonus) {
+                       String scalingCurve, int maxDamageBonus, int xpBonus,
+                       int maxHealthBonus, int eliteChance, int escortChance) {
     }
 
     public static View snapshot() {
@@ -53,7 +54,8 @@ public record SyncConfigS2C(String json) implements CustomPayload {
         return new View(String.valueOf(c.difficulty), c.xpRateGlobal, String.valueOf(c.deathPenalty),
                 c.deathPercent, c.pointSoftCap, c.pointCapPercent, c.respecCost, c.enableEnemyScaling,
                 c.enableBirthTraits, c.enableCurses, c.allowCrossTraining, c.enableVision,
-                c.allowGrantXp, String.valueOf(c.scalingCurve), c.maxDamageBonus, c.xpBonus);
+                c.allowGrantXp, String.valueOf(c.scalingCurve), c.maxDamageBonus, c.xpBonus,
+                c.maxHealthBonus, c.eliteChance, c.escortChance);
     }
 
     public static void sendTo(ServerPlayerEntity player) {
