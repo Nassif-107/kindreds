@@ -140,6 +140,7 @@ public final class ThreatService {
         float strongestInDimension = 0f;
         double radiusSq = GROUP_RADIUS * GROUP_RADIUS;
         for (ServerPlayerEntity p : world.getPlayers()) {
+            if (p.isSpectator()) continue; // a spectator is not "near enough to matter"
             float s = scaledFor(p);
             strongestInDimension = Math.max(strongestInDimension, s);
             if (p.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= radiusSq) {

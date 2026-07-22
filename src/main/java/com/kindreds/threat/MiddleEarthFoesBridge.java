@@ -9,6 +9,7 @@ import net.sevenstars.middleearth.entity.beasts.warg.WargEntity;
 import net.sevenstars.middleearth.entity.npcs.NpcEntity;
 import net.sevenstars.middleearth.exceptions.FactionIdentifierException;
 import net.sevenstars.middleearth.resources.StateSaverAndLoader;
+import net.sevenstars.middleearth.resources.datas.common.DispositionType;
 import net.sevenstars.middleearth.resources.datas.factions.Faction;
 import net.sevenstars.middleearth.resources.datas.factions.FactionLookup;
 import net.sevenstars.middleearth.resources.persistent_datas.PlayerData;
@@ -39,6 +40,11 @@ import net.sevenstars.middleearth.resources.persistent_datas.PlayerData;
  *   <li>{@code StateSaverAndLoader.getPlayerState(PlayerEntity)} -&gt;
  *       {@code PlayerData.getFaction()} - the attacking/defending player's own faction, nullable if
  *       they never onboarded.</li>
+ *   <li>{@code Faction.getDisposition()} - public, returns {@code DispositionType}; signature
+ *       confirmed by {@code javap} for task 3. Deviation from the brief: {@code DispositionType}
+ *       lives in {@code net.sevenstars.middleearth.resources.datas.common}, not
+ *       {@code ...datas.factions} - imported accordingly below. The {@code EVIL} constant name
+ *       matches.</li>
  * </ul>
  *
  * <p>{@code NpcEntity.shouldTarget(...)} is deliberately <b>not</b> called even though its name
@@ -82,6 +88,26 @@ final class MiddleEarthFoesBridge {
                 return true; // factionless player: hostile to all, per the base mod's own default
             }
             return faction.isHostileToward(playerFactionId);
+        }
+        return false;
+    }
+
+    /** Spawn-time scope has no player to ask, so NPCs gate on their faction's coarse disposition:
+     * an EVIL-faction NPC arrives as an enemy of everyone. Finer per-player hostility still governs
+     * the per-player paths through isHostileBaseMob. Wargs and trolls are hostile by construction. */
+    static boolean isHostileFactionMobAtSpawn(Entity entity) {
+        if (entity instanceof WargEntity || entity instanceof TrollEntity || entity instanceof CaveTrollEntity) {
+            return true;
+        }
+        if (entity instanceof NpcEntity npc) {
+            Identifier factionId = npc.getFactionIdentifier();
+            if (factionId == null) return false;
+            try {
+                Faction faction = FactionLookup.getFactionById(entity.getWorld(), factionId);
+                return faction != null && faction.getDisposition() == DispositionType.EVIL;
+            } catch (FactionIdentifierException e) {
+                return false;
+            }
         }
         return false;
     }
