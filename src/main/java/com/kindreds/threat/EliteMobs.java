@@ -49,6 +49,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * did not survive the round trip), pruned on {@code ENTITY_UNLOAD} and whenever a tick finds a mob no
  * longer alive. The 40-tick cadence work rides {@code ServerTickEvents.END_SERVER_TICK}, the same
  * timer shape {@link ThreatService} uses for its own slow refresh.
+ *
+ * <p>The master switch, {@code enableEnemyScaling}, gates every gameplay effect here (cadence
+ * abilities and death loot) exactly as its sibling systems gate theirs - but not the elite's name,
+ * which is cosmetic and persists regardless.
  */
 public final class EliteMobs {
     private EliteMobs() {
@@ -87,6 +91,9 @@ public final class EliteMobs {
             }
             MobMark mark = MobMark.of(mob);
             if (mark.elite()) {
+                // Ungated: re-dressing (name/visibility) is cosmetic and LIVE registration is bookkeeping,
+                // not an ability - keeping both unconditional lets a re-enabled switch revive abilities on
+                // the next cadence tick without waiting for a reload.
                 dress(mob, mark); // re-registers a reloaded elite and re-applies its name if lost
             }
         });
@@ -102,12 +109,18 @@ public final class EliteMobs {
             if (++tickCounter % CADENCE_TICKS != 0) {
                 return;
             }
+            // Checked once before iterating LIVE rather than per mob, but the removeIf prune and the
+            // empty-map cleanup below stay unconditional - LIVE bookkeeping is not a gameplay effect, and
+            // a dead elite must still leave the map even while scaling is off.
+            boolean scaling = scalingEnabled();
             for (Map.Entry<ServerWorld, Set<MobEntity>> entry : LIVE.entrySet()) {
                 ServerWorld world = entry.getKey();
                 Set<MobEntity> elites = entry.getValue();
                 elites.removeIf(mob -> !mob.isAlive());
-                for (MobEntity mob : elites) {
-                    cadence(world, mob);
+                if (scaling) {
+                    for (MobEntity mob : elites) {
+                        cadence(world, mob);
+                    }
                 }
                 if (elites.isEmpty()) {
                     LIVE.remove(world, elites);
@@ -120,7 +133,7 @@ public final class EliteMobs {
                 return;
             }
             MobMark mark = MobMark.of(mob);
-            if (!mark.elite()) {
+            if (!mark.elite() || !scalingEnabled()) {
                 return;
             }
             if ("swift".equals(mark.eliteAbility())) {
@@ -133,12 +146,20 @@ public final class EliteMobs {
         });
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-            if (!MobMark.of(entity).elite() || !(entity.getWorld() instanceof ServerWorld world)) {
+            if (!MobMark.of(entity).elite() || !(entity.getWorld() instanceof ServerWorld world)
+                    || !scalingEnabled()) {
                 return;
             }
             rerollLoot(world, entity, source);
             rollBounty(world, entity);
         });
+    }
+
+    /** Whether scaling (and therefore every gameplay effect below - cadence abilities and death loot)
+     * is on at all. Mirrors {@link ThreatEvidence#scalingEnabled()} exactly; the name/visibility dress
+     * and the {@link #LIVE} bookkeeping do not call this - see their own call sites for why. */
+    private static boolean scalingEnabled() {
+        return Kindreds.CONFIG != null && Kindreds.CONFIG.enableEnemyScaling;
     }
 
     /**
