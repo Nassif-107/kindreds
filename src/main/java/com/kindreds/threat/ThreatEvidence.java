@@ -5,6 +5,7 @@ import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -50,8 +51,14 @@ public final class ThreatEvidence {
      * it, even a death this class does not treat as evidence). */
     private static final Map<UUID, Float> ACCUMULATED_DAMAGE = new ConcurrentHashMap<>();
 
-    /** Registers the three listeners. Call once from {@link Kindreds#onInitialize()}. */
+    /** Registers the four listeners. Call once from {@link Kindreds#onInitialize()}. */
     public static void register() {
+        // Mirrors ThreatService#register's own disconnect handler: without this, a player who logs
+        // out mid-fight carries that accumulation into a fight days later, and the map itself grows
+        // for the server's lifetime, since nothing else ever removes an entry from it.
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
+                ACCUMULATED_DAMAGE.remove(handler.player.getUuid()));
+
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
             if (!scalingEnabled() || !(entity instanceof ServerPlayerEntity player)) {
                 return;
@@ -134,11 +141,12 @@ public final class ThreatEvidence {
         return Kindreds.CONFIG != null && Kindreds.CONFIG.enableEnemyScaling;
     }
 
-    /** The {@link ThreatTuning} every fold in this class uses: {@link ThreatTuning#DEFAULTS} with
-     * its band narrowed by the server's {@code adaptiveStrength} setting. Only called after {@link
+    /** Delegates to {@link ThreatService#tuningFor()} - the one place {@link ThreatTuning} is built
+     * from config, so this class's folds and {@code ThreatService#refresh}'s re-band can never
+     * quietly drift apart on what "the current tuning" means. Only called after {@link
      * #scalingEnabled()} has confirmed {@link Kindreds#CONFIG} is non-null. */
     private static ThreatTuning tuningFor() {
-        return ThreatTuning.withAdaptiveStrength(Kindreds.CONFIG.adaptiveStrength);
+        return ThreatService.tuningFor();
     }
 
     /**

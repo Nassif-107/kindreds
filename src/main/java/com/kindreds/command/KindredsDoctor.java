@@ -578,6 +578,12 @@ public final class KindredsDoctor {
     private static void checkThreat(ServerCommandSource source) {
         ServerPlayerEntity player = source.getPlayer();
         if (player == null) {
+            // Dev-English is deliberate here, same exception as the rest of this class (see the class
+            // javadoc) - silently skipping left a console-run doctor looking like this check just
+            // never existed, rather than naming why it did nothing.
+            line(source, Text.literal("  " + pad("threat", 11)
+                    + "(needs a calling player - run /kindreds doctor as a player, not from console)")
+                    .formatted(Formatting.DARK_GRAY));
             return;
         }
         KindredData data = KindredAttachment.get(player);

@@ -35,13 +35,23 @@ public final class ThreatService {
     }
 
     private static final Map<UUID, Float> CACHE = new ConcurrentHashMap<>();
+    /** The rank each player was last told they held - the announcement's "before" memory.
+     * Deliberately NOT {@link #CACHE}: the cache is invalidated by exactly the events that MOVE
+     * threat (every evidence fold, unlock, respec, race change), so a crossing caused by any of
+     * those would find no "before" figure left to compare against and never be announced. This map
+     * is untouched by {@link #invalidate}; only {@link #register}'s disconnect handler clears it. */
+    private static final Map<UUID, ThreatRank> LAST_ANNOUNCED = new ConcurrentHashMap<>();
     private static final int REFRESH_TICKS = 40;
     private static int tickCounter;
 
     /** Registers the disconnect-invalidation hook and the slow refresh timer. Call once from
      * {@link Kindreds#onInitialize()}. */
     public static void register() {
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> invalidate(handler.player.getUuid()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            UUID uuid = handler.player.getUuid();
+            invalidate(uuid);
+            LAST_ANNOUNCED.remove(uuid);
+        });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (++tickCounter % REFRESH_TICKS != 0) {
                 return;
@@ -92,8 +102,38 @@ public final class ThreatService {
         return ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
     }
 
+    /** The {@link ThreatTuning} every fold and re-band in the mod uses: {@link ThreatTuning#DEFAULTS}
+     * narrowed by the server's {@code adaptiveStrength}. The one place this construction happens, so
+     * {@link ThreatEvidence}'s folds and this class's refresh-time re-band can never quietly build it
+     * two different ways. Only called where {@link Kindreds#CONFIG} is already known non-null. */
+    static ThreatTuning tuningFor() {
+        return ThreatTuning.withAdaptiveStrength(Kindreds.CONFIG.adaptiveStrength);
+    }
+
+    /**
+     * Re-clamps a stored competence value into the band the given {@code adaptiveStrength} implies.
+     * Pulled out as a pure function, provable without a running game, because it is the one piece of
+     * the FIX 2 defence with no Minecraft in it: an operator LOWERING {@code adaptiveStrength} must
+     * immediately narrow competence already sitting in {@link ThreatState}, not just competence
+     * folded from here on - {@link ThreatEvidence#register} only ever narrows a value at the moment
+     * it folds, so without this, a family never fought again keeps its old, wider value forever.
+     */
+    static float rebanded(float competence, int adaptiveStrength) {
+        return ThreatMath.rebanded(competence, ThreatTuning.withAdaptiveStrength(adaptiveStrength));
+    }
+
     private static float refresh(ServerPlayerEntity player, KindredData data) {
         ThreatState state = data.threat();
+
+        // Re-band stored competence (global and per-family) before anything reads it: adaptiveStrength
+        // may have been lowered since these were last folded, and a fold-time-only clamp would leave a
+        // family the player hasn't fought since sitting at its old, wider value indefinitely (FIX 2).
+        // Writing back keeps the client-synced ThreatState consistent with what refresh computes below.
+        int adaptiveStrength = Kindreds.CONFIG.adaptiveStrength;
+        state.setCompetence(rebanded(state.competence(), adaptiveStrength));
+        for (Map.Entry<String, Float> entry : state.familyCompetence().entrySet()) {
+            entry.setValue(rebanded(entry.getValue(), adaptiveStrength));
+        }
 
         // the live reading of declared power
         float commitment = commitmentOf(player, data);
@@ -107,6 +147,13 @@ public final class ThreatService {
         // REFRESH_TICKS (not state.playedTicks(), which accumulates for the player's whole life) is
         // the played-time INCREMENT since the last decay step - using the lifetime total here would
         // make decay accelerate without bound for a veteran character.
+        //
+        // Acknowledged, not fixed: a cache-miss refresh (threatOf after invalidate - unlock, respec,
+        // race change, a kill/death fold) also charges a full REFRESH_TICKS of decay allowance even
+        // when far less than 40 ticks have actually elapsed since the last refresh. At
+        // priorDecayPerHour's default of 2/hour that is about 0.001 points per invalidation - not
+        // remotely exploitable even chained rapidly - so this is a documented phantom allowance, not
+        // a bug to fix here.
         float mark = ThreatMath.decayed(state.priorMark(), live,
                 Kindreds.CONFIG.priorDecayPerHour, REFRESH_TICKS);
         state.setPriorMark(mark);
@@ -114,29 +161,24 @@ public final class ThreatService {
                 (float) player.getAttributeValue(EntityAttributes.MAX_HEALTH)));
 
         float threat = ThreatMath.threat(mark, state.competence());
-        // Captured BEFORE the cache is overwritten - this is the one place the "before" figure a
-        // rank-crossing announcement needs still exists. Absent (null) means this player has no
-        // prior refresh to compare against (first population after login), which announceRankChange
-        // must treat as silence rather than as a crossing from "nothing".
-        Float previous = CACHE.get(player.getUuid());
         CACHE.put(player.getUuid(), threat);
-        announceRankChange(player, previous, threat);
+        announceRankChange(player, threat);
         return threat;
     }
 
     /**
      * Tells the player when their threat crosses a named rank boundary - the story beat is the
-     * crossing, not the number moving (see {@link ThreatRank}). Silent when {@code previous} is
-     * absent: that means this is the player's first refresh since joining, and "nothing" is not a
-     * rank to have risen or fallen from - announcing here would just be a login-spam message.
+     * crossing, not the number moving (see {@link ThreatRank}). Silent when {@link #LAST_ANNOUNCED}
+     * has no entry for this player: that means this is their first refresh since joining, and
+     * "nothing" is not a rank to have risen or fallen from - announcing here would just be a
+     * login-spam message. {@code Map#put} both reads the prior entry and stores the new one in a
+     * single call, so a first-ever refresh is recorded silently and every later crossing compares
+     * against it.
      */
-    private static void announceRankChange(ServerPlayerEntity player, Float previous, float threat) {
-        if (previous == null) {
-            return;
-        }
-        ThreatRank was = ThreatRank.of(previous);
+    private static void announceRankChange(ServerPlayerEntity player, float threat) {
         ThreatRank now = ThreatRank.of(threat);
-        if (was == now) {
+        ThreatRank was = LAST_ANNOUNCED.put(player.getUuid(), now);
+        if (was == null || was == now) {
             return;
         }
         String key = now.ordinal() > was.ordinal() ? "kindreds.threat.risen" : "kindreds.threat.fallen";

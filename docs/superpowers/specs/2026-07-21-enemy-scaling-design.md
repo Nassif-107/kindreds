@@ -122,7 +122,7 @@ Both halves of that fraction are deliberate:
 
 | Observation | Effect on `competence` | May it lower threat? |
 |---|---|---|
-| `hardship < target` (coasting) | rises, EWMA α = 0.10 | — |
+| `hardship < target` (coasting) | rises, EWMA α = 0.10 × attacker weight | — |
 | `hardship > target` (struggling) | falls, EWMA α = 0.04 | yes, weighted (below) |
 | Death to a scaled mob | −0.05 × killer weight | yes, weighted |
 | Dropped below 25% health and survived | −0.01 × attacker weight | yes, weighted |
@@ -320,6 +320,10 @@ with the replacement ladder in phase 3. Until then, the gate is the code describ
 - included: any `Monster`, plus everything in `kindreds:scaled_extra`
 - excluded: everything in `kindreds:never_scaled` (bosses, the Ender Dragon, the Wither, tamed
   creatures, NPCs of a faction friendly to the player)
+- **Until the tag mechanism lands (see above), vanilla bosses are in scope.** The Wither and the
+  Ender Dragon are both `instanceof Monster`, and phase 1 gates purely on that check - the exclusion
+  list above describes the phase-3 tag, not the current code. A boss fight scales and pays evidence
+  like any other qualifying fight until `kindreds:never_scaled` actually exists to carve it out.
 - per-dimension multiplier, defaulting to `1.0` in the Middle-earth dimension and `0.75` in the
   overworld, so the old world stays gentler than the new one.
 
@@ -391,7 +395,7 @@ readable by everyone.
 | `replacementChance` | 35% | 0 disables species replacement |
 | `escortChance` | 30% | 0 disables escorts |
 | `priorDecayPerHour` | 2 | How fast the high-water mark forgets (§2.2) |
-| `xpBonus` | 50% | |
+| `xpBonus` | 50% | Global per-player rate bonus that tracks threat: danger pays, applied to every award, not just for besting a scaled-up foe |
 | `groupScaling` | 15% per extra player | |
 | `dimensionMultiplier` | 1.0 Middle-earth, 0.75 overworld | |
 

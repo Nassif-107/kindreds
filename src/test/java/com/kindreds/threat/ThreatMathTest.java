@@ -36,6 +36,16 @@ class ThreatMathTest {
     }
 
     @Test
+    void negativePerHourNeverGrowsTheMark() {
+        // priorDecayPerHour is exposed and (before FIX 3) unvalidated at /kindreds config: a negative
+        // value makes allowance negative, so mark - allowance RAISES the mark instead of lowering it.
+        // Without the clamp this exact call computes 82f (above its own 80f starting mark) from a
+        // single hour of play, and would keep compounding on every 40-tick refresh thereafter.
+        float mark = ThreatMath.decayed(80f, 10f, -2f, 72000L);
+        assertEquals(80f, mark, 0.001f, "a negative perHour changed the mark via decay: " + mark);
+    }
+
+    @Test
     void competenceCannotEscapeItsBand() {
         float high = ThreatMath.foldFastKill(1.25f, ThreatTuning.DEFAULTS);
         assertTrue(high <= ThreatMath.COMPETENCE_MAX, "rose past the ceiling: " + high);

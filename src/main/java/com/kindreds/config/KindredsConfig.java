@@ -71,8 +71,9 @@ public class KindredsConfig {
      * unscaled damage. Bounded so even {@code LONG_DEFEAT} at full threat stays survivable rather
      * than one-shotting a geared player. */
     public int maxDamageBonus = 60;
-    /** Extra xp awarded for besting a scaled-up foe, as a percent bonus - the world getting harder
-     * should also pay better, or growing stronger becomes a strictly worse trade. */
+    /** A global per-player rate bonus that tracks threat: danger pays, on every award, as a percent
+     * bonus - the world getting harder should also pay better, or growing stronger becomes a
+     * strictly worse trade. */
     public int xpBonus = 50;
     /** 100 = the full evidence band; lower narrows it toward 1.0. It can never widen it (spec §2.4). */
     public int adaptiveStrength = 100;

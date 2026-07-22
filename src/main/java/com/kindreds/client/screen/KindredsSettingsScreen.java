@@ -215,7 +215,10 @@ public class KindredsSettingsScreen extends Screen {
                 presetRects.add(r);
             }
             presetIndex++;
-            boolean hover = isOperator() && within(r, mouseX, mouseY);
+            // Gated on fullyVisible too, matching mouseClicked's own rejection (see the visibleTop/
+            // visibleBottom field javadoc) - otherwise a partially-scrolled-off row could still light
+            // up under the cursor while rejecting the click that hover promised would land.
+            boolean hover = fullyVisible && isOperator() && within(r, mouseX, mouseY);
 
             ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], active ? 0xC02A2010 : (hover ? 0x80201810 : 0x60141014));
             ctx.drawBorder(r[0], r[1], r[2], r[3], active ? 0xFFD8B45F : 0xFF3B3122);
@@ -249,7 +252,8 @@ public class KindredsSettingsScreen extends Screen {
                 flagRects.add(r);
             }
             flagIndex++;
-            boolean hover = isOperator() && within(r, mouseX, mouseY);
+            // See the presetRects hover comment above - same reasoning, same fix.
+            boolean hover = fullyVisible && isOperator() && within(r, mouseX, mouseY);
             if (hover) {
                 ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], 0x50201810);
             }

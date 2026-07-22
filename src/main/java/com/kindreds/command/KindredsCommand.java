@@ -342,7 +342,16 @@ public final class KindredsCommand {
                 case "weightCommitment" -> c.weightCommitment = Integer.parseInt(value);
                 case "weightGear" -> c.weightGear = Integer.parseInt(value);
                 case "weightRenown" -> c.weightRenown = Integer.parseInt(value);
-                case "priorDecayPerHour" -> c.priorDecayPerHour = Float.parseFloat(value);
+                case "priorDecayPerHour" -> {
+                    float decay = Float.parseFloat(value);
+                    if (decay < 0f) {
+                        // A negative rate would make ThreatMath#decayed RAISE the mark instead of
+                        // lowering it, compounding on every 40-tick refresh - reject at the source
+                        // rather than rely solely on decayed's own clamp.
+                        throw new IllegalArgumentException("priorDecayPerHour must not be negative");
+                    }
+                    c.priorDecayPerHour = decay;
+                }
                 case "maxDamageBonus" -> c.maxDamageBonus = Integer.parseInt(value);
                 case "xpBonus" -> c.xpBonus = Integer.parseInt(value);
                 case "adaptiveStrength" -> c.adaptiveStrength = Integer.parseInt(value);
@@ -354,7 +363,8 @@ public final class KindredsCommand {
         } catch (IllegalArgumentException e) {
             source.sendError(Text.literal("Bad value '" + value + "' for " + key
                     + (key.equals("deathPenalty") ? " (expected KEEP/LOSE_UNSPENT/LOSE_PERCENT/HARDCORE)" : "")
-                    + (key.equals("scalingCurve") ? " (expected FEEL_STRONGER/EXACT_PACE/LONG_DEFEAT)" : "")));
+                    + (key.equals("scalingCurve") ? " (expected FEEL_STRONGER/EXACT_PACE/LONG_DEFEAT)" : "")
+                    + (key.equals("priorDecayPerHour") ? " (must not be negative)" : "")));
             return 0;
         }
         c.save(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));

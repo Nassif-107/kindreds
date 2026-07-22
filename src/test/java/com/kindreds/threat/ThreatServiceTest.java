@@ -50,4 +50,19 @@ class ThreatServiceTest {
     void commitmentIsZeroWithNothingSpentOrAvailable() {
         assertEquals(0f, ThreatService.commitmentFrom(0, 0, 80), 0.0001f);
     }
+
+    /**
+     * Covers {@link ThreatService#rebanded}, the pure core of FIX 2: lowering {@code adaptiveStrength}
+     * must immediately narrow competence already sitting in storage, not merely narrow it going
+     * forward on that value's next fold. If this helper were bypassed (competence returned
+     * unchanged), a stored 0.75 at strength 0 would stay 0.75 instead of collapsing to 1.0 - which is
+     * exactly the "0% adaptive strength keeps a permanent 25% discount" bug this fix closes.
+     */
+    @Test
+    void rebandedNarrowsStoredCompetenceAsAdaptiveStrengthIsLowered() {
+        // strength 0: no adaptation at all - a wide stored value collapses to exactly the prior-only 1.0
+        assertEquals(1.0f, ThreatService.rebanded(0.75f, 0), 0.0001f);
+        // strength 100: the full evidence band - an in-band stored value is left untouched
+        assertEquals(0.75f, ThreatService.rebanded(0.75f, 100), 0.0001f);
+    }
 }

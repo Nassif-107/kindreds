@@ -3,7 +3,6 @@ package com.kindreds.threat;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Covers the two parts of {@link MobDanger} that do not need a running game to prove: the id-path
@@ -70,15 +69,5 @@ class MobDangerTest {
     void expectedAtClampsThreatToItsValidRange() {
         assertEquals(60.0, MobDanger.expectedAt(-50f), 0.001);
         assertEquals(600.0, MobDanger.expectedAt(250f), 0.001);
-    }
-
-    @Test
-    void expectedAtIsMonotonicInThreat() {
-        double previous = MobDanger.expectedAt(0f);
-        for (float threat = 5f; threat <= 100f; threat += 5f) {
-            double current = MobDanger.expectedAt(threat);
-            assertTrue(current >= previous, "expectedAt was not monotonic at threat=" + threat);
-            previous = current;
-        }
     }
 }

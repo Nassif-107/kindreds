@@ -17,13 +17,19 @@ public enum ThreatRank {
     /** Lowest threat, inclusive, that earns this rank. */
     public final float floor;
 
+    /** {@link #values()} allocates a fresh array on every call; {@link #of} is called once per player
+     * on the 40-tick refresh path ({@code ThreatService#announceRankChange}) plus once per {@code
+     * /kindreds doctor threat} check, so caching it once here avoids churning a new array on every one
+     * of those calls for every online player. */
+    private static final ThreatRank[] VALUES = values();
+
     ThreatRank(float floor) {
         this.floor = floor;
     }
 
     public static ThreatRank of(float threat) {
         ThreatRank best = UNNOTICED;
-        for (ThreatRank rank : values()) {
+        for (ThreatRank rank : VALUES) {
             if (threat >= rank.floor) {
                 best = rank;
             }

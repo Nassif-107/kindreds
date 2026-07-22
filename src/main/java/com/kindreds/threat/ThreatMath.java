@@ -79,7 +79,13 @@ public final class ThreatMath {
             return current;
         }
         long safeTicks = Math.max(0L, playedTicks);
-        float allowance = perHour * (safeTicks / (float) TICKS_PER_HOUR);
+        // priorDecayPerHour is an exposed, unvalidated-at-the-formula-level setting (KindredsCommand
+        // rejects a negative one, but this must hold even if that guard is ever bypassed): a negative
+        // perHour would make allowance negative, and mark - allowance would then RAISE the mark on
+        // every refresh - decay working in reverse, compounding forever. Clamped to >= 0 so the worst
+        // a bad value can do is stop decay entirely, never invert it.
+        float safePerHour = Math.max(0f, perHour);
+        float allowance = safePerHour * (safeTicks / (float) TICKS_PER_HOUR);
         return Math.max(current, mark - allowance);
     }
 
@@ -106,17 +112,27 @@ public final class ThreatMath {
      * {@code 1 - hardshipTarget} denominator only stays correct while hardship does not exceed 1 - past
      * that the fall grows without limit, which is exactly the "tank a fight forever and never die"
      * exploit this method exists to prevent.
+     *
+     * <p>The rise (coasting) branch is weighted by {@code attackerWeight} exactly like the fall
+     * branch already was - spec §2.3 says kills are weighted by the target's base danger ("deleting
+     * a cave troll counts and deleting a chicken does not"), but the rise branch never actually
+     * applied it. Left unweighted, the retaliation rule's widened scope (a provoked bee/wolf/friendly
+     * guard is now in scope) reopened trivial-kill coasting credit: provoke something harmless, kill
+     * it untouched, collect a full unweighted rise every time (see {@code ThreatExploitTest}). The
+     * asymmetry (rise EWMA α = 0.10 vs fall α = 0.04) survives, since both are scaled by the same
+     * weight at equal attacker danger.
      */
     public static float foldHardship(float competence, float hardship, float attackerWeight, ThreatTuning t) {
         hardship = clamp01(hardship);
         float error = t.hardshipTarget() - hardship;           // positive = coasting
+        float weight = clamp01(attackerWeight);
         float alpha;
         float normalized;
         if (error >= 0) {
-            alpha = t.riseRate();
+            alpha = t.riseRate() * weight;
             normalized = error / t.hardshipTarget();
         } else {
-            alpha = t.fallRate() * clamp01(attackerWeight);
+            alpha = t.fallRate() * weight;
             normalized = error / (1f - t.hardshipTarget());
         }
         return band(competence + alpha * normalized * 0.25f, t);
@@ -181,6 +197,18 @@ public final class ThreatMath {
     public static float group(float strongestScaled, int players, float perPlayer, float cap) {
         float bonus = Math.min(cap, Math.max(0, players - 1) * perPlayer);
         return strongestScaled * (1f + bonus);
+    }
+
+    /**
+     * Clamps an already-stored competence value into {@code t}'s band right now - the exact clamp
+     * {@link #band} applies at fold time, exposed publicly so a value can be re-clamped when the
+     * tuning itself changes (an operator lowering {@code adaptiveStrength}), not only on that
+     * family's next fold. See {@code ThreatService#refresh}, which writes the result back to
+     * {@link ThreatState} so a narrowed band applies to stored competence immediately rather than
+     * waiting on evidence that may never arrive.
+     */
+    public static float rebanded(float competence, ThreatTuning t) {
+        return band(competence, t);
     }
 
     private static float band(float competence, ThreatTuning t) {

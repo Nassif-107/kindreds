@@ -28,6 +28,11 @@ instead of counting nodes. Nothing in phase 1 touches mobs at spawn — that is 
   (`weightCommitment`/`weightGear`/`weightRenown`) - a server wanting pure skill-based scaling with
   `weightGear = 0` is a real and supported choice.
 
+  **Correction (final review): the per-dimension multipliers never shipped.** No config field, no
+  command key, no settings-screen row - deferred to phase 2, same as `ThreatMath.group` (written and
+  unit-tested, but nothing in phase 1 calls it; group scaling is phase-2 territory too). Everything
+  else in this list did ship.
+
   **Internal (calibration, NOT config fields, NOT in the rules screen):** `hardshipTarget`, both EWMA
   rates, `deathPenalty`, the gear reference values, and the danger yardstick. These are not dials -
   each holds an invariant, and several are load-bearing for the exploit defences:
@@ -38,6 +43,13 @@ instead of counting nodes. Nothing in phase 1 touches mobs at spawn — that is 
 
   They live in `ThreatTuning` so tests can drive them, and are constructed from `ThreatTuning.DEFAULTS`
   in production. Do not add config fields for them.
+
+  **Correction (final review): the gear reference values and the danger yardstick did not end up in
+  `ThreatTuning`.** They live as inline literals at their single use sites - the `25`/`12` (armour/
+  weapon references) in `ThreatService#gearOf`, and the `60`/`540` (danger yardstick) in
+  `MobDanger#expectedAt` - rather than as `ThreatTuning` fields. The spirit of this rule is upheld
+  (neither is a config field, neither is reachable from the rules screen or the command), just not
+  its letter; both remain single-source-of-truth constants, only not centralized in the one record.
 - **The competence band is the hardest case of the same rule.** `COMPETENCE_MIN`/`COMPETENCE_MAX`
   (`0.75`/`1.25`) are the anti-farming floor (spec §2.4). `adaptiveStrength` may *narrow* the band
   toward 1.0; nothing may widen it. `ThreatMath.bandFor` clamps its own inputs rather than trusting
@@ -1127,6 +1139,11 @@ ticks the high-water decay is measured in."
 - [ ] **Step 1: Add the fields**
 
 In `KindredsConfig.java`, beside `enableEnemyScaling`:
+
+[Note (final review): the excerpt below is as originally authored. The shipped code uses a typed
+`ScalingCurve` enum (`FEEL_STRONGER`/`EXACT_PACE`/`LONG_DEFEAT`) for this field, not a raw `String`
+with a string-switch exponent method - see `com.kindreds.config.ScalingCurve` and
+`KindredsConfig#scalingCurveExponent`. Left unrewritten below as a historical record of the plan.]
 
 ```java
     /** Enemy scaling is on by default now: the world answering a grown hero is the intended game. */
