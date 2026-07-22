@@ -54,6 +54,17 @@ public final class ThreatService {
      * no-ops if it is absent, so this class has no compile-time dependency on the base mod. */
     private static final Identifier DETECTION_RANGE_ID = Identifier.of("middle-earth", "detection_range");
 
+    /**
+     * The detection-erosion counter's fixed span - the amount added at full threat (spec §3: at full
+     * threat the counter cancels the deepest stealth build exactly, never past baseline). Must fit
+     * within the {@code middle-earth:detection_range} attribute's own {@code [0.1, 1.0]} clamp width
+     * (0.9) - if a future base-mod update ever widens or narrows that clamp without this constant
+     * following it, detection would stop capping out exactly at baseline. {@code KindredsDoctor}'s
+     * {@code checkDetectionSpan} is the tripwire that catches that drift; it reads this constant
+     * rather than a second, retyped {@code 0.9} literal so the two can never quietly diverge.
+     */
+    public static final double DETECTION_SPAN = 0.9;
+
     /** Registers the disconnect-invalidation hook and the slow refresh timer. Call once from
      * {@link Kindreds#onInitialize()}. */
     public static void register() {
@@ -244,7 +255,7 @@ public final class ThreatService {
         // javadoc) removes any modifier already installed and adds nothing back, so toggling off
         // mid-session immediately restores full stealth rather than leaving a stale counter in place.
         float scaled = ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
-        double detectionAmount = scalingEnabled() ? 0.9 * scaled : 0.0;
+        double detectionAmount = scalingEnabled() ? DETECTION_SPAN * scaled : 0.0;
         AbilityApplier.setDynamicModifier(player, DETECTION_RANGE_ID, "threat/detection",
                 detectionAmount, EntityAttributeModifier.Operation.ADD_VALUE);
 

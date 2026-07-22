@@ -1,11 +1,14 @@
 package com.kindreds.threat;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,5 +82,43 @@ class ThreatStateTest {
                 back.familyVoiceKeys(), "the derived, bounded keys must survive the wire");
         assertTrue(back.familyCompetence().isEmpty(),
                 "the raw per-family table must never itself ride the wire (spec §7)");
+    }
+
+    /**
+     * The wire-only invariant's other half: {@link #familyVoiceKeysSurviveThePacketRoundTripButTheRawMapNeverRidesTheWire}
+     * proves {@link ThreatState#familyVoiceKeys} rides the {@link ThreatState#PACKET_CODEC packet
+     * codec}; this proves the opposite for the {@link ThreatState#CODEC persistence codec} - derived
+     * display data must never come back from disk. Until now that absence was only enforced by
+     * omission (the field simply isn't listed in {@code CODEC}'s {@code RecordCodecBuilder} group) -
+     * nothing failed if a future edit added it back in. This pins it as an actual assertion.
+     */
+    @Test
+    void familyVoiceKeysNeverSurviveThePersistenceRoundTrip() {
+        ThreatState original = new ThreatState();
+        original.setCompetence(1.0f);
+        original.familyCompetence().put("trolls", 1.35f); // +0.35 mastered
+        original.familyCompetence().put("undead", 0.80f); // -0.20 feared
+        ThreatState toSave = original.copy(); // populates familyVoiceKeys, exactly as the real save path would
+
+        assertTrue(!toSave.familyVoiceKeys().isEmpty(),
+                "copy() must have derived non-empty voice keys for this to be a meaningful proof");
+
+        JsonElement json = ThreatState.CODEC.encodeStart(JsonOps.INSTANCE, toSave).result().orElseThrow();
+        ThreatState decoded = ThreatState.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
+
+        assertTrue(decoded.familyVoiceKeys().isEmpty(),
+                "derived display data (familyVoiceKeys) must never come back from disk - "
+                        + "ThreatState.CODEC has no field for it, so a fresh ThreatState() is what "
+                        + "decoding must produce; if a future edit ever adds a `family_voice_keys` "
+                        + "field to CODEC's RecordCodecBuilder group (mirroring PACKET_CODEC), this "
+                        + "constructed instance's list would come back non-empty and this assertion "
+                        + "would fail, exactly as it should - CODEC is the persistence codec, and spec "
+                        + "§7 says derived Deeds-page voice data is recomputed fresh, never saved");
+        // The mirror image, for contrast: familyCompetence (the raw table itself, not the derived
+        // voice keys) IS meant to persist - CODEC's "family" field exists precisely to save it. If
+        // this ever came back empty too, the round trip would be silently losing real player data
+        // rather than correctly discarding derived display data.
+        assertEquals(Map.of("trolls", 1.35f, "undead", 0.80f), decoded.familyCompetence(),
+                "familyCompetence itself must survive persistence - only its derived voiceKeys must not");
     }
 }

@@ -610,7 +610,7 @@ public final class KindredsDoctor {
      * the attribute itself, is absent - phase 2 is meant to degrade cleanly without it.
      */
     private static void checkDetectionSpan(ServerCommandSource source, List<String> problems) {
-        final double detectionSpan = 0.9;
+        final double detectionSpan = ThreatService.DETECTION_SPAN;
         Identifier id = Identifier.of("middle-earth", "detection_range");
         var entry = net.minecraft.registry.Registries.ATTRIBUTE.getEntry(id).orElse(null);
         if (entry == null) {
@@ -629,13 +629,14 @@ public final class KindredsDoctor {
         double width = clamped.getMaxValue() - clamped.getMinValue();
         boolean ok = detectionSpan <= width + 1e-9;
         report(source, "detection", String.format(Locale.ROOT,
-                        "span 0.9 within [%.2f,%.2f] (width %.2f)",
-                        clamped.getMinValue(), clamped.getMaxValue(), width),
-                ok ? null : "the 0.9 detection span exceeds the attribute's own clamp width " + width
-                        + " - the counter can no longer cancel a full stealth build at full threat");
+                        "span %.2f within [%.2f,%.2f] (width %.2f)",
+                        detectionSpan, clamped.getMinValue(), clamped.getMaxValue(), width),
+                ok ? null : "the " + detectionSpan + " detection span exceeds the attribute's own clamp "
+                        + "width " + width + " - the counter can no longer cancel a full stealth build "
+                        + "at full threat");
         if (!ok) {
-            problems.add("detection counter span 0.9 exceeds middle-earth:detection_range's clamp "
-                    + "width " + width);
+            problems.add("detection counter span " + detectionSpan
+                    + " exceeds middle-earth:detection_range's clamp width " + width);
         }
     }
 
@@ -687,7 +688,7 @@ public final class KindredsDoctor {
      * {@link EliteMobs#abilityFor} - its first caller, and the same check {@code MobMark#eliteAbility}
      * is meant to be validated against rather than trusted blindly (spec §3, Task 4's carry-forward). */
     private static void checkEliteAbilities(ServerCommandSource source, List<String> problems) {
-        String[] pool = {"aura", "rally", "swift", "bulwark"};
+        List<String> pool = EliteMobs.abilityPool();
         List<String> unresolved = new ArrayList<>();
         for (String id : pool) {
             if (!EliteMobs.abilityFor(id)) {
@@ -696,7 +697,7 @@ public final class KindredsDoctor {
                         + "- a promoted mob carrying it would be trusted blindly");
             }
         }
-        report(source, "elite abils", (pool.length - unresolved.size()) + "/" + pool.length + " resolve",
+        report(source, "elite abils", (pool.size() - unresolved.size()) + "/" + pool.size() + " resolve",
                 unresolved.isEmpty() ? null : "unresolved: " + String.join(", ", unresolved));
     }
 

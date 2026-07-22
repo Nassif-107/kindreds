@@ -186,6 +186,13 @@ public final class EliteMobs {
         return ABILITIES.contains(id);
     }
 
+    /** The real elite ability pool, read-only - so the doctor can iterate the actual list instead of
+     * a retyped copy that could silently drift from it. {@link #ABILITIES} is already a {@code
+     * List.of(...)}, so this is the same immutable list, not a defensive copy. */
+    public static List<String> abilityPool() {
+        return ABILITIES;
+    }
+
     /** Applies a promoted (or reloaded) mark to a live entity: the translated name, its visibility,
      * and registration into {@link #LIVE} so the tick cadence picks it up. Safe to call repeatedly -
      * {@code Set#add} is idempotent, and re-setting an already-correct name is harmless. */

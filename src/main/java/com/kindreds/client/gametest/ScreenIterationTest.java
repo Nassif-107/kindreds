@@ -156,6 +156,12 @@ public class ScreenIterationTest implements FabricClientGameTest {
                     System.out.println(TAG + " " + failures.size() + " failure(s)");
                 }
             });
+            // On the test thread, where `failures` is directly visible: a print-only summary left
+            // this test green even when a summoned mob arrived unscaled. Throwing here is what makes
+            // runClientGameTest actually fail on that.
+            if (!failures.isEmpty()) {
+                throw new AssertionError("ScreenIterationTest failures: " + failures);
+            }
 
             for (int scale : SCALES) {
                 setScale(context, scale);
