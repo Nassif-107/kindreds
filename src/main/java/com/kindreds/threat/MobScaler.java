@@ -2,11 +2,20 @@ package com.kindreds.threat;
 
 import com.kindreds.Kindreds;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.SpawnHelper;
+
+import java.util.function.Consumer;
 
 /**
  * The spawn-time half of the world's answer: a mob entering the world is weighed once against the
@@ -58,9 +67,62 @@ public final class MobScaler {
                 mark = mark.withElite(promoted.eliteAbility(), promoted.eliteName());
                 EliteMobs.dress(mob, mark);   // name + visibility + LIVE registration
             }
-            // Escort rolls are appended here by Task 5.
+            // Natural spawns only (hard bound #2): SPAWNER/SPAWN_EGG/BREEDING/COMMAND/reload never
+            // roll. mark.escort() (hard bound #1, structural not a dial) keeps an escort from ever
+            // escorting - no recursion is even possible via this guard.
+            if (!mark.escort() && "NATURAL".equals(mark.spawnReason())
+                    && Kindreds.CONFIG.escortChance > 0
+                    && world.getRandom().nextFloat() < (Kindreds.CONFIG.escortChance / 100f) * scaledGroup) {
+                spawnEscorts(mob, world);
+            }
             MobMark.set(mob, mark.withScaled(true));
         });
+    }
+
+    /** How many escorts the dimension can absorb right now: 0 at or past 80% of the monster cap,
+     * else up to 2. cap = capacity * spawningChunks / 289 (17x17 = SpawnHelper.CHUNK_AREA - that
+     * constant and the cap check itself are package-private in vanilla, so the formula is
+     * reproduced here; if a Minecraft update changes CHUNK_AREA this number silently drifts, which
+     * is why the doctor asserts it against a sane range rather than trusting it forever). */
+    static int escortBudget(int currentMonsters, int capacity, int spawningChunks) {
+        int cap = capacity * spawningChunks / 289;
+        return currentMonsters >= 0.8 * cap ? 0 : 2;
+    }
+
+    /** Hard bound #3 (suppressed at >= 80% of the monster cap) and #1 (at most 2, same species as
+     * {@code leader}). Never called for an escort itself - the {@code mark.escort()} guard above
+     * keeps this off the recursive path entirely. */
+    private static void spawnEscorts(MobEntity leader, ServerWorld world) {
+        SpawnHelper.Info info = world.getChunkManager().getSpawnInfo();
+        if (info == null) {
+            return;
+        }
+        int budget = escortBudget(info.getGroupToCount().getInt(SpawnGroup.MONSTER),
+                SpawnGroup.MONSTER.getCapacity(), info.getSpawningChunkCount());
+        int wanted = Math.min(budget, 1 + world.getRandom().nextInt(2));   // 1-2, budget-capped
+        for (int i = 0; i < wanted; i++) {
+            BlockPos pos = leader.getBlockPos().add(
+                    world.getRandom().nextInt(5) - 2, 0, world.getRandom().nextInt(5) - 2);
+            double x = pos.getX() + 0.5;
+            double y = pos.getY();
+            double z = pos.getZ() + 0.5;
+            // Leader and escort share the type, so the leader's own hitbox is the escort's box too -
+            // skip this position on a collision rather than searching for another one.
+            if (!world.isSpaceEmpty(leader.getDimensions(leader.getPose()).getBoxAt(x, y, z))) {
+                continue;
+            }
+            spawnEscortOf(leader.getType(), world, pos);
+        }
+    }
+
+    /** Binds the wildcard captured by {@code EntityType<?>.getType()} to a single type variable so
+     * the consumer below type-checks without raw types. */
+    private static <T extends Entity> void spawnEscortOf(EntityType<T> type, ServerWorld world, BlockPos pos) {
+        // The 6-arg spawn runs initialize() (difficulty gear) and the consumer BEFORE adding, so the
+        // escort flag is set before its own ENTITY_LOAD fires - it scales, but never rolls escorts or
+        // promotion of its own (see the guards above and Task 4's elite-roll guard).
+        Consumer<T> markAsEscort = escort -> MobMark.set(escort, MobMark.of(escort).withEscort(true));
+        type.spawn(world, markAsEscort, pos, SpawnReason.NATURAL, false, false);
     }
 
     /** Health x (1 + maxHealthBonus * scaledGroup), then top up: raising max health does not raise

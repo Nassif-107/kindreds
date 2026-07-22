@@ -12,7 +12,7 @@ class MobMarkTest {
     @Test
     void markSurvivesTheCodecRoundTrip() {
         MobMark mark = MobMark.DEFAULT.withSpawnReason("NATURAL").withScaled(true)
-                .withElite("rally", "kindreds.elite.name.orc_kin.2").withEscort(false);
+                .withElite("rally", "kindreds.elite.name.orc_kin.2").withEscort(true);
         JsonElement json = MobMark.CODEC.encodeStart(JsonOps.INSTANCE, mark).getOrThrow();
         MobMark back = MobMark.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
         assertEquals(mark, back);
