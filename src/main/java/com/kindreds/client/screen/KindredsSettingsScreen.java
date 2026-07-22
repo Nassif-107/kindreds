@@ -57,6 +57,15 @@ public class KindredsSettingsScreen extends Screen {
      * Kept as a field so {@link #mouseScrolled} can clamp without redoing the layout math. */
     private int maxScroll;
 
+    /** The scissor-clipped body band, {@code [visibleTop, visibleBottom]}, as of the last render -
+     * mirrors the local {@code bodyTop}/{@code panelBottom} in {@link #render}. A preset/flag row is
+     * only ever added to {@link #presetRects}/{@link #flagRects} when it lies fully inside this band,
+     * and {@link #mouseClicked} rejects any click outside it too: a row that has scrolled up under the
+     * always-visible header (or down past the panel bottom) must never be clickable there, even though
+     * its rect - drawn at a scrolled Y - would otherwise still overlap the header/footer screen area. */
+    private int visibleTop;
+    private int visibleBottom;
+
     public KindredsSettingsScreen(Screen parent) {
         super(Text.translatable("kindreds.settings.title"));
         this.parent = parent;
@@ -144,6 +153,10 @@ public class KindredsSettingsScreen extends Screen {
         if (v == null) {
             scrollY = 0;
             maxScroll = 0;
+            // No body is drawn at all in this branch, so nothing should ever be clickable - collapse
+            // the band to empty rather than leave the previous render's bounds lying around.
+            visibleTop = 0;
+            visibleBottom = 0;
             ctx.drawCenteredTextWithShadow(this.textRenderer,
                     Text.translatable("kindreds.settings.unknown").formatted(Formatting.GRAY),
                     this.width / 2, y + 30, 0xFF8A7C60);
@@ -177,6 +190,10 @@ public class KindredsSettingsScreen extends Screen {
         int bodyTop = y + headH;
         maxScroll = overflow ? Math.max(0, bodyH - (panelBottom - bodyTop)) : 0;
         scrollY = Math.max(0, Math.min(scrollY, maxScroll));
+        // Stash the band for mouseClicked (see the field javadoc) - must be set together with the
+        // presetRects/flagRects population below so the two never disagree about what is visible.
+        this.visibleTop = bodyTop;
+        this.visibleBottom = panelBottom;
 
         // Scissor bounds equal the drawable content box in both branches (in the non-overflow branch
         // panelBottom - bodyTop == bodyH exactly, by construction of panelH above), so this clips
@@ -184,11 +201,20 @@ public class KindredsSettingsScreen extends Screen {
         ctx.enableScissor(x - 8, bodyTop, x + panelW + 8, panelBottom);
 
         int by = bodyTop - scrollY;
+        int presetIndex = 0;
         for (Difficulty d : PRESETS) {
             boolean active = d.name().equalsIgnoreCase(v.difficulty());
             int h = rowH;
-            int[] r = {x, by, panelW, h};
-            presetRects.add(r);
+            // {x, y, w, h, PRESETS-index}. The index rides along in the rect itself rather than being
+            // inferred from list position, because a row that scrolls fully off the visible band below
+            // is skipped from presetRects entirely (see the fully-visible check) - without a carried
+            // index, later presets would silently shift down to earlier slots in mouseClicked.
+            int[] r = {x, by, panelW, h, presetIndex};
+            boolean fullyVisible = r[1] >= bodyTop && r[1] + r[3] <= panelBottom;
+            if (fullyVisible) {
+                presetRects.add(r);
+            }
+            presetIndex++;
             boolean hover = isOperator() && within(r, mouseX, mouseY);
 
             ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], active ? 0xC02A2010 : (hover ? 0x80201810 : 0x60141014));
@@ -212,10 +238,17 @@ public class KindredsSettingsScreen extends Screen {
         ctx.drawText(this.textRenderer, Text.translatable("kindreds.settings.rules")
                 .formatted(Formatting.GOLD), x, by, 0xFFD8B45F, false);
         by += compact ? 10 : 13;
+        int flagIndex = 0;
         for (String flag : FLAGS) {
             boolean on = flagValue(v, flag);
-            int[] r = {x, by, panelW, flagH - 2};
-            flagRects.add(r);
+            // {x, y, w, h, FLAGS-index} - see the presetRects comment above for why the index rides
+            // along instead of being read back from list position.
+            int[] r = {x, by, panelW, flagH - 2, flagIndex};
+            boolean fullyVisible = r[1] >= bodyTop && r[1] + r[3] <= panelBottom;
+            if (fullyVisible) {
+                flagRects.add(r);
+            }
+            flagIndex++;
             boolean hover = isOperator() && within(r, mouseX, mouseY);
             if (hover) {
                 ctx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], 0x50201810);
@@ -295,19 +328,25 @@ public class KindredsSettingsScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isOperator()) {
-            for (int i = 0; i < presetRects.size() && i < PRESETS.length; i++) {
-                if (within(presetRects.get(i), mouseX, mouseY)) {
+        // Defense-in-depth alongside the fully-visible check that gates what makes it into
+        // presetRects/flagRects in the first place (see their population in render()): a click outside
+        // the scissor-clipped body band - e.g. in the always-visible header, where a row can appear to
+        // have scrolled to once scrollY > 0 - must never be able to hit a rect, even if some future
+        // change to the rect-population logic slipped one through.
+        boolean inBody = mouseY >= visibleTop && mouseY <= visibleBottom;
+        if (isOperator() && inBody) {
+            for (int[] r : presetRects) {
+                if (within(r, mouseX, mouseY)) {
                     ClientPlayNetworking.send(
-                            new SetDifficultyC2S(PRESETS[i].name().toLowerCase(Locale.ROOT)));
+                            new SetDifficultyC2S(PRESETS[r[4]].name().toLowerCase(Locale.ROOT)));
                     return true;
                 }
             }
             SyncConfigS2C.View v = ClientConfigMirror.get();
-            for (int i = 0; i < flagRects.size() && i < FLAGS.length; i++) {
-                if (within(flagRects.get(i), mouseX, mouseY) && v != null) {
+            for (int[] r : flagRects) {
+                if (within(r, mouseX, mouseY) && v != null) {
                     ClientPlayNetworking.send(new com.kindreds.network.SetConfigFlagC2S(
-                            FLAGS[i], !flagValue(v, FLAGS[i])));
+                            FLAGS[r[4]], !flagValue(v, FLAGS[r[4]])));
                     return true;
                 }
             }
