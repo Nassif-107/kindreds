@@ -138,9 +138,11 @@ public final class ThreatMath {
         return band(competence + alpha * normalized * 0.25f, t);
     }
 
-    /** A fast kill is evidence of strength. Raise-only: a slow kill proves nothing, it can be staged. */
-    public static float foldFastKill(float competence, ThreatTuning t) {
-        return band(competence + t.riseRate() * 0.05f, t);
+    /** A fast kill is evidence of strength - raise-only (a slow kill proves nothing, it can be
+     * staged), and weighted by how dangerous the victim actually was: one-shotting a provoked hen
+     * proves as little as taking five minutes over it. */
+    public static float foldFastKill(float competence, float attackerWeight, ThreatTuning t) {
+        return band(competence + t.riseRate() * 0.05f * clamp01(attackerWeight), t);
     }
 
     /** A death, weighted by how dangerous the killer was relative to what the player should handle. */

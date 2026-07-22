@@ -40,6 +40,14 @@ import java.util.concurrent.ConcurrentHashMap;
  *       evidence rather than merely negligible evidence - the "a hundred slow kills of a trivial
  *       mob" exploit spec §12 requires a regression test for.</li>
  * </ul>
+ *
+ * <h2>Time-to-kill</h2>
+ * {@code AFTER_DAMAGE} also captures, per player, which in-scope mob they first struck and when
+ * (see {@link #ENGAGEMENTS}) - the fight's start. {@code AFTER_KILLED_OTHER_ENTITY} closes the
+ * loop: a kill of that same mob, fast enough relative to its danger (see {@link #isFastKill}),
+ * folds through {@link ThreatMath#foldFastKill} the same way a coasting hardship fold does -
+ * raise-only, and weighted by the same {@code dangerRatio}, so killing a trivial mob quickly
+ * proves as little as killing it slowly (spec §2.3).
  */
 public final class ThreatEvidence {
     private ThreatEvidence() {
@@ -51,22 +59,54 @@ public final class ThreatEvidence {
      * it, even a death this class does not treat as evidence). */
     private static final Map<UUID, Float> ACCUMULATED_DAMAGE = new ConcurrentHashMap<>();
 
+    /** One player's current fight, for the time-to-kill signal: which mob they first struck, and
+     * when. First hit wins for a given mob - a re-hit on the same mob does not reset the clock, so
+     * a fight that runs long cannot quietly restart its own timer. Cleared on kill (its purpose
+     * served), on player death, and on disconnect - the same three moments {@link #ACCUMULATED_DAMAGE}
+     * clears on - so a stale engagement can never bleed into an unrelated later fight. */
+    private static final Map<UUID, Engagement> ENGAGEMENTS = new ConcurrentHashMap<>();
+
+    /** A player's in-progress fight: the mob first struck, and the world tick that first hit landed. */
+    private record Engagement(UUID mob, long firstHitTick) {
+    }
+
+    /** 8 seconds - the internal yardstick an at-level, full-weight kill is judged against. Not a
+     * config value: exposing this would let a server tune the fast-kill bar independently of
+     * {@link MobDanger#expectedAt}, which is the one place "at-level" is defined. */
+    private static final long TTK_BASE_TICKS = 160;
+
     /** Registers the four listeners. Call once from {@link Kindreds#onInitialize()}. */
     public static void register() {
         // Mirrors ThreatService#register's own disconnect handler: without this, a player who logs
         // out mid-fight carries that accumulation into a fight days later, and the map itself grows
         // for the server's lifetime, since nothing else ever removes an entry from it.
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
-                ACCUMULATED_DAMAGE.remove(handler.player.getUuid()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            ACCUMULATED_DAMAGE.remove(handler.player.getUuid());
+            ENGAGEMENTS.remove(handler.player.getUuid());
+        });
 
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
-            if (!scalingEnabled() || !(entity instanceof ServerPlayerEntity player)) {
+            if (!scalingEnabled()) {
                 return;
             }
-            if (!(source.getAttacker() instanceof LivingEntity attacker) || !MobDanger.isInScope(attacker, player)) {
-                return; // never another player, never fall/lava/drowning - see the class javadoc
+            if (entity instanceof ServerPlayerEntity player) {
+                if (!(source.getAttacker() instanceof LivingEntity attacker) || !MobDanger.isInScope(attacker, player)) {
+                    return; // never another player, never fall/lava/drowning - see the class javadoc
+                }
+                ACCUMULATED_DAMAGE.merge(player.getUuid(), damageTaken, Float::sum);
+                return;
             }
-            ACCUMULATED_DAMAGE.merge(player.getUuid(), damageTaken, Float::sum);
+            // Attacker side: capture when a fight against a NEW in-scope mob started, for the
+            // time-to-kill signal. First hit wins - a re-hit on the same mob (still the current
+            // engagement) must not push the clock forward, or a fight that runs long would keep
+            // resetting its own timer and could never be judged "slow".
+            if (entity instanceof LivingEntity mob && source.getAttacker() instanceof ServerPlayerEntity player
+                    && MobDanger.isInScope(mob, player)) {
+                Engagement current = ENGAGEMENTS.get(player.getUuid());
+                if (current == null || !current.mob().equals(mob.getUuid())) {
+                    ENGAGEMENTS.put(player.getUuid(), new Engagement(mob.getUuid(), player.getWorld().getTime()));
+                }
+            }
         });
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, entity, killed) -> {
@@ -86,9 +126,23 @@ public final class ThreatEvidence {
                     (float) player.getAttributeValue(EntityAttributes.MAX_HEALTH)));
 
             float hardship = hardshipOf(accumulated, state.maxHealthMark());
-            float weight = ThreatMath.attackerWeight(MobDanger.of(killed),
+            // dangerRatio doubles as both foldHardship's attackerWeight and the TTK signal's
+            // weighting below - both are "how dangerous was this kill relative to what this
+            // player's threat expects", the same quantity spec §2.3 defines once.
+            float dangerRatio = ThreatMath.attackerWeight(MobDanger.of(killed),
                     MobDanger.expectedAt(ThreatService.threatOf(player)));
             ThreatTuning tuning = tuningFor();
+
+            // Time-to-kill: evidence a fight started AND ended fast - see class javadoc and spec
+            // §2.3. Checked, and the engagement cleared, before the hardship fold below so a kill
+            // that qualifies folds both signals in the same pass.
+            Engagement engagement = ENGAGEMENTS.remove(player.getUuid());
+            if (engagement != null && engagement.mob().equals(killed.getUuid())) {
+                long ttk = world.getTime() - engagement.firstHitTick();
+                if (isFastKill(ttk, TTK_BASE_TICKS, dangerRatio)) {
+                    state.setCompetence(ThreatMath.foldFastKill(state.competence(), dangerRatio, tuning));
+                }
+            }
 
             String family = MobDanger.family(killed);
             // A family never seen before starts from the player's overall record, not a neutral
@@ -96,8 +150,8 @@ public final class ThreatEvidence {
             // absent, so a family's very first fold does not look like a fresh start.
             float familyBefore = state.familyCompetence().getOrDefault(family, state.competence());
 
-            state.setCompetence(ThreatMath.foldHardship(state.competence(), hardship, weight, tuning));
-            state.familyCompetence().put(family, ThreatMath.foldHardship(familyBefore, hardship, weight, tuning));
+            state.setCompetence(ThreatMath.foldHardship(state.competence(), hardship, dangerRatio, tuning));
+            state.familyCompetence().put(family, ThreatMath.foldHardship(familyBefore, hardship, dangerRatio, tuning));
 
             ThreatService.invalidate(player.getUuid());
         });
@@ -108,8 +162,11 @@ public final class ThreatEvidence {
             }
             // The fight is over the moment the player dies, whatever killed them - clear the
             // accumulator unconditionally so a death to something out of scope (fall, lava, /kill)
-            // does not let stale damage bleed into the next fight's hardship.
+            // does not let stale damage bleed into the next fight's hardship. The engagement clears
+            // the same way, for the same reason - a death mid-fight must not let that fight's TTK
+            // clock survive into whatever comes next.
             ACCUMULATED_DAMAGE.remove(player.getUuid());
+            ENGAGEMENTS.remove(player.getUuid());
             if (!scalingEnabled() || !(source.getAttacker() instanceof LivingEntity killer)
                     || !MobDanger.isInScope(killer, player)) {
                 return; // only a death to a mob in scope is evidence - see class javadoc
@@ -165,5 +222,24 @@ public final class ThreatEvidence {
      */
     static float hardshipOf(float accumulatedDamage, float effectiveMaxHealth) {
         return Math.max(0f, accumulatedDamage) / Math.max(1f, effectiveMaxHealth);
+    }
+
+    /**
+     * The pure decision core of the time-to-kill signal (spec §2.3): was {@code ttkTicks} fast
+     * enough, against a mob of this danger, to count as evidence of strength? {@code
+     * dangerRatio} - {@link ThreatMath#attackerWeight}'s output - scales the {@code baseTicks}
+     * yardstick down for a below-expected mob, so besting a trivial mob quickly proves as little
+     * as besting it slowly: {@code expected} collapses toward {@code 0} as danger falls, so
+     * {@code ttkTicks} (never negative) can only clear the bar for a mob genuinely near or above
+     * what this player's threat expects. Provable without a running game (see {@code TtkTest}),
+     * even though the engagement bookkeeping around it is not.
+     */
+    static boolean isFastKill(long ttkTicks, long baseTicks, float dangerRatio) {
+        long expected = (long) (baseTicks * clamp01(dangerRatio));
+        return ttkTicks < expected / 2;
+    }
+
+    private static float clamp01(float value) {
+        return Math.max(0f, Math.min(1f, value));
     }
 }

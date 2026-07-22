@@ -47,7 +47,7 @@ class ThreatMathTest {
 
     @Test
     void competenceCannotEscapeItsBand() {
-        float high = ThreatMath.foldFastKill(1.25f, ThreatTuning.DEFAULTS);
+        float high = ThreatMath.foldFastKill(1.25f, 1.0f, ThreatTuning.DEFAULTS);
         assertTrue(high <= ThreatMath.COMPETENCE_MAX, "rose past the ceiling: " + high);
         float low = 1.0f;
         for (int i = 0; i < 500; i++) {
@@ -59,17 +59,32 @@ class ThreatMathTest {
     @Test
     void foldFastKillOnlyEverRaisesCompetence() {
         float start = 1.0f;
-        float raised = ThreatMath.foldFastKill(start, ThreatTuning.DEFAULTS);
+        float raised = ThreatMath.foldFastKill(start, 1.0f, ThreatTuning.DEFAULTS);
         assertTrue(raised > start, "a fast kill should strictly raise competence, got " + raised);
 
         // repeated application must never move it backwards, all the way up to the ceiling
         float competence = start;
         float previous = competence;
         for (int i = 0; i < 50; i++) {
-            competence = ThreatMath.foldFastKill(competence, ThreatTuning.DEFAULTS);
+            competence = ThreatMath.foldFastKill(competence, 1.0f, ThreatTuning.DEFAULTS);
             assertTrue(competence >= previous, "competence decreased on iteration " + i);
             previous = competence;
         }
+    }
+
+    @Test
+    void fastKillsOfTrivialMobsProveNothing() {
+        float c = 1.0f;
+        for (int i = 0; i < 100; i++) {
+            c = ThreatMath.foldFastKill(c, 0.003f, ThreatTuning.DEFAULTS);  // chicken-danger weight
+        }
+        assertTrue(c < 1.01f, "100 trivial fast kills must not meaningfully raise competence, got " + c);
+    }
+
+    @Test
+    void fastKillsOfRealThreatsCount() {
+        float once = ThreatMath.foldFastKill(1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        assertEquals(1.0f + 0.10f * 0.05f, once, 0.0001f);
     }
 
     @Test

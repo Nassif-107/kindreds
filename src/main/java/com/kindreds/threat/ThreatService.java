@@ -1,6 +1,7 @@
 package com.kindreds.threat;
 
 import com.kindreds.Kindreds;
+import com.kindreds.ability.AbilityApplier;
 import com.kindreds.data.Disciplines;
 import com.kindreds.data.SkillTree;
 import com.kindreds.playerdata.KindredAttachment;
@@ -11,6 +12,7 @@ import com.kindreds.progression.UnlockService;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -47,6 +49,10 @@ public final class ThreatService {
     private static final Map<UUID, ThreatRank> LAST_ANNOUNCED = new ConcurrentHashMap<>();
     private static final int REFRESH_TICKS = 40;
     private static int tickCounter;
+
+    /** The base mod's stealth attribute - resolved generically by {@link AbilityApplier}, which
+     * no-ops if it is absent, so this class has no compile-time dependency on the base mod. */
+    private static final Identifier DETECTION_RANGE_ID = Identifier.of("middle-earth", "detection_range");
 
     /** Registers the disconnect-invalidation hook and the slow refresh timer. Call once from
      * {@link Kindreds#onInitialize()}. */
@@ -215,6 +221,16 @@ public final class ThreatService {
 
         float threat = ThreatMath.threat(mark, state.competence());
         CACHE.put(player.getUuid(), threat);
+
+        // Threat erodes stealth: a positive modifier drags a stealth-lowered detection_range back
+        // toward its 1.0 baseline. The attribute's own [0.1, 1.0] clamp is the cap - at full threat
+        // the counter (+0.9) cancels the deepest stealth build exactly, and can never exceed
+        // baseline. setDynamicModifier resolves the attribute generically and no-ops when the base
+        // mod is absent.
+        float scaled = ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
+        AbilityApplier.setDynamicModifier(player, DETECTION_RANGE_ID, "threat/detection",
+                0.9 * scaled, EntityAttributeModifier.Operation.ADD_VALUE);
+
         announceRankChange(player, threat);
         return threat;
     }
