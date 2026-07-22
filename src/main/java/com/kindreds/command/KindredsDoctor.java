@@ -55,6 +55,12 @@ import java.util.stream.Stream;
  * are confirmed by looking for their merged handler methods on the real target classes, payloads by
  * asking Fabric which receivers are registered and what the connected client accepts, and deeds by
  * diffing the advancement ids the server actually loaded against the files shipped in this jar.
+ *
+ * <p><b>Deliberate exception to the "no user-facing English in Java" rule:</b> every line this class
+ * prints is literal dev-English, never localized. The doctor is a diagnostic for whoever runs the
+ * server, its output is meant to be pasted into bug reports verbatim, and localizing it would make
+ * those reports untranslatable back. Comments elsewhere in this class citing "the class javadoc" for
+ * this exception mean this paragraph.
  */
 public final class KindredsDoctor {
     private KindredsDoctor() {

@@ -126,7 +126,7 @@ Both halves of that fraction are deliberate:
 | `hardship > target` (struggling) | falls, EWMA α = 0.04 | yes, weighted (below) |
 | Death to a scaled mob | −0.05 × killer weight | yes, weighted |
 | Dropped below 25% health and survived | −0.01 × attacker weight | yes, weighted |
-| Time-to-kill below expected | rises | **no — raise-only** |
+| Time-to-kill below expected | rises | **no — raise-only** *(deferred: the fold exists and is tested, nothing feeds it in phase 1)* |
 
 Kills are weighted by the target's **base danger** (its unscaled max health × attack damage), so
 deleting a cave troll counts and deleting a chicken does not.

@@ -31,14 +31,14 @@ import java.util.concurrent.ConcurrentHashMap;
  *       or drowning damage counts, or the exploit is a friend beating you up, or a leap off a cliff
  *       mid-fight (spec §2.3).</li>
  *   <li>{@code AFTER_KILLED_OTHER_ENTITY} filters by the <b>kill target</b> too, even though the
- *       brief for this event does not restate it: {@link ThreatMath#foldHardship}'s coasting branch
- *       (hardship below target) rises by the flat {@code riseRate}, <em>not</em> weighted by
- *       attacker danger - that weighting only applies on the falling/struggling branch. Without this
- *       second check, a player who has taken no damage and then kills a chicken would read as
- *       maximally "coasting" and raise competence for free, which is exactly the "a hundred slow
- *       kills of a trivial mob" exploit spec §12 requires a regression test for. Gating the kill
- *       itself on scope is what makes a chicken punch produce no evidence at all rather than the
- *       best possible evidence.</li>
+ *       brief for this event does not restate it. {@link ThreatMath#foldHardship} now weights
+ *       <em>both</em> branches by attacker danger (the coasting rise included - the final review
+ *       closed the provoked-trivial-kill farm by making the rise earn its weight the same way the
+ *       fall does), so a chicken kill folds to almost nothing even when it slips in scope. The gate
+ *       remains as defence-in-depth: it keeps out-of-scope kills from resetting the damage
+ *       accumulator or touching the per-family table at all, so a chicken punch produces no
+ *       evidence rather than merely negligible evidence - the "a hundred slow kills of a trivial
+ *       mob" exploit spec §12 requires a regression test for.</li>
  * </ul>
  */
 public final class ThreatEvidence {

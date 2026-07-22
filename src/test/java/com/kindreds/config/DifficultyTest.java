@@ -82,6 +82,7 @@ class DifficultyTest {
         c.deathPenalty = DeathPenalty.HARDCORE;
         c.deathPercent = 0.99;
         c.pointCapPercent = 13;
+        c.pointSoftCap = 77;
         c.respecCost = 999;
 
         Difficulty.CUSTOM.applyTo(c);
@@ -92,6 +93,7 @@ class DifficultyTest {
         assertEquals(DeathPenalty.HARDCORE, c.deathPenalty, "CUSTOM: deathPenalty");
         assertEquals(0.99, c.deathPercent, 1e-9, "CUSTOM: deathPercent");
         assertEquals(13, c.pointCapPercent, "CUSTOM: pointCapPercent");
+        assertEquals(77, c.pointSoftCap, "CUSTOM: pointSoftCap");
         assertEquals(999, c.respecCost, "CUSTOM: respecCost");
         assertFreeDialsUntouched(c, "CUSTOM");
     }

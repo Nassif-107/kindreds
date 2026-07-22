@@ -29,9 +29,9 @@ instead of counting nodes. Nothing in phase 1 touches mobs at spawn — that is 
   `weightGear = 0` is a real and supported choice.
 
   **Correction (final review): the per-dimension multipliers never shipped.** No config field, no
-  command key, no settings-screen row - deferred to phase 2, same as `ThreatMath.group` (written and
-  unit-tested, but nothing in phase 1 calls it; group scaling is phase-2 territory too). Everything
-  else in this list did ship.
+  command key, no settings-screen row - deferred to phase 2, same as `ThreatMath.group` and
+  `ThreatMath.foldFastKill` (all written and unit-tested, but nothing in phase 1 calls them; group
+  scaling and the time-to-kill signal are phase-2 territory). Everything else in this list did ship.
 
   **Internal (calibration, NOT config fields, NOT in the rules screen):** `hardshipTarget`, both EWMA
   rates, `deathPenalty`, the gear reference values, and the danger yardstick. These are not dials -
