@@ -24,7 +24,22 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
-import static com.kindreds.gametest.ProvingGroundSupport.*;
+import static com.kindreds.gametest.ProvingGroundSupport.COMBAT;
+import static com.kindreds.gametest.ProvingGroundSupport.applyLethalDamage;
+import static com.kindreds.gametest.ProvingGroundSupport.check;
+import static com.kindreds.gametest.ProvingGroundSupport.closeOut;
+import static com.kindreds.gametest.ProvingGroundSupport.discardIfAlive;
+import static com.kindreds.gametest.ProvingGroundSupport.finish;
+import static com.kindreds.gametest.ProvingGroundSupport.freshPlayer;
+import static com.kindreds.gametest.ProvingGroundSupport.manufactureVeteran;
+import static com.kindreds.gametest.ProvingGroundSupport.newFailureList;
+import static com.kindreds.gametest.ProvingGroundSupport.refreshThreat;
+import static com.kindreds.gametest.ProvingGroundSupport.remove;
+import static com.kindreds.gametest.ProvingGroundSupport.removeIfPresent;
+import static com.kindreds.gametest.ProvingGroundSupport.restoreConfig;
+import static com.kindreds.gametest.ProvingGroundSupport.settleEquipment;
+import static com.kindreds.gametest.ProvingGroundSupport.snapshotConfig;
+import static com.kindreds.gametest.ProvingGroundSupport.treeResolved;
 
 /**
  * Scenarios that prove spawn-time wiring: a mob's health/elite/escort promotion, driven by real
@@ -219,12 +234,28 @@ public class SpawnScalingProvingGround {
             // reads) is computed as part of the world's own tick cycle, not guaranteed populated on
             // the very first tick this test method runs.
             context.runAtTick(context.getTick() + 20, () -> {
-                applyDials.run();
-                ZombieEntity leader = EntityType.ZOMBIE.spawn(world,
-                        context.getAbsolutePos(new BlockPos(2, 2, 0)), SpawnReason.NATURAL);
-                check(failures, leader != null, "leader zombie failed to NATURAL-spawn");
+                // I3: a throw here would otherwise leak the maxed dials into the shared static -
+                // restore-and-rethrow, mirroring the method-scope catch below.
+                ZombieEntity leader;
+                try {
+                    applyDials.run();
+                    leader = EntityType.ZOMBIE.spawn(world,
+                            context.getAbsolutePos(new BlockPos(2, 2, 0)), SpawnReason.NATURAL);
+                    check(failures, leader != null, "leader zombie failed to NATURAL-spawn");
+                } catch (RuntimeException | Error e) {
+                    restoreConfig(snapshot);
+                    removeIfPresent(player);
+                    throw e;
+                }
 
                 context.runAtTick(context.getTick() + 5, () -> {
+                  // I3: finish() throws on any collected failure, so config restore (and world
+                  // cleanup, M4) must run ALWAYS, in a finally around the whole continuation body,
+                  // BEFORE finish - the earlier `finish(); restoreConfig(); complete();` ordering
+                  // leaked eliteChance/escortChance 100, maxHealthBonus 100 and the x2 dimension
+                  // multipliers into every concurrently-running scenario whenever a check failed.
+                  ZombieEntity commandZombieForCleanup = null;
+                  try {
                     applyDials.run();
                     if (leader != null) {
                         MobMark leaderMark = MobMark.of(leader);
@@ -268,6 +299,7 @@ public class SpawnScalingProvingGround {
 
                     ZombieEntity commandZombie = EntityType.ZOMBIE.spawn(world,
                             context.getAbsolutePos(new BlockPos(2, 2, 0)), SpawnReason.COMMAND);
+                    commandZombieForCleanup = commandZombie;
                     check(failures, commandZombie != null, "COMMAND zombie failed to spawn");
                     if (commandZombie != null) {
                         List<ZombieEntity> nearCommand = world.getEntitiesByClass(ZombieEntity.class,
@@ -277,10 +309,13 @@ public class SpawnScalingProvingGround {
                         check(failures, !MobMark.of(commandZombie).escort(),
                                 "a COMMAND-spawned leader was itself marked as an escort");
                     }
-
-                    finish("championsAndCompany", failures);
+                  } finally {
                     restoreConfig(snapshot);
-                    context.complete();
+                    removeIfPresent(player);              // M4: the threat-100 player must not
+                    discardIfAlive(commandZombieForCleanup); // linger for other tests' group scans
+                  }
+                  finish("championsAndCompany", failures);
+                  context.complete();
                 });
             });
         } catch (RuntimeException | Error e) {
@@ -298,6 +333,9 @@ public class SpawnScalingProvingGround {
     public void theSwitchMeansOff(TestContext context) {
         List<String> failures = newFailureList();
         KindredsConfig snapshot = snapshotConfig();
+        ServerPlayerEntity veteran = null;
+        ZombieEntity zombie = null;
+        ZombieEntity attacker = null;
         try {
             Kindreds.CONFIG.enableEnemyScaling = false;
             Kindreds.CONFIG.eliteChance = 100;
@@ -307,34 +345,50 @@ public class SpawnScalingProvingGround {
             Kindreds.CONFIG.dimensionMultiplierMiddleEarth = 2f;
 
             ServerWorld world = context.getWorld();
-            ServerPlayerEntity veteran = freshPlayer(context, new BlockPos(0, 2, 0));
+            veteran = freshPlayer(context, new BlockPos(0, 2, 0));
             manufactureVeteran(veteran, Kindreds.CONFIG);
 
-            ZombieEntity zombie = EntityType.ZOMBIE.spawn(world,
+            zombie = EntityType.ZOMBIE.spawn(world,
                     context.getAbsolutePos(new BlockPos(2, 2, 0)), SpawnReason.NATURAL);
             check(failures, zombie != null, "zombie failed to NATURAL-spawn");
             if (zombie != null) {
+                ZombieEntity spawned = zombie; // effectively-final copy for the predicate below
                 EntityAttributeInstance hp = zombie.getAttributeInstance(EntityAttributes.MAX_HEALTH);
                 check(failures, hp == null || hp.getModifier(MobScaler.SCALED_HEALTH_ID) == null,
                         "zombie carries a " + MobScaler.SCALED_HEALTH_ID + " modifier with scaling off");
                 check(failures, !zombie.hasCustomName(), "zombie was named (elite-promoted) with scaling off");
                 check(failures, !MobMark.of(zombie).elite(), "zombie's mark reads elite with scaling off");
                 List<ZombieEntity> nearby = world.getEntitiesByClass(ZombieEntity.class,
-                        zombie.getBoundingBox().expand(8), e -> e != zombie);
+                        zombie.getBoundingBox().expand(8), e -> e != spawned);
                 check(failures, nearby.isEmpty(),
                         "zombie arrived with " + nearby.size() + " companions with scaling off");
             }
 
-            ZombieEntity attacker = zombie != null ? zombie : EntityType.ZOMBIE.spawn(world,
+            attacker = zombie != null ? zombie : EntityType.ZOMBIE.spawn(world,
                     context.getAbsolutePos(new BlockPos(2, 2, 0)), SpawnReason.COMMAND);
             float competenceBefore = KindredAttachment.get(veteran).threat().competence();
             for (int i = 0; i < 5; i++) {
                 context.damage(veteran, world.getDamageSources().mobAttack(attacker), 2.0f);
             }
+            // I1: CLOSE the fight before reading competence back. Competence only ever moves on the
+            // kill/death folds, so five open hits alone would leave "competence unchanged" true even
+            // with every scalingEnabled() gate deleted - the assertion was not load-bearing. The
+            // veteran killing its attacker forces the close-out to be ATTEMPTED: gates intact ->
+            // nothing folds (this scenario passes); gates deleted -> the kill folds the banked
+            // hardship + TTK credit and the equality below fails.
+            applyLethalDamage(veteran);
+            settleEquipment(veteran);
+            check(failures, attacker != null, "no attacker zombie available to close the fight against");
+            if (attacker != null) {
+                closeOut(veteran, attacker, 5);
+                check(failures, !attacker.isAlive(),
+                        "veteran's attacks did not kill the attacker - the fight never closed, so "
+                                + "the competence-unchanged assertion below would prove nothing");
+            }
             float competenceAfter = KindredAttachment.get(veteran).threat().competence();
             check(failures, competenceAfter == competenceBefore,
                     "competence moved (" + competenceBefore + " -> " + competenceAfter
-                            + ") from mob damage with scaling off");
+                            + ") from a full damage-then-kill fight with scaling off");
 
             long xpBefore = KindredAttachment.get(veteran).xpIn(COMBAT);
             ProgressionService.awardXp(veteran, null, COMBAT, 1000, 1.0);
@@ -344,9 +398,10 @@ public class SpawnScalingProvingGround {
 
             ThreatService.invalidate(veteran.getUuid());
             ThreatService.threatOf(veteran);
+            ServerPlayerEntity detectionProbe = veteran; // effectively-final copy for the lambda below
             Identifier detectionId = Identifier.of("middle-earth", "detection_range");
             boolean detectionAbsentOrZero = Registries.ATTRIBUTE.getEntry(detectionId).map(attr -> {
-                EntityAttributeInstance instance = veteran.getAttributeInstance(attr);
+                EntityAttributeInstance instance = detectionProbe.getAttributeInstance(attr);
                 // No stable public id to look up the detection-erosion modifier by directly from
                 // here (its key is built inside AbilityApplier); the observable proxy is the
                 // attribute's resolved value against its own base - the erosion counter is the only
@@ -362,6 +417,9 @@ public class SpawnScalingProvingGround {
                     + " xpGain=" + xpGain + " detectionAbsentOrZero=" + detectionAbsentOrZero);
         } finally {
             restoreConfig(snapshot);
+            removeIfPresent(veteran);
+            discardIfAlive(zombie);
+            discardIfAlive(attacker);
         }
         finish("theSwitchMeansOff", failures);
         context.complete();

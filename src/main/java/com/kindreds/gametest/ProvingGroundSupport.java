@@ -9,6 +9,7 @@ import com.kindreds.playerdata.KindredData;
 import com.kindreds.progression.ProgressionService;
 import com.kindreds.progression.UnlockService;
 import com.kindreds.threat.ThreatService;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -80,7 +81,21 @@ public final class ProvingGroundSupport {
      * untouched default - "fresh mock players per scenario", per the brief.
      */
     public static ServerPlayerEntity freshPlayer(TestContext context, BlockPos relativePos) {
-        ServerPlayerEntity player = context.createMockCreativeServerPlayerInWorld();
+        return armForCombat(context, context.createMockCreativeServerPlayerInWorld(), relativePos);
+    }
+
+    /**
+     * The full arm-for-combat sequence a mock player needs before any {@code damage()} call against
+     * it can land, positioned at {@code relativePos} and healed to full. Split out of
+     * {@link #freshPlayer} because it must be re-applied to EVERY player object {@code
+     * PlayerManager#respawnPlayer} hands back, not just freshly-created ones: a respawned {@code
+     * ServerPlayerEntity} is a brand-new entity with {@code loaded=false, remainingLoadTicks=60}
+     * again (javap-verified), so without re-arming, every hit against it is silently a no-op - the
+     * exact bug that made {@code fiftyDeathsNeverBreakTheFloor}'s deaths 2-50 never happen on this
+     * task's first review.
+     */
+    public static ServerPlayerEntity armForCombat(TestContext context, ServerPlayerEntity player,
+                                                   BlockPos relativePos) {
         player.changeGameMode(GameMode.SURVIVAL);
         // Belt and braces: TestContext$2 hardcodes getGameMode() to CREATIVE regardless of the
         // changeGameMode call above (see class javadoc) - clearing the ability flag directly is
@@ -126,6 +141,26 @@ public final class ProvingGroundSupport {
     public static void remove(ServerPlayerEntity player) {
         player.getServer().getPlayerManager().remove(player);
         player.discard();
+    }
+
+    /** Null-safe {@link #remove} for a scenario's {@code finally} block (M4): every scenario must
+     * clear its own mock players out of the shared world alongside restoring config, or {@code
+     * ThreatService#scaledGroupAt}'s whole-dimension fallback keeps reading this scenario's
+     * strongest leftover player from every OTHER concurrently- and later-running test - the
+     * cross-test contamination the task-8a review flagged. */
+    public static void removeIfPresent(ServerPlayerEntity player) {
+        if (player != null) {
+            remove(player);
+        }
+    }
+
+    /** Null-safe end-of-scenario discard for a mob (M4), for the same {@code finally} blocks as
+     * {@link #removeIfPresent}. Only a still-alive mob needs it - a killed one is removed by its
+     * own death handling - so this mostly matters on failure paths that bailed before the kill. */
+    public static void discardIfAlive(Entity mob) {
+        if (mob != null && mob.isAlive()) {
+            mob.discard();
+        }
     }
 
     // --- Gearing -------------------------------------------------------------------------------

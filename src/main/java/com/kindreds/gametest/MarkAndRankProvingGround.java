@@ -13,11 +13,23 @@ import net.minecraft.test.TestContext;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameMode;
 
 import java.util.List;
 
-import static com.kindreds.gametest.ProvingGroundSupport.*;
+import static com.kindreds.gametest.ProvingGroundSupport.addRenown;
+import static com.kindreds.gametest.ProvingGroundSupport.armForCombat;
+import static com.kindreds.gametest.ProvingGroundSupport.check;
+import static com.kindreds.gametest.ProvingGroundSupport.equipNetherite;
+import static com.kindreds.gametest.ProvingGroundSupport.finish;
+import static com.kindreds.gametest.ProvingGroundSupport.freshPlayer;
+import static com.kindreds.gametest.ProvingGroundSupport.manufactureVeteran;
+import static com.kindreds.gametest.ProvingGroundSupport.newFailureList;
+import static com.kindreds.gametest.ProvingGroundSupport.removeIfPresent;
+import static com.kindreds.gametest.ProvingGroundSupport.restoreConfig;
+import static com.kindreds.gametest.ProvingGroundSupport.settleEquipment;
+import static com.kindreds.gametest.ProvingGroundSupport.simulateHoursOfDecay;
+import static com.kindreds.gametest.ProvingGroundSupport.snapshotConfig;
+import static com.kindreds.gametest.ProvingGroundSupport.stripGear;
 
 /**
  * Scenarios that prove the mark's two headline promises: it never snaps down on the spot (only
@@ -46,18 +58,13 @@ public class MarkAndRankProvingGround {
     public void rankCrossingAnnounces(TestContext context) {
         List<String> failures = newFailureList();
         KindredsConfig snapshot = snapshotConfig();
+        RecordingServerPlayerEntity player = null;
         try {
             Kindreds.CONFIG.enableEnemyScaling = true;
 
             ServerWorld world = context.getWorld();
-            RecordingServerPlayerEntity player = RecordingServerPlayerEntity.create(world);
-            player.changeGameMode(GameMode.SURVIVAL);
-            player.getAbilities().invulnerable = false;
-            player.setInvulnerable(false); // see ProvingGroundSupport#freshPlayer's javadoc - the
-                                            // separate entity-level flag, not just the ability one
-            player.setLoaded(true); // see the same javadoc - PlayerEntity#isLoaded's grace period
-            BlockPos abs = context.getAbsolutePos(new BlockPos(0, 2, 0));
-            player.refreshPositionAndAngles(abs.getX() + 0.5, abs.getY(), abs.getZ() + 0.5, 0f, 0f);
+            player = RecordingServerPlayerEntity.create(world);
+            armForCombat(context, player, new BlockPos(0, 2, 0)); // same arm sequence freshPlayer applies
 
             // --- first population after "join": silent, no matter what rank it lands on ---
             ThreatService.invalidate(player.getUuid());
@@ -104,6 +111,7 @@ public class MarkAndRankProvingGround {
                     + " threatAfterRise=" + threatAfterRise + " threatAfterFall=" + threatAfterFall);
         } finally {
             restoreConfig(snapshot);
+            removeIfPresent(player); // M4: fully-connected recording player must not linger either
         }
         finish("rankCrossingAnnounces", failures);
         context.complete();
@@ -123,10 +131,11 @@ public class MarkAndRankProvingGround {
     public void theMarkNeverForgets(TestContext context) {
         List<String> failures = newFailureList();
         KindredsConfig snapshot = snapshotConfig();
+        ServerPlayerEntity player = null;
         try {
             Kindreds.CONFIG.enableEnemyScaling = true;
 
-            ServerPlayerEntity player = freshPlayer(context, new BlockPos(0, 2, 0));
+            player = freshPlayer(context, new BlockPos(0, 2, 0));
             manufactureVeteran(player, Kindreds.CONFIG); // equips + settles + refreshes threat itself
             KindredData data = KindredAttachment.get(player);
             float priorMark = data.threat().priorMark();
@@ -183,6 +192,9 @@ public class MarkAndRankProvingGround {
                     + " afterReequip=" + markAfterReequip);
         } finally {
             restoreConfig(snapshot);
+            // M4: this player ends re-equipped with a high mark - the single worst contaminator for
+            // every other scenario's scaledGroupAt whole-dimension fallback if left in the world.
+            removeIfPresent(player);
         }
         finish("theMarkNeverForgets", failures);
         context.complete();
