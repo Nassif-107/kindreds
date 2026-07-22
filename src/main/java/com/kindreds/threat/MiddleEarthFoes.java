@@ -31,6 +31,14 @@ public final class MiddleEarthFoes {
     private static final String MIDDLE_EARTH_MOD_ID = "middle-earth";
 
     /**
+     * Latches the degraded-path warn to once per session: if a future base-mod release breaks this
+     * API while still reporting itself as loaded, every combat tick would otherwise re-throw and
+     * re-log a full stack trace, which is log spam at combat rate rather than a useful diagnostic
+     * past the first occurrence.
+     */
+    private static volatile boolean warnedOnce = false;
+
+    /**
      * @return whether {@code entity} is a base-mod mob that counts as hostile to {@code player} -
      * always {@code false} if the base mod isn't loaded, or if checking failed unexpectedly.
      */
@@ -41,9 +49,12 @@ public final class MiddleEarthFoes {
         try {
             return MiddleEarthFoesBridge.isHostileBaseMob(entity, player);
         } catch (Throwable t) {
-            Kindreds.LOGGER.warn(
-                    "[Kindreds] failed to check entity {} against the base Middle-earth mod's factions; treating as out of scope",
-                    entity.getUuid(), t);
+            if (!warnedOnce) {
+                warnedOnce = true;
+                Kindreds.LOGGER.warn(
+                        "[Kindreds] failed to check entity {} against the base Middle-earth mod's factions; treating as out of scope",
+                        entity.getUuid(), t);
+            }
             return false;
         }
     }

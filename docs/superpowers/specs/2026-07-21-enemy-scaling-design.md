@@ -314,7 +314,8 @@ troll has more health for everyone, but only hits each player as hard as *that* 
 
 ### 5.1 Which mobs
 
-Scope is a tag, not a hardcoded list, so a datapack can extend it:
+Scope is a tag, not a hardcoded list, so a datapack can extend it - but the tag mechanism itself lands
+with the replacement ladder in phase 3. Until then, the gate is the code described below, not a tag.
 
 - included: any `Monster`, plus everything in `kindreds:scaled_extra`
 - excluded: everything in `kindreds:never_scaled` (bosses, the Ender Dragon, the Wither, tamed
@@ -343,6 +344,20 @@ NPC into retaliating would be a free, repeatable way to farm scaling evidence ag
 was never meant to be a threat. The faction check therefore applies uniformly everywhere
 `MobDanger#isInScope` is consulted (incoming damage, a kill, a death), not only when the player is the
 one doing the killing.
+
+**Retaliation rule: anything actively fighting the player is in scope, faction aside.** A friendly mob
+that retaliates because the player struck it first must still fight - and be fought - at proper
+strength: it should scale, count as evidence, and pay kill credit, the same as any other opponent
+actually in the fight. `MobDanger#isInScope` adds a vanilla-only clause for this: any `MobEntity`
+whose current target (`getTarget()`) is the specific player being evaluated is in scope, regardless of
+faction - because `RevengeGoal` and its kin set the target while a mob is actively engaging, this one
+check covers provoked friendly NPCs/guards, the base mod's retaliating beasts, and provoked vanilla
+neutrals (iron golems, wolves) alike, without needing a faction lookup for any of them. It excludes one
+case on purpose: a player-owned pet (anything implementing `Tameable` with a non-null owner reference)
+is kept out of scope even while it is targeting the player, because a sicced pet is the player
+attacking by proxy - and player-sourced evidence must never count, the same reason the evidence loop
+excludes players themselves. An unprovoked, murdered villager still targets nobody and still pays
+nothing.
 
 ### 5.2 Families
 

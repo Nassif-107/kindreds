@@ -2,7 +2,9 @@ package com.kindreds.threat;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -74,17 +76,47 @@ public final class MobDanger {
     /**
      * Whether this mod scales, and takes evidence from, this entity at all against {@code player}.
      *
-     * <p>Scope is vanilla hostiles, plus the base Middle-earth mod's wargs and trolls, plus its NPCs
-     * when their faction is currently hostile toward {@code player}. The base mod ships its entire
-     * army as one {@code PassiveEntity}-derived {@code NpcEntity} class - covering both hostile
-     * factions (mordor, isengard, moria...) and friendly ones (gondor, rohan, shire...) - and its
-     * wargs/trolls as a horse-lineage {@code AbstractBeastEntity}, so neither is a vanilla {@link
-     * Monster} and both would otherwise be invisible here. The faction check keeps a friendly NPC out
-     * of scope even when it retaliates against the player that struck it first ({@code RevengeGoal},
-     * which every NPC has with no faction check of its own) - see {@link MiddleEarthFoes} for the
-     * lookup.
+     * <p>Scope is vanilla hostiles, plus anything actively targeting {@code player} (except a
+     * player-owned pet), plus the base Middle-earth mod's wargs and trolls, plus its NPCs when their
+     * faction is currently hostile toward {@code player}. The base mod ships its entire army as one
+     * {@code PassiveEntity}-derived {@code NpcEntity} class - covering both hostile factions (mordor,
+     * isengard, moria...) and friendly ones (gondor, rohan, shire...) - and its wargs/trolls as a
+     * horse-lineage {@code AbstractBeastEntity}, so neither is a vanilla {@link Monster} and both
+     * would otherwise be invisible here. The faction check keeps a friendly NPC out of scope even when
+     * it retaliates against the player that struck it first ({@code RevengeGoal}, which every NPC has
+     * with no faction check of its own) - see {@link MiddleEarthFoes} for the lookup.
+     *
+     * <p><b>Anything actively fighting {@code player} is in scope, faction aside.</b> A friendly mob
+     * that retaliates because the player struck it first must still fight - and be fought - at proper
+     * strength: it scales, it counts as evidence, and killing it pays credit. {@code mob.getTarget()
+     * == player} is what tests this: {@code RevengeGoal} and its kin set the target while a mob is
+     * actively engaging, so this one clause covers provoked friendly NPCs/guards, the base mod's
+     * retaliating beasts, and provoked vanilla neutrals (iron golems, wolves) alike. An unprovoked,
+     * murdered villager still targets nobody and still pays nothing. A player-owned pet is excluded
+     * even while targeting {@code player} - see {@link #isOwnedPet} for why.
+     *
+     * <p><b>Known caveat.</b> On the kill-credit path, the victim's target may already be cleared by
+     * the time death is processed, in which case a provoked-friendly kill just pays nothing; the
+     * damage and death-evidence paths are unaffected, since the target is set for as long as the mob
+     * is actively attacking.
      */
     public static boolean isInScope(Entity entity, ServerPlayerEntity player) {
-        return entity instanceof Monster || MiddleEarthFoes.isHostileBaseMob(entity, player);
+        return entity instanceof Monster
+                || (entity instanceof MobEntity mob && mob.getTarget() == player && !isOwnedPet(entity))
+                || MiddleEarthFoes.isHostileBaseMob(entity, player);
+    }
+
+    /**
+     * A tamed/owned creature is excluded from the "actively targeting" scope rule even while it is
+     * targeting {@code player} - a sicced pet is the player attacking by proxy, and player-sourced
+     * evidence must never count, the same reason the evidence loop excludes players themselves.
+     *
+     * <p>Checked via {@link Tameable#getOwnerReference()} rather than {@link Tameable#getOwner()}:
+     * the reference records that an owner was ever set, while resolving it to a live entity can
+     * legitimately fail (owner offline, chunk unloaded) without the pet having become ownerless - and
+     * a momentarily-unresolvable owner must not fall through to counting as scoped.
+     */
+    private static boolean isOwnedPet(Entity entity) {
+        return entity instanceof Tameable tameable && tameable.getOwnerReference() != null;
     }
 }

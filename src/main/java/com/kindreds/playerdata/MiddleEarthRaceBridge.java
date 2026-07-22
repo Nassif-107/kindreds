@@ -7,9 +7,13 @@ import net.sevenstars.middleearth.resources.persistent_datas.PlayerData;
 
 /**
  * The <b>only</b> class in the {@code com.kindreds.playerdata} package allowed to reference base
- * Middle-earth mod types ({@code net.sevenstars.middleearth.*}). It has one sibling elsewhere in the
- * mod, {@code com.kindreds.threat.MiddleEarthFoesBridge}, which follows the exact same isolation
- * pattern for the enemy-scaling scope gate.
+ * Middle-earth mod types ({@code net.sevenstars.middleearth.*}). Together with its one sibling
+ * elsewhere in the mod, {@code com.kindreds.threat.MiddleEarthFoesBridge} (the same isolation pattern
+ * for the enemy-scaling scope gate), these are the only <b>guarded</b> production references to the
+ * base mod - the five {@code net.sevenstars.middleearth.*}-referencing classes under {@code
+ * com.kindreds.client.gametest} reference it directly and unguarded, which is safe because they load
+ * only via the {@code fabric-client-gametest} entrypoint, a dev/CI-only client that already has the
+ * base mod on its classpath - the absence-safety this class exists for simply doesn't arise there.
  *
  * <p>The base mod's jars are {@code modCompileOnly} (see {@code build.gradle}): present at compile
  * time (from the dev instance's {@code mods/} folder) but not guaranteed present at runtime, since
