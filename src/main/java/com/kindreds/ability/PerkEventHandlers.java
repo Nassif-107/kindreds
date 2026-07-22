@@ -295,7 +295,7 @@ public final class PerkEventHandlers {
         if (Kindreds.CONFIG != null && Kindreds.CONFIG.enableEnemyScaling
                 && victim instanceof ServerPlayerEntity served
                 && source.getAttacker() instanceof LivingEntity attacker
-                && MobDanger.isInScope(attacker)) {
+                && MobDanger.isInScope(attacker, served)) {
             float scaled = ThreatService.scaledAgainst(served, attacker);
             multiplier *= 1.0f + (Kindreds.CONFIG.maxDamageBonus / 100f) * scaled;
         }

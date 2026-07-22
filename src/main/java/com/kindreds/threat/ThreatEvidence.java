@@ -56,7 +56,7 @@ public final class ThreatEvidence {
             if (!scalingEnabled() || !(entity instanceof ServerPlayerEntity player)) {
                 return;
             }
-            if (!(source.getAttacker() instanceof LivingEntity attacker) || !MobDanger.isInScope(attacker)) {
+            if (!(source.getAttacker() instanceof LivingEntity attacker) || !MobDanger.isInScope(attacker, player)) {
                 return; // never another player, never fall/lava/drowning - see the class javadoc
             }
             ACCUMULATED_DAMAGE.merge(player.getUuid(), damageTaken, Float::sum);
@@ -64,7 +64,7 @@ public final class ThreatEvidence {
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, entity, killed) -> {
             if (!scalingEnabled() || !(entity instanceof ServerPlayerEntity player)
-                    || !MobDanger.isInScope(killed)) {
+                    || !MobDanger.isInScope(killed, player)) {
                 return; // only a kill of a mob in scope is a "qualifying fight" - see class javadoc
             }
             float accumulated = ACCUMULATED_DAMAGE.getOrDefault(player.getUuid(), 0f);
@@ -104,7 +104,7 @@ public final class ThreatEvidence {
             // does not let stale damage bleed into the next fight's hardship.
             ACCUMULATED_DAMAGE.remove(player.getUuid());
             if (!scalingEnabled() || !(source.getAttacker() instanceof LivingEntity killer)
-                    || !MobDanger.isInScope(killer)) {
+                    || !MobDanger.isInScope(killer, player)) {
                 return; // only a death to a mob in scope is evidence - see class javadoc
             }
             KindredData data = KindredAttachment.get(player);

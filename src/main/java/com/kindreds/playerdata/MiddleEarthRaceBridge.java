@@ -6,8 +6,10 @@ import net.sevenstars.middleearth.resources.StateSaverAndLoader;
 import net.sevenstars.middleearth.resources.persistent_datas.PlayerData;
 
 /**
- * The <b>only</b> class in this mod allowed to reference base Middle-earth mod types
- * ({@code net.sevenstars.middleearth.*}).
+ * The <b>only</b> class in the {@code com.kindreds.playerdata} package allowed to reference base
+ * Middle-earth mod types ({@code net.sevenstars.middleearth.*}). It has one sibling elsewhere in the
+ * mod, {@code com.kindreds.threat.MiddleEarthFoesBridge}, which follows the exact same isolation
+ * pattern for the enemy-scaling scope gate.
  *
  * <p>The base mod's jars are {@code modCompileOnly} (see {@code build.gradle}): present at compile
  * time (from the dev instance's {@code mods/} folder) but not guaranteed present at runtime, since

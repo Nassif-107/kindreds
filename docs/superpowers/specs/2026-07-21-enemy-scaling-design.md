@@ -322,9 +322,27 @@ Scope is a tag, not a hardcoded list, so a datapack can extend it:
 - per-dimension multiplier, defaulting to `1.0` in the Middle-earth dimension and `0.75` in the
   overworld, so the old world stays gentler than the new one.
 
-**Faction NPCs need care.** The base mod's `middle-earth:npc` covers both hostile and friendly
-factions. Only NPCs currently hostile to the player are in scope; this is resolved through
-`Allegiance`, which is already the single friend-or-foe authority in this mod.
+**The base mod's army is not a `Monster`.** An audit while wiring the scope gate found that the base
+mod ships every orc, uruk, goblin, Snaga and brigand - hostile factions and friendly ones alike - as
+one `NpcEntity` class extending `PassiveEntity`, and its wargs and trolls as a custom
+`AbstractBeastEntity` extending `AbstractHorseEntity` (a mount lineage). Neither is a vanilla
+`Monster`, so the `instanceof Monster` check alone misses almost the entire base-mod bestiary; only
+vanilla hostiles and the base mod's Shelob-line spiders (which do extend `HostileEntity`) were ever
+caught. `MobDanger#isInScope` is widened accordingly: wargs and trolls are always in scope (there is
+no friendly warg or troll), and an `NpcEntity` is in scope only when its faction is currently hostile
+toward the specific player being evaluated - resolved via the base mod's own faction diplomacy table
+(`Faction#isHostileToward`), not through `Allegiance`, because this needs the base mod's per-faction
+data, which `Allegiance` does not have. A player who never onboarded a race/faction has no faction of
+their own; the base mod's own logic treats a factionless player as hostile-by-everyone, and the scope
+gate mirrors that default rather than inventing its own.
+
+**Why the faction check has to run on every path, not just kills.** Every `NpcEntity`, friendly or
+hostile, carries a `RevengeGoal` with no faction check of its own - hit a friendly villager-equivalent
+and it swings back. Without gating *incoming* damage and deaths by faction too, provoking a friendly
+NPC into retaliating would be a free, repeatable way to farm scaling evidence against something that
+was never meant to be a threat. The faction check therefore applies uniformly everywhere
+`MobDanger#isInScope` is consulted (incoming damage, a kill, a death), not only when the player is the
+one doing the killing.
 
 ### 5.2 Families
 

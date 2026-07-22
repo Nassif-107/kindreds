@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 /**
@@ -70,8 +71,20 @@ public final class MobDanger {
         return "other";
     }
 
-    /** Whether this mod scales, and takes evidence from, this entity at all. */
-    public static boolean isInScope(Entity entity) {
-        return entity instanceof Monster;
+    /**
+     * Whether this mod scales, and takes evidence from, this entity at all against {@code player}.
+     *
+     * <p>Scope is vanilla hostiles, plus the base Middle-earth mod's wargs and trolls, plus its NPCs
+     * when their faction is currently hostile toward {@code player}. The base mod ships its entire
+     * army as one {@code PassiveEntity}-derived {@code NpcEntity} class - covering both hostile
+     * factions (mordor, isengard, moria...) and friendly ones (gondor, rohan, shire...) - and its
+     * wargs/trolls as a horse-lineage {@code AbstractBeastEntity}, so neither is a vanilla {@link
+     * Monster} and both would otherwise be invisible here. The faction check keeps a friendly NPC out
+     * of scope even when it retaliates against the player that struck it first ({@code RevengeGoal},
+     * which every NPC has with no faction check of its own) - see {@link MiddleEarthFoes} for the
+     * lookup.
+     */
+    public static boolean isInScope(Entity entity, ServerPlayerEntity player) {
+        return entity instanceof Monster || MiddleEarthFoes.isHostileBaseMob(entity, player);
     }
 }
