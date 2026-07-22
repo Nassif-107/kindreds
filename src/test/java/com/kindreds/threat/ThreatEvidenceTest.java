@@ -53,18 +53,18 @@ class ThreatEvidenceTest {
     }
 
     @Test
-    void boundedEngagementTableCapsAtEightAndEvictsTheOldestByInsertionOrder() {
+    void boundedEngagementTableCapsAtSixteenAndEvictsTheOldestByInsertionOrder() {
         // A sword sweep, an army skirmish, a mob farm - whatever causes one player to open
-        // engagements against many mobs at once must not grow this table without limit. The 9th
+        // engagements against many mobs at once must not grow this table without limit. The 17th
         // distinct mob evicts the 1st (oldest by first-engaged order), never a middle or newest one.
         LinkedHashMap<UUID, ThreatEvidence.Engagement> table = ThreatEvidence.newEngagementTable();
-        UUID[] mobs = new UUID[9];
+        UUID[] mobs = new UUID[17];
         for (int i = 0; i < mobs.length; i++) {
             mobs[i] = UUID.randomUUID();
             table.put(mobs[i], new ThreatEvidence.Engagement(i, 0f, 20f));
         }
 
-        assertEquals(8, table.size(), "table grew past the 8-entry cap");
+        assertEquals(16, table.size(), "table grew past the 16-entry cap");
         assertFalse(table.containsKey(mobs[0]), "oldest engagement (mob 0) was not evicted");
         for (int i = 1; i < mobs.length; i++) {
             assertTrue(table.containsKey(mobs[i]), "mob " + i + " was evicted but should have survived");
@@ -78,7 +78,7 @@ class ThreatEvidenceTest {
         // would let a player "refresh" them into permanent immunity from eviction by re-hitting them
         // just before every new mob tagged - the opposite of the size bound's intent.
         LinkedHashMap<UUID, ThreatEvidence.Engagement> table = ThreatEvidence.newEngagementTable();
-        UUID[] mobs = new UUID[8];
+        UUID[] mobs = new UUID[16];
         for (int i = 0; i < mobs.length; i++) {
             mobs[i] = UUID.randomUUID();
             table.put(mobs[i], new ThreatEvidence.Engagement(i, 0f, 20f));
@@ -87,16 +87,16 @@ class ThreatEvidenceTest {
         // Re-hit (overwrite) the oldest mob several times - table is already at the cap.
         table.put(mobs[0], new ThreatEvidence.Engagement(0, 5f, 15f));
         table.put(mobs[0], new ThreatEvidence.Engagement(0, 9f, 11f));
-        assertEquals(8, table.size(), "overwriting an existing entry changed the table's size");
+        assertEquals(16, table.size(), "overwriting an existing entry changed the table's size");
 
-        // A genuinely new, 9th mob now evicts mob 0 (still the oldest by insertion order) despite
+        // A genuinely new, 17th mob now evicts mob 0 (still the oldest by insertion order) despite
         // the re-hits above, not mob 1.
-        UUID ninth = UUID.randomUUID();
-        table.put(ninth, new ThreatEvidence.Engagement(20, 0f, 20f));
+        UUID seventeenth = UUID.randomUUID();
+        table.put(seventeenth, new ThreatEvidence.Engagement(20, 0f, 20f));
 
-        assertEquals(8, table.size());
+        assertEquals(16, table.size());
         assertFalse(table.containsKey(mobs[0]), "re-hitting mob 0 should not have saved it from eviction");
         assertTrue(table.containsKey(mobs[1]), "mob 1 should not have been evicted instead of mob 0");
-        assertTrue(table.containsKey(ninth));
+        assertTrue(table.containsKey(seventeenth));
     }
 }

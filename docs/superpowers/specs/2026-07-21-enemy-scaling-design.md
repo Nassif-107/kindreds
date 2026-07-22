@@ -107,6 +107,7 @@ Per qualifying fight, the signal is **hardship**:
 ```
 hardship = damageTakenFromScopedMobs / highWaterMaxHealth
 ```
+(measured as health and absorption actually lost, not raw damage dealt)
 
 with a target of `0.25` — a meaningful fight should cost about a quarter of your health.
 

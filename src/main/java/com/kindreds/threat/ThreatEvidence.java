@@ -82,14 +82,36 @@ public final class ThreatEvidence {
     /** Damage taken from in-scope mobs since this player's last qualifying kill or death - the
      * running numerator of {@link #hardshipOf}. Cleared whenever a fight closes: a qualifying kill,
      * or any player death (see the {@code AFTER_DEATH} handler below for why death always clears
-     * it, even a death this class does not treat as evidence). */
+     * it, even a death this class does not treat as evidence). Banks endpoint-measured HP+absorption
+     * lost per hit (see {@link #VICTIM_HEALTH_BEFORE} and the victim branches of {@code ALLOW_DAMAGE}
+     * / {@code AFTER_DAMAGE} below), mirroring how the attacker side banks {@link Engagement
+     * #damageDealt} - mitigation-proof by construction, not the event's raw pre-mitigation figure. */
     private static final Map<UUID, Float> ACCUMULATED_DAMAGE = new ConcurrentHashMap<>();
+
+    /** The victim's own {@code getHealth() + getAbsorptionAmount()} the instant before whichever hit
+     * against them is currently in flight - one slot per player, refreshed on every {@code
+     * ALLOW_DAMAGE} call where that player is the one being damaged by an in-scope mob. It needs no
+     * per-mob keying, unlike {@link #ENGAGEMENTS}: a player is only ever mid-way through taking one
+     * hit at a time (single server thread, one hit's whole {@code damage()} call stack runs to
+     * completion before the next begins), so the same slot is written by {@code ALLOW_DAMAGE} and
+     * consumed by {@code AFTER_DAMAGE} within that same call stack. An i-frame-swallowed hit (source
+     * damage cancelled or reduced to 0 downstream, so {@code AFTER_DAMAGE} never fires - see the
+     * class javadoc) leaves a harmless stale snapshot: it is simply overwritten the next time this
+     * player takes a real hit, never read in between. Cleared on disconnect and on death alongside
+     * {@link #ACCUMULATED_DAMAGE}, for the same hygiene reason - not correctness, since a stale entry
+     * is never read without first being refreshed by that same read's own {@code ALLOW_DAMAGE}. */
+    private static final Map<UUID, Float> VICTIM_HEALTH_BEFORE = new ConcurrentHashMap<>();
 
     /** Every mob a player has an open engagement against, keyed by that mob's own {@code UUID}, is
      * capped at this many entries. Not a config value - a structural bound so a player who tags many
      * mobs in a single running fight (an army skirmish, a mob farm) cannot grow this table without
-     * limit; see {@link #newEngagementTable()} for how the cap is enforced. */
-    private static final int MAX_ENGAGEMENTS_PER_PLAYER = 8;
+     * limit; see {@link #newEngagementTable()} for how the cap is enforced. Raised from 8 to 16: a
+     * sweeping-edge weapon swing tags 3-5 in-scope mobs in one blow, so 8 let an honest player fighting
+     * a horde self-evict their own focus target's banked credit mid-fight; 16 makes that unrealistic
+     * for any single swing or short skirmish while {@link #ENGAGEMENTS}'s worst-case size - one inner
+     * table per online player, each bounded here - stays online players × 16, still trivially small.
+     */
+    private static final int MAX_ENGAGEMENTS_PER_PLAYER = 16;
 
     /** One entry per player, each holding that player's open engagements against every in-scope mob
      * they are currently mid-fight with, keyed by the mob's {@code UUID} - not a single slot, so a
@@ -97,13 +119,13 @@ public final class ThreatEvidence {
      * (see {@link Engagement} for what each fight's record holds and why).
      *
      * <p>Each player's inner table is bounded to {@link #MAX_ENGAGEMENTS_PER_PLAYER} entries (see
-     * {@link #newEngagementTable()}): the 9th distinct mob a player engages evicts the oldest
+     * {@link #newEngagementTable()}): the 17th distinct mob a player engages evicts the oldest
      * (by first-engaged order) automatically. This is deliberately a size bound, not a correctness
      * requirement - a mob that is killed by <em>someone else</em> while this player has an open
      * engagement against it leaves a stale entry nobody ever explicitly removes; the cap keeps that
      * bounded rather than unbounded, and the entry is fully reclaimed the moment this player next
      * dies or disconnects (both clear the player's whole inner table below), or the moment the cap
-     * evicts it to make room for a ninth mob.
+     * evicts it to make room for a 17th mob.
      *
      * <p><b>Thread-safety invariant:</b> the outer map is a {@link ConcurrentHashMap} because it is
      * read and written by whichever server thread happens to be running each event, but all three
@@ -124,7 +146,7 @@ public final class ThreatEvidence {
      * well-tested {@code LinkedHashMap} machinery every other bounded-LRU-style cache in the JDK
      * ecosystem leans on) rather than a hand-rolled rule sitting next to it, so there is nothing
      * further to extract into a separate pure function - this factory is itself the seam
-     * {@code ThreatEvidenceTest} exercises directly to prove the cap-at-8-oldest-evicted behaviour
+     * {@code ThreatEvidenceTest} exercises directly to prove the cap-at-16-oldest-evicted behaviour
      * without a running game.
      */
     static LinkedHashMap<UUID, Engagement> newEngagementTable() {
@@ -174,6 +196,7 @@ public final class ThreatEvidence {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ACCUMULATED_DAMAGE.remove(handler.player.getUuid());
             ENGAGEMENTS.remove(handler.player.getUuid());
+            VICTIM_HEALTH_BEFORE.remove(handler.player.getUuid());
         });
 
         // ALLOW_DAMAGE, not ALLOW_DEATH, is where each (player, mob) kill-credit engagement is
@@ -207,10 +230,23 @@ public final class ThreatEvidence {
                     // A new mob for this player - the clock starts now, no damage banked yet. If
                     // this very hit turns out lethal (a genuine one-shot of a full-health mob),
                     // healthBeforeHit alone already gives it share ~= 1.0. May evict this player's
-                    // oldest other engagement if this is their 9th - see newEngagementTable().
+                    // oldest other engagement if this is their 17th - see newEngagementTable().
                     table.put(mob.getUuid(),
                             new Engagement(player.getWorld().getTime(), 0f, healthBeforeHit));
                 }
+            } else if (scalingEnabled() && entity instanceof ServerPlayerEntity victim
+                    && source.getAttacker() instanceof LivingEntity attacker
+                    && MobDanger.isInScope(attacker, victim)) {
+                // Victim side, mirroring the attacker branch above: snapshot this player's own HP
+                // pool - health PLUS absorption, see the AFTER_DAMAGE victim branch's javadoc for why
+                // absorption is included - the instant before whichever hit is now in flight, for
+                // that hit's own AFTER_DAMAGE (same guard order: victim first, then in-scope
+                // attacker) to diff against. Fires for every hit including a lethal one (unlike
+                // AFTER_DAMAGE), but a lethal hit to a player still produces AFTER_DEATH, not a
+                // consumed AFTER_DAMAGE read, so a stale snapshot from a killing blow is simply never
+                // read - see VICTIM_HEALTH_BEFORE's javadoc for the same reasoning applied to a
+                // cancelled/absorbed (i-frame) hit.
+                VICTIM_HEALTH_BEFORE.put(victim.getUuid(), victim.getHealth() + victim.getAbsorptionAmount());
             }
             return true; // observe only - never cancel a hit
         });
@@ -223,7 +259,26 @@ public final class ThreatEvidence {
                 if (!(source.getAttacker() instanceof LivingEntity attacker) || !MobDanger.isInScope(attacker, player)) {
                     return; // never another player, never fall/lava/drowning - see the class javadoc
                 }
-                ACCUMULATED_DAMAGE.merge(player.getUuid(), damageTaken, Float::sum);
+                // Hardship is endpoint-measured HP+absorption actually lost, not the event's raw
+                // damageTaken parameter - the same principle as the attacker side's damageDealt, and
+                // for the same reason: damageTaken is pre-mitigation (armor, resistance and
+                // absorption are all applied later, inside applyDamage), so banking it raw would let
+                // an armored/resistant player's world soften faster than the fight actually cost them
+                // - an armored veteran tanking a troll IS coasting, and inflated raw-damage hardship
+                // would spuriously read that as struggling. Absorption is included on BOTH endpoints
+                // deliberately: absorption hearts are real fight cost getHealth() alone cannot see -
+                // an absorption-buffed player tanking hits must not read hardship 0 just because their
+                // health bar never moved. The snapshot this diffs against is ALLOW_DAMAGE's job, above
+                // (same call stack, same hit); if it is stale (this hit's own snapshot was never
+                // written - scaling was off, or the attacker fell out of scope between the two
+                // events) there is nothing meaningful to diff, so this hit contributes 0 rather than
+                // risking a bogus figure from an unrelated earlier hit's leftover snapshot.
+                Float before = VICTIM_HEALTH_BEFORE.get(player.getUuid());
+                if (before != null) {
+                    float hpAndAbsorptionLost =
+                            Math.max(0f, before - (player.getHealth() + player.getAbsorptionAmount()));
+                    ACCUMULATED_DAMAGE.merge(player.getUuid(), hpAndAbsorptionLost, Float::sum);
+                }
                 return;
             }
             // Attacker side: bank this (non-lethal - see the class javadoc for why AFTER_DAMAGE never
@@ -331,6 +386,10 @@ public final class ThreatEvidence {
             // player's whole table, every mob they had an open engagement against, not just one.
             ACCUMULATED_DAMAGE.remove(player.getUuid());
             ENGAGEMENTS.remove(player.getUuid());
+            // Hygiene, not correctness (see VICTIM_HEALTH_BEFORE's javadoc: a stale entry is never
+            // read without first being refreshed) - but the killing blow is itself the last write this
+            // slot will ever get for this life, so there is no reason to let it linger.
+            VICTIM_HEALTH_BEFORE.remove(player.getUuid());
             if (!scalingEnabled() || !(source.getAttacker() instanceof LivingEntity killer)
                     || !MobDanger.isInScope(killer, player)) {
                 return; // only a death to a mob in scope is evidence - see class javadoc
