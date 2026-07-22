@@ -26,6 +26,8 @@ public final class MobScaler {
      * chunk cycle). */
     public static final Identifier SCALED_HEALTH_ID = Identifier.of(Kindreds.MOD_ID, "scaled/max_health");
 
+    /** Registers the {@code ENTITY_LOAD} handler that weighs, scales and (possibly) promotes every
+     * mob entering the world. Call once from {@link Kindreds#onInitialize()}. */
     public static void register() {
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (!(entity instanceof MobEntity mob)) {
@@ -46,8 +48,18 @@ public final class MobScaler {
             }
             float scaledGroup = ThreatService.scaledGroupAt(world, mob.getBlockPos());
             applyHealth(mob, scaledGroup);
-            // Elite and escort rolls are appended here by Tasks 4 and 5.
-            MobMark.set(mob, MobMark.of(mob).withScaled(true));
+
+            // Threaded through rather than re-fetched: mark is about to gain elite fields below, and
+            // a second MobMark.of(mob) read here would lose that write the moment escort rolls
+            // (Task 5) land between the two - see Task 3's review finding #1.
+            if (!mark.escort() && Kindreds.CONFIG.eliteChance > 0
+                    && world.getRandom().nextFloat() < (Kindreds.CONFIG.eliteChance / 100f) * scaledGroup) {
+                MobMark promoted = EliteMobs.choose(MobDanger.family(mob), new java.util.Random(world.getRandom().nextLong()));
+                mark = mark.withElite(promoted.eliteAbility(), promoted.eliteName());
+                EliteMobs.dress(mob, mark);   // name + visibility + LIVE registration
+            }
+            // Escort rolls are appended here by Task 5.
+            MobMark.set(mob, mark.withScaled(true));
         });
     }
 

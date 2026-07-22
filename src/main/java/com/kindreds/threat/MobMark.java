@@ -22,8 +22,13 @@ import net.minecraft.util.Identifier;
 public record MobMark(String spawnReason, boolean scaled, String eliteAbility, String eliteName,
                       boolean escort) {
 
+    /** The inert mark: no spawn reason recorded, unscaled, no elite identity, not an escort - what
+     * {@link #of} hands back for any entity with nothing attached. */
     public static final MobMark DEFAULT = new MobMark("", false, "", "", false);
 
+    /** Every field {@code optionalFieldOf}, defaulted to {@link #DEFAULT}'s own values, so a mob
+     * saved before this record gained a field - or before phase 2 existed at all - decodes cleanly
+     * instead of failing to load. */
     public static final Codec<MobMark> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.STRING.optionalFieldOf("spawn_reason", "").forGetter(MobMark::spawnReason),
             Codec.BOOL.optionalFieldOf("scaled", false).forGetter(MobMark::scaled),
@@ -41,16 +46,24 @@ public record MobMark(String spawnReason, boolean scaled, String eliteAbility, S
         return mark == null ? DEFAULT : mark;
     }
 
+    /** Stores {@code mark} on {@code entity}, replacing whatever was attached before. */
     public static void set(Entity entity, MobMark mark) {
         entity.setAttached(KEY, mark);
     }
 
+    /** Whether this mob was promoted - {@link #eliteAbility} is the tell, since an unpromoted mob
+     * never has one set. */
     public boolean elite() {
         return !eliteAbility.isEmpty();
     }
 
+    /** A copy with {@link #spawnReason} replaced - everything else carried over unchanged. */
     public MobMark withSpawnReason(String reason) { return new MobMark(reason, scaled, eliteAbility, eliteName, escort); }
+    /** A copy with {@link #scaled} replaced - everything else carried over unchanged. */
     public MobMark withScaled(boolean s) { return new MobMark(spawnReason, s, eliteAbility, eliteName, escort); }
+    /** A copy with {@link #eliteAbility} and {@link #eliteName} replaced together - the two always
+     * change as a pair, so there is no single-field with-er for either. */
     public MobMark withElite(String ability, String name) { return new MobMark(spawnReason, scaled, ability, name, escort); }
+    /** A copy with {@link #escort} replaced - everything else carried over unchanged. */
     public MobMark withEscort(boolean e) { return new MobMark(spawnReason, scaled, eliteAbility, eliteName, e); }
 }

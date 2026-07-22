@@ -93,6 +93,7 @@ public class Kindreds implements ModInitializer {
         com.kindreds.threat.ThreatService.register();
         com.kindreds.threat.ThreatEvidence.register();
         com.kindreds.threat.MobScaler.register();
+        com.kindreds.threat.EliteMobs.register();
 
         // Push each player's server-authoritative skill data to their own client as soon as their
         // play session is ready, so client-side UI/HUD has real data from the very first tick
