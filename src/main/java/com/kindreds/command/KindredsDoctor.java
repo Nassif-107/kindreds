@@ -15,6 +15,9 @@ import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.progression.RenownService;
 import com.kindreds.progression.UnlockService;
+import com.kindreds.threat.ThreatRank;
+import com.kindreds.threat.ThreatService;
+import com.kindreds.threat.ThreatState;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.advancement.AdvancementEntry;
@@ -132,6 +135,7 @@ public final class KindredsDoctor {
         checkClamps(source, server, problems);
         checkStacking(source, server, problems);
         checkPlayer(source, problems);
+        checkThreat(source);
 
         if (problems.isEmpty()) {
             line(source, Text.literal("  all checks passed").formatted(Formatting.GREEN));
@@ -555,6 +559,40 @@ public final class KindredsDoctor {
             problems.add("this player's race did not resolve from the base Middle-earth mod - "
                     + "no tree, no traits, no renown will apply");
         }
+    }
+
+    /**
+     * "Why is the world like this" for the calling player: the resolved threat, its rank, and the
+     * high-water figures {@link ThreatState} actually retains.
+     *
+     * <p>Deliberately does NOT report the three raw prior components (commitment/gear/renown) that
+     * feed {@code ThreatService#refresh} - {@code commitmentOf}/{@code gearOf} are private, ephemeral
+     * (recomputed from live player state every refresh, never retained), and adding public plumbing
+     * to {@code ThreatService} just so the doctor could read them once would be new surface for one
+     * diagnostic line. {@code priorMark} (the blended, decayed figure those three feed into) and
+     * {@code competence} are the components {@link ThreatState} actually persists, so those are what
+     * is reported; renown alone is cheaply and correctly available via
+     * {@link RenownService#deedsForRace}, so it is shown too. Informational only - a low/high threat
+     * is not itself a defect, so this never adds to {@code problems}.
+     */
+    private static void checkThreat(ServerCommandSource source) {
+        ServerPlayerEntity player = source.getPlayer();
+        if (player == null) {
+            return;
+        }
+        KindredData data = KindredAttachment.get(player);
+        ThreatState state = data.threat();
+        float threat = ThreatService.threatOf(player);
+        ThreatRank rank = ThreatRank.of(threat);
+        line(source, Text.literal("  " + pad("threat", 11)
+                + String.format(Locale.ROOT, "%.1f/100", threat)
+                + " (" + rank.name().toLowerCase(Locale.ROOT) + ")"
+                + ", prior mark " + String.format(Locale.ROOT, "%.1f", state.priorMark())
+                + ", competence " + String.format(Locale.ROOT, "%.2f", state.competence())
+                + ", renown " + RenownService.deedsForRace(data) + "/4").formatted(Formatting.GRAY));
+        line(source, Text.literal("    commitment/gear are not separately reported - "
+                + "ThreatService recomputes them live each refresh and does not retain them, only "
+                + "the blended prior mark above").formatted(Formatting.DARK_GRAY));
     }
 
     // --- helpers --------------------------------------------------------------------------------

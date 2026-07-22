@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
@@ -113,8 +114,33 @@ public final class ThreatService {
                 (float) player.getAttributeValue(EntityAttributes.MAX_HEALTH)));
 
         float threat = ThreatMath.threat(mark, state.competence());
+        // Captured BEFORE the cache is overwritten - this is the one place the "before" figure a
+        // rank-crossing announcement needs still exists. Absent (null) means this player has no
+        // prior refresh to compare against (first population after login), which announceRankChange
+        // must treat as silence rather than as a crossing from "nothing".
+        Float previous = CACHE.get(player.getUuid());
         CACHE.put(player.getUuid(), threat);
+        announceRankChange(player, previous, threat);
         return threat;
+    }
+
+    /**
+     * Tells the player when their threat crosses a named rank boundary - the story beat is the
+     * crossing, not the number moving (see {@link ThreatRank}). Silent when {@code previous} is
+     * absent: that means this is the player's first refresh since joining, and "nothing" is not a
+     * rank to have risen or fallen from - announcing here would just be a login-spam message.
+     */
+    private static void announceRankChange(ServerPlayerEntity player, Float previous, float threat) {
+        if (previous == null) {
+            return;
+        }
+        ThreatRank was = ThreatRank.of(previous);
+        ThreatRank now = ThreatRank.of(threat);
+        if (was == now) {
+            return;
+        }
+        String key = now.ordinal() > was.ordinal() ? "kindreds.threat.risen" : "kindreds.threat.fallen";
+        player.sendMessage(Text.translatable(key, Text.translatable(now.translationKey())), false);
     }
 
     /**

@@ -2377,5 +2377,13 @@
   "kindreds.deed.dimension.minecraft.the_end": "Край",
   "kindreds.deed.dimension.minecraft.overworld": "Верхний мир",
   "kindreds.deed.item.minecraft.banners": "знамя",
-  "kindreds.deeds.title_held": "Этот титул ваш."
+  "kindreds.deeds.title_held": "Этот титул ваш.",
+  "kindreds.threat.regard": "Взгляд земли: %s",
+  "kindreds.threat.rank.unnoticed": "Незамеченный",
+  "kindreds.threat.rank.watched": "Под наблюдением",
+  "kindreds.threat.rank.marked": "Отмеченный",
+  "kindreds.threat.rank.hunted": "Преследуемый",
+  "kindreds.threat.rank.shadow": "Тень легла на вас",
+  "kindreds.threat.risen": "%s обращает на вас взор.",
+  "kindreds.threat.fallen": "Взгляд земли слабеет: %s."
 }

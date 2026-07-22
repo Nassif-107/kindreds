@@ -2377,5 +2377,13 @@
   "kindreds.deed.dimension.minecraft.the_end": "the End",
   "kindreds.deed.dimension.minecraft.overworld": "the Overworld",
   "kindreds.deed.item.minecraft.banners": "a banner",
-  "kindreds.deeds.title_held": "You hold this title."
+  "kindreds.deeds.title_held": "You hold this title.",
+  "kindreds.threat.regard": "The land's regard: %s",
+  "kindreds.threat.rank.unnoticed": "Unnoticed",
+  "kindreds.threat.rank.watched": "Watched",
+  "kindreds.threat.rank.marked": "Marked",
+  "kindreds.threat.rank.hunted": "Hunted",
+  "kindreds.threat.rank.shadow": "The Shadow is upon you",
+  "kindreds.threat.risen": "%s has taken notice of you.",
+  "kindreds.threat.fallen": "The land's regard for you fades to %s."
 }

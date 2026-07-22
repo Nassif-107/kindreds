@@ -3,6 +3,8 @@ package com.kindreds.client.screen;
 import com.kindreds.client.ClientDeeds;
 import com.kindreds.playerdata.ClientKindredData;
 import com.kindreds.playerdata.KindredData;
+import com.kindreds.threat.ThreatMath;
+import com.kindreds.threat.ThreatRank;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -110,15 +112,27 @@ public class KindredDeedsScreen extends Screen {
                 cx - tw / 2, py + 10, INK_HEADER, false);
 
         // The one number a player came here for: what their deeds are worth.
+        int headY = py + 22;
         String tally = deeds.isEmpty()
                 ? I18n.translate("kindreds.deeds.norace")
                 : I18n.translate("kindreds.deeds.tally", done, deeds.size(), done * 5);
         int sw = textRenderer.getWidth(tally);
-        ctx.drawText(textRenderer, Text.literal(tally), cx - sw / 2, py + 22,
+        ctx.drawText(textRenderer, Text.literal(tally), cx - sw / 2, headY,
                 done > 0 ? DONE : INK_MUTE, false);
-        ctx.fill(px + 30, py + 34, px + pw - 30, py + 35, RULE);
+        headY += LINE + 1;
 
-        int viewTop = py + 40;
+        // The land's regard for you, as a name rather than the number that drives it - the number
+        // itself stays in the doctor for anyone who wants to know why. Flowed from the running Y
+        // (not a fixed offset) so a shorter tally line above it never leaves a gap or an overlap.
+        float threat = ThreatMath.threat(data.threat().priorMark(), data.threat().competence());
+        Text rank = Text.translatable("kindreds.threat.regard",
+                Text.translatable(ThreatRank.of(threat).translationKey()));
+        int rw = textRenderer.getWidth(rank);
+        ctx.drawText(textRenderer, rank, cx - rw / 2, headY, INK_MUTE, false);
+        headY += LINE + 1;
+
+        ctx.fill(px + 30, headY, px + pw - 30, headY + 1, RULE);
+        int viewTop = headY + 6;
         int viewBottom = py + ph - 20;
         viewHeight = Math.max(1, viewBottom - viewTop);
         clampScroll();

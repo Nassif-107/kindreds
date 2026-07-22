@@ -1,6 +1,7 @@
 package com.kindreds.client.gametest;
 
 import com.kindreds.client.screen.KindredCodexScreen;
+import com.kindreds.client.screen.KindredsSettingsScreen;
 import com.kindreds.client.screen.SkillTreeScreen;
 import com.kindreds.playerdata.ClientKindredData;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -62,6 +63,13 @@ public class ScreenIterationTest implements FabricClientGameTest {
                         ClientKindredData.INSTANCE, null));
                 context.waitTicks(10);
                 context.takeScreenshot("deeds-s" + scale);
+
+                // The settings screen (Task 6's flow-layout) and the Deeds page (this task's rank
+                // line) are the two screens this task actually needs proof of: no overlapping text
+                // at any GUI scale.
+                context.setScreen(() -> new KindredsSettingsScreen(null));
+                context.waitTicks(10);
+                context.takeScreenshot("settings-s" + scale);
 
                 context.setScreen(() -> new com.kindreds.client.screen.KindredHubScreen());
                 context.waitTicks(8);
