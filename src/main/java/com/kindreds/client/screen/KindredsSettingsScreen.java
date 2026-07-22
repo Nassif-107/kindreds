@@ -48,6 +48,15 @@ public class KindredsSettingsScreen extends Screen {
     private final List<int[]> flagRects = new ArrayList<>();
     private final Screen parent;
 
+    /** Vertical scroll offset (px) applied to the panel body when {@code panelH} exceeds the
+     * available window height - the safety net for GUI scales/window sizes where even {@code compact}
+     * mode cannot make everything fit. Clamped to {@code [0, maxScroll]} every render/scroll. */
+    private int scrollY;
+
+    /** {@code panelH - visibleHeight} as of the last render, i.e. the current scroll clamp ceiling.
+     * Kept as a field so {@link #mouseScrolled} can clamp without redoing the layout math. */
+    private int maxScroll;
+
     public KindredsSettingsScreen(Screen parent) {
         super(Text.translatable("kindreds.settings.title"));
         this.parent = parent;
@@ -77,7 +86,14 @@ public class KindredsSettingsScreen extends Screen {
         // Compact when the full layout genuinely will not fit, not when the window is merely small:
         // the roomy metrics need head + 5 presets + rules + 5 flags, and at 854x480 that overran the
         // bottom and cut the last toggles off entirely.
-        int fullHeight = 56 + PRESETS.length * 38 + 24 + FLAGS.length * 18 + 26;
+        // This must mirror the roomy (non-compact) branch of the panelH formula below - head + 5
+        // presets + rules gap + 5 flags + world-answers gap + 4 world-answers rows + footer gap.
+        // It previously stopped after FLAGS, so it under-counted the panel by the whole "The world
+        // answers" section and never compacted for a screen that, once that section was added, no
+        // longer fit - which is exactly why that section and the footer ran off the bottom at scales
+        // 2-4: the decision below thought there was room when there wasn't.
+        int fullHeight = 56 + PRESETS.length * 38 + 24 + FLAGS.length * 18 + 24
+                + WORLD_ANSWERS_ROWS.length * 18 + 26;
         // Conservative on purpose: the roomy layout measured 386 but drew past the bottom of a
         // 480-tall window, cutting the last two toggles. Rather than keep guessing at the true
         // height, the roomy variant is reserved for windows with room to spare - compact loses only
@@ -90,13 +106,35 @@ public class KindredsSettingsScreen extends Screen {
         // was painted straight over them - which is why the xp/cap/scaling line appeared to sit
         // behind Fireside. The header now reserves what it actually draws.
         int headH = compact ? 48 : 56;
-        int panelH = headH + PRESETS.length * (rowH + 4) + (compact ? 14 : 24)
+        // bodyH is exactly what the loops below draw (presets, rule flags, world-answers, footer gap)
+        // - kept separate from headH so scrolling can be applied to precisely that content without
+        // needing to re-derive it from panelH later (headH can still grow by a couple of px below when
+        // the numbers line wraps, and bodyH must not drift when that happens).
+        int bodyH = PRESETS.length * (rowH + 4) + (compact ? 14 : 24)
                 + FLAGS.length * flagH + (compact ? 14 : 24)
                 + WORLD_ANSWERS_ROWS.length * flagH + (compact ? 16 : 26);
-        int y = Math.max(4, (this.height - panelH) / 2);
+        int panelH = headH + bodyH;
 
-        ctx.fill(x - 8, y - 10, x + panelW + 8, y + panelH, 0xE0120F0A);
-        ctx.drawBorder(x - 8, y - 10, panelW + 16, panelH + 10, 0xFF4A3D28);
+        // Root cause 2: compact alone can still not be enough at GUI scale 3-4 or a small window -
+        // it drops row height/spacing but not rows. When the panel genuinely does not fit even
+        // compact, pin its top near the screen top and let the body (everything below the header)
+        // scroll, instead of silently drawing "The world answers" and the footer past the bottom
+        // edge where they exist on screen but can neither be seen nor clicked.
+        boolean overflow = panelH > this.height - 12;
+        int y;
+        int panelBottom;
+        if (!overflow) {
+            // Unchanged from before: centered, full content, no scrolling - the common case must not
+            // regress.
+            y = Math.max(4, (this.height - panelH) / 2);
+            panelBottom = y + panelH;
+        } else {
+            y = 4;
+            panelBottom = this.height - 6;
+        }
+
+        ctx.fill(x - 8, y - 10, x + panelW + 8, panelBottom, 0xE0120F0A);
+        ctx.drawBorder(x - 8, y - 10, panelW + 16, panelBottom - (y - 10), 0xFF4A3D28);
 
         ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.settings.title").formatted(Formatting.GOLD),
@@ -104,6 +142,8 @@ public class KindredsSettingsScreen extends Screen {
 
         SyncConfigS2C.View v = ClientConfigMirror.get();
         if (v == null) {
+            scrollY = 0;
+            maxScroll = 0;
             ctx.drawCenteredTextWithShadow(this.textRenderer,
                     Text.translatable("kindreds.settings.unknown").formatted(Formatting.GRAY),
                     this.width / 2, y + 30, 0xFF8A7C60);
@@ -131,7 +171,19 @@ public class KindredsSettingsScreen extends Screen {
             headH = Math.max(headH, 58);
         }
 
-        int by = y + headH;
+        // bodyTop is where the scrollable content (presets onward) actually starts drawing - after
+        // the header, which may just have grown by a couple of px if the numbers line wrapped. The
+        // title/header above bodyTop is never scrolled, so it can never be the thing that's lost.
+        int bodyTop = y + headH;
+        maxScroll = overflow ? Math.max(0, bodyH - (panelBottom - bodyTop)) : 0;
+        scrollY = Math.max(0, Math.min(scrollY, maxScroll));
+
+        // Scissor bounds equal the drawable content box in both branches (in the non-overflow branch
+        // panelBottom - bodyTop == bodyH exactly, by construction of panelH above), so this clips
+        // nothing when everything already fits - only the overflow case actually crops anything.
+        ctx.enableScissor(x - 8, bodyTop, x + panelW + 8, panelBottom);
+
+        int by = bodyTop - scrollY;
         for (Difficulty d : PRESETS) {
             boolean active = d.name().equalsIgnoreCase(v.difficulty());
             int h = rowH;
@@ -199,6 +251,7 @@ public class KindredsSettingsScreen extends Screen {
                 : Text.translatable("kindreds.settings.notop").formatted(Formatting.RED);
         ctx.drawCenteredTextWithShadow(this.textRenderer, foot, this.width / 2, by + 6,
                 isOperator() ? 0xFF8A7C60 : 0xFFDD8060);
+        ctx.disableScissor();
     }
 
     private static boolean flagValue(SyncConfigS2C.View v, String flag) {
@@ -260,6 +313,20 @@ public class KindredsSettingsScreen extends Screen {
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    /** Scrolls the body (presets/flags/world-answers/footer) when the panel is taller than the
+     * window - the safety net for GUI scales 2-4 / small windows where even {@code compact} still
+     * overflows. A no-op (falls through to the superclass) once everything already fits, so this
+     * never fights normal Screen scroll handling in the common case. */
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (maxScroll <= 0) {
+            return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        }
+        scrollY -= (int) Math.round(verticalAmount * 16);
+        scrollY = Math.max(0, Math.min(scrollY, maxScroll));
+        return true;
     }
 
     @Override
