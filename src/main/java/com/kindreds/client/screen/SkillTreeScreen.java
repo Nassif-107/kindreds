@@ -148,6 +148,10 @@ public class SkillTreeScreen extends Screen {
     private final List<int[]> tabRects = new ArrayList<>();   // parallel to tabDisciplines: x,y,w,h
     private final List<Placed> placed = new ArrayList<>();
     private Placed hovered;
+    /** Set during {@link #renderTabRail}, read at the end of {@link #render} - a new player can read
+     * "how do I earn points here?" for a discipline without first clicking into it. Null when the
+     * discipline has no {@code .howto} text authored yet, or nothing is hovered. */
+    private String hoveredTabDiscipline;
 
     // Unlock feedback.
     private String pendingUnlockNodeId;
@@ -456,8 +460,23 @@ public class SkillTreeScreen extends Screen {
         if (hovered != null) {
             NodeTooltip.render(ctx, MinecraftClient.getInstance(), hovered.node(), hovered.state(),
                     tree, theme, mouseX, mouseY, width, height);
+        } else if (hoveredTabDiscipline != null) {
+            renderDisciplineTabTooltip(ctx, mouseX, mouseY);
         }
         super.render(ctx, mouseX, mouseY, deltaTicks);
+    }
+
+    /** The tab-rail hover card: the discipline's name and - where authored - how it is earned. Reuses
+     * {@link #hoveredTabDiscipline} rather than re-hit-testing, and silently draws nothing extra
+     * beyond the name when no {@code .howto} text exists yet for the discipline. */
+    private void renderDisciplineTabTooltip(DrawContext ctx, int mouseX, int mouseY) {
+        String howtoKey = "kindreds.discipline." + hoveredTabDiscipline + ".howto";
+        List<Text> lines = new ArrayList<>();
+        lines.add(Text.literal(titleCase(hoveredTabDiscipline)).formatted(Formatting.BOLD));
+        if (I18n.hasTranslation(howtoKey)) {
+            lines.add(Text.translatable(howtoKey).formatted(Formatting.GRAY));
+        }
+        NodeTooltip.renderTextBox(ctx, MinecraftClient.getInstance(), lines, theme, mouseX, mouseY, width, height);
     }
 
     private void renderNoRacePrompt(DrawContext ctx) {
@@ -511,12 +530,16 @@ public class SkillTreeScreen extends Screen {
         ctx.enableScissor(rail[0] + 1, listTop, rail[0] + rail[2] - 1, listBottom);
 
         tabRects.clear();
+        hoveredTabDiscipline = null;
         int y = listTop + (int) railScroll;
         for (String disc : tabDisciplines) {
             int[] r = {rail[0] + 6, y, rail[2] - 12, rowH - 4};
             tabRects.add(r);
             boolean sel = disc.equals(selectedDiscipline);
             boolean hover = within(r, mouseX, mouseY);
+            if (hover && mouseY >= listTop && mouseY < listBottom) {
+                hoveredTabDiscipline = disc;
+            }
             boolean hasNodes = disciplinesWithNodes.contains(disc);
             int avail = available(data, disc);
 
@@ -1123,6 +1146,22 @@ public class SkillTreeScreen extends Screen {
         y += 12;
         ctx.drawText(textRenderer, Text.translatable("kindreds.tree.xp_line", xp, next).formatted(Formatting.DARK_GRAY), x, y, 0xFF9A9484, false);
         y += 18;
+
+        // "How do I earn points here?" is the single most common thing a new player cannot answer
+        // just from the level/points/XP-bar this panel already shows - so it gets its own line,
+        // sourced from the same key the tab-rail hover card reads (see renderTabRail).
+        String howtoKey = "kindreds.discipline." + selectedDiscipline + ".howto";
+        if (I18n.hasTranslation(howtoKey)) {
+            ctx.drawText(textRenderer, Text.translatable("kindreds.tree.howto_heading").formatted(Formatting.GOLD),
+                    x, y, 0xFFD8B45F, false);
+            y += 11;
+            for (var line : textRenderer.wrapLines(Text.translatable(howtoKey).formatted(Formatting.GRAY), panel[2] - 20)) {
+                ctx.drawText(textRenderer, line, x, y, 0xFFB6B0A2, false);
+                y += 10;
+            }
+            y += 6;
+        }
+
         ctx.drawText(textRenderer, Text.translatable("kindreds.tree.click_node").formatted(Formatting.ITALIC),
                 x, y, 0xFF9A9484, false);
         return y + 16;
@@ -1174,10 +1213,12 @@ public class SkillTreeScreen extends Screen {
         ctx.drawText(textRenderer, Text.literal(I18n.translate("kindreds.tree.effects")).formatted(Formatting.BOLD), x, y, accent, false);
         y += 12;
         for (var ability : node.abilities()) {
-            // describe() embeds legacy color codes (e.g. curses); the String draw path honors them.
-            for (var line : textRenderer.wrapLines(Text.literal(NodeTooltip.describe(ability)), wrap)) {
-                ctx.drawText(textRenderer, line, x + 4, y, 0xFFE6E0D0, false);
-                y += 10;
+            // describeLines() embeds legacy color codes (e.g. curses); the String draw path honors them.
+            for (String desc : NodeTooltip.describeLines(ability)) {
+                for (var line : textRenderer.wrapLines(Text.literal(desc), wrap)) {
+                    ctx.drawText(textRenderer, line, x + 4, y, 0xFFE6E0D0, false);
+                    y += 10;
+                }
             }
         }
         y += 4;

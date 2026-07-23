@@ -49,8 +49,15 @@ public final class NodeTooltip {
 
     public static void render(DrawContext ctx, MinecraftClient client, SkillNode node, TreeRenderer.NodeState state,
                                SkillTree tree, Theme theme, int mouseX, int mouseY, int screenW, int screenH) {
+        renderBox(ctx, client, buildLines(client, node, state, tree), theme, mouseX, mouseY, screenW, screenH);
+    }
+
+    /** A small hover card of already-wrapped {@code lines} anchored near the mouse, flipping to the
+     * left/up edge of the screen when it would otherwise run off it. Factored out of {@link #render}
+     * so any hover target (a node, a discipline tab) gets the same look with no duplicated box math. */
+    public static void renderBox(DrawContext ctx, MinecraftClient client, List<OrderedText> lines, Theme theme,
+                                  int mouseX, int mouseY, int screenW, int screenH) {
         TextRenderer tr = client.textRenderer;
-        List<OrderedText> lines = buildLines(client, node, state, tree);
 
         int width = MAX_WIDTH;
         for (OrderedText line : lines) {
@@ -82,6 +89,18 @@ public final class NodeTooltip {
         }
     }
 
+    /** Wraps each of {@code rawLines} (plain, unwrapped {@link Text}) to {@link #MAX_WIDTH} and hands
+     * the result to {@link #renderBox} - the entry point for hover cards built from arbitrary text
+     * rather than a {@link SkillNode} (e.g. a discipline tab's "how to earn" card). */
+    public static void renderTextBox(DrawContext ctx, MinecraftClient client, List<Text> rawLines, Theme theme,
+                                      int mouseX, int mouseY, int screenW, int screenH) {
+        List<OrderedText> lines = new ArrayList<>();
+        for (Text t : rawLines) {
+            addWrapped(lines, client.textRenderer, t);
+        }
+        renderBox(ctx, client, lines, theme, mouseX, mouseY, screenW, screenH);
+    }
+
     private static List<OrderedText> buildLines(MinecraftClient client, SkillNode node, TreeRenderer.NodeState state,
                                                  SkillTree tree) {
         TextRenderer tr = client.textRenderer;
@@ -91,7 +110,9 @@ public final class NodeTooltip {
         addWrapped(lines, tr, Text.literal(flavor(node)).formatted(Formatting.GRAY));
 
         for (AbilityDef ability : node.abilities()) {
-            addWrapped(lines, tr, Text.literal(describe(ability)));
+            for (String line : describeLines(ability)) {
+                addWrapped(lines, tr, Text.literal(line));
+            }
         }
 
         SkillNode.Cost cost = node.cost();
@@ -160,6 +181,46 @@ public final class NodeTooltip {
             case ContextualBoon c -> I18n.translate("kindreds.kind.contextual");
             case PerkDef p -> I18n.translate("kindreds.kind.perk");
         };
+    }
+
+    /**
+     * Every line describing {@code ability}'s effect. Almost always just {@link #describe}'s one
+     * line - except an {@link ActiveAbilityDef}, which a player has no way to learn the shape of
+     * before spending a point in it: the button and the cooldown were all the tooltip ever said.
+     * Two more lines are added when there is something to say:
+     * <ul>
+     *   <li>what it grants the caster - read straight from {@link ActiveAbilityDef#effects()}, so it
+     *       can never drift out of sync with what activating the node actually does;</li>
+     *   <li>what it does to the world - {@code kindreds.ability.<path>.desc}, hand-authored (world
+     *       effects live as Java constants in {@code ActiveAbilityHandlers}, with no data-driven
+     *       surface this tooltip can read at runtime), so it is present only where authored and
+     *       silently absent otherwise rather than printing nothing useful.</li>
+     * </ul>
+     */
+    static List<String> describeLines(AbilityDef ability) {
+        List<String> lines = new ArrayList<>();
+        lines.add(describe(ability));
+        if (ability instanceof ActiveAbilityDef act) {
+            if (!act.effects().isEmpty()) {
+                lines.add(describeSelfEffects(act.effects()));
+            }
+            String descKey = "kindreds.ability." + act.abilityId().getPath() + ".desc";
+            if (I18n.hasTranslation(descKey)) {
+                lines.add("§7" + I18n.translate(descKey));
+            }
+        }
+        return lines;
+    }
+
+    /** "Grants Strength 1, Speed 1 for 15s" - the same "Name Level" shape {@link #describe} already
+     * uses for a passive {@link StatusEffectDef}, joined and given the one duration every effect an
+     * active ability grants shares (they are cast together, so they end together). */
+    private static String describeSelfEffects(List<StatusEffectDef> effects) {
+        List<String> parts = new ArrayList<>();
+        for (StatusEffectDef s : effects) {
+            parts.add(effectName(s.effect()) + " " + (s.amplifier() + 1));
+        }
+        return I18n.translate("kindreds.effect.grants_for", String.join(", ", parts), effects.get(0).durationTicks() / 20);
     }
 
     /** One line describing the mechanical effect of a single ability - curses render in the warning
