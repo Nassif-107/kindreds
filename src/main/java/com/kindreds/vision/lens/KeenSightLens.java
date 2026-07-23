@@ -18,9 +18,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Elf's "keen-sight" lens. While active, nearby living creatures are lit with vanilla's glowing
- * entity outline (the same see-through silhouette a spectral arrow paints) so the Eldar sense the
- * living around them even through stone - plus a gentle starlight gamma lift at night.
+ * Elf's "keen-sight" lens. While active, nearby <b>threats</b> - vanilla hostiles and the base
+ * Middle-earth mod's EVIL-faction NPCs, wargs and trolls - are lit with vanilla's glowing entity
+ * outline (the same see-through silhouette a spectral arrow paints) so the Eldar sense their enemies
+ * even through stone - plus a gentle starlight gamma lift at night. See {@link #isThreat}: neutral
+ * folk and animals are deliberately left un-lit so the outline reads as "enemy near", not "life near".
  *
  * <h2>Why glow, not boxes</h2>
  * The earlier P1 version drew an axis-aligned wireframe {@code VertexRendering.drawBox} per entity -
@@ -31,9 +33,10 @@ import java.util.Set;
  * we can switch them back off the instant they leave range or the lens is dropped - never leaving a
  * creature stuck glowing.
  *
- * <p>Threat-colour tinting (hostiles red, friends teal) needs a scoreboard team colour, which is
- * server-owned; the white silhouette is the honest client-only result for now. Faction-aware colour
- * is a later phase and only changes the team lookup, not this scan/toggle framework.
+ * <p>The silhouette is vanilla white (a coloured outline would need a server-owned scoreboard team
+ * colour); since only threats are lit now, an un-coloured outline is unambiguous - everything glowing
+ * is an enemy. Per-faction colour tinting remains a possible later phase and would only change the
+ * colour lookup, not this scan/toggle framework.
  */
 public final class KeenSightLens {
     private KeenSightLens() {
@@ -116,7 +119,18 @@ public final class KeenSightLens {
         return cachedRadius;
     }
 
-    /** Sets the glow flag on the nearest living creatures within range and clears it on any entity
+    /** A client-side "is this a threat worth revealing" test: vanilla hostiles, plus the base
+     * Middle-earth mod's EVIL-faction NPCs (orcs, uruks, hostile brigands) and its wargs and trolls -
+     * resolved through the absence-safe {@link com.kindreds.threat.MiddleEarthFoes} gate, which needs
+     * only the entity (no server player), so it works on the client and stays inert when the base mod
+     * isn't installed. Cows, allied folk and neutral villagers are left un-lit, so the silhouette
+     * actually means "an enemy is near" instead of merely "something is alive" - which is what made the
+     * old sense-all-life version feel pointless. */
+    private static boolean isThreat(LivingEntity e) {
+        return VisionThreat.isThreat(e);
+    }
+
+    /** Sets the glow flag on the nearest hostile creatures within range and clears it on any entity
      * that has since left the set - so the outline tracks the lens exactly. */
     private static void updateGlow(MinecraftClient mc) {
         int radius = radius(mc);
@@ -126,7 +140,7 @@ public final class KeenSightLens {
         Box searchBox = mc.player.getBoundingBox().expand(radius);
 
         List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, searchBox,
-                e -> e != mc.player && e.isAlive() && e.squaredDistanceTo(eye) <= radiusSq);
+                e -> e != mc.player && e.isAlive() && e.squaredDistanceTo(eye) <= radiusSq && isThreat(e));
         nearby.sort((a, b) -> Double.compare(a.squaredDistanceTo(eye), b.squaredDistanceTo(eye)));
 
         Set<Integer> next = new HashSet<>();

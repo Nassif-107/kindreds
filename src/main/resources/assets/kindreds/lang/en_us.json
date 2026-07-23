@@ -645,7 +645,6 @@
   "kindreds.perk.ally_aura": "Leadership: you and allies within %d blocks are heartened",
   "kindreds.perk.war_pack": "War-pack: +%d%% melee damage per nearby foe (up to %d)",
   "kindreds.perk.evasion": "Evasion: %d%% chance to shrug off %d%% of a hit",
-  "kindreds.perk.light_ward": "Star-glass: light wards off creatures of the dark",
   "kindreds.context.starlight": "Starlight",
   "kindreds.context.daylight": "Daylight",
   "kindreds.context.underground": "Underground",
