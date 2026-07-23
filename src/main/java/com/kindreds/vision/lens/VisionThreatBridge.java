@@ -41,7 +41,11 @@ final class VisionThreatBridge {
             }
             try {
                 Faction faction = FactionLookup.getFactionById(entity.getWorld(), factionId);
-                return faction != null && faction.getDisposition() == DispositionType.EVIL;
+                // Any non-GOOD faction is a threat: EVIL (orcs, uruks, Mordor) and NEUTRAL alike -
+                // NEUTRAL in this mod is the hostile-to-all factions (Brigands, Wild Goblins), which
+                // a player very much wants to see coming. Only GOOD factions (the free peoples) are
+                // left un-lit, alongside animals and allies.
+                return faction != null && faction.getDisposition() != DispositionType.GOOD;
             } catch (FactionIdentifierException e) {
                 return false;
             }

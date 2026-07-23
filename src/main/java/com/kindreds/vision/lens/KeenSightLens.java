@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * Elf's "keen-sight" lens. While active, nearby <b>threats</b> - vanilla hostiles and the base
- * Middle-earth mod's EVIL-faction NPCs, wargs and trolls - are lit with vanilla's glowing entity
+ * Middle-earth mod's hostile-faction NPCs, wargs and trolls - are lit with vanilla's glowing entity
  * outline (the same see-through silhouette a spectral arrow paints) so the Eldar sense their enemies
  * even through stone - plus a gentle starlight gamma lift at night. See {@link #isThreat}: neutral
  * folk and animals are deliberately left un-lit so the outline reads as "enemy near", not "life near".
@@ -120,7 +120,7 @@ public final class KeenSightLens {
     }
 
     /** A client-side "is this a threat worth revealing" test: vanilla hostiles, plus the base
-     * Middle-earth mod's EVIL-faction NPCs (orcs, uruks, hostile brigands) and its wargs and trolls -
+     * Middle-earth mod's hostile-faction NPCs (orcs, uruks, brigands, wild goblins) and its wargs/trolls -
      * resolved through the absence-safe {@link com.kindreds.threat.MiddleEarthFoes} gate, which needs
      * only the entity (no server player), so it works on the client and stays inert when the base mod
      * isn't installed. Cows, allied folk and neutral villagers are left un-lit, so the silhouette
