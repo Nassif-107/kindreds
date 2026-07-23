@@ -84,6 +84,19 @@ public final class ActiveAbilityHandlers {
         HANDLERS.put("huan_the_hound", (p, w) -> summonWolves(p, w, 1, true));
         HANDLERS.put("call_of_wargs", (p, w) -> summonWolves(p, w, 2, false)); // Uruk warg-pack (wolves as wargs)
         HANDLERS.put("warg_pack", (p, w) -> summonWolves(p, w, 4, false));
+
+        // The Elf tree used to grant the SAME ability under several different names (e.g. four nodes
+        // all silently cast Light of the Phial, four all cast Song of Luthien) - a player training
+        // deeper only ever bought a shorter cooldown, never a new effect. These give each of those
+        // extra nodes a genuinely different mechanic instead, reusing handlers already built for
+        // other races (exactly how call_of_wargs/warg_pack above already reuse summonWolves).
+        HANDLERS.put("quiver_of_lorien", (p, w) -> replenishQuiver(p, w, 12));
+        HANDLERS.put("earendils_journey", (p, w) -> rideOfTheRohirrim(p, w, 8.0));
+        HANDLERS.put("craft_of_the_noldor", (p, w) -> mastersForge(p, w));
+        HANDLERS.put("light_of_the_elder_days", (p, w) -> anduril(p, w, 8.0));
+        HANDLERS.put("keening_song", (p, w) -> dreadNova(p, w, 6.0));
+        HANDLERS.put("song_of_leithian", (p, w) -> skulk(p, w, 12.0));
+        HANDLERS.put("luthiens_grace", (p, w) -> handsOfTheKing(p, w, 10.0));
     }
 
     /** Whether any handler backs {@code abilityId}. An active ability without one unlocks, binds to a
@@ -117,6 +130,17 @@ public final class ActiveAbilityHandlers {
             world.spawnEntity(arrow);
         }
         world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.1f);
+    }
+
+    /** Quiver of Lorien: a modest handful of arrows appears at the archer's belt, as if the wood
+     * itself provided for its own. A resource top-up rather than another burst/status effect - the
+     * one active in the whole roster that is useful for the plain reason of not running dry mid-fight,
+     * deliberately modest (not a refill, not infinite - just enough to matter) so it never substitutes
+     * for actually carrying arrows. */
+    private static void replenishQuiver(ServerPlayerEntity p, ServerWorld world, int amount) {
+        p.getInventory().offerOrDrop(new ItemStack(Items.ARROW, amount));
+        world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, p.getX(), p.getBodyY(0.8), p.getZ(), 12, 0.4, 0.5, 0.4, 0.05);
+        world.playSound(null, p.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.8f, 1.3f);
     }
 
     /** One heavy, piercing arrow - the Eldar's slaying shot. */

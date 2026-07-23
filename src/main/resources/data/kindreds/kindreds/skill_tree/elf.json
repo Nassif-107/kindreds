@@ -20,7 +20,7 @@
       "abilities": [
         {
           "type": "active",
-          "ability_id": "kindreds:arrow_of_the_eldar",
+          "ability_id": "kindreds:quiver_of_lorien",
           "cooldown_ticks": 3600,
           "effects": [
             {
@@ -64,7 +64,7 @@
       "abilities": [
         {
           "type": "active",
-          "ability_id": "kindreds:light_of_the_phial",
+          "ability_id": "kindreds:earendils_journey",
           "cooldown_ticks": 1950,
           "effects": [
             {
@@ -1378,7 +1378,7 @@
       "abilities": [
         {
           "type": "active",
-          "ability_id": "kindreds:light_of_the_phial",
+          "ability_id": "kindreds:craft_of_the_noldor",
           "cooldown_ticks": 2000,
           "effects": [
             {
@@ -1563,7 +1563,7 @@
         },
         {
           "type": "active",
-          "ability_id": "kindreds:light_of_the_phial",
+          "ability_id": "kindreds:light_of_the_elder_days",
           "cooldown_ticks": 1900,
           "effects": [
             {
@@ -1828,7 +1828,7 @@
       "abilities": [
         {
           "type": "active",
-          "ability_id": "kindreds:song_of_luthien",
+          "ability_id": "kindreds:keening_song",
           "cooldown_ticks": 2000,
           "effects": []
         },
@@ -1894,7 +1894,7 @@
       "abilities": [
         {
           "type": "active",
-          "ability_id": "kindreds:song_of_luthien",
+          "ability_id": "kindreds:song_of_leithian",
           "cooldown_ticks": 1800,
           "effects": []
         },
@@ -2111,7 +2111,7 @@
       "abilities": [
         {
           "type": "active",
-          "ability_id": "kindreds:song_of_luthien",
+          "ability_id": "kindreds:luthiens_grace",
           "cooldown_ticks": 1550,
           "effects": []
         },
