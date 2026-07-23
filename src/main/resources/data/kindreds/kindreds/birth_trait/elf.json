@@ -46,12 +46,6 @@
       "amount": 2.0
     },
     {
-      "type": "status_effect",
-      "effect": "minecraft:saturation",
-      "amplifier": 0,
-      "duration_ticks": -1
-    },
-    {
       "type": "contextual_boon",
       "when": "starlight",
       "effect": {

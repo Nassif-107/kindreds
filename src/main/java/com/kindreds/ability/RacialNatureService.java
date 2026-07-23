@@ -78,7 +78,7 @@ public final class RacialNatureService {
         if (elf) {
             neverSicken(player);
         }
-        if (dwarf || uruk) {
+        if (dwarf || uruk || elf) {
             endureHunger(player);
         }
         if (orcKin) {
@@ -97,9 +97,12 @@ public final class RacialNatureService {
     }
 
     /** A well-fed Hobbit is a hale and comfortable one - while their belly is full, they mend
-     * quietly (the Little Folk thrive on good food and plain plenty). */
+     * quietly (the Little Folk thrive on good food and plain plenty). Gated on being genuinely hurt
+     * (below ~80% health) rather than any missing sliver, so it speeds recovery from a real wound
+     * instead of constantly topping off the last half-heart. */
     private static void wellFed(ServerPlayerEntity player) {
-        if (player.getHungerManager().getFoodLevel() >= 18 && player.getHealth() < player.getMaxHealth()) {
+        if (player.getHungerManager().getFoodLevel() >= 18
+                && player.getHealth() < player.getMaxHealth() * 0.8f) {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 40, 0, true, false, false));
         }
     }
@@ -135,18 +138,19 @@ public final class RacialNatureService {
         }
     }
 
-    /** Dwarves and Uruks "suffer toil and hunger more hardily than all other speaking peoples" - so
-     * their food drains far slower, and (critically) that includes the exhaustion spent by sprinting,
-     * fighting, and natural regeneration healing. Vanilla charges every point of healing as ~6.0
-     * exhaustion, which quickly eats a full hunger bar in a drawn-out fight; a race that "rarely needs
-     * food" whose food still evaporates the moment it heals is a hollow buff. Bleeding off ~90% of the
-     * accumulated exhaustion each second makes hunger drain roughly an order of magnitude slower across
-     * ALL sources, without ever hard-stopping it. */
+    /** Races that "suffer toil and hunger more hardily than all other speaking peoples" (Dwarves and
+     * Uruks) or are sustained by a lighter spirit and lembas (Elves) drain food slower - including
+     * the exhaustion spent by sprinting, fighting, and natural-regeneration healing. Vanilla charges
+     * every point of healing as ~6.0 exhaustion, which quickly eats a full hunger bar in a drawn-out
+     * fight; a race that "rarely needs food" whose food still evaporates the moment it heals is a
+     * hollow buff. Bleeding off ~55% of the accumulated exhaustion each second makes hunger drain
+     * roughly twice as slowly across ALL sources - noticeably hardy, but they still get hungry and
+     * must eventually eat (they are no longer effectively immortal on an empty stomach). */
     private static void endureHunger(ServerPlayerEntity player) {
         HungerManager hunger = player.getHungerManager();
         float exhaustion = ((HungerManagerAccessor) hunger).kindreds$getExhaustion();
         if (exhaustion > 0.0f) {
-            hunger.addExhaustion(-exhaustion * 0.9f);
+            hunger.addExhaustion(-exhaustion * 0.55f);
         }
     }
 

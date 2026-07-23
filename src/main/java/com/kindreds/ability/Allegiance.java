@@ -20,6 +20,10 @@ import java.util.function.BiPredicate;
  * <h2>The rule</h2>
  * <ul>
  *   <li>A {@link Monster} is always a foe.</li>
+ *   <li>A base Middle-earth mod mob (orc, uruk, bandit, warg, troll) is a foe when the base mod's
+ *       own faction diplomacy says it is hostile to you - so this is race/faction-aware for free,
+ *       and stays inert when the base mod isn't installed. See {@link
+ *       com.kindreds.threat.MiddleEarthFoes}.</li>
  *   <li>A player is a foe only if the server allows PvP <b>and</b> they are not an ally.</li>
  *   <li>A tamed creature inherits its owner's standing, so you never bomb an ally's wolf.</li>
  *   <li>Anything else (cows, villagers, armour stands) is neither, and abilities leave it alone.</li>
@@ -96,7 +100,12 @@ public final class Allegiance {
             // an ally's hound is not a target; a rival's is
             return pvpEnabled(self) && !isAlly(self, owner);
         }
-        return living instanceof Monster;
+        // A vanilla Monster is always a foe; the base Middle-earth mod ships its enemies (orcs,
+        // uruks, bandits, wargs, trolls) as PassiveEntity/AbstractHorseEntity subclasses that are
+        // NOT Monster, so we also ask the base mod's own faction diplomacy whether this mob is
+        // hostile to this player - which makes it race/faction-aware for free (an Orc player's
+        // orc-kin are not foes; a rival faction's are). Absence-safe when the base mod isn't loaded.
+        return living instanceof Monster || com.kindreds.threat.MiddleEarthFoes.isHostileBaseMob(living, self);
     }
 
     /**
