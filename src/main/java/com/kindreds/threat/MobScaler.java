@@ -67,16 +67,27 @@ public final class MobScaler {
                 mark = mark.withElite(promoted.eliteAbility(), promoted.eliteName());
                 EliteMobs.dress(mob, mark);   // name + visibility + LIVE registration
             }
-            // Natural spawns only (hard bound #2): SPAWNER/SPAWN_EGG/BREEDING/COMMAND/reload never
-            // roll. mark.escort() (hard bound #1, structural not a dial) keeps an escort from ever
-            // escorting - no recursion is even possible via this guard.
-            if (!mark.escort() && "NATURAL".equals(mark.spawnReason())
+            // Natural-occurring spawns only (hard bound #2): SPAWNER/SPAWN_EGG/BREEDING/COMMAND and
+            // reloads never roll. The base Middle-earth mod spawns its hostile NPCs (orcs, uruks,
+            // brigands) with SpawnReason.JOCKEY rather than NATURAL, so they'd never get escorts under
+            // a NATURAL-only gate even though they're exactly the enemies escorts are meant for -
+            // JOCKEY is therefore accepted too. mark.escort() (hard bound #1, structural not a dial)
+            // keeps an escort from ever escorting - no recursion is even possible via this guard.
+            if (!mark.escort() && isNaturalOccurring(mark.spawnReason())
                     && Kindreds.CONFIG.escortChance > 0
                     && world.getRandom().nextFloat() < (Kindreds.CONFIG.escortChance / 100f) * scaledGroup) {
                 spawnEscorts(mob, world);
             }
             MobMark.set(mob, mark.withScaled(true));
         });
+    }
+
+    /** Spawn reasons that count as a natural-occurring hostile worth escorting: vanilla's own
+     * {@code NATURAL}, plus {@code JOCKEY} - the reason the base Middle-earth mod spawns its hostile
+     * NPCs under. Every other reason (spawner, egg, breeding, command, reload) is excluded, same as
+     * before. */
+    static boolean isNaturalOccurring(String spawnReason) {
+        return "NATURAL".equals(spawnReason) || "JOCKEY".equals(spawnReason);
     }
 
     /** How many escorts the dimension can absorb right now: 0 at or past 80% of the monster cap,
@@ -113,17 +124,23 @@ public final class MobScaler {
             if (!world.isSpaceEmpty(leader.getDimensions(leader.getPose()).getBoxAt(x, y, z))) {
                 continue;
             }
-            spawnEscortOf(leader.getType(), world, pos);
+            spawnEscortOf(leader.getType(), world, pos, leader);
         }
     }
 
     /** Binds the wildcard captured by {@code EntityType<?>.getType()} to a single type variable so
      * the consumer below type-checks without raw types. */
-    private static <T extends Entity> void spawnEscortOf(EntityType<T> type, ServerWorld world, BlockPos pos) {
+    private static <T extends Entity> void spawnEscortOf(EntityType<T> type, ServerWorld world, BlockPos pos, MobEntity leader) {
         // The 6-arg spawn runs initialize() (difficulty gear) and the consumer BEFORE adding, so the
-        // escort flag is set before its own ENTITY_LOAD fires - it scales, but never rolls escorts or
-        // promotion of its own (see the guards above and Task 4's elite-roll guard).
-        Consumer<T> markAsEscort = escort -> MobMark.set(escort, MobMark.of(escort).withEscort(true));
+        // escort flag is set - and the base-mod NPC identity is copied from the leader - before its
+        // own ENTITY_LOAD fires. It scales, but never rolls escorts or promotion of its own (see the
+        // guards above and Task 4's elite-roll guard). EscortNpcSupport is a no-op for vanilla
+        // leaders and when the base mod is absent; for a base-mod NPC leader it stamps the escort with
+        // the leader's exact faction/rank/gear so it can't come out a mismatched or blank NPC.
+        Consumer<T> markAsEscort = escort -> {
+            MobMark.set(escort, MobMark.of(escort).withEscort(true));
+            EscortNpcSupport.copyNpcIdentity(escort, leader);
+        };
         type.spawn(world, markAsEscort, pos, SpawnReason.NATURAL, false, false);
     }
 
