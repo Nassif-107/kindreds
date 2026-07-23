@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "CraftingResultSlotMixin",
+    "HorseTameActivityMixin",
     "HungerManagerAccessor",
     "ItemMixin",
     "LivingEntityBowSpeedMixin",
@@ -12,7 +13,8 @@
     "MobEntityInitializeMixin",
     "PersistentProjectileEntityAccessor",
     "PersistentProjectileEntityMixin",
-    "PlayerAdvancementTrackerMixin"
+    "PlayerAdvancementTrackerMixin",
+    "WolfTameActivityMixin"
   ],
   "client": [
     "MouseScrollMixin",
