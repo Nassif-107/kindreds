@@ -114,6 +114,7 @@ public final class ActivityHooks {
     private static final long RUNECRAFT_USE_XP = 3;      // use an enchant/anvil/lectern/etc. station
     private static final long BEAST_INTERACT_XP = 2;     // handle an animal
     private static final long BEAST_RIDE_XP = 1;         // per interval while mounted on a beast
+    private static final long BEAST_TAME_XP = 20;        // one-time: successfully tame a wolf or horse
     private static final long LEADERSHIP_CHAMPION_XP = 12; // fell a mighty foe (max health >= 30)
     private static final long LEADERSHIP_LEAD_XP = 1;    // per interval with allies at your side
     private static final long SHADOW_INNOCENT_XP = 10;   // a dark deed: slay the innocent
@@ -178,6 +179,22 @@ public final class ActivityHooks {
             award(sp, BEAST_LORE, BEAST_INTERACT_XP);
         }
         return ActionResult.PASS;
+    }
+
+    // --- Beast-lore (taming milestone): called from WolfTameActivityMixin / HorseTameActivityMixin
+
+    /** Called by {@code com.kindreds.mixin.WolfTameActivityMixin} / {@code
+     * com.kindreds.mixin.HorseTameActivityMixin} the instant a wolf or horse transitions from
+     * untamed to tamed as the direct, synchronous result of this player's {@code interactMob}
+     * call. The mixins themselves guard the untamed->tamed transition (see their javadocs for why
+     * that's exploit-safe against chunk-reload xp farming), so this method just applies the
+     * eligibility gate and awards — heavier than the repeatable {@link #BEAST_INTERACT_XP}/
+     * {@link #BEAST_RIDE_XP} sources since taming isn't spammable. */
+    public static void onAnimalTamed(ServerPlayerEntity player) {
+        if (!isEligible(player)) {
+            return;
+        }
+        award(player, BEAST_LORE, BEAST_TAME_XP);
     }
 
     private static boolean isRunecraftStation(Block block) {
