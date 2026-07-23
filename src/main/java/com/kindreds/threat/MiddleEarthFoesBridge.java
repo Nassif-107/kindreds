@@ -92,9 +92,12 @@ final class MiddleEarthFoesBridge {
         return false;
     }
 
-    /** Spawn-time scope has no player to ask, so NPCs gate on their faction's coarse disposition:
-     * an EVIL-faction NPC arrives as an enemy of everyone. Finer per-player hostility still governs
-     * the per-player paths through isHostileBaseMob. Wargs and trolls are hostile by construction. */
+    /** Spawn-time scope has no player to ask, so NPCs gate on their faction's coarse disposition: any
+     * non-GOOD faction arrives as an enemy of everyone. That is EVIL (orcs, uruks, Mordor) AND NEUTRAL
+     * (Brigands, Wild Goblins) - in this mod NEUTRAL is the hostile-to-all bandit factions, which a
+     * player fights just like the orcs, so they must scale too; only GOOD (the free peoples) is
+     * excluded. Finer per-player hostility still governs the per-player paths through isHostileBaseMob.
+     * Wargs and trolls are hostile by construction. */
     static boolean isHostileFactionMobAtSpawn(Entity entity) {
         if (entity instanceof WargEntity || entity instanceof TrollEntity || entity instanceof CaveTrollEntity) {
             return true;
@@ -104,7 +107,7 @@ final class MiddleEarthFoesBridge {
             if (factionId == null) return false;
             try {
                 Faction faction = FactionLookup.getFactionById(entity.getWorld(), factionId);
-                return faction != null && faction.getDisposition() == DispositionType.EVIL;
+                return faction != null && faction.getDisposition() != DispositionType.GOOD;
             } catch (FactionIdentifierException e) {
                 return false;
             }
