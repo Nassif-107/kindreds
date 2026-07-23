@@ -590,8 +590,8 @@
         {
           "type": "attribute",
           "attribute": "minecraft:sneaking_speed",
-          "operation": "add_value",
-          "amount": 0.15
+          "operation": "add_multiplied_base",
+          "amount": 0.08
         }
       ]
     },
@@ -903,8 +903,8 @@
         {
           "type": "attribute",
           "attribute": "minecraft:sneaking_speed",
-          "operation": "add_value",
-          "amount": 0.25
+          "operation": "add_multiplied_base",
+          "amount": 0.12
         },
         {
           "type": "attribute",

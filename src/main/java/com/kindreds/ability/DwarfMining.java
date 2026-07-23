@@ -1,7 +1,7 @@
 package com.kindreds.ability;
 
+import com.kindreds.Kindreds;
 import com.kindreds.data.ability.PerkDef;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -11,12 +11,16 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.BlastingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -35,7 +39,9 @@ import java.util.Set;
  *   <li><b>vein_miner</b> ({@code max}) - one strike takes the whole connected ore seam.</li>
  *   <li><b>miners_rhythm</b> ({@code amplifier}) - a short Haste for striking ore.</li>
  *   <li><b>auto_smelt</b> - ores you mine come up already smelted (recipe-driven, so it covers modded
- *       metals too). Gems and the like, which have no smelting recipe, are left untouched.</li>
+ *       metals too - tried as both a furnace and a blast-furnace recipe, since the base mod's tin,
+ *       lead, silver and mithril only register a blasting recipe for their raw ore). Gems and the
+ *       like, which have no smelting recipe of either kind, are left untouched.</li>
  *   <li><b>ore_magnet</b> - mined drops fly straight into your pack, none left on the ground.</li>
  *   <li><b>prospector_xp</b> ({@code xp}) - the Dwarf knows the worth of stone: bonus experience.</li>
  * </ul>
@@ -49,8 +55,18 @@ public final class DwarfMining {
 
     private static final ThreadLocal<Boolean> VEINING = ThreadLocal.withInitial(() -> false);
 
+    /**
+     * Every ore this kit answers to: the Fabric convention tag ({@code c:ores}, which covers vanilla
+     * ore blocks) plus the base mod's own tin/lead/silver/mithril ore tags, referenced optionally so
+     * a world without the base mod loads this tag as just {@code c:ores}. The base mod ships those
+     * four metals under its own {@code middle-earth:*_ores} tags only - none of them are in
+     * {@code c:ores} - so checking the convention tag alone silently excluded all four (the entire
+     * vein-miner/auto-smelt/ore-magnet/miner's-rhythm/prospector kit did nothing for them).
+     */
+    private static final TagKey<Block> DWARF_ORES = TagKey.of(RegistryKeys.BLOCK, Identifier.of(Kindreds.MOD_ID, "dwarf_ores"));
+
     public static void onBlockBroken(ServerWorld world, ServerPlayerEntity player, BlockPos pos, BlockState state) {
-        if (VEINING.get() || !state.isIn(ConventionalBlockTags.ORES)) {
+        if (VEINING.get() || !state.isIn(DWARF_ORES)) {
             return;
         }
         // Miner's rhythm: a short Haste for striking ore.
@@ -150,19 +166,29 @@ public final class DwarfMining {
         }
     }
 
-    /** The smelted form of {@code in} if a furnace recipe exists (scaled to the stack), else {@code in}
-     * unchanged. Recipe-driven, so modded ores smelt to their own results. */
+    /** The smelted form of {@code in} if a furnace OR a blast-furnace recipe exists (scaled to the
+     * stack), else {@code in} unchanged. Recipe-driven, so modded ores smelt to their own results -
+     * tried as a furnace recipe first, then a blast-furnace one, because the base mod's tin, lead,
+     * silver and mithril register only the latter for their raw ore (a furnace-only lookup silently
+     * left those four the one exception to "auto-smelt just works"). */
     private static ItemStack smelt(ServerWorld world, ItemStack in) {
         if (in.isEmpty()) {
             return in;
         }
         SingleStackRecipeInput input = new SingleStackRecipeInput(in);
-        Optional<RecipeEntry<SmeltingRecipe>> match =
+        Optional<RecipeEntry<SmeltingRecipe>> smelting =
                 world.getRecipeManager().getFirstMatch(RecipeType.SMELTING, input, world);
-        if (match.isEmpty()) {
-            return in;
+        ItemStack result;
+        if (smelting.isPresent()) {
+            result = smelting.get().value().craft(input, world.getRegistryManager());
+        } else {
+            Optional<RecipeEntry<BlastingRecipe>> blasting =
+                    world.getRecipeManager().getFirstMatch(RecipeType.BLASTING, input, world);
+            if (blasting.isEmpty()) {
+                return in;
+            }
+            result = blasting.get().value().craft(input, world.getRegistryManager());
         }
-        ItemStack result = match.get().value().craft(input, world.getRegistryManager());
         if (result.isEmpty()) {
             return in;
         }

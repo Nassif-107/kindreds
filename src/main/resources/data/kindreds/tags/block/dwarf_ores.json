@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#c:ores",
+    { "id": "#middle-earth:tin_ores", "required": false },
+    { "id": "#middle-earth:lead_ores", "required": false },
+    { "id": "#middle-earth:silver_ores", "required": false },
+    { "id": "#middle-earth:mithril_ores", "required": false }
+  ]
+}
