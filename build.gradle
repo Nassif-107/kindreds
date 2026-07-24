@@ -9,8 +9,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     // Compile-only interop with the base Middle-earth mod (present in the instance, not on Maven):
-    modCompileOnly files("${instMods}/SevenStarsAPI-1.0.0-1.21.8-beta.jar")
-    modCompileOnly files("${instMods}/Middle-earth-1.0.0-1.21.8-beta.jar")
+    modCompileOnly files("${instMods}/SevenStarsAPI-1.0.1-1.21.8-beta.jar")
+    modCompileOnly files("${instMods}/Middle-earth-1.0.1-1.21.8-beta.jar")
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
