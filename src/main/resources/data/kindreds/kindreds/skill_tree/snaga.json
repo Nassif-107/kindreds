@@ -89,7 +89,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.15
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.capstone.the_last_snaga",
@@ -171,7 +172,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "snaga.stealth.skulk",
@@ -363,7 +365,8 @@
             "bonus": 0.5
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.stealth.cheap_shot",
@@ -400,7 +403,8 @@
             "duration_ticks": 100
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.stealth.assassin",
@@ -437,7 +441,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.stealth.throat_cutter",
@@ -475,7 +480,8 @@
           }
         }
       ],
-      "exclusive_group": "snaga.stealth.spec"
+      "exclusive_group": "snaga.stealth.spec",
+      "max_rank": 3
     },
     {
       "id": "snaga.stealth.slippery",
@@ -500,7 +506,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.stealth.quick_feet",
@@ -531,7 +538,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.stealth.vanish",
@@ -665,7 +673,8 @@
             "bonus": 0.1
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "snaga.archery.poisoned_arrows",
@@ -840,7 +849,8 @@
             "bonus": 0.12
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.archery.from_the_shadows",
@@ -872,7 +882,8 @@
             "max": 0.6
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.archery.ambush_shot",
@@ -960,7 +971,8 @@
             "ticks": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.archery.rain_of_darts",
@@ -984,7 +996,8 @@
             "arrows": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.archery.pelt_them",
@@ -1015,7 +1028,8 @@
             "ticks": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.archery.stinging_swarm",
@@ -1486,7 +1500,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.shadow.crippling_strike",
@@ -1529,7 +1544,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.shadow.festering_wound",
@@ -1566,7 +1582,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.shadow.death_of_a_thousand_cuts",
@@ -1610,7 +1627,8 @@
           }
         }
       ],
-      "exclusive_group": "snaga.shadow.spec"
+      "exclusive_group": "snaga.shadow.spec",
+      "max_rank": 3
     },
     {
       "id": "snaga.shadow.spite_of_the_slave",
@@ -1696,7 +1714,8 @@
             "health": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "snaga.survival.runner",
@@ -1719,7 +1738,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "snaga.survival.fleet",
@@ -1742,7 +1762,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.12
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.nimble_dodge",
@@ -1767,7 +1788,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.tireless_runner",
@@ -1798,7 +1820,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.swift_as_a_shadow",
@@ -1830,7 +1853,8 @@
           }
         }
       ],
-      "exclusive_group": "snaga.survival.spec"
+      "exclusive_group": "snaga.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.orc_draught",
@@ -1898,7 +1922,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.second_wind",
@@ -2019,7 +2044,8 @@
           "operation": "add_value",
           "amount": 0.5
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.deep_dweller",
@@ -2082,7 +2108,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.pit_survivor",
@@ -2120,7 +2147,8 @@
           "amount": 350.0
         }
       ],
-      "exclusive_group": "snaga.survival.spec"
+      "exclusive_group": "snaga.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "snaga.survival.will_to_live",
@@ -2207,7 +2235,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "snaga.combat.gang_up",
@@ -2232,7 +2261,8 @@
             "max": 6
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "snaga.combat.shiv",
@@ -2262,7 +2292,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.sand_in_the_eyes",
@@ -2305,7 +2336,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.sucker_punch",
@@ -2335,7 +2367,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.dirtiest_fighter",
@@ -2373,7 +2406,8 @@
           }
         }
       ],
-      "exclusive_group": "snaga.combat.spec"
+      "exclusive_group": "snaga.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.pack_tactics",
@@ -2398,7 +2432,8 @@
             "max": 7
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.feeding_frenzy",
@@ -2429,7 +2464,8 @@
             "percent": 0.08
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.swarm_them",
@@ -2460,7 +2496,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.overwhelm",
@@ -2493,7 +2530,8 @@
           }
         }
       ],
-      "exclusive_group": "snaga.combat.spec"
+      "exclusive_group": "snaga.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "snaga.combat.cornered",

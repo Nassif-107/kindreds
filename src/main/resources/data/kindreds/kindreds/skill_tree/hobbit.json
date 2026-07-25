@@ -80,7 +80,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.well_fed",
@@ -101,7 +102,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.survival.hardy",
@@ -132,7 +134,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.survival.tough_as_roots",
@@ -161,7 +164,8 @@
           "operation": "add_value",
           "amount": 1.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.shire_resolve",
@@ -300,7 +304,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.good_food",
@@ -330,7 +335,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.comforts_of_home",
@@ -360,7 +366,8 @@
             "health": 4.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.never_say_die",
@@ -424,7 +431,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.fools_luck",
@@ -455,7 +463,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.luck_of_the_shire",
@@ -486,7 +495,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.impossibly_lucky",
@@ -518,7 +528,8 @@
           }
         }
       ],
-      "exclusive_group": "hobbit.survival.spec"
+      "exclusive_group": "hobbit.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "hobbit.survival.resilience_of_the_shire",
@@ -593,7 +604,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.stealth.slip_away",
@@ -766,7 +778,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.stealth.hard_to_catch",
@@ -797,7 +810,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.stealth.slippery_customer",
@@ -822,7 +836,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.stealth.impossible_to_pin_down",
@@ -854,7 +869,8 @@
           "amount": 0.1
         }
       ],
-      "exclusive_group": "hobbit.stealth.spec"
+      "exclusive_group": "hobbit.stealth.spec",
+      "max_rank": 3
     },
     {
       "id": "hobbit.stealth.light_step",
@@ -883,7 +899,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.stealth.barefoot",
@@ -912,7 +929,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.stealth.soft_footed",
@@ -943,7 +961,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.stealth.unheard_unseen",
@@ -1041,7 +1060,8 @@
             "bonus": 0.1
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.archery.deadly_accuracy",
@@ -1088,7 +1108,8 @@
             "bonus": 0.12
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.archery.keen_eye",
@@ -1148,7 +1169,8 @@
           },
           "foe": "orc"
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.archery.deadeye_of_the_shire",
@@ -1316,7 +1338,8 @@
             "bonus": 0.12
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.archery.goblin_cleaver",
@@ -1341,7 +1364,8 @@
           },
           "foe": "orc"
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.archery.never_miss",
@@ -1471,7 +1495,8 @@
             "speed": 1
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.beast_lore.gentle_folk",
@@ -1495,7 +1520,8 @@
             "radius": 12
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.beast_lore.sure_pony",
@@ -1519,7 +1545,8 @@
             "speed": 2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.hardy_pony",
@@ -1544,7 +1571,8 @@
             "regen": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.pony_of_the_shire",
@@ -1569,7 +1597,8 @@
             "rider_resistance": 0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.bill_the_pony",
@@ -1596,7 +1625,8 @@
           }
         }
       ],
-      "exclusive_group": "hobbit.beast_lore.spec"
+      "exclusive_group": "hobbit.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.beast_friend",
@@ -1626,7 +1656,8 @@
           "operation": "add_value",
           "amount": 1.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.wild_free_folk",
@@ -1664,7 +1695,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.friend_to_all",
@@ -1701,7 +1733,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.master_of_beasts",
@@ -1739,7 +1772,8 @@
           "amount": 2.0
         }
       ],
-      "exclusive_group": "hobbit.beast_lore.spec"
+      "exclusive_group": "hobbit.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.foraging",
@@ -1769,7 +1803,8 @@
             "health": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.herb_lore",
@@ -1799,7 +1834,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.field_and_stream",
@@ -1828,7 +1864,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.at_home_in_the_wild",
@@ -1865,7 +1902,8 @@
           "amount": 3.0
         }
       ],
-      "exclusive_group": "hobbit.beast_lore.spec"
+      "exclusive_group": "hobbit.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "hobbit.beast_lore.friend_of_pony_and_beast",
@@ -1910,7 +1948,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.song.good_cheer",
@@ -1938,7 +1977,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.song.walking_song",
@@ -1974,7 +2014,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "hobbit.song.hearten",
@@ -2004,7 +2045,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.song.merry_company",
@@ -2047,7 +2089,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.song.songs_of_the_shire",
@@ -2083,7 +2126,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.song.heart_of_the_fellowship",
@@ -2140,7 +2184,8 @@
           }
         }
       ],
-      "exclusive_group": "hobbit.song.spec"
+      "exclusive_group": "hobbit.song.spec",
+      "max_rank": 3
     },
     {
       "id": "hobbit.song.share_the_food",
@@ -2199,7 +2244,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "hobbit.song.a_proper_meal",

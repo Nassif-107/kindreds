@@ -63,7 +63,8 @@
           "operation": "add_value",
           "amount": 5.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.grand.return_of_the_king",
@@ -125,7 +126,8 @@
           "operation": "add_value",
           "amount": 6.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.grand.ranger_of_the_north",
@@ -165,7 +167,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.2
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.combat.swordsman",
@@ -186,7 +189,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.combat.valour_of_men",
@@ -215,7 +219,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.combat.bladework",
@@ -251,7 +256,8 @@
             "duration_ticks": 100
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.combat.deft_strokes",
@@ -274,7 +280,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.combat.master_at_arms",
@@ -310,7 +317,8 @@
             "percent": 0.08
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.combat.blademaster_of_gondor",
@@ -340,7 +348,8 @@
           "amount": 0.1
         }
       ],
-      "exclusive_group": "human.combat.spec"
+      "exclusive_group": "human.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "human.combat.defiance",
@@ -539,7 +548,8 @@
             "percent": 0.2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.combat.foe_of_the_shadow",
@@ -572,7 +582,8 @@
           },
           "foe": "troll"
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.combat.flame_of_the_west",
@@ -773,7 +784,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.leadership.presence_of_a_king",
@@ -809,7 +821,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.leadership.banner_bearer",
@@ -839,7 +852,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.leadership.rally",
@@ -869,7 +883,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.leadership.white_tree_banner",
@@ -905,7 +920,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.leadership.standard_of_the_king",
@@ -962,7 +978,8 @@
           }
         }
       ],
-      "exclusive_group": "human.leadership.spec"
+      "exclusive_group": "human.leadership.spec",
+      "max_rank": 3
     },
     {
       "id": "human.leadership.healing_hands",
@@ -1032,7 +1049,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.leadership.hands_of_the_king",
@@ -1193,7 +1211,8 @@
             "health": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.leadership.horn_of_helm_hammerhand",
@@ -1363,7 +1382,8 @@
             "bonus": 0.12
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.archery.steady_aim",
@@ -1394,7 +1414,8 @@
             "bonus": 0.1
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.archery.keen_archer",
@@ -1418,7 +1439,8 @@
             "bonus": 0.12
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.archery.far_shot",
@@ -1443,7 +1465,8 @@
             "max": 0.6
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.archery.piercing_shot",
@@ -1467,7 +1490,8 @@
             "targets": 2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.archery.deadshot",
@@ -1520,7 +1544,8 @@
             "ticks": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.archery.hail_of_arrows",
@@ -1567,7 +1592,8 @@
             "arrows": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.archery.rain_of_gondor",
@@ -1630,7 +1656,8 @@
           },
           "foe": "orc"
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.archery.orc_fletcher",
@@ -1698,7 +1725,8 @@
             "max": 0.6
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.archery.warden_of_the_walls",
@@ -1738,7 +1766,8 @@
           }
         }
       ],
-      "exclusive_group": "human.archery.spec"
+      "exclusive_group": "human.archery.spec",
+      "max_rank": 3
     },
     {
       "id": "human.archery.bowmaster_of_gondor",
@@ -1806,7 +1835,8 @@
             "speed": 1
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.beast_lore.rider_of_the_mark",
@@ -1836,7 +1866,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.beast_lore.groom",
@@ -1861,7 +1892,8 @@
             "regen": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.barded_horse",
@@ -1886,7 +1918,8 @@
             "rider_resistance": 0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.tireless_mount",
@@ -1912,7 +1945,8 @@
             "rider_resistance": 0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.mearas",
@@ -1939,7 +1973,8 @@
           }
         }
       ],
-      "exclusive_group": "human.beast_lore.spec"
+      "exclusive_group": "human.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.cavalryman",
@@ -1993,7 +2028,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.the_charge",
@@ -2090,7 +2126,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.horse_friend",
@@ -2120,7 +2157,8 @@
           "operation": "add_value",
           "amount": 1.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.eored_captain",
@@ -2163,7 +2201,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.marshal_of_the_mark",
@@ -2200,7 +2239,8 @@
           "amount": 3.0
         }
       ],
-      "exclusive_group": "human.beast_lore.spec"
+      "exclusive_group": "human.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "human.beast_lore.lord_of_the_mark",
@@ -2278,7 +2318,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "human.survival.wilderness_lore",
@@ -2367,7 +2408,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.survival.strider",
@@ -2397,7 +2439,8 @@
             "radius": 12
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.survival.grey_ranger",
@@ -2435,7 +2478,8 @@
           "amount": -0.15
         }
       ],
-      "exclusive_group": "human.survival.spec"
+      "exclusive_group": "human.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "human.survival.twilight_vigor",
@@ -2603,7 +2647,8 @@
           "operation": "add_value",
           "amount": 4.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.survival.hardy",
@@ -2632,7 +2677,8 @@
           "operation": "add_value",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.survival.numenorean_blood",
@@ -2663,7 +2709,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "human.survival.blood_of_the_west",
@@ -2701,7 +2748,8 @@
           "amount": 2.0
         }
       ],
-      "exclusive_group": "human.survival.spec"
+      "exclusive_group": "human.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "human.survival.chieftain_of_the_dunedain",

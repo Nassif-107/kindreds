@@ -108,7 +108,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "dwarf.mining.deep_delver",
@@ -166,7 +167,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.mining.gem_cutter",
@@ -204,7 +206,8 @@
             "xp": 3
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.mining.mothers_lode",
@@ -229,7 +232,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.mining.mithril_seeker",
@@ -261,7 +265,8 @@
           "amount": 2.0
         }
       ],
-      "exclusive_group": "dwarf.mining.spec"
+      "exclusive_group": "dwarf.mining.spec",
+      "max_rank": 3
     },
     {
       "id": "dwarf.mining.tireless_pick",
@@ -290,7 +295,8 @@
           "operation": "add_value",
           "amount": 1.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.mining.vein_miner",
@@ -314,7 +320,8 @@
             "max": 16
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.mining.miners_rhythm",
@@ -605,7 +612,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "dwarf.smithing.master_craft",
@@ -629,7 +637,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "dwarf.smithing.plated",
@@ -659,7 +668,8 @@
             "percent": 0.2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.tempered_plate",
@@ -689,7 +699,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.dwarf_mail",
@@ -718,7 +729,8 @@
           "operation": "add_value",
           "amount": 0.05
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.mithril_coat",
@@ -754,7 +766,8 @@
           "amount": 4.0
         }
       ],
-      "exclusive_group": "dwarf.smithing.spec"
+      "exclusive_group": "dwarf.smithing.spec",
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.careful_work",
@@ -778,7 +791,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.forge_master",
@@ -825,7 +839,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.work_of_the_longbeards",
@@ -879,7 +894,8 @@
           "operation": "add_multiplied_base",
           "amount": -0.2
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.anvil_stance",
@@ -915,7 +931,8 @@
             "percent": 0.25
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.smithing.aule_blessed",
@@ -1071,7 +1088,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "dwarf.combat.iron_stance",
@@ -1100,7 +1118,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "dwarf.combat.hewer",
@@ -1123,7 +1142,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.12
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.orc_cleaver",
@@ -1148,7 +1168,8 @@
           },
           "foe": "orc"
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.troll_hewer",
@@ -1179,7 +1200,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.baruk_khazad",
@@ -1211,7 +1233,8 @@
           "foe": "orc"
         }
       ],
-      "exclusive_group": "dwarf.combat.spec"
+      "exclusive_group": "dwarf.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.shield_wall",
@@ -1240,7 +1263,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.stone_skin",
@@ -1270,7 +1294,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.unmovable",
@@ -1305,7 +1330,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.stonehelm_guard",
@@ -1342,7 +1368,8 @@
           "amount": 0.1
         }
       ],
-      "exclusive_group": "dwarf.combat.spec"
+      "exclusive_group": "dwarf.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "dwarf.combat.dwarven_temper",
@@ -1584,7 +1611,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "dwarf.runecraft.rune_of_warding",
@@ -1659,7 +1687,8 @@
             "percent": 0.2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.runecraft.rune_of_endurance",
@@ -1688,7 +1717,8 @@
           "operation": "add_value",
           "amount": 4.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.runecraft.ward_everlasting",
@@ -1724,7 +1754,8 @@
             "percent": 0.2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.runecraft.gate_of_durin",
@@ -1793,7 +1824,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.12
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.runecraft.graven_weapon",
@@ -1829,7 +1861,8 @@
             "duration_ticks": 200
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.runecraft.rune_of_wrath",
@@ -1943,7 +1976,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "dwarf.runecraft.runes_of_moria",
