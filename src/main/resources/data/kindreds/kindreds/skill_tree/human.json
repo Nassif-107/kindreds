@@ -2802,6 +2802,126 @@
           }
         }
       ]
+    },
+    {
+      "id": "human.archery.bowyers_eye",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "human.archery.bowman"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:entity_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "human.beast_lore.horse_sense",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "human.beast_lore.horse_lord"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:tempt_range",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "human.combat.drilled_guard",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "human.combat.swordsman"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "human.leadership.rallying_word",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "human.leadership.captain"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "human.survival.rangers_pace",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "human.survival.ranger"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:movement_efficiency",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }

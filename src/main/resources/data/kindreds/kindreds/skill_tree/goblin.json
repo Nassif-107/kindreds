@@ -2453,6 +2453,102 @@
           }
         }
       ]
+    },
+    {
+      "id": "goblin.combat.gang_up",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.combat.tooth_and_claw"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "goblin.shadow.lightless_eye",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.shadow.gloom_child"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.1
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "goblin.smithing.scrap_hoard",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.smithing.scrap_armor"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "goblin.stealth.crawl",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "goblin.stealth.sneak"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.06
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }

@@ -2169,6 +2169,102 @@
           }
         }
       ]
+    },
+    {
+      "id": "dwarf.combat.stout_arm",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.combat.axe_of_the_dwarves"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "dwarf.mining.lamp_bearer",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:mining",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.mining.stoneworked"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:block_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "dwarf.runecraft.graven_ward",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:runecraft",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.runecraft.rune_lore"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor_toughness",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "dwarf.smithing.bellows_hand",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "dwarf.smithing.smiths_hand"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }

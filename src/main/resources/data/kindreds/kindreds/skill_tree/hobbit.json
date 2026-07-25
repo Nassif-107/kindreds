@@ -2521,6 +2521,78 @@
           "amount": 2.0
         }
       ]
+    },
+    {
+      "id": "hobbit.archery.sure_hand",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.archery.stone_thrower"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:entity_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "hobbit.beast_lore.kind_word",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.beast_lore.pony_friend"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:tempt_range",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "hobbit.stealth.soft_soles",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "hobbit.stealth.quiet_folk"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.06
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }
