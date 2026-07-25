@@ -128,6 +128,27 @@ public final class NodeTooltip {
                     .formatted(Formatting.DARK_GRAY));
         }
 
+        // A fork in the road, said out loud BEFORE it is walked. The exclusive rule was already
+        // enforced server-side and the losing node greys out afterwards, but nothing warned that a
+        // node was a choice at all - so the first a player learned of it was a path they wanted
+        // quietly closing. Named rivals, while the choice is still open.
+        node.exclusiveGroup().ifPresent(group -> {
+            if (state == TreeRenderer.NodeState.OWNED) {
+                return;     // the choice is made; the rivals are already shown locked
+            }
+            List<String> rivals = new ArrayList<>();
+            for (SkillNode other : tree.nodes()) {
+                if (!other.id().equals(node.id())
+                        && other.exclusiveGroup().filter(group::equals).isPresent()) {
+                    rivals.add(displayName(other.id()));
+                }
+            }
+            if (!rivals.isEmpty()) {
+                addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.exclusive_choice",
+                        String.join(", ", rivals))).withColor(ThemeAssets.WARNING_COLOR));
+            }
+        });
+
         // "Sealed" only applies while the capstone isn't yet OWNED - once unlocked it's fully lit and
         // shown as an earned deed instead (see TreeRenderer.drawNode for the matching seal-ring gate).
         node.deedAdvancement().ifPresent(deed -> {
