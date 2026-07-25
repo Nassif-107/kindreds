@@ -62,8 +62,16 @@ public final class DwarfMining {
      * four metals under its own {@code middle-earth:*_ores} tags only - none of them are in
      * {@code c:ores} - so checking the convention tag alone silently excluded all four (the entire
      * vein-miner/auto-smelt/ore-magnet/miner's-rhythm/prospector kit did nothing for them).
+     *
+     * <p>Also carries the base mod's adamant, emerald, ruby and sapphire ores by explicit block id:
+     * those seven gem ores are in <b>no</b> ore tag at all, neither the convention one nor any of the
+     * base mod's own, so a tag union alone would still have missed them.
+     *
+     * <p>Public, and the single gate for every mining perk including {@code mining_fortune} over in
+     * {@link PerkEventHandlers}. Fortune used to check {@code c:ores} instead, which silently exempted
+     * 25 of the base mod's 47 ores - every metal and gem a Dwarf actually digs for.
      */
-    private static final TagKey<Block> DWARF_ORES = TagKey.of(RegistryKeys.BLOCK, Identifier.of(Kindreds.MOD_ID, "dwarf_ores"));
+    public static final TagKey<Block> DWARF_ORES = TagKey.of(RegistryKeys.BLOCK, Identifier.of(Kindreds.MOD_ID, "dwarf_ores"));
 
     public static void onBlockBroken(ServerWorld world, ServerPlayerEntity player, BlockPos pos, BlockState state) {
         if (VEINING.get() || !state.isIn(DWARF_ORES)) {

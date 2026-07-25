@@ -4,6 +4,14 @@
     { "id": "#middle-earth:tin_ores", "required": false },
     { "id": "#middle-earth:lead_ores", "required": false },
     { "id": "#middle-earth:silver_ores", "required": false },
-    { "id": "#middle-earth:mithril_ores", "required": false }
+    { "id": "#middle-earth:mithril_ores", "required": false },
+
+    { "id": "middle-earth:medgon_adamant_ore", "required": false },
+    { "id": "middle-earth:medgon_emerald_ore", "required": false },
+    { "id": "middle-earth:nurgon_emerald_ore", "required": false },
+    { "id": "middle-earth:medgon_ruby_ore", "required": false },
+    { "id": "middle-earth:nurgon_ruby_ore", "required": false },
+    { "id": "middle-earth:medgon_sapphire_ore", "required": false },
+    { "id": "middle-earth:nurgon_sapphire_ore", "required": false }
   ]
 }
