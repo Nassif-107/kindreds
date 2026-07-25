@@ -2695,6 +2695,126 @@
           "amount": 0.12
         }
       ]
+    },
+    {
+      "id": "uruk.beast_lore.warg_handler",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.beast_lore.warg_rider"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:tempt_range",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "uruk.combat.white_hand_drill",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.combat.brute"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "uruk.leadership.fear_of_the_hand",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.leadership.taskmaster"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "uruk.shadow.sun_hardened",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.shadow.cruelty"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.1
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "uruk.smithing.isengard_plate",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:smithing",
+        "points": 2
+      },
+      "prereqs": [
+        "uruk.smithing.crude_forge"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }

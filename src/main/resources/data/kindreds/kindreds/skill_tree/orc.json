@@ -2686,6 +2686,126 @@
         }
       ],
       "max_rank": 3
+    },
+    {
+      "id": "orc.beast_lore.whip_and_meat",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.beast_lore.wolf_friend"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:tempt_range",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "orc.combat.snarling_charge",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:combat",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.combat.orc_brawn"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_speed",
+          "operation": "add_value",
+          "amount": 0.1
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "orc.leadership.the_lash",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:leadership",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.leadership.slave_driver"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:attack_damage",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "orc.shadow.gloom_born",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.shadow.child_of_the_dark"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.1
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "orc.survival.foul_hide",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "orc.survival.orc_hide"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:armor",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }

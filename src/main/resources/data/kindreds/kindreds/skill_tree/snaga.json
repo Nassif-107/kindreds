@@ -2740,6 +2740,102 @@
           }
         }
       ]
+    },
+    {
+      "id": "snaga.archery.crooked_shaft",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.archery.crude_bow"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:entity_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "snaga.shadow.beneath_notice",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:shadow",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.shadow.dark_dweller"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:burning_time",
+          "operation": "add_multiplied_base",
+          "amount": -0.1
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "snaga.stealth.slink",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:stealth",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.stealth.sneak"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:sneaking_speed",
+          "operation": "add_multiplied_base",
+          "amount": 0.06
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "snaga.survival.carrion_gut",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "snaga.survival.scavenger"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_health",
+          "operation": "add_value",
+          "amount": 1.0
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }

@@ -2629,6 +2629,126 @@
           }
         }
       ]
+    },
+    {
+      "id": "elf.archery.steady_draw",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:archery",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.archery.woodelf_aim"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:entity_interaction_range",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "elf.beast_lore.gentle_voice",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:beast_lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.beast_lore.friend_of_beasts"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:tempt_range",
+          "operation": "add_value",
+          "amount": 4.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "elf.lore.starlit_memory",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:lore",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.lore.lore_of_the_eldar"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:luck",
+          "operation": "add_value",
+          "amount": 0.5
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "elf.song.clear_voice",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:song",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.song.voice_of_the_eldar"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:max_absorption",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "max_rank": 2
+    },
+    {
+      "id": "elf.survival.light_step",
+      "tier": 2,
+      "pos": [
+        30,
+        60
+      ],
+      "cost": {
+        "discipline": "kindreds:survival",
+        "points": 2
+      },
+      "prereqs": [
+        "elf.survival.wood_wise"
+      ],
+      "abilities": [
+        {
+          "type": "attribute",
+          "attribute": "minecraft:safe_fall_distance",
+          "operation": "add_value",
+          "amount": 2.0
+        }
+      ],
+      "max_rank": 2
     }
   ]
 }
