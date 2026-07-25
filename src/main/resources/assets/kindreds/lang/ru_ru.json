@@ -677,6 +677,7 @@
   "kindreds.tree.use.curse": "Проклятие — срабатывает само%s.",
   "kindreds.tree.equip_slot": "Назначить в слот способности:",
   "kindreds.tree.equip_hint": "(золотой = назначено; нажмите ещё раз, чтобы снять)",
+  "kindreds.tree.deepen": "Углубить до ранга %d из %d  (%d очк.)",
   "kindreds.tree.learn": "Изучить  (%d очк.)",
   "kindreds.tree.attempt_sealed": "Попытка (запечатано деянием)",
   "kindreds.tree.equip_vision": "Включить зрение",

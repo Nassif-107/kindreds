@@ -1315,9 +1315,14 @@ public class SkillTreeScreen extends Screen {
             ctx.fill(unlockButton[0], unlockButton[1], unlockButton[0] + unlockButton[2], unlockButton[1] + unlockButton[3], fill);
             ctx.drawBorder(unlockButton[0], unlockButton[1], unlockButton[2], unlockButton[3],
                     state == TreeRenderer.NodeState.SEALED ? ThemeAssets.WARNING_COLOR : 0xFF66DD66);
+            // A node already owned but short of its last rank is being deepened, not learned - the
+            // button says which, and names the rank being bought so the repeat cost is never a puzzle.
+            int ownedRank = currentData().rankOf(node.id());
             String label = state == TreeRenderer.NodeState.SEALED
                     ? I18n.translate("kindreds.tree.attempt_sealed")
-                    : I18n.translate("kindreds.tree.learn", node.cost().points());
+                    : ownedRank > 0
+                        ? I18n.translate("kindreds.tree.deepen", ownedRank + 1, node.maxRank(), node.cost().points())
+                        : I18n.translate("kindreds.tree.learn", node.cost().points());
             int lw = textRenderer.getWidth(label);
             ctx.drawText(textRenderer, Text.literal(label), unlockButton[0] + (unlockButton[2] - lw) / 2, unlockButton[1] + 6, 0xFFFFFFFF, true);
             y += 24;
