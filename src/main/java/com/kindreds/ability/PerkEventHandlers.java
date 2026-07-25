@@ -62,7 +62,12 @@ public final class PerkEventHandlers {
             }
             DwarfMining.onBlockBroken(serverWorld, sp, pos, state);
             List<PerkDef> perks = PerkService.perksOfType(sp, "mining_fortune");
-            if (perks.isEmpty() || !state.isIn(ConventionalBlockTags.ORES)) {
+            // kindreds:dwarf_ores, not c:ores - the same tag every other mining perk gates on. The
+            // base mod leaves 25 of its 47 ores outside c:ores (all tin/lead/silver/mithril sit in
+            // its own middle-earth:*_ores tags, and its adamant/emerald/ruby/sapphire ores carry no
+            // ore tag at all), so gating fortune on c:ores silently exempted every metal and gem a
+            // Dwarf actually digs for. See the tag file for the full union.
+            if (perks.isEmpty() || !state.isIn(DwarfMining.DWARF_ORES)) {
                 return;
             }
             for (PerkDef perk : perks) {
@@ -166,6 +171,7 @@ public final class PerkEventHandlers {
             if (++tickCounter % AURA_INTERVAL != 0) {
                 return;
             }
+            DwarfSmithing.beat();   // one tick of the slow mend metronome, shared by every player
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 tickAllyAura(player);
                 tickWarPack(player);
@@ -177,7 +183,7 @@ public final class PerkEventHandlers {
         });
     }
 
-    private static final int AURA_INTERVAL = 10;
+    static final int AURA_INTERVAL = 10;
     private static final Identifier ATTACK_DAMAGE = Identifier.of("minecraft", "attack_damage");
     private static int tickCounter;
 

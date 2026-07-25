@@ -29,6 +29,11 @@ public final class BeastPerks {
 
     private static final int HOLD = 40; // ticks a refreshed buff is held (> the 10-tick cadence)
 
+    /** Ceiling on the Speed amplifier granted to a mount, whatever the data asks for. Amplifier 1 is
+     * Speed II, +40% on an animal that already outruns a sprinting player - swift enough to feel like
+     * Asfaloth, slow enough that the ground still goes past rather than blinks past. */
+    private static final int MAX_MOUNT_SPEED = 1;
+
     /** Called once per player each aura cadence from {@link PerkEventHandlers}. */
     public static void tick(ServerPlayerEntity player) {
         beastCalm(player);
@@ -99,8 +104,17 @@ public final class BeastPerks {
             regen |= p.param("regen", 0f) > 0.5f;
             riderResist = Math.max(riderResist, Math.round(p.param("rider_resistance", -1f)));
         }
-        mount.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, HOLD, speed, false, false, false));
-        mount.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, HOLD, speed, false, false, false));
+        // Capped, and jump no longer rides on the speed dial. Both effects used to be applied at the
+        // raw `speed` param, which tops out at 3 in the data: Speed IV (+80%) on a mount that is already
+        // the fastest thing a player owns, *and* Jump Boost IV under a horse - and a horse with Jump
+        // Boost IV clears enormous distances in a single bound. The pair of them together is what read
+        // as teleporting across the landscape rather than riding over it.
+        int speedAmp = Math.min(speed, MAX_MOUNT_SPEED);
+        mount.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, HOLD, speedAmp, false, false, false));
+        // A steady seat, not a catapult: one level of spring at the deeper ranks, never scaling with speed.
+        if (speed >= 2) {
+            mount.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, HOLD, 0, false, false, false));
+        }
         if (regen) {
             mount.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, HOLD, 0, false, false, false));
         }
