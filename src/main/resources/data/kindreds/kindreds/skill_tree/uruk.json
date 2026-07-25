@@ -77,7 +77,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.2
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.brute",
@@ -98,7 +99,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.12
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.combat.uruk_strength",
@@ -127,7 +129,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.combat.cleaver",
@@ -150,7 +153,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.12
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.savage_swing",
@@ -209,7 +213,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.black_uruk",
@@ -239,7 +244,8 @@
           "amount": 0.2
         }
       ],
-      "exclusive_group": "uruk.combat.spec"
+      "exclusive_group": "uruk.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.bloodlust",
@@ -263,7 +269,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.blood_frenzy",
@@ -335,7 +342,8 @@
             "percent": 0.1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.unquenchable",
@@ -406,7 +414,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.death_march",
@@ -489,7 +498,8 @@
             "duration_ticks": 100
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.combat.relentless_pursuit",
@@ -611,7 +621,8 @@
             "max": 5
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.leadership.uruk_captain",
@@ -647,7 +658,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.leadership.strength_in_numbers",
@@ -672,7 +684,8 @@
             "max": 6
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.the_swarm",
@@ -701,7 +714,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.warlord_of_isengard",
@@ -739,7 +753,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.horde_master",
@@ -771,7 +786,8 @@
           "amount": 0.1
         }
       ],
-      "exclusive_group": "uruk.leadership.spec"
+      "exclusive_group": "uruk.leadership.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.driver",
@@ -801,7 +817,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.white_hand",
@@ -844,7 +861,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.banner_of_the_white_hand",
@@ -880,7 +898,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.saruman_of_many_colours",
@@ -937,7 +956,8 @@
           }
         }
       ],
-      "exclusive_group": "uruk.leadership.spec"
+      "exclusive_group": "uruk.leadership.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.cruel_master",
@@ -974,7 +994,8 @@
             "health": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.whispers_of_saruman",
@@ -1004,7 +1025,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.dread_of_the_white_hand",
@@ -1047,7 +1069,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.terror_incarnate",
@@ -1098,7 +1121,8 @@
           }
         }
       ],
-      "exclusive_group": "uruk.leadership.spec"
+      "exclusive_group": "uruk.leadership.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.leadership.master_of_the_host",
@@ -1156,7 +1180,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.crude_forge",
@@ -1183,7 +1208,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.05
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.smithing.iron_of_isengard",
@@ -1212,7 +1238,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.smithing.uruk_plate",
@@ -1235,7 +1262,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.jagged_plate",
@@ -1265,7 +1293,8 @@
             "percent": 0.25
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.heavy_harness",
@@ -1294,7 +1323,8 @@
           "operation": "add_value",
           "amount": 0.15
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.armour_of_the_white_hand",
@@ -1331,7 +1361,8 @@
           }
         }
       ],
-      "exclusive_group": "uruk.smithing.spec"
+      "exclusive_group": "uruk.smithing.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.crude_blade",
@@ -1354,7 +1385,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.serrated_edge",
@@ -1390,7 +1422,8 @@
             "duration_ticks": 100
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.cleaving_axe",
@@ -1426,7 +1459,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.weapon_of_the_uruk_hai",
@@ -1463,7 +1497,8 @@
           }
         }
       ],
-      "exclusive_group": "uruk.smithing.spec"
+      "exclusive_group": "uruk.smithing.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.forge_tempered",
@@ -1486,7 +1521,8 @@
           "operation": "add_multiplied_base",
           "amount": -0.5
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.war_machine",
@@ -1550,7 +1586,8 @@
           "operation": "add_value",
           "amount": 4.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.smithing.engine_of_isengard",
@@ -1635,7 +1672,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.shadow.cruelty",
@@ -1663,7 +1701,8 @@
             "duration_ticks": 100
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.shadow.no_fear",
@@ -1726,7 +1765,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.shadow.morgul_poison",
@@ -1756,7 +1796,8 @@
             "duration_ticks": 60
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.shadow.cruel_wounds",
@@ -1793,7 +1834,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.shadow.venom_of_mordor",
@@ -1837,7 +1879,8 @@
           }
         }
       ],
-      "exclusive_group": "uruk.shadow.spec"
+      "exclusive_group": "uruk.shadow.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.shadow.dread",
@@ -1902,7 +1945,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.shadow.terror_of_the_shadow",
@@ -1939,7 +1983,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.shadow.nameless_dread",
@@ -2220,7 +2265,8 @@
             "speed": 1
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.beast_lore.wolf_of_isengard",
@@ -2250,7 +2296,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "uruk.beast_lore.swift_warg",
@@ -2274,7 +2321,8 @@
             "speed": 2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.savage_mount",
@@ -2299,7 +2347,8 @@
             "regen": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.barded_warg",
@@ -2324,7 +2373,8 @@
             "rider_resistance": 0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.dread_warg",
@@ -2351,7 +2401,8 @@
           }
         }
       ],
-      "exclusive_group": "uruk.beast_lore.spec"
+      "exclusive_group": "uruk.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.call_the_pack",
@@ -2399,7 +2450,8 @@
             "radius": 14
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.the_warg_pack",
@@ -2492,7 +2544,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.mounted_savagery",
@@ -2522,7 +2575,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.terror_of_the_wild",
@@ -2560,7 +2614,8 @@
             "duration_ticks": 100
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.lord_of_wargs",
@@ -2592,7 +2647,8 @@
           "amount": 0.12
         }
       ],
-      "exclusive_group": "uruk.beast_lore.spec"
+      "exclusive_group": "uruk.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "uruk.beast_lore.warg_lord_of_isengard",

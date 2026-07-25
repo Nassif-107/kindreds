@@ -108,7 +108,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.combat.savage_blows",
@@ -137,7 +138,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.combat.cleaving_scimitar",
@@ -160,7 +162,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.combat.savage_swing",
@@ -213,7 +216,8 @@
             "percent": 0.1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.combat.blackblade",
@@ -250,7 +254,8 @@
           }
         }
       ],
-      "exclusive_group": "orc.combat.spec"
+      "exclusive_group": "orc.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.combat.war_numbers",
@@ -275,7 +280,8 @@
             "max": 6
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.combat.first_blood",
@@ -306,7 +312,8 @@
             "percent": 0.08
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.combat.blood_frenzy",
@@ -380,7 +387,8 @@
           }
         }
       ],
-      "exclusive_group": "orc.combat.spec"
+      "exclusive_group": "orc.combat.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.combat.skulker",
@@ -404,7 +412,8 @@
             "bonus": 0.4
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.combat.dark_strength",
@@ -787,7 +796,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.shadow.black_breath",
@@ -830,7 +840,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.shadow.morgul_wound",
@@ -867,7 +878,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.shadow.breath_of_the_nazgul",
@@ -911,7 +923,8 @@
           }
         }
       ],
-      "exclusive_group": "orc.shadow.spec"
+      "exclusive_group": "orc.shadow.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.shadow.fear_the_eye",
@@ -1169,7 +1182,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.survival.skulking_survivor",
@@ -1198,7 +1212,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.survival.wall_crawler",
@@ -1227,7 +1242,8 @@
           "operation": "add_value",
           "amount": 0.5
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.survival.deep_dweller",
@@ -1358,7 +1374,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.survival.cowards_luck",
@@ -1389,7 +1406,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.survival.slippery",
@@ -1456,7 +1474,8 @@
           "amount": -0.2
         }
       ],
-      "exclusive_group": "orc.survival.spec"
+      "exclusive_group": "orc.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.survival.iron_stomach",
@@ -1486,7 +1505,8 @@
             "health": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.survival.plague_ridden",
@@ -1515,7 +1535,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.survival.hardy_vermin",
@@ -1544,7 +1565,8 @@
           "operation": "add_value",
           "amount": 4.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.survival.unkillable_pest",
@@ -1582,7 +1604,8 @@
           "amount": 2.0
         }
       ],
-      "exclusive_group": "orc.survival.spec"
+      "exclusive_group": "orc.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.survival.survivor_of_the_pits",
@@ -1652,7 +1675,8 @@
             "radius": 12
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.beast_lore.pack_runner",
@@ -1682,7 +1706,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.beast_lore.call_wolves",
@@ -1730,7 +1755,8 @@
             "radius": 14
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.moria_wolf_pact",
@@ -1824,7 +1850,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.blood_scent",
@@ -1855,7 +1882,8 @@
             "health": 3.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.alpha",
@@ -1886,7 +1914,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.pack_alpha",
@@ -1919,7 +1948,8 @@
           }
         }
       ],
-      "exclusive_group": "orc.beast_lore.spec"
+      "exclusive_group": "orc.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.warg_rider",
@@ -1943,7 +1973,8 @@
             "speed": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.swift_warg",
@@ -1967,7 +1998,8 @@
             "speed": 2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.savage_rider",
@@ -1997,7 +2029,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.dread_rider",
@@ -2029,7 +2062,8 @@
           "amount": 0.1
         }
       ],
-      "exclusive_group": "orc.beast_lore.spec"
+      "exclusive_group": "orc.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.beast_lore.master_of_the_pack",
@@ -2098,7 +2132,8 @@
             "max": 5
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.leadership.orc_captain",
@@ -2134,7 +2169,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "orc.leadership.strength_in_numbers",
@@ -2159,7 +2195,8 @@
             "max": 6
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.the_mob",
@@ -2188,7 +2225,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.gorgoroth_host",
@@ -2226,7 +2264,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.endless_horde",
@@ -2258,7 +2297,8 @@
           "amount": 0.08
         }
       ],
-      "exclusive_group": "orc.leadership.spec"
+      "exclusive_group": "orc.leadership.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.the_whip",
@@ -2288,7 +2328,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.cruel_captain",
@@ -2325,7 +2366,8 @@
             "health": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.mordor_banner",
@@ -2368,7 +2410,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.captain_of_the_tower",
@@ -2418,7 +2461,8 @@
           "amount": 2.0
         }
       ],
-      "exclusive_group": "orc.leadership.spec"
+      "exclusive_group": "orc.leadership.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.bully",
@@ -2454,7 +2498,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.08
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.taskmaster",
@@ -2491,7 +2536,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.dread_captain",
@@ -2534,7 +2580,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.terror_of_the_pits",
@@ -2585,7 +2632,8 @@
           }
         }
       ],
-      "exclusive_group": "orc.leadership.spec"
+      "exclusive_group": "orc.leadership.spec",
+      "max_rank": 3
     },
     {
       "id": "orc.leadership.warlord_of_the_black_land",
@@ -2636,7 +2684,8 @@
           "operation": "add_multiplied_total",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     }
   ]
 }

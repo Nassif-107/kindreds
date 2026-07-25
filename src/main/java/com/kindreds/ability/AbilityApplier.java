@@ -171,6 +171,16 @@ public final class AbilityApplier {
      * {@link #applyContextual}). Idempotent either way - the node-tagged id is removed first, so a
      * re-apply (e.g. a reconcile pass, or re-entering a context) can never throw on a duplicate id.
      */
+    /** How deep {@code nodeId} has been taken by {@code p}, floored at 1. Ids that are not owned tree
+     * nodes - birth traits, curses, contextual keys - are rank 0 and so read as 1, unscaled. */
+    private static int rankFor(ServerPlayerEntity p, String nodeId) {
+        try {
+            return Math.max(1, com.kindreds.playerdata.KindredAttachment.get(p).rankOf(nodeId));
+        } catch (RuntimeException e) {
+            return 1;   // no attachment yet (very early apply): treat as a plain single rank
+        }
+    }
+
     private static void applyAttributeMod(ServerPlayerEntity p, AttributeMod mod, String nodeId, boolean persistent) {
         Registries.ATTRIBUTE.getEntry(mod.attribute()).ifPresentOrElse(attribute -> {
             EntityAttributeInstance instance = p.getAttributeInstance(attribute);
@@ -185,7 +195,14 @@ public final class AbilityApplier {
             }
             Identifier id = attributeModifierId(nodeId, mod.attribute().getPath());
             instance.removeModifier(id); // idempotent guard: adding a duplicate id throws
-            EntityAttributeModifier modifier = new EntityAttributeModifier(id, mod.amount(), operation);
+            // Scaled by how deep the node has been taken, so a ranked attribute node is worth its
+            // repeat purchases: rank 3 of a +2 max-health node is +6, not +2 bought three times for
+            // nothing. The remove-then-add above is what makes a rank-up land cleanly - the node's
+            // modifier id is fixed, so re-applying replaces the shallower value rather than stacking
+            // a second one. Rank 0 (a birth trait, or any id that is not an owned node) reads as 1,
+            // which leaves every non-tree caller exactly as it was.
+            EntityAttributeModifier modifier = new EntityAttributeModifier(
+                    id, mod.amount() * rankFor(p, nodeId), operation);
             if (persistent) {
                 instance.addPersistentModifier(modifier);
             } else {

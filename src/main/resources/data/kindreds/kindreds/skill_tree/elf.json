@@ -107,7 +107,8 @@
             "bonus": 0.15
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "elf.archery.eye_of_the_eldar",
@@ -210,7 +211,8 @@
             "max": 0.6
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.archery.deadeye_of_mirkwood",
@@ -243,7 +245,8 @@
           }
         }
       ],
-      "exclusive_group": "elf.archery.spec"
+      "exclusive_group": "elf.archery.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.archery.swift_nock",
@@ -294,7 +297,8 @@
             "bonus": 0.15
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.archery.galadhrim_volley",
@@ -365,7 +369,8 @@
           }
         }
       ],
-      "exclusive_group": "elf.archery.spec"
+      "exclusive_group": "elf.archery.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.archery.great_bow",
@@ -396,7 +401,8 @@
             "targets": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.archery.venom_arrows",
@@ -477,7 +483,8 @@
           },
           "foe": "orc"
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.archery.piercing_shaft",
@@ -508,7 +515,8 @@
             "bonus": 0.2
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.archery.arrow_of_the_eldar",
@@ -613,7 +621,8 @@
           "operation": "add_value",
           "amount": -0.15
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "elf.survival.light_of_foot",
@@ -648,7 +657,8 @@
           "operation": "add_value",
           "amount": 0.6
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "elf.survival.silvan_shadow",
@@ -672,7 +682,8 @@
             "bonus": 0.4
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.survival.unseen_hunter",
@@ -703,7 +714,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.survival.cloak_of_lorien",
@@ -761,7 +773,8 @@
           "amount": -0.12
         }
       ],
-      "exclusive_group": "elf.survival.spec"
+      "exclusive_group": "elf.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.survival.snow_treader",
@@ -796,7 +809,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.survival.tree_climber",
@@ -825,7 +839,8 @@
           "operation": "add_value",
           "amount": 0.5
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.survival.fleet_of_foot",
@@ -854,7 +869,8 @@
           "operation": "add_value",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.survival.swift_as_nimrodel",
@@ -884,7 +900,8 @@
           "amount": 350.0
         }
       ],
-      "exclusive_group": "elf.survival.spec"
+      "exclusive_group": "elf.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.survival.waybread",
@@ -960,7 +977,8 @@
             "reduction": 1.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.survival.grace_of_the_eldar",
@@ -1031,7 +1049,8 @@
           "amount": 5.0
         }
       ],
-      "exclusive_group": "elf.survival.spec"
+      "exclusive_group": "elf.survival.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.survival.warden_of_the_woodland_realm",
@@ -1093,7 +1112,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "elf.lore.sight_beyond_sight",
@@ -1146,7 +1166,8 @@
             "reduction": 0.08
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.lore.elven_reflexes",
@@ -1177,7 +1198,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.lore.doom_averted",
@@ -1242,7 +1264,8 @@
           "amount": 5.0
         }
       ],
-      "exclusive_group": "elf.lore.spec"
+      "exclusive_group": "elf.lore.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.lore.star_glass",
@@ -1313,7 +1336,8 @@
           },
           "foe": "undead"
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.lore.phial_of_galadriel",
@@ -1433,7 +1457,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.lore.unstained_by_shadow",
@@ -1495,7 +1520,8 @@
           "operation": "add_value",
           "amount": 3.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.lore.light_of_valinor",
@@ -1630,7 +1656,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "elf.song.song_of_rest",
@@ -1693,7 +1720,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.song.march_of_the_hosts",
@@ -1729,7 +1757,8 @@
           "operation": "add_multiplied_base",
           "amount": 0.1
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.song.hymn_of_courage",
@@ -1759,7 +1788,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.song.lay_of_gil_galad",
@@ -1809,7 +1839,8 @@
           "amount": 3.0
         }
       ],
-      "exclusive_group": "elf.song.spec"
+      "exclusive_group": "elf.song.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.song.song_of_binding",
@@ -1875,7 +1906,8 @@
             "duration_ticks": 100
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.song.lay_of_leithian",
@@ -1979,7 +2011,8 @@
           "operation": "add_value",
           "amount": 2.0
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.song.grace_of_rivendell",
@@ -2048,7 +2081,8 @@
             "duration_ticks": 80
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.song.music_of_the_ainur",
@@ -2163,7 +2197,8 @@
             "radius": 12
           }
         }
-      ]
+      ],
+      "max_rank": 2
     },
     {
       "id": "elf.beast_lore.speech_of_beasts",
@@ -2221,7 +2256,8 @@
             "radius": 14
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.summon_the_pack",
@@ -2279,7 +2315,8 @@
             "radius": 16
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.lord_of_wolves",
@@ -2368,7 +2405,8 @@
             "amount": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.the_great_hunt",
@@ -2405,7 +2443,8 @@
             "amount": 2.0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.hound_of_the_valar",
@@ -2461,7 +2500,8 @@
             "speed": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.tireless_mount",
@@ -2486,7 +2526,8 @@
             "regen": 1
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.sure_seat",
@@ -2511,7 +2552,8 @@
             "rider_resistance": 0
           }
         }
-      ]
+      ],
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.asfaloth",
@@ -2538,7 +2580,8 @@
           }
         }
       ],
-      "exclusive_group": "elf.beast_lore.spec"
+      "exclusive_group": "elf.beast_lore.spec",
+      "max_rank": 3
     },
     {
       "id": "elf.beast_lore.friend_of_all_living_things",
