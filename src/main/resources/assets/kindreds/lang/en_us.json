@@ -677,6 +677,7 @@
   "kindreds.tree.use.curse": "Curse - triggers automatically%s.",
   "kindreds.tree.equip_slot": "Equip to ability slot:",
   "kindreds.tree.equip_hint": "(gold = equipped; click again to clear)",
+  "kindreds.tree.deepen": "Deepen to rank %d of %d  (%d pt)",
   "kindreds.tree.learn": "Learn  (%d pt)",
   "kindreds.tree.attempt_sealed": "Attempt (deed-sealed)",
   "kindreds.tree.equip_vision": "Equip Vision",
