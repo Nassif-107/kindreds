@@ -2,7 +2,12 @@ package com.kindreds.threat;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +52,7 @@ class ThreatMathTest {
 
     @Test
     void competenceCannotEscapeItsBand() {
-        float high = ThreatMath.foldFastKill(1.25f, ThreatTuning.DEFAULTS);
+        float high = ThreatMath.foldFastKill(1.25f, 1.0f, ThreatTuning.DEFAULTS);
         assertTrue(high <= ThreatMath.COMPETENCE_MAX, "rose past the ceiling: " + high);
         float low = 1.0f;
         for (int i = 0; i < 500; i++) {
@@ -59,17 +64,32 @@ class ThreatMathTest {
     @Test
     void foldFastKillOnlyEverRaisesCompetence() {
         float start = 1.0f;
-        float raised = ThreatMath.foldFastKill(start, ThreatTuning.DEFAULTS);
+        float raised = ThreatMath.foldFastKill(start, 1.0f, ThreatTuning.DEFAULTS);
         assertTrue(raised > start, "a fast kill should strictly raise competence, got " + raised);
 
         // repeated application must never move it backwards, all the way up to the ceiling
         float competence = start;
         float previous = competence;
         for (int i = 0; i < 50; i++) {
-            competence = ThreatMath.foldFastKill(competence, ThreatTuning.DEFAULTS);
+            competence = ThreatMath.foldFastKill(competence, 1.0f, ThreatTuning.DEFAULTS);
             assertTrue(competence >= previous, "competence decreased on iteration " + i);
             previous = competence;
         }
+    }
+
+    @Test
+    void fastKillsOfTrivialMobsProveNothing() {
+        float c = 1.0f;
+        for (int i = 0; i < 100; i++) {
+            c = ThreatMath.foldFastKill(c, 0.003f, ThreatTuning.DEFAULTS);  // chicken-danger weight
+        }
+        assertTrue(c < 1.01f, "100 trivial fast kills must not meaningfully raise competence, got " + c);
+    }
+
+    @Test
+    void fastKillsOfRealThreatsCount() {
+        float once = ThreatMath.foldFastKill(1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        assertEquals(1.0f + 0.10f * 0.05f, once, 0.0001f);
     }
 
     @Test
@@ -108,10 +128,22 @@ class ThreatMathTest {
 
     @Test
     void hardshipRisesCompetenceWhenCoastingAndLowersItWhenStruggling() {
-        float coasting = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, ThreatTuning.DEFAULTS);
-        float struggling = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float coasting = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float struggling = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
         assertTrue(coasting > 1.0f, "an untouched win should read as coasting");
         assertTrue(struggling < 1.0f, "a near-death should read as struggling");
+    }
+
+    @Test
+    void killShareScalesTheRiseAndOnlyTheRise() {
+        float fullShare = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float tinyShare = ThreatMath.foldHardship(1.0f, 0.0f, 1.0f, 0.01f, ThreatTuning.DEFAULTS);
+        assertTrue(fullShare > 1.0f);
+        assertTrue(tinyShare < 1.0f + (fullShare - 1.0f) * 0.02f, "a 1% share must earn ~1% of the rise");
+        // THE ASYMMETRY: a struggling fold is untouched by share
+        float fallFull = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, 1.0f, ThreatTuning.DEFAULTS);
+        float fallTiny = ThreatMath.foldHardship(1.0f, 1.0f, 1.0f, 0.01f, ThreatTuning.DEFAULTS);
+        assertEquals(fallFull, fallTiny, 1e-6f, "share must never gate the falling branch");
     }
 
     @Test
@@ -127,7 +159,7 @@ class ThreatMathTest {
         float largestFallMagnitude = 0f;
         for (float hardship : hardships) {
             for (float attackerWeight : attackerWeights) {
-                float result = ThreatMath.foldHardship(1.0f, hardship, attackerWeight, ThreatTuning.DEFAULTS);
+                float result = ThreatMath.foldHardship(1.0f, hardship, attackerWeight, 1.0f, ThreatTuning.DEFAULTS);
                 float delta = result - 1.0f;
                 if (delta > 0f) {
                     largestRise = Math.max(largestRise, delta);
@@ -237,5 +269,58 @@ class ThreatMathTest {
         assertSame(ThreatRank.SHADOW, ThreatRank.of(80f));
         assertSame(ThreatRank.SHADOW, ThreatRank.of(100f));
         assertEquals("kindreds.threat.rank.hunted", ThreatRank.HUNTED.translationKey());
+    }
+
+    // --- familyVoiceKeys (spec §3a's Deeds-page voice, derived - see ThreatState#copy()) ----------
+
+    @Test
+    void familyVoiceLinesRequireStrictlyMoreThanOneTenthDivergence() {
+        float global = 1.0f;
+        Map<String, Float> family = new HashMap<>();
+        family.put("trolls", global + 0.10f);   // exactly +0.10 - must say nothing
+        family.put("wargs", global - 0.10f);    // exactly -0.10 - must say nothing
+        assertTrue(ThreatMath.familyVoiceKeys(family, global).isEmpty(),
+                "a divergence of exactly 0.1 must not voice a line");
+
+        family.put("trolls", global + 0.11f);   // clearly past +0.10
+        family.put("wargs", global - 0.11f);    // clearly past -0.10
+        List<String> keys = ThreatMath.familyVoiceKeys(family, global);
+        assertTrue(keys.contains("kindreds.family.mastered.trolls"), keys.toString());
+        assertTrue(keys.contains("kindreds.family.feared.wargs"), keys.toString());
+    }
+
+    @Test
+    void familyVoiceLinesCapAtThreeStrongestDivergenceFirst() {
+        // Magnitudes deliberately spaced well apart (0.40/0.35/0.20/0.15, plus a below-threshold
+        // 0.05) so the ordering is unambiguous even after float rounding - a near-tie belongs to a
+        // dedicated float-precision test, not this one, which is only about the cap and the ordering.
+        Map<String, Float> family = new HashMap<>();
+        family.put("spiders", 1.40f);  // +0.40 mastered - strongest
+        family.put("wargs", 0.65f);    // -0.35 feared - second strongest
+        family.put("trolls", 1.20f);   // +0.20 mastered - third strongest, makes the cut
+        family.put("undead", 0.85f);   // -0.15 feared - the weakest qualifier, dropped by the cap
+        family.put("orc_kin", 1.05f);  // +0.05 - under threshold, never appears
+        List<String> keys = ThreatMath.familyVoiceKeys(family, 1.0f);
+
+        assertEquals(3, keys.size(), "four families qualify but at most three lines: " + keys);
+        assertEquals(List.of("kindreds.family.mastered.spiders", "kindreds.family.feared.wargs",
+                "kindreds.family.mastered.trolls"), keys);
+        assertFalse(keys.contains("kindreds.family.mastered.orc_kin"), "0.05 is under threshold: " + keys);
+        assertFalse(keys.contains("kindreds.family.feared.undead"), "the weakest qualifier is dropped: " + keys);
+    }
+
+    @Test
+    void onlyTheFiveNamedFamiliesEverVoiceAnOpinion() {
+        Map<String, Float> family = new HashMap<>();
+        family.put("other", 5.0f); // wildly divergent, but "other" is not one of the five named families
+        assertTrue(ThreatMath.familyVoiceKeys(family, 1.0f).isEmpty(),
+                "an 'other' entry must never produce a voice line");
+    }
+
+    @Test
+    void aFamilyWithNoEvidenceRecordedSaysNothing() {
+        // familyCompetence has no entry at all for this family (never fought it) - must not be read
+        // as "diverges by the full global-vs-zero amount".
+        assertTrue(ThreatMath.familyVoiceKeys(Map.of(), 1.0f).isEmpty());
     }
 }

@@ -15,12 +15,17 @@ import com.kindreds.playerdata.KindredAttachment;
 import com.kindreds.playerdata.KindredData;
 import com.kindreds.progression.RenownService;
 import com.kindreds.progression.UnlockService;
+import com.kindreds.threat.EliteMobs;
+import com.kindreds.threat.MobMark;
+import com.kindreds.threat.MobScaler;
 import com.kindreds.threat.ThreatRank;
 import com.kindreds.threat.ThreatService;
 import com.kindreds.threat.ThreatState;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -97,6 +102,8 @@ public final class KindredsDoctor {
                     "kindreds$onTakeItem"),
             new MixinCheck("PlayerAdvancementTracker", net.minecraft.advancement.PlayerAdvancementTracker.class,
                     "kindreds$onGrantCriterion"),
+            new MixinCheck("MobEntityInitialize", net.minecraft.entity.mob.MobEntity.class,
+                    "kindreds$captureSpawnReason"),
     };
 
     /** S2C payloads: the connected client must know these or the feature they carry is dead. */
@@ -140,6 +147,11 @@ public final class KindredsDoctor {
         checkAbilities(source, server, problems);
         checkClamps(source, server, problems);
         checkStacking(source, server, problems);
+        checkPhase2Dials(source, problems);
+        checkDetectionSpan(source, problems);
+        checkMobMark(source, problems);
+        checkEscortYardstick(source, problems);
+        checkEliteAbilities(source, problems);
         checkPlayer(source, problems);
         checkThreat(source);
 
@@ -541,6 +553,152 @@ public final class KindredsDoctor {
                     + distinct.size() + " nodes " + distinct + why);
         }
         return count;
+    }
+
+    /**
+     * Phase-2's exposed dials, sanity-checked against the ranges {@code KindredsCommand#configSet}
+     * enforces at write time (spec §6). This does not re-implement that validation - it exists for
+     * the case that validation is bypassed entirely: a config JSON hand-edited on disk, or a future
+     * regression in {@code configSet} itself that stops rejecting an out-of-range value before it is
+     * stored. A currently-loaded value outside its documented range is exactly what either failure
+     * mode looks like.
+     */
+    private static void checkPhase2Dials(ServerCommandSource source, List<String> problems) {
+        if (Kindreds.CONFIG == null) {
+            report(source, "phase2 dials", "not loaded", "Kindreds.CONFIG is null");
+            problems.add("phase-2 dials: Kindreds.CONFIG is null, cannot check ranges");
+            return;
+        }
+        List<String> outOfRange = new ArrayList<>();
+        dialInRange(outOfRange, problems, "maxDamageBonus", Kindreds.CONFIG.maxDamageBonus, 0, 400);
+        dialInRange(outOfRange, problems, "maxHealthBonus", Kindreds.CONFIG.maxHealthBonus, 0, 400);
+        dialInRange(outOfRange, problems, "eliteChance", Kindreds.CONFIG.eliteChance, 0, 100);
+        dialInRange(outOfRange, problems, "escortChance", Kindreds.CONFIG.escortChance, 0, 100);
+        dialInRange(outOfRange, problems, "groupScalingPercent", Kindreds.CONFIG.groupScalingPercent, 0, 100);
+        dialInRange(outOfRange, problems, "dimensionMultiplierMiddleEarth",
+                Kindreds.CONFIG.dimensionMultiplierMiddleEarth, 0f, 2f);
+        dialInRange(outOfRange, problems, "dimensionMultiplierOverworld",
+                Kindreds.CONFIG.dimensionMultiplierOverworld, 0f, 2f);
+        report(source, "phase2 dials", (7 - outOfRange.size()) + "/7 within range",
+                outOfRange.isEmpty() ? null : "out of range: " + String.join(", ", outOfRange));
+    }
+
+    private static void dialInRange(List<String> outOfRange, List<String> problems, String name,
+                                    int value, int min, int max) {
+        if (value < min || value > max) {
+            outOfRange.add(name + "=" + value);
+            problems.add(name + " is " + value + ", outside its allowed [" + min + "," + max + "] range");
+        }
+    }
+
+    private static void dialInRange(List<String> outOfRange, List<String> problems, String name,
+                                    float value, float min, float max) {
+        if (value < min || value > max) {
+            outOfRange.add(name + "=" + value);
+            problems.add(name + " is " + value + ", outside its allowed [" + min + "," + max + "] range");
+        }
+    }
+
+    /**
+     * {@code ThreatService#refresh}'s detection modifier reaches for the base mod's
+     * {@code middle-earth:detection_range} attribute with a fixed span of {@code 0.9} (the amount at
+     * full threat) - the attribute's OWN clamp width is what actually bounds it in play (spec §3: at
+     * full threat the counter cancels the deepest stealth build exactly, never past baseline). If a
+     * future base-mod update widened that attribute past {@code [0.1, 1.0]} without this mod's dial
+     * following it, {@code 0.9} would silently stop being "the whole span" and detection would cap
+     * out below baseline instead of exactly at it. Skips silently (not a problem) if the base mod, or
+     * the attribute itself, is absent - phase 2 is meant to degrade cleanly without it.
+     */
+    private static void checkDetectionSpan(ServerCommandSource source, List<String> problems) {
+        final double detectionSpan = ThreatService.DETECTION_SPAN;
+        Identifier id = Identifier.of("middle-earth", "detection_range");
+        var entry = net.minecraft.registry.Registries.ATTRIBUTE.getEntry(id).orElse(null);
+        if (entry == null) {
+            line(source, Text.literal("  " + pad("detection", 11)
+                    + "(middle-earth:detection_range not registered - base mod absent)")
+                    .formatted(Formatting.DARK_GRAY));
+            return;
+        }
+        if (!(entry.value() instanceof ClampedEntityAttribute clamped)) {
+            problems.add("middle-earth:detection_range exists but is not a ClampedEntityAttribute - "
+                    + "the [0.1,1.0] clamp ThreatService#refresh assumes may not hold");
+            report(source, "detection", "not a ClampedEntityAttribute",
+                    "actual type " + entry.value().getClass().getSimpleName());
+            return;
+        }
+        double width = clamped.getMaxValue() - clamped.getMinValue();
+        boolean ok = detectionSpan <= width + 1e-9;
+        report(source, "detection", String.format(Locale.ROOT,
+                        "span %.2f within [%.2f,%.2f] (width %.2f)",
+                        detectionSpan, clamped.getMinValue(), clamped.getMaxValue(), width),
+                ok ? null : "the " + detectionSpan + " detection span exceeds the attribute's own clamp "
+                        + "width " + width + " - the counter can no longer cancel a full stealth build "
+                        + "at full threat");
+        if (!ok) {
+            problems.add("detection counter span " + detectionSpan
+                    + " exceeds middle-earth:detection_range's clamp width " + width);
+        }
+    }
+
+    /** Confirms {@link MobMark#KEY} is actually a registered, persistent attachment type - the same
+     * lazy-static-final hazard {@code KindredAttachment.TYPE} once had (see {@link MobMark#init()}'s
+     * javadoc for the failure mode this guards against). Calling {@code init()} here is itself a
+     * genuine use (forces the class to load if nothing has yet), so a broken registration would show
+     * up as a null or wrongly-shaped {@link net.fabricmc.fabric.api.attachment.v1.AttachmentType}. */
+    private static void checkMobMark(ServerCommandSource source, List<String> problems) {
+        var key = MobMark.init();
+        boolean ok = key != null && key.isPersistent()
+                && key.identifier().equals(Identifier.of(Kindreds.MOD_ID, "mob_mark"));
+        report(source, "mob mark", ok ? "kindreds:mob_mark registered, persistent" : "NOT registered",
+                ok ? null : "MobMark.KEY did not resolve to the expected persistent attachment type");
+        if (!ok) {
+            problems.add("MobMark.KEY is not a registered persistent attachment (kindreds:mob_mark) - "
+                    + "scaled/elite/escort marks would not survive a chunk reload");
+        }
+    }
+
+    /**
+     * Recomputes {@code SpawnGroup.MONSTER.getCapacity()} and {@code MobScaler#escortBudget} against
+     * the exact numbers {@code MobScalerEscortTest} was written against (see {@code MobScaler}'s own
+     * comment) - the tripwire for its hardcoded {@code 289} ({@code SpawnHelper.CHUNK_AREA}, package-
+     * private in vanilla and so unreachable directly). If a Minecraft update ever changes the monster
+     * cap or the chunk-area constant this formula assumes, this check drifts into red instead of
+     * escorts silently spawning at the wrong rate forever.
+     */
+    private static void checkEscortYardstick(ServerCommandSource source, List<String> problems) {
+        int capacity = SpawnGroup.MONSTER.getCapacity();
+        boolean capacityOk = capacity == 70;
+        if (!capacityOk) {
+            problems.add("SpawnGroup.MONSTER.getCapacity() is " + capacity + ", not the 70 the 289 "
+                    + "CHUNK_AREA tripwire was written against - MobScaler.escortBudget's hardcoded "
+                    + "289 needs re-deriving against vanilla's real SpawnHelper.CHUNK_AREA");
+        }
+        int budget = MobScaler.escortBudget(56, 70, 289);
+        boolean budgetOk = budget == 0;
+        if (!budgetOk) {
+            problems.add("MobScaler.escortBudget(56, 70, 289) returned " + budget + ", expected 0 - "
+                    + "the hardcoded 289 constant has silently drifted from what SpawnHelper actually "
+                    + "uses");
+        }
+        report(source, "escort cap", "capacity=" + capacity + ", escortBudget(56,70,289)=" + budget,
+                (capacityOk && budgetOk) ? null : "the 289 CHUNK_AREA tripwire tripped - see the log");
+    }
+
+    /** Every elite ability id the promotion pool can hand out must resolve via
+     * {@link EliteMobs#abilityFor} - its first caller, and the same check {@code MobMark#eliteAbility}
+     * is meant to be validated against rather than trusted blindly (spec §3, Task 4's carry-forward). */
+    private static void checkEliteAbilities(ServerCommandSource source, List<String> problems) {
+        List<String> pool = EliteMobs.abilityPool();
+        List<String> unresolved = new ArrayList<>();
+        for (String id : pool) {
+            if (!EliteMobs.abilityFor(id)) {
+                unresolved.add(id);
+                problems.add("elite ability id '" + id + "' does not resolve via EliteMobs.abilityFor "
+                        + "- a promoted mob carrying it would be trusted blindly");
+            }
+        }
+        report(source, "elite abils", (pool.size() - unresolved.size()) + "/" + pool.size() + " resolve",
+                unresolved.isEmpty() ? null : "unresolved: " + String.join(", ", unresolved));
     }
 
     /** The calling player\'s own progression state, which is what most "is it working?" questions

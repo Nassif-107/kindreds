@@ -1043,12 +1043,12 @@ zero failures), `compileJava`, both lang files parse, all five gametest entrypoi
 | §3 detection toward the 1.0 clamp, per-player | Task 6 |
 | §3 rewards: elites drop better | Task 4 (re-roll + bounty tag) |
 | §2.3 TTK raise-only, now fed | Task 6 |
-| §3a per-family voice on the Deeds page | Task 7 |
+| §3a per-family voice on the Deeds page | Task 7 ✅ |
 | §4 group resolution, strongest, 128 blocks, +45% cap, AFK-farm rule | Task 2 |
 | §6 `maxHealthBonus`/`eliteChance`/`escortChance`/`groupScaling`/`dimensionMultiplier` | Task 1 |
 | §11 ENTITY_LOAD early-outs, idempotence, health top-up, elite persistence | Tasks 3–4 |
-| §12 gametest: scaled mob, named elite, screenshots | Task 7 |
-| §12 doctor: caps within clamps | Task 7 |
+| §12 gametest: scaled mob, named elite, screenshots | Task 7 ✅ |
+| §12 doctor: caps within clamps | Task 7 ✅ |
 
 **Explicitly deferred to phase 3:** species replacement (`replacementChance`), the tag mechanism and
 the boss carve-out, the family tags. **Not in any phase (spec non-goals):** spawn-rule changes, boss

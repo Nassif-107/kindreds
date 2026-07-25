@@ -14,6 +14,35 @@ class KindredsConfigTest {
     assertEquals(DeathPenalty.LOSE_PERCENT, KindredsConfig.load(f).deathPenalty);
   }
 
+  // Task 1 (phase 2): the six new dials - default values, and that they round-trip like every
+  // other plain-data field.
+  @Test void phase2DialsDefaultAndRoundTrip(@TempDir Path dir) {
+    Path f = dir.resolve("k.json");
+    KindredsConfig c = KindredsConfig.load(f);
+    assertEquals(100, c.maxHealthBonus);
+    assertEquals(25, c.eliteChance);
+    assertEquals(30, c.escortChance);
+    assertEquals(15, c.groupScalingPercent);
+    assertEquals(1.0f, c.dimensionMultiplierMiddleEarth, 1e-6f);
+    assertEquals(0.75f, c.dimensionMultiplierOverworld, 1e-6f);
+
+    c.maxHealthBonus = 200;
+    c.eliteChance = 50;
+    c.escortChance = 60;
+    c.groupScalingPercent = 40;
+    c.dimensionMultiplierMiddleEarth = 1.5f;
+    c.dimensionMultiplierOverworld = 0.5f;
+    c.save(f);
+
+    KindredsConfig reloaded = KindredsConfig.load(f);
+    assertEquals(200, reloaded.maxHealthBonus);
+    assertEquals(50, reloaded.eliteChance);
+    assertEquals(60, reloaded.escortChance);
+    assertEquals(40, reloaded.groupScalingPercent);
+    assertEquals(1.5f, reloaded.dimensionMultiplierMiddleEarth, 1e-6f);
+    assertEquals(0.5f, reloaded.dimensionMultiplierOverworld, 1e-6f);
+  }
+
   // Task 13 Fix 4: enableCurses/enableVision are now read (CurseService/CurseContextService,
   // SetVisionLensC2S) rather than just declared. The actual gating is MC-bound (touches a live
   // ServerPlayerEntity), so - matching AbilityApplier's "compile-verified only" precedent for

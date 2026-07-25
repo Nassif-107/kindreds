@@ -107,6 +107,7 @@ Per qualifying fight, the signal is **hardship**:
 ```
 hardship = damageTakenFromScopedMobs / highWaterMaxHealth
 ```
+(measured as health and absorption actually lost, not raw damage dealt)
 
 with a target of `0.25` — a meaningful fight should cost about a quarter of your health.
 
@@ -122,11 +123,11 @@ Both halves of that fraction are deliberate:
 
 | Observation | Effect on `competence` | May it lower threat? |
 |---|---|---|
-| `hardship < target` (coasting) | rises, EWMA α = 0.10 × attacker weight | — |
+| `hardship < target` (coasting) | rises, EWMA α = 0.10 × attacker weight × own share of the kill | — |
 | `hardship > target` (struggling) | falls, EWMA α = 0.04 | yes, weighted (below) |
 | Death to a scaled mob | −0.05 × killer weight | yes, weighted |
 | Dropped below 25% health and survived | −0.01 × attacker weight | yes, weighted |
-| Time-to-kill below expected | rises | **no — raise-only** *(deferred: the fold exists and is tested, nothing feeds it in phase 1)* |
+| Time-to-kill below expected | rises, × attacker weight × own share | **no — raise-only** |
 
 Kills are weighted by the target's **base danger** (its unscaled max health × attack damage), so
 deleting a cave troll counts and deleting a chicken does not.
@@ -140,13 +141,24 @@ almost nothing.
 mob to death over five minutes and let the system conclude you are struggling. A fast kill is hard
 to fake and proves strength; a slow kill proves nothing, because it can be staged.
 
-Together these close the three staged-evidence exploits:
+**Every rising signal is also weighted by the killer's own share of the kill** - their damage dealt
+to the mob, as a fraction of its max health, clamped `0..1`. Danger-weighting alone still leaves a
+kill-steal exploit open: a friend whittles a dangerous mob to 1 HP over minutes, and a second player
+tags it and lands the last hit within a couple of ticks, collecting the same full, danger-weighted
+rise as someone who fought the whole thing. Kill-share closes this structurally rather than merely
+bounding it - a 1% share earns roughly 1% of the rise a full share would. Share never gates the
+*falling* branch: taking a mauling is honest evidence of a hard fight regardless of who lands the
+finishing blow, so gating the fall by share would only hand back a different exploit (always let a
+friend land the kill to blunt legitimate softening).
+
+Together these close the four staged-evidence exploits:
 
 | Staged | Why it fails |
 |---|---|
 | Fight weak monsters for a very long time | TTK is raise-only, so a slow kill is simply ignored |
 | Stand in front of a zombie and take hits | hardship from a trivial attacker is weighted to near zero |
 | Die on purpose, repeatedly, to something weak | the death penalty carries the same weight, and the §2.4 floor bounds the total anyway |
+| Let someone else fight it, tag it, and take the kill | both rising signals are weighted by kill-share, so a last-hit steal earns only its own tiny fraction of the credit |
 
 **Asymmetric by design.** Threat rises promptly when a player is coasting and falls slowly when they
 are struggling: a death must never instantly soften the world, but a genuinely stuck player does get
@@ -417,6 +429,11 @@ with the same rules the existing fields follow:
 - persisted in `CODEC` with `optionalFieldOf` so worlds written before this feature load cleanly;
 - carried in `PACKET_CODEC` only as the **resolved threat number and its three components**, which is
   all the client needs to display it. The ring buffer and the per-family table stay server-side.
+
+**Reconciling with §3a:** the per-family table stays server-side per the rule above; §3a's Deeds-page
+voice lines ride the wire only as an at-most-three, already-decided list of derived translation keys
+(`ThreatState.familyVoiceKeys`, computed from that table at copy time - see `ThreatState#copy()`),
+never the raw per-family numbers themselves.
 
 **A caution from this codebase's own history:** the sync packet must send a snapshot, not the live
 collections, or netty encodes them on its own thread while the server thread is still editing.

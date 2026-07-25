@@ -78,6 +78,20 @@ public class KindredsConfig {
     /** 100 = the full evidence band; lower narrows it toward 1.0. It can never widen it (spec §2.4). */
     public int adaptiveStrength = 100;
 
+    /** How much extra max health a mob may arrive with at full group threat. Percent. */
+    public int maxHealthBonus = 100;
+    /** Chance an in-scope mob is promoted to an elite at full group threat. Percent; 0 disables. */
+    public int eliteChance = 25;
+    /** Chance a scaled mob brings 1-2 escorts at full group threat. Percent; 0 disables. The escort
+     * HARD BOUNDS (max 2, same species, natural spawns only, mob-cap suppression) are deliberately
+     * not configurable - they are what keeps escorts from ever being a runaway population. */
+    public int escortChance = 30;
+    /** Extra group difficulty per additional nearby player, percent. The +45%% total cap is internal. */
+    public int groupScalingPercent = 15;
+    /** Difficulty pacing per dimension: the old world stays gentler than the new one. */
+    public float dimensionMultiplierMiddleEarth = 1.0f;
+    public float dimensionMultiplierOverworld = 0.75f;
+
     // Deliberately NOT config fields: the hardship target, the two EWMA rates, the death penalty,
     // the gear reference and the danger yardstick. They are calibration rather than difficulty, and
     // several hold an invariant an operator could break without knowing - the EWMA rates must keep

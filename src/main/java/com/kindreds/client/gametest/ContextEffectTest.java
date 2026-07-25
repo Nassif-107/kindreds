@@ -109,6 +109,12 @@ public class ContextEffectTest implements FabricClientGameTest {
                     System.out.println(TAG + " " + failures.size() + " problem(s)");
                 }
             });
+            // On the test thread, where `failures` is directly visible: a print-only summary left
+            // this test green even when a real assertion broke. Throwing here is what makes
+            // runClientGameTest actually fail on that.
+            if (!failures.isEmpty()) {
+                throw new AssertionError("ContextEffectTest failures: " + failures);
+            }
         }
     }
 

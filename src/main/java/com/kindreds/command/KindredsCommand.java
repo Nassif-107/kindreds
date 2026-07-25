@@ -282,7 +282,10 @@ public final class KindredsCommand {
             "pointCapPercent", "allowGrantXp", "hudAnimations",
             // Task 6: enemy-scaling tuning - see KindredsConfig for what each one means.
             "scalingCurve", "weightCommitment", "weightGear", "weightRenown", "priorDecayPerHour",
-            "maxDamageBonus", "xpBonus", "adaptiveStrength");
+            "maxDamageBonus", "xpBonus", "adaptiveStrength",
+            // Task 1 (phase 2): the phase-2 dials - see KindredsConfig for what each one means.
+            "maxHealthBonus", "eliteChance", "escortChance", "groupScalingPercent",
+            "dimensionMultiplierMiddleEarth", "dimensionMultiplierOverworld");
 
     private static final SuggestionProvider<ServerCommandSource> CONFIG_KEY_SUGGESTIONS =
             (context, builder) -> CommandSource.suggestMatching(CONFIG_KEYS, builder);
@@ -313,6 +316,12 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("  maxDamageBonus = " + c.maxDamageBonus), false);
         source.sendFeedback(() -> Text.literal("  xpBonus = " + c.xpBonus), false);
         source.sendFeedback(() -> Text.literal("  adaptiveStrength = " + c.adaptiveStrength), false);
+        source.sendFeedback(() -> Text.literal("  maxHealthBonus = " + c.maxHealthBonus), false);
+        source.sendFeedback(() -> Text.literal("  eliteChance = " + c.eliteChance), false);
+        source.sendFeedback(() -> Text.literal("  escortChance = " + c.escortChance), false);
+        source.sendFeedback(() -> Text.literal("  groupScalingPercent = " + c.groupScalingPercent), false);
+        source.sendFeedback(() -> Text.literal("  dimensionMultiplierMiddleEarth = " + c.dimensionMultiplierMiddleEarth), false);
+        source.sendFeedback(() -> Text.literal("  dimensionMultiplierOverworld = " + c.dimensionMultiplierOverworld), false);
         source.sendFeedback(() -> Text.literal("Change with: /kindreds config <key> <value>  (saved to kindreds-server.json)"), false);
         return 1;
     }
@@ -355,6 +364,12 @@ public final class KindredsCommand {
                 case "maxDamageBonus" -> c.maxDamageBonus = Integer.parseInt(value);
                 case "xpBonus" -> c.xpBonus = Integer.parseInt(value);
                 case "adaptiveStrength" -> c.adaptiveStrength = Integer.parseInt(value);
+                case "maxHealthBonus" -> c.maxHealthBonus = parsePercent(value, 0, 400);
+                case "eliteChance" -> c.eliteChance = parsePercent(value, 0, 100);
+                case "escortChance" -> c.escortChance = parsePercent(value, 0, 100);
+                case "groupScalingPercent" -> c.groupScalingPercent = parsePercent(value, 0, 100);
+                case "dimensionMultiplierMiddleEarth" -> c.dimensionMultiplierMiddleEarth = parseUnitRange(value, 0f, 2f);
+                case "dimensionMultiplierOverworld" -> c.dimensionMultiplierOverworld = parseUnitRange(value, 0f, 2f);
                 default -> {
                     source.sendError(Text.literal("Unknown key '" + key + "'. Valid: " + String.join(", ", CONFIG_KEYS)));
                     return 0;
@@ -380,6 +395,28 @@ public final class KindredsCommand {
             return false;
         }
         throw new IllegalArgumentException("expected true/false");
+    }
+
+    /** Parses an integer percent value, rejecting anything outside {@code [min, max]} before it can
+     * ever reach the config - the {@code priorDecayPerHour} lesson: reject at the source rather than
+     * rely on a downstream clamp. */
+    private static int parsePercent(String v, int min, int max) {
+        int parsed = Integer.parseInt(v);
+        if (parsed < min || parsed > max) {
+            throw new IllegalArgumentException("must be between " + min + " and " + max);
+        }
+        return parsed;
+    }
+
+    /** Parses a float value, rejecting anything outside {@code [min, max]} before it can ever reach
+     * the config. Used for the dimension multipliers, which are unitless scale factors rather than
+     * percents. */
+    private static float parseUnitRange(String v, float min, float max) {
+        float parsed = Float.parseFloat(v);
+        if (parsed < min || parsed > max) {
+            throw new IllegalArgumentException("must be between " + min + " and " + max);
+        }
+        return parsed;
     }
 
     // --- respec ------------------------------------------------------------------------------

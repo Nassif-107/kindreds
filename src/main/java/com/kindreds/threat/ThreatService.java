@@ -1,6 +1,7 @@
 package com.kindreds.threat;
 
 import com.kindreds.Kindreds;
+import com.kindreds.ability.AbilityApplier;
 import com.kindreds.data.Disciplines;
 import com.kindreds.data.SkillTree;
 import com.kindreds.playerdata.KindredAttachment;
@@ -11,11 +12,16 @@ import com.kindreds.progression.UnlockService;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,6 +49,21 @@ public final class ThreatService {
     private static final Map<UUID, ThreatRank> LAST_ANNOUNCED = new ConcurrentHashMap<>();
     private static final int REFRESH_TICKS = 40;
     private static int tickCounter;
+
+    /** The base mod's stealth attribute - resolved generically by {@link AbilityApplier}, which
+     * no-ops if it is absent, so this class has no compile-time dependency on the base mod. */
+    private static final Identifier DETECTION_RANGE_ID = Identifier.of("middle-earth", "detection_range");
+
+    /**
+     * The detection-erosion counter's fixed span - the amount added at full threat (spec §3: at full
+     * threat the counter cancels the deepest stealth build exactly, never past baseline). Must fit
+     * within the {@code middle-earth:detection_range} attribute's own {@code [0.1, 1.0]} clamp width
+     * (0.9) - if a future base-mod update ever widens or narrows that clamp without this constant
+     * following it, detection would stop capping out exactly at baseline. {@code KindredsDoctor}'s
+     * {@code checkDetectionSpan} is the tripwire that catches that drift; it reads this constant
+     * rather than a second, retyped {@code 0.9} literal so the two can never quietly diverge.
+     */
+    public static final double DETECTION_SPAN = 0.9;
 
     /** Registers the disconnect-invalidation hook and the slow refresh timer. Call once from
      * {@link Kindreds#onInitialize()}. */
@@ -102,12 +123,69 @@ public final class ThreatService {
         return ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
     }
 
+    /** The +45%% group-size cap is a bound, not a dial (spec §4) - it is what keeps a full server
+     * from multiplying a mob past recognition. */
+    private static final float GROUP_CAP = 0.45f;
+    /** "Nearby" for a spawn decision, blocks (spec §4). */
+    private static final double GROUP_RADIUS = 128.0;
+
+    /** Pure core: the strongest figure carries the group bonus. Package-private for the unit test. */
+    static float groupOf(List<Float> scaledValues, float perPlayer) {
+        float strongest = 0f;
+        for (float s : scaledValues) {
+            strongest = Math.max(strongest, s);
+        }
+        return ThreatMath.group(strongest, scaledValues.size(), perPlayer, GROUP_CAP);
+    }
+
+    /** Pure core: middle-earth paces at its own multiplier; everywhere else is the old world. */
+    static float dimensionMultiplier(String dimensionNamespace, float middleEarth, float overworld) {
+        return "middle-earth".equals(dimensionNamespace) ? middleEarth : overworld;
+    }
+
+    /**
+     * The SHARED difficulty for a mob entering the world at {@code pos} (spec §4): the strongest
+     * player within 128 blocks carries the group bonus; a spawn with no player in range uses the
+     * strongest player in the dimension, undecayed - an AFK farm 130 blocks out must not be a
+     * difficulty switch. No players in the dimension at all -> 0 (an unwitnessed mob costs nothing).
+     */
+    public static float scaledGroupAt(ServerWorld world, BlockPos pos) {
+        if (Kindreds.CONFIG == null || !Kindreds.CONFIG.enableEnemyScaling) {
+            return 0f;
+        }
+        List<Float> near = new ArrayList<>();
+        float strongestInDimension = 0f;
+        double radiusSq = GROUP_RADIUS * GROUP_RADIUS;
+        for (ServerPlayerEntity p : world.getPlayers()) {
+            if (p.isSpectator()) continue; // a spectator is not "near enough to matter"
+            float s = scaledFor(p);
+            strongestInDimension = Math.max(strongestInDimension, s);
+            if (p.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= radiusSq) {
+                near.add(s);
+            }
+        }
+        float group = near.isEmpty()
+                ? strongestInDimension
+                : groupOf(near, Kindreds.CONFIG.groupScalingPercent / 100f);
+        return group * dimensionMultiplier(world.getRegistryKey().getValue().getNamespace(),
+                Kindreds.CONFIG.dimensionMultiplierMiddleEarth,
+                Kindreds.CONFIG.dimensionMultiplierOverworld);
+    }
+
     /** The {@link ThreatTuning} every fold and re-band in the mod uses: {@link ThreatTuning#DEFAULTS}
      * narrowed by the server's {@code adaptiveStrength}. The one place this construction happens, so
      * {@link ThreatEvidence}'s folds and this class's refresh-time re-band can never quietly build it
      * two different ways. Only called where {@link Kindreds#CONFIG} is already known non-null. */
     static ThreatTuning tuningFor() {
         return ThreatTuning.withAdaptiveStrength(Kindreds.CONFIG.adaptiveStrength);
+    }
+
+    /** Whether scaling is on at all - the same null-safe shape {@link ThreatEvidence} checks with
+     * before it accrues any evidence. {@link #refresh} uses this to gate the detection-erosion
+     * modifier below, so a server that flips {@code enableEnemyScaling} off mid-session stops
+     * eroding stealth on the very next refresh, not just for players who reconnect afterward. */
+    private static boolean scalingEnabled() {
+        return Kindreds.CONFIG != null && Kindreds.CONFIG.enableEnemyScaling;
     }
 
     /**
@@ -162,6 +240,25 @@ public final class ThreatService {
 
         float threat = ThreatMath.threat(mark, state.competence());
         CACHE.put(player.getUuid(), threat);
+
+        // Threat erodes stealth: a positive modifier drags a stealth-lowered detection_range back
+        // toward its 1.0 baseline. The attribute's own [0.1, 1.0] clamp is the cap - at full threat
+        // the counter (+0.9) cancels the deepest stealth build exactly, and can never exceed
+        // baseline. setDynamicModifier resolves the attribute generically and no-ops when the base
+        // mod is absent.
+        //
+        // Gated on scalingEnabled() - not just on this method being reached at all - because a
+        // server can flip enableEnemyScaling off mid-session without every player reconnecting or
+        // invalidating their cache; refresh still runs on the tick timer regardless. Without this
+        // gate, threat computed while scaling was on would keep eroding stealth forever after it was
+        // turned off. amount = 0.0 when disabled: setDynamicModifier's remove-then-skip-add (see its
+        // javadoc) removes any modifier already installed and adds nothing back, so toggling off
+        // mid-session immediately restores full stealth rather than leaving a stale counter in place.
+        float scaled = ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
+        double detectionAmount = scalingEnabled() ? DETECTION_SPAN * scaled : 0.0;
+        AbilityApplier.setDynamicModifier(player, DETECTION_RANGE_ID, "threat/detection",
+                detectionAmount, EntityAttributeModifier.Operation.ADD_VALUE);
+
         announceRankChange(player, threat);
         return threat;
     }

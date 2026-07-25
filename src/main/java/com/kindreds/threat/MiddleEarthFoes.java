@@ -58,4 +58,26 @@ public final class MiddleEarthFoes {
             return false;
         }
     }
+
+    /**
+     * @return whether {@code entity} is a base-mod mob that counts as hostile at spawn time, with no
+     * player to check per-player hostility against - always {@code false} if the base mod isn't
+     * loaded, or if checking failed unexpectedly. See {@link MiddleEarthFoesBridge#isHostileFactionMobAtSpawn}.
+     */
+    public static boolean isHostileFactionMobAtSpawn(Entity entity) {
+        if (!FabricLoader.getInstance().isModLoaded(MIDDLE_EARTH_MOD_ID)) {
+            return false;
+        }
+        try {
+            return MiddleEarthFoesBridge.isHostileFactionMobAtSpawn(entity);
+        } catch (Throwable t) {
+            if (!warnedOnce) {
+                warnedOnce = true;
+                Kindreds.LOGGER.warn(
+                        "[Kindreds] failed to check entity {} against the base Middle-earth mod's factions; treating as out of scope",
+                        entity.getUuid(), t);
+            }
+            return false;
+        }
+    }
 }

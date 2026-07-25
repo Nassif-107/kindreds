@@ -119,4 +119,11 @@ public final class MobDanger {
     private static boolean isOwnedPet(Entity entity) {
         return entity instanceof Tameable tameable && tameable.getOwnerReference() != null;
     }
+
+    /** The player-free scope for SHARED spawn effects (health, elites, escorts): vanilla hostiles
+     * plus the base mod's always-hostile beasts and EVIL-faction NPCs. Per-player effects keep using
+     * {@link #isInScope(Entity, ServerPlayerEntity)} - a friendly NPC must never arrive pre-scaled. */
+    public static boolean isScalableAtSpawn(Entity entity) {
+        return entity instanceof Monster || MiddleEarthFoes.isHostileFactionMobAtSpawn(entity);
+    }
 }

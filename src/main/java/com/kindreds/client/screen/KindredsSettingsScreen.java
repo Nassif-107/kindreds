@@ -41,7 +41,8 @@ public class KindredsSettingsScreen extends Screen {
      * these have no click handler here. Editing is via {@code /kindreds config}; this row set exists
      * so a non-operator (and an operator without console access) can at least see what is in effect. */
     private static final String[] WORLD_ANSWERS_ROWS = {
-            "enemyScaling", "scalingCurve", "maxDamageBonus", "xpBonus"
+            "enemyScaling", "scalingCurve", "maxDamageBonus", "xpBonus",
+            "maxHealthBonus", "eliteChance", "escortChance"
     };
 
     private final List<int[]> presetRects = new ArrayList<>();
@@ -310,6 +311,9 @@ public class KindredsSettingsScreen extends Screen {
             case "scalingCurve" -> Text.translatable("kindreds.settings.curve." + v.scalingCurve());
             case "maxDamageBonus" -> Text.literal(v.maxDamageBonus() + "%");
             case "xpBonus" -> Text.literal(v.xpBonus() + "%");
+            case "maxHealthBonus" -> Text.literal(v.maxHealthBonus() + "%");
+            case "eliteChance" -> Text.literal(v.eliteChance() + "%");
+            case "escortChance" -> Text.literal(v.escortChance() + "%");
             default -> Text.literal("");
         };
     }
