@@ -11,6 +11,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,16 @@ public final class KindredData {
     private final Set<String> unlockedNodes;
     private Identifier activeVisionLens;
     private int corruption;
+
+    /**
+     * How deep each multi-rank node has been taken, for the nodes taken past rank 1.
+     *
+     * <p>Deliberately kept <b>beside</b> {@link #unlockedNodes} rather than replacing it. Membership
+     * of that set still means "owned", so every existing call site, save file and sync packet keeps
+     * its exact meaning, and a node simply absent from this map sits at rank 1. That is what lets
+     * ranks arrive in a live world without disturbing a single player's progress - see {@link #rankOf}.
+     */
+    private final Map<String, Integer> nodeRanks = new HashMap<>();
 
     /**
      * Great Deeds of renown this player has performed (advancement ids under {@code kindreds:renown/},
@@ -143,6 +154,33 @@ public final class KindredData {
 
     public Set<String> unlockedNodes() {
         return unlockedNodes;
+    }
+
+    /** Live, mutable rank table - see the field javadoc. Only holds nodes taken past rank 1. */
+    public Map<String, Integer> nodeRanks() {
+        return nodeRanks;
+    }
+
+    /**
+     * How deep {@code nodeId} has been taken: {@code 0} if it is not owned at all, otherwise at least
+     * {@code 1}. An owned node with no entry in {@link #nodeRanks} is rank 1, which is what makes every
+     * node written before ranks existed - and every save file holding one - read correctly.
+     */
+    public int rankOf(String nodeId) {
+        if (!unlockedNodes.contains(nodeId)) {
+            return 0;
+        }
+        return Math.max(1, nodeRanks.getOrDefault(nodeId, 1));
+    }
+
+    /** Records {@code nodeId} as taken to {@code rank}. Rank 1 is left out of the map so the common
+     * case adds nothing to the save file. */
+    public void setRank(String nodeId, int rank) {
+        if (rank <= 1) {
+            nodeRanks.remove(nodeId);
+        } else {
+            nodeRanks.put(nodeId, rank);
+        }
     }
 
     public Identifier activeVisionLens() {
@@ -293,11 +331,17 @@ public final class KindredData {
             // optionalFieldOf so worlds written before threat scaling existed load cleanly, with a
             // fresh default ThreatState rather than a failed decode.
             ThreatState.CODEC.optionalFieldOf("threat",
-                    new ThreatState()).forGetter(KindredData::threat)
-    ).apply(instance, (xp, nodes, lens, corruption, cooldowns, discoveredBiomes, renown, threat) -> {
+                    new ThreatState()).forGetter(KindredData::threat),
+            // optionalFieldOf, same save-compatibility reason as the fields above: a world written
+            // before ranks existed loads with an empty table, which reads as "every owned node is at
+            // rank 1" - exactly what it was.
+            Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("node_ranks", Map.of())
+                    .forGetter(d -> Map.copyOf(d.nodeRanks()))
+    ).apply(instance, (xp, nodes, lens, corruption, cooldowns, discoveredBiomes, renown, threat, ranks) -> {
         KindredData data = new KindredData(xp, nodes, lens.orElse(null), corruption, cooldowns,
                 new HashSet<>(discoveredBiomes), new HashSet<>(renown));
         data.setThreat(threat);
+        data.nodeRanks().putAll(ranks);
         return data;
     }));
 
@@ -336,11 +380,17 @@ public final class KindredData {
             KindredData::renown,
             ThreatState.PACKET_CODEC,
             KindredData::threat,
-            (xp, unlockedNodes, lens, corruption, cooldowns, race, renown, threat) -> {
+            // The client needs ranks to draw "Rank 2/3" and to price the next rank, so they ride the
+            // sync packet alongside the owned set rather than being inferred client-side.
+            PacketCodecs.map((IntFunction<Map<String, Integer>>) HashMap::new,
+                    PacketCodecs.STRING, PacketCodecs.VAR_INT),
+            KindredData::nodeRanks,
+            (xp, unlockedNodes, lens, corruption, cooldowns, race, renown, threat, ranks) -> {
                 KindredData data = new KindredData(xp, unlockedNodes, lens, corruption, cooldowns,
                         new HashSet<>(), renown);
                 data.setRace(race);
                 data.setThreat(threat);
+                data.nodeRanks().putAll(ranks);
                 return data;
             });
 }

@@ -68,7 +68,12 @@ public final class UnlockService {
         if (node == null) {
             return UnlockResult.fail("unknown_node");
         }
-        if (data.hasNode(nodeId)) {
+        // Owning a node no longer ends the matter: a multi-rank node can be deepened until its last
+        // rank, and only then is it "already unlocked". Every other rule below - points, prereqs,
+        // exclusivity, deed, cap - is re-checked for each rank, so deepening is bought exactly as
+        // dearly as the first purchase was.
+        int currentRank = data.rankOf(nodeId);
+        if (currentRank >= node.maxRank()) {
             return UnlockResult.fail("already_unlocked");
         }
 
@@ -146,18 +151,24 @@ public final class UnlockService {
         return resolution.tree();
     }
 
-    /** The most points {@code tree} could ever absorb: every node, except that only the cheapest
-     * member of each exclusive group is ever ownable. This is the denominator the percentage cap
-     * scales against, so a 4-lane race and a 5-lane race are limited proportionally. */
+    /** The most points {@code tree} could ever absorb: every node at its deepest rank, except that
+     * only the cheapest member of each exclusive group is ever ownable. This is the denominator the
+     * percentage cap scales against, so a 4-lane race and a 5-lane race are limited proportionally.
+     *
+     * <p>Ranks count here for the same reason they count in {@link #totalPointsSpent}: a rank-3 node
+     * can draw three times its listed points. Measuring the ceiling without them would leave the cap
+     * a percentage of a tree that no longer exists, quietly tightening every race the moment a node
+     * gained depth. */
     public static int maxSpendable(SkillTree tree) {
         int total = 0;
         java.util.Map<String, Integer> cheapestExclusive = new java.util.HashMap<>();
         for (SkillNode n : tree.nodes()) {
+            int fullCost = n.cost().points() * n.maxRank();
             String group = n.exclusiveGroup().orElse(null);
             if (group == null) {
-                total += n.cost().points();
+                total += fullCost;
             } else {
-                cheapestExclusive.merge(group, n.cost().points(), Math::min);
+                cheapestExclusive.merge(group, fullCost, Math::min);
             }
         }
         for (int c : cheapestExclusive.values()) {
@@ -204,16 +215,19 @@ public final class UnlockService {
     public static int totalPointsSpent(KindredData data, SkillTree tree) {
         int spent = 0;
         for (SkillNode n : tree.nodes()) {
-            if (data.hasNode(n.id())) {
-                spent += n.cost().points();
-            }
+            // Every rank was paid for at the node's full price, so a rank-3 node has cost three
+            // times its listed points. Counting it once would let ranks slip past the tree-wide cap.
+            spent += n.cost().points() * data.rankOf(n.id());
         }
         return spent;
     }
 
-    /** Marks {@code nodeId} as unlocked on {@code data}. Assumes {@link #canUnlock} already passed. */
+    /** Marks {@code nodeId} as unlocked - or, if already owned, one rank deeper - on {@code data}.
+     * Assumes {@link #canUnlock} already passed, which is where the rank ceiling is enforced. */
     public static void applyUnlock(KindredData data, String nodeId) {
+        int next = data.rankOf(nodeId) + 1;
         data.unlockedNodes().add(nodeId);
+        data.setRank(nodeId, next);
     }
 
     private static SkillNode findNode(SkillTree tree, String nodeId) {

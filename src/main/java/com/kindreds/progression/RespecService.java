@@ -52,6 +52,9 @@ public final class RespecService {
             }
         }
         data.unlockedNodes().clear();
+        // Ranks are owned-ness too: leaving them behind would refund the points while quietly keeping
+        // every node's depth, so the next purchase of that node would resume at its old rank.
+        data.nodeRanks().clear();
         com.kindreds.ability.PerkService.invalidate(target.getUuid());
         com.kindreds.threat.ThreatService.invalidate(target.getUuid());
         return reversedCount;

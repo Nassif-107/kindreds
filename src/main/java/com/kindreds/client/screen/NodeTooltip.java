@@ -48,8 +48,9 @@ public final class NodeTooltip {
     private static final int LINE_HEIGHT = 10;
 
     public static void render(DrawContext ctx, MinecraftClient client, SkillNode node, TreeRenderer.NodeState state,
-                               SkillTree tree, Theme theme, int mouseX, int mouseY, int screenW, int screenH) {
-        renderBox(ctx, client, buildLines(client, node, state, tree), theme, mouseX, mouseY, screenW, screenH);
+                               SkillTree tree, Theme theme, int mouseX, int mouseY, int screenW, int screenH,
+                               int currentRank) {
+        renderBox(ctx, client, buildLines(client, node, state, tree, currentRank), theme, mouseX, mouseY, screenW, screenH);
     }
 
     /** A small hover card of already-wrapped {@code lines} anchored near the mouse, flipping to the
@@ -102,11 +103,17 @@ public final class NodeTooltip {
     }
 
     private static List<OrderedText> buildLines(MinecraftClient client, SkillNode node, TreeRenderer.NodeState state,
-                                                 SkillTree tree) {
+                                                 SkillTree tree, int currentRank) {
         TextRenderer tr = client.textRenderer;
         List<OrderedText> lines = new ArrayList<>();
 
         addWrapped(lines, tr, Text.literal(displayName(node.id())).formatted(Formatting.BOLD));
+        // Depth, said plainly, and only for nodes that actually have any - a plain node should not
+        // grow a "Rank 1/1" line it gains nothing from.
+        if (node.maxRank() > 1) {
+            addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.rank",
+                    currentRank, node.maxRank())).formatted(Formatting.GOLD));
+        }
         addWrapped(lines, tr, Text.literal(flavor(node)).formatted(Formatting.GRAY));
 
         for (AbilityDef ability : node.abilities()) {

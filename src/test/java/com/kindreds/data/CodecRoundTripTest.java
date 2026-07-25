@@ -40,7 +40,8 @@ class CodecRoundTripTest {
                 List.of(),
                 List.of(attributeMod),
                 Optional.empty(),
-                Optional.empty());
+                Optional.empty(),
+                1);
 
         SkillTree tree = new SkillTree(
                 Identifier.of("kindreds", "elf"),
