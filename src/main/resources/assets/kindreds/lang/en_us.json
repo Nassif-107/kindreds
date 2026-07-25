@@ -687,6 +687,7 @@
   "kindreds.tree.kind.curse": "Curse",
   "kindreds.tooltip.cost": "Cost: %d %s pt(s)",
   "kindreds.tooltip.requires": "Requires: %s",
+  "kindreds.tooltip.rank": "Rank %d of %d",
   "kindreds.tooltip.exclusive_choice": "A parting of ways - take this and you close off: %s",
   "kindreds.tooltip.sealed_deed": "Sealed - Deed: %s",
   "kindreds.tooltip.deed_earned": "Deed earned: %s",

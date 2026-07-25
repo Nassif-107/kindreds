@@ -94,8 +94,10 @@ public final class ProgressionService {
         int spent = 0;
         for (SkillNode node : tree.nodes()) {
             SkillNode.Cost cost = node.cost();
-            if (cost.disciplineId().equals(discipline) && data.hasNode(node.id())) {
-                spent += cost.points();
+            if (cost.disciplineId().equals(discipline)) {
+                // Multiplied by rank: each rank of a node was bought at the node's full price, so a
+                // node taken to rank 3 has drawn three times its listed points out of the discipline.
+                spent += cost.points() * data.rankOf(node.id());
             }
         }
         return spent;

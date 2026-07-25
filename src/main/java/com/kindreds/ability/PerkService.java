@@ -98,22 +98,65 @@ public final class PerkService {
             return List.of();
         }
         List<PerkDef> perks = new ArrayList<>();
-        birthTraitFor(server, race.get()).ifPresent(bt -> addPerks(perks, bt.traits()));
+        birthTraitFor(server, race.get()).ifPresent(bt -> addPerks(perks, bt.traits(), 1));
         UnlockService.treeFor(player).ifPresent(tree -> {
             KindredData data = KindredAttachment.get(player);
             for (String nodeId : data.unlockedNodes()) {
-                tree.node(nodeId).ifPresent(node -> addPerks(perks, node.abilities()));
+                int rank = data.rankOf(nodeId);
+                tree.node(nodeId).ifPresent(node -> addPerks(perks, node.abilities(), rank));
             }
         });
         return List.copyOf(perks);
     }
 
-    private static void addPerks(List<PerkDef> out, List<AbilityDef> abilities) {
+    /**
+     * Adds every perk in {@code abilities}, with its numbers scaled to {@code rank}.
+     *
+     * <p>This is where a rank stops being bookkeeping and becomes strength. Most perk handlers fold
+     * their owned copies together with {@code Math.max}, so handing them the same perk twice changed
+     * nothing - which is exactly why a second node granting an identical perk used to be worth
+     * nothing at all. Scaling the numbers instead means rank 2 genuinely reads as twice the perk to
+     * every handler, whether that handler maxes, sums or rolls.
+     */
+    private static void addPerks(List<PerkDef> out, List<AbilityDef> abilities, int rank) {
         for (AbilityDef ability : abilities) {
             if (ability instanceof PerkDef perk) {
-                out.add(perk);
+                out.add(rank <= 1 ? perk : scaled(perk, rank));
             }
         }
+    }
+
+    /**
+     * A copy of {@code perk} with its tunables multiplied by {@code rank}.
+     *
+     * <p>Probability-shaped params are deliberately excluded from the multiplication and raised on a
+     * curve that cannot pass certainty instead: tripling a {@code chance} of 0.4 would read as 1.2 and
+     * silently become "always", which is a different perk rather than a deeper one. Each rank closes
+     * half of the remaining gap to 1.0, so more ranks always help and never guarantee.
+     */
+    private static PerkDef scaled(PerkDef perk, int rank) {
+        Map<String, Float> scaledParams = new java.util.HashMap<>(perk.params().size());
+        perk.params().forEach((key, value) -> scaledParams.put(key, scaleParam(key, value, rank)));
+        return new PerkDef(perk.perk(), scaledParams, perk.foe(), perk.effect());
+    }
+
+    /** Param names that read as a probability in {@code [0,1]} rather than a magnitude. */
+    private static boolean isChanceLike(String key) {
+        return key.equals("chance") || key.endsWith("_chance") || key.equals("share");
+    }
+
+    private static float scaleParam(String key, float value, int rank) {
+        if (!isChanceLike(key)) {
+            return value * rank;
+        }
+        if (value <= 0f || value >= 1f) {
+            return value;   // a ban or a certainty is a statement, not something to deepen
+        }
+        float chance = value;
+        for (int i = 1; i < rank; i++) {
+            chance += (1f - chance) * 0.5f;   // halve the remaining gap, never reach it
+        }
+        return chance;
     }
 
     private static Optional<BirthTrait> birthTraitFor(MinecraftServer server, Identifier race) {

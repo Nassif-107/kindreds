@@ -459,7 +459,7 @@ public class SkillTreeScreen extends Screen {
 
         if (hovered != null) {
             NodeTooltip.render(ctx, MinecraftClient.getInstance(), hovered.node(), hovered.state(),
-                    tree, theme, mouseX, mouseY, width, height);
+                    tree, theme, mouseX, mouseY, width, height, data.rankOf(hovered.node().id()));
         } else if (hoveredTabDiscipline != null) {
             renderDisciplineTabTooltip(ctx, mouseX, mouseY);
         }

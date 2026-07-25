@@ -106,8 +106,15 @@ public final class TreeRenderer {
      * {@code UnlockResultS2C} (shown as a toast by {@code KindredsClient}).
      */
     public static NodeState stateOf(SkillNode node, KindredData data, SkillTree tree) {
-        if (data.hasNode(node.id())) {
+        // A multi-rank node is only finished at its last rank. Below that it stays a node you can
+        // buy - otherwise the tree would draw it as done and quietly refuse the deepening the whole
+        // rank system exists to sell. Its remaining ranks are still gated on points and the cap below.
+        int rank = data.rankOf(node.id());
+        if (rank >= node.maxRank()) {
             return NodeState.OWNED;
+        }
+        if (rank > 0) {
+            return prereqsAndPointsMet(node, data, tree) ? NodeState.AVAILABLE : NodeState.OWNED;
         }
         // A specialization whose mutually-exclusive rival is already owned is closed off - the player
         // chose the other path. Shown LOCKED (matching the server's exclusive_conflict rule) so the

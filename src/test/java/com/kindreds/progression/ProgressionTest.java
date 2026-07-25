@@ -188,7 +188,8 @@ class ProgressionTest {
                 List.of(),
                 List.of(),
                 Optional.empty(),
-                Optional.empty()
+                Optional.empty(),
+                1
         );
     }
 }

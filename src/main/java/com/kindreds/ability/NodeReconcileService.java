@@ -97,6 +97,7 @@ public final class NodeReconcileService {
                 }
             }
             data.unlockedNodes().remove(nodeId);
+            data.nodeRanks().remove(nodeId);   // depth belongs to the node; it goes with it
         }
         com.kindreds.ability.PerkService.invalidate(player.getUuid());
         com.kindreds.Kindreds.LOGGER.info(

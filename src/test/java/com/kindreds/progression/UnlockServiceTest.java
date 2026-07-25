@@ -38,11 +38,76 @@ class UnlockServiceTest {
     private static SkillNode node(String id, Identifier discipline, int cost, List<String> prereqs,
                                    Optional<String> exclusiveGroup, Optional<Identifier> deed) {
         return new SkillNode(id, 0, new int[]{0, 0}, new SkillNode.Cost(discipline, cost), prereqs, List.of(),
-                deed, exclusiveGroup);
+                deed, exclusiveGroup, 1);
     }
 
     private static SkillNode simple(String id, Identifier discipline, int cost) {
         return node(id, discipline, cost, List.of(), Optional.empty(), Optional.empty());
+    }
+
+    private static SkillNode ranked(String id, Identifier discipline, int cost, int maxRank) {
+        return new SkillNode(id, 0, new int[]{0, 0}, new SkillNode.Cost(discipline, cost), List.of(), List.of(),
+                Optional.empty(), Optional.empty(), maxRank);
+    }
+
+    /** A rank-1 node is finished the moment it is bought - the old behaviour, unchanged. */
+    @Test
+    void plainNodeIsAlreadyUnlockedAfterOnePurchase() {
+        SkillTree tree = tree(simple("archer_1", ARCHERY, 1));
+        KindredData data = new KindredData();
+        UnlockService.applyUnlock(data, "archer_1");
+
+        assertEquals(1, data.rankOf("archer_1"));
+        assertEquals("already_unlocked",
+                UnlockService.canUnlock(data, tree, "archer_1", PLENTY_POINTS, ALL_DEEDS_EARNED).reason());
+    }
+
+    /** A multi-rank node stays buyable until its last rank, and then stops. */
+    @Test
+    void rankedNodeCanBeDeepenedUntilItsLastRank() {
+        SkillTree tree = tree(ranked("deep_delver", MINING, 2, 3));
+        KindredData data = new KindredData();
+
+        assertTrue(UnlockService.canUnlock(data, tree, "deep_delver", PLENTY_POINTS, ALL_DEEDS_EARNED).ok());
+        UnlockService.applyUnlock(data, "deep_delver");
+        assertEquals(1, data.rankOf("deep_delver"));
+
+        assertTrue(UnlockService.canUnlock(data, tree, "deep_delver", PLENTY_POINTS, ALL_DEEDS_EARNED).ok(),
+                "rank 2 of 3 must still be buyable");
+        UnlockService.applyUnlock(data, "deep_delver");
+        UnlockService.applyUnlock(data, "deep_delver");
+        assertEquals(3, data.rankOf("deep_delver"));
+
+        assertEquals("already_unlocked",
+                UnlockService.canUnlock(data, tree, "deep_delver", PLENTY_POINTS, ALL_DEEDS_EARNED).reason(),
+                "past the last rank there is nothing left to buy");
+    }
+
+    /** Every rank is paid for, so the tree-wide spend counts them all - otherwise deepening would be
+     * a way to slip past the point cap for free. */
+    @Test
+    void everyRankCountsTowardPointsSpent() {
+        SkillTree tree = tree(ranked("deep_delver", MINING, 2, 3));
+        KindredData data = new KindredData();
+
+        UnlockService.applyUnlock(data, "deep_delver");
+        assertEquals(2, UnlockService.totalPointsSpent(data, tree));
+        UnlockService.applyUnlock(data, "deep_delver");
+        assertEquals(4, UnlockService.totalPointsSpent(data, tree));
+        UnlockService.applyUnlock(data, "deep_delver");
+        assertEquals(6, UnlockService.totalPointsSpent(data, tree));
+    }
+
+    /** An unowned node is rank 0; a node owned before ranks existed reads as rank 1 with no entry in
+     * the rank table, which is what keeps old saves meaning exactly what they meant. */
+    @Test
+    void anOwnedNodeWithNoRankEntryIsRankOne() {
+        KindredData data = new KindredData();
+        assertEquals(0, data.rankOf("never_bought"));
+
+        data.unlockedNodes().add("legacy_node");     // as an old save decodes it: owned, no rank entry
+        assertEquals(1, data.rankOf("legacy_node"));
+        assertTrue(data.nodeRanks().isEmpty(), "rank 1 must not need an entry");
     }
 
     @Test
