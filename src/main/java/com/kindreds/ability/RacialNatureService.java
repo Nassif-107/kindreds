@@ -146,11 +146,27 @@ public final class RacialNatureService {
      * hollow buff. Bleeding off ~55% of the accumulated exhaustion each second makes hunger drain
      * roughly twice as slowly across ALL sources - noticeably hardy, but they still get hungry and
      * must eventually eat (they are no longer effectively immortal on an empty stomach). */
+    /**
+     * Fraction of accumulated exhaustion these races shrug off each second.
+     *
+     * <p>Sized deliberately. Exhaustion is the meter that drives food loss, and vanilla charges it
+     * for natural regeneration as well as for exertion - that is the loop which makes healing cost
+     * food. Draining it faster than it accrues does not make hunger slower, it removes hunger
+     * entirely: at the previous 0.55 the meter settled near {@code gain / 0.55}, well under the 4.0
+     * threshold, so a dwarf could take damage, regenerate to full, and never see the food bar move.
+     *
+     * <p>At 0.20 the steady state is {@code gain / 0.20}, so a single regeneration tick (which costs
+     * far more than a second of ordinary movement) still carries the meter past 4.0 and food still
+     * drains. What remains is a genuine ~20% edge on everyday exertion, which is what "endures
+     * hunger and toil far past other folk" should mean.
+     */
+    private static final float HUNGER_ENDURANCE = 0.20f;
+
     private static void endureHunger(ServerPlayerEntity player) {
         HungerManager hunger = player.getHungerManager();
         float exhaustion = ((HungerManagerAccessor) hunger).kindreds$getExhaustion();
         if (exhaustion > 0.0f) {
-            hunger.addExhaustion(-exhaustion * 0.55f);
+            hunger.addExhaustion(-exhaustion * HUNGER_ENDURANCE);
         }
     }
 
