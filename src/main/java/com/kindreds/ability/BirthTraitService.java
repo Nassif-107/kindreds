@@ -57,6 +57,21 @@ public final class BirthTraitService {
      */
     private static final int APPLY_DELAY_TICKS = 3;
 
+    /**
+     * Health to restore once a player's max-health bonus is back, keyed by player.
+     *
+     * The base mod re-asserts each race's stats with {@code clearModifiers()} on join, which drops
+     * max health to the racial base for the few ticks before this service re-applies its bonus - and
+     * the game clamps current health down to whatever the maximum is at that instant. The bonus then
+     * returns, but the health lost to the clamp does not, so every relog cost a player the difference
+     * and left them regenerating it back through food.
+     *
+     * Recorded on disconnect, which is the one moment the true value is certainly unclamped, and
+     * fallen back to the value seen on join when there is no disconnect on record (a server restart
+     * between sessions, say). Consumed by the deferred apply below.
+     */
+    private static final Map<UUID, Float> HEALTH_BEFORE_RESET = new HashMap<>();
+
     /** Players awaiting a deferred (post-base-mod) birth-trait apply, with ticks remaining. */
     private static final Map<UUID, Integer> PENDING = new HashMap<>();
 
@@ -66,9 +81,17 @@ public final class BirthTraitService {
         // Deferred (NOT inline) so we re-assert after the base mod's same-tick clearModifiers(). See
         // APPLY_DELAY_TICKS.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-                PENDING.put(handler.player.getUuid(), APPLY_DELAY_TICKS));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
-                PENDING.remove(handler.player.getUuid()));
+                {
+                    // putIfAbsent: a value recorded on disconnect is the unclamped one and must win
+                    // over whatever health reads as here, which may already have been clamped.
+                    HEALTH_BEFORE_RESET.putIfAbsent(handler.player.getUuid(), handler.player.getHealth());
+                    PENDING.put(handler.player.getUuid(), APPLY_DELAY_TICKS);
+                });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            PENDING.remove(handler.player.getUuid());
+            // The authoritative reading: modifiers are still installed, so this is real health.
+            HEALTH_BEFORE_RESET.put(handler.player.getUuid(), handler.player.getHealth());
+        });
 
         // On a REAL death (alive == false), vanilla drops every persistent attribute modifier and
         // clears status effects - including this mod's birth-trait ones - and the base mod re-asserts
@@ -102,6 +125,24 @@ public final class BirthTraitService {
         ServerTickEvents.END_SERVER_TICK.register(BirthTraitService::onEndTick);
     }
 
+    /**
+     * Gives back health the max-health clamp took while the bonus was briefly absent.
+     *
+     * Only ever restores, never grants: the result is bounded by both the health the player actually
+     * had and their current maximum, so this cannot heal anyone above where they left off, and does
+     * nothing at all for a race with no max-health bonus.
+     */
+    private static void restoreHealthAfterReset(ServerPlayerEntity player) {
+        Float remembered = HEALTH_BEFORE_RESET.remove(player.getUuid());
+        if (remembered == null) {
+            return;
+        }
+        float restored = Math.min(remembered, player.getMaxHealth());
+        if (restored > player.getHealth()) {
+            player.setHealth(restored);
+        }
+    }
+
     /** Ticks down each pending deferred apply and fires it at zero, then runs the periodic race/config
      * sweep every ~2s. */
     private static void onEndTick(MinecraftServer server) {
@@ -117,6 +158,7 @@ public final class BirthTraitService {
                         // Same post-base-mod window: re-assert unlocked-node passives too, which the base
                         // mod's clearModifiers() on login/dimension would otherwise have stripped.
                         NodeReconcileService.reapply(player);
+                        restoreHealthAfterReset(player);
                         com.kindreds.network.SyncKindredDataS2C.sendTo(player);
                     }
                     it.remove();
