@@ -1,0 +1,12 @@
+{
+  "values": [
+    { "id": "middle-earth:bonfire", "required": false },
+    { "id": "middle-earth:orcish_drum", "required": false },
+
+    "minecraft:campfire",
+    "minecraft:soul_campfire",
+
+    { "id": "minecraft:note_block", "required": false },
+    { "id": "minecraft:jukebox", "required": false }
+  ]
+}

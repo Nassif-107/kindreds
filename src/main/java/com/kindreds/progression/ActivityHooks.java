@@ -112,10 +112,8 @@ public final class ActivityHooks {
     private static final long LORE_ADVANCEMENT_XP = 15;
 
     // Chunk 2 discipline tuning.
-    private static final long SONG_PLAY_XP = 2;          // sound a note block / jukebox
-    private static final long SONG_HEARTH_XP = 4;        // tend a hearth / gathering place
+    private static final long SONG_PLAY_XP = 4;          // sound a drum, tend a bonfire or campfire
     private static final long SONG_RESTED_XP = 25;       // a night's rest ended in song
-    private static final long SONG_HEARTH_CD = 200;      // 10s, so a campfire is not a click-farm
     /** Ticks abed before waking counts as a night's rest (a bed skips ~5s of real time). */
     private static final int SLEEP_TICKS_FOR_SONG = 60;
     private static final long RUNECRAFT_USE_XP = 3;      // use an enchant/anvil/lectern/etc. station
@@ -126,11 +124,26 @@ public final class ActivityHooks {
     private static final long LEADERSHIP_LEAD_XP = 1;    // per interval with allies at your side
     private static final long SHADOW_INNOCENT_XP = 10;   // a dark deed: slay the innocent
     /** Cooldowns (game ticks) so "use"-style hooks can't be spam-farmed. */
-    private static final long SONG_CD = 20, RUNECRAFT_CD = 60, BEAST_CD = 40;
+    private static final long SONG_CD = 200, RUNECRAFT_CD = 60, BEAST_CD = 40;
     private static final int RIDE_AWARD_INTERVAL = 100;   // 5s mounted
     private static final int LEAD_AWARD_INTERVAL = 200;   // 10s leading
     private static final int LEAD_RADIUS = 16;
     private static final float CHAMPION_HEALTH = 30f;
+
+    /**
+     * Blocks that count as making music or keeping a hearth, for Song.
+     *
+     * <p>A tag rather than a hardcoded list because the vanilla answers are largely unreachable in
+     * Middle-earth: a note block wants redstone and a jukebox wants a diamond, and the mod generates
+     * neither ore in its own dimension, while a bell has no crafting recipe in vanilla at all. The
+     * tag leads instead with Middle-earth's own {@code bonfire} (a campfire and logs) and
+     * {@code orcish_drum} (leather, sticks and logs) - both craftable from what the world actually
+     * provides - and keeps the vanilla blocks as optional entries so they still count for anyone who
+     * has carried one back from the old world.
+     */
+    private static final net.minecraft.registry.tag.TagKey<Block> SONG_HEARTHS =
+            net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.BLOCK,
+                    Identifier.of(Kindreds.MOD_ID, "song_hearths"));
 
     /** Per-player, per-key last-award game time, for the cooldown-gated "use" hooks. */
     private static final Map<UUID, Map<String, Long>> COOLDOWNS = new HashMap<>();
@@ -167,13 +180,8 @@ public final class ActivityHooks {
             return ActionResult.PASS;
         }
         Block block = world.getBlockState(hit.getBlockPos()).getBlock();
-        if ((block == Blocks.NOTE_BLOCK || block == Blocks.JUKEBOX) && offCooldown(sp, "song", SONG_CD)) {
+        if (world.getBlockState(hit.getBlockPos()).isIn(SONG_HEARTHS) && offCooldown(sp, "song", SONG_CD)) {
             award(sp, SONG, SONG_PLAY_XP);
-        } else if (isGatheringPlace(block) && offCooldown(sp, "song_hearth", SONG_HEARTH_CD)) {
-            // Song is the art of the hall as much as the instrument - the Hall of Fire, the hearth at
-            // Bag End, the long table. Sitting to a fire or a feast is where songs are actually sung,
-            // and it gives the discipline a source that does not need a note block carried everywhere.
-            award(sp, SONG, SONG_HEARTH_XP);
         } else if (isRunecraftStation(block) && offCooldown(sp, "runecraft", RUNECRAFT_CD)) {
             award(sp, RUNECRAFT, RUNECRAFT_USE_XP);
         }
@@ -207,13 +215,6 @@ public final class ActivityHooks {
             return;
         }
         award(player, BEAST_LORE, BEAST_TAME_XP);
-    }
-
-    /** Hearths and gathering places - where songs are sung rather than merely played. */
-    private static boolean isGatheringPlace(Block block) {
-        return block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE
-                || block == Blocks.JUKEBOX || block == Blocks.BELL
-                || block == Blocks.BREWING_STAND || block == Blocks.BARREL;
     }
 
     private static boolean isRunecraftStation(Block block) {
