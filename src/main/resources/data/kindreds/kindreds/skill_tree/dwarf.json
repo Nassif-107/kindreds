@@ -1998,7 +1998,7 @@
           "type": "attribute",
           "attribute": "minecraft:armor_toughness",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 1.0
         },
         {
           "type": "attribute",
@@ -2125,7 +2125,7 @@
           "type": "attribute",
           "attribute": "minecraft:armor",
           "operation": "add_value",
-          "amount": 2.0
+          "amount": 1.0
         },
         {
           "type": "attribute",
