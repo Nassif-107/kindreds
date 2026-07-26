@@ -590,6 +590,18 @@ public final class ActivityHooks {
             Map.entry("mining", List.of("smithing", "survival", "combat")),
             Map.entry("smithing", List.of("mining", "runecraft", "combat")));
 
+    /** Shared with {@link StrandedXpMigration}: whether this race's tree has any node costing
+     * {@code discipline}. */
+    static boolean canSpendIn(ServerPlayerEntity player, Identifier race, Identifier discipline) {
+        return raceCanSpendIn(player, race, discipline);
+    }
+
+    /** Shared with {@link StrandedXpMigration} so xp banked before the redirect existed is rescued by
+     * exactly the rule that now routes xp earned after it. */
+    static Identifier nearestSpendableFor(ServerPlayerEntity player, Identifier race, Identifier discipline) {
+        return nearestSpendable(player, race, discipline);
+    }
+
     private static Identifier nearestSpendable(ServerPlayerEntity player, Identifier race, Identifier discipline) {
         for (String neighbour : NEIGHBOURS.getOrDefault(discipline.getPath(), List.of())) {
             Identifier candidate = Identifier.of(Kindreds.MOD_ID, neighbour);

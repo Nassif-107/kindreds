@@ -105,6 +105,9 @@ public class Kindreds implements ModInitializer {
         // play session is ready, so client-side UI/HUD has real data from the very first tick
         // rather than the empty default.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            // Before the first sync, so the client is told the rescued totals rather than the
+            // stranded ones. Naturally idempotent - see StrandedXpMigration.
+            com.kindreds.progression.StrandedXpMigration.run(handler.player);
             SyncKindredDataS2C.sendTo(handler.player);
             // The client needs the server's rules to display them (settings screen, soft cap).
             com.kindreds.network.SyncConfigS2C.sendTo(handler.player);
