@@ -150,6 +150,18 @@ public final class ActivityHooks {
             net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.BLOCK,
                     Identifier.of(Kindreds.MOD_ID, "song_hearths"));
 
+    /**
+     * Where runes are cut and metal is worked.
+     *
+     * <p>A tag, and led by Middle-earth's own smithing rather than vanilla's: the mod ships a working
+     * {@code forge} and {@code bellows} and five shaping anvils - stone, treated, and the dwarven,
+     * elven and orcish patterns - and those, not a vanilla anvil, are where a smith in this world
+     * actually stands. The vanilla stations stay in the tag behind them.
+     */
+    private static final net.minecraft.registry.tag.TagKey<Block> RUNECRAFT_STATIONS =
+            net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.BLOCK,
+                    Identifier.of(Kindreds.MOD_ID, "runecraft_stations"));
+
     /** Instruments and pipes - Song earned from what you carry rather than what you stand beside.
      * Middle-earth ships five pipes and pipeweed to fill them; a pipe at ease by the road is as much
      * the art of the hall as a drum is, and it is the one Song source that travels with you. */
@@ -200,7 +212,8 @@ public final class ActivityHooks {
             // gives Lore the one thing it never had - a source you can return to. Until now its only
             // income was completing advancements, which are finite and mostly unrelated to a scholar.
             award(sp, LORE, LORE_STUDY_XP);
-        } else if (isRunecraftStation(block) && offCooldown(sp, "runecraft", RUNECRAFT_CD)) {
+        } else if (world.getBlockState(hit.getBlockPos()).isIn(RUNECRAFT_STATIONS)
+                && offCooldown(sp, "runecraft", RUNECRAFT_CD)) {
             award(sp, RUNECRAFT, RUNECRAFT_USE_XP);
         }
         return ActionResult.PASS;
@@ -253,10 +266,7 @@ public final class ActivityHooks {
                 || block == Blocks.CARTOGRAPHY_TABLE || block == Blocks.BOOKSHELF;
     }
 
-    private static boolean isRunecraftStation(Block block) {
-        return block == Blocks.ENCHANTING_TABLE || block == Blocks.ANVIL || block == Blocks.CHIPPED_ANVIL
-                || block == Blocks.DAMAGED_ANVIL || block == Blocks.SMITHING_TABLE;
-    }
+
 
     // --- Mining: PlayerBlockBreakEvents.AFTER ---------------------------------------------------
 

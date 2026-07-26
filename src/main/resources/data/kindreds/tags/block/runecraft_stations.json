@@ -1,0 +1,17 @@
+{
+  "values": [
+    { "id": "middle-earth:forge", "required": false },
+    { "id": "middle-earth:bellows", "required": false },
+    { "id": "middle-earth:stone_anvil", "required": false },
+    { "id": "middle-earth:treated_anvil", "required": false },
+    { "id": "middle-earth:dwarven_treated_anvil", "required": false },
+    { "id": "middle-earth:elven_treated_anvil", "required": false },
+    { "id": "middle-earth:orcish_treated_anvil", "required": false },
+
+    "minecraft:enchanting_table",
+    "minecraft:anvil",
+    "minecraft:chipped_anvil",
+    "minecraft:damaged_anvil",
+    "minecraft:smithing_table"
+  ]
+}
