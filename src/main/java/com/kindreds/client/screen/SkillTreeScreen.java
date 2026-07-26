@@ -658,7 +658,8 @@ public class SkillTreeScreen extends Screen {
                 int ring = (int) (p.r() + 5);
                 ctx.drawBorder((int) p.x() - ring, (int) p.y() - ring, ring * 2, ring * 2, 0xFFFFE070);
             }
-            TreeRenderer.drawNode(ctx, p.node(), p.state(), theme, p.x(), p.y(), p.r(), hover || selected);
+            TreeRenderer.drawNode(ctx, p.node(), p.state(), theme, p.x(), p.y(), p.r(), hover || selected,
+                    data.rankOf(p.node().id()));
 
             if (zoom >= BADGE_ZOOM) {
                 NodeKind kind = kindOf(p.node());
@@ -1204,6 +1205,17 @@ public class SkillTreeScreen extends Screen {
         String kindLabel = "[" + I18n.translate("kindreds.tree.kind." + kind.name().toLowerCase(Locale.ROOT)) + "]";
         ctx.drawText(textRenderer, Text.literal(kindLabel), panel[0] + panel[2] - 10 - textRenderer.getWidth(kindLabel), y, kind.color, false);
         y += 14;
+
+        // Depth, on the panel the player is actually looking at when they press the button. Rank used
+        // to appear only on the hover tooltip, so buying one looked exactly like points vanishing for
+        // nothing: the panel was identical before and after, and once the points ran out the button
+        // disappeared too, which read as a node stuck on its first tier.
+        if (node.maxRank() > 1) {
+            int owned = data.rankOf(node.id());
+            String rankLine = I18n.translate("kindreds.tree.rank_line", owned, node.maxRank());
+            ctx.drawText(textRenderer, Text.literal(rankLine), x, y, 0xFFFFC24A, false);
+            y += 12;
+        }
 
         for (var line : textRenderer.wrapLines(Text.literal(NodeTooltip.flavor(node)).formatted(Formatting.GRAY), wrap)) {
             ctx.drawText(textRenderer, line, x, y, 0xFFB6B0A2, false);

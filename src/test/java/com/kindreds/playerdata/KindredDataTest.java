@@ -195,4 +195,30 @@ class KindredDataTest {
         assertEquals(0L, back.threat().playedTicks());
         assertTrue(back.threat().familyCompetence().isEmpty());
     }
+
+    /** Ranks must survive BOTH round trips or the tree lies to the player: the save codec keeps the
+     * depth a node was bought to, and the wire codec is what lets the screen draw "Rank 2 of 3" and
+     * price the next rank. A node deepened on the server but flat on the client reads as points that
+     * vanished for nothing. */
+    @Test
+    void ranksSurviveSaveAndWire() {
+        KindredData data = new KindredData();
+        data.unlockedNodes().add("dwarf.mining.stoneworked");
+        data.setRank("dwarf.mining.stoneworked", 3);
+        data.unlockedNodes().add("dwarf.mining.plain");   // owned, never deepened
+
+        // save codec
+        JsonElement json = KindredData.CODEC.encodeStart(JsonOps.INSTANCE, data).result().orElseThrow();
+        KindredData saved = KindredData.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
+        assertEquals(3, saved.rankOf("dwarf.mining.stoneworked"), "save codec must keep the rank");
+        assertEquals(1, saved.rankOf("dwarf.mining.plain"), "an owned node with no rank entry is rank 1");
+        assertEquals(0, saved.rankOf("never.bought"));
+
+        // wire codec
+        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), DynamicRegistryManager.EMPTY);
+        KindredData.PACKET_CODEC.encode(buf, data);
+        KindredData wired = KindredData.PACKET_CODEC.decode(buf);
+        assertEquals(3, wired.rankOf("dwarf.mining.stoneworked"), "wire codec must carry the rank to the client");
+        assertEquals(1, wired.rankOf("dwarf.mining.plain"));
+    }
 }

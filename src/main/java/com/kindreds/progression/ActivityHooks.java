@@ -35,7 +35,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -111,6 +113,11 @@ public final class ActivityHooks {
 
     // Chunk 2 discipline tuning.
     private static final long SONG_PLAY_XP = 2;          // sound a note block / jukebox
+    private static final long SONG_HEARTH_XP = 4;        // tend a hearth / gathering place
+    private static final long SONG_RESTED_XP = 25;       // a night's rest ended in song
+    private static final long SONG_HEARTH_CD = 200;      // 10s, so a campfire is not a click-farm
+    /** Ticks abed before waking counts as a night's rest (a bed skips ~5s of real time). */
+    private static final int SLEEP_TICKS_FOR_SONG = 60;
     private static final long RUNECRAFT_USE_XP = 3;      // use an enchant/anvil/lectern/etc. station
     private static final long BEAST_INTERACT_XP = 2;     // handle an animal
     private static final long BEAST_RIDE_XP = 1;         // per interval while mounted on a beast
@@ -162,6 +169,11 @@ public final class ActivityHooks {
         Block block = world.getBlockState(hit.getBlockPos()).getBlock();
         if ((block == Blocks.NOTE_BLOCK || block == Blocks.JUKEBOX) && offCooldown(sp, "song", SONG_CD)) {
             award(sp, SONG, SONG_PLAY_XP);
+        } else if (isGatheringPlace(block) && offCooldown(sp, "song_hearth", SONG_HEARTH_CD)) {
+            // Song is the art of the hall as much as the instrument - the Hall of Fire, the hearth at
+            // Bag End, the long table. Sitting to a fire or a feast is where songs are actually sung,
+            // and it gives the discipline a source that does not need a note block carried everywhere.
+            award(sp, SONG, SONG_HEARTH_XP);
         } else if (isRunecraftStation(block) && offCooldown(sp, "runecraft", RUNECRAFT_CD)) {
             award(sp, RUNECRAFT, RUNECRAFT_USE_XP);
         }
@@ -195,6 +207,13 @@ public final class ActivityHooks {
             return;
         }
         award(player, BEAST_LORE, BEAST_TAME_XP);
+    }
+
+    /** Hearths and gathering places - where songs are sung rather than merely played. */
+    private static boolean isGatheringPlace(Block block) {
+        return block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE
+                || block == Blocks.JUKEBOX || block == Blocks.BELL
+                || block == Blocks.BREWING_STAND || block == Blocks.BARREL;
     }
 
     private static boolean isRunecraftStation(Block block) {
@@ -323,6 +342,29 @@ public final class ActivityHooks {
             tickBiome(player, state, race);
             tickBeastRide(player, state, race);
             tickLeadership(player, state, race);
+            tickRestedSong(player, state, race);
+        }
+    }
+
+    /**
+     * Song: a night actually slept through ends in one, and pays properly for it.
+     *
+     * <p>Song had exactly one source - striking a note block or a jukebox, two xp on a one-second
+     * cooldown - which made it the one discipline a player could not realistically level at all
+     * without standing in a room hitting a block. Sleeping is the opposite kind of source: it happens
+     * on its own rhythm, cannot be farmed faster than the night comes, and is where the songs in the
+     * books are actually sung. Awarded on waking, and only after a real sleep rather than a moment in
+     * the bed, so climbing in and straight out earns nothing.
+     */
+    private static void tickRestedSong(ServerPlayerEntity player, PlayerTickState state, Optional<Identifier> race) {
+        if (player.isSleeping()) {
+            state.ticksSleeping++;
+            return;
+        }
+        int slept = state.ticksSleeping;
+        state.ticksSleeping = 0;
+        if (slept >= SLEEP_TICKS_FOR_SONG) {
+            race.ifPresent(r -> award(player, r, SONG, SONG_RESTED_XP));
         }
     }
 
@@ -439,12 +481,94 @@ public final class ActivityHooks {
 
     /** Awards using an already-resolved race (tick-driven hooks, which cache it — see
      * {@link #cachedRace}), then re-syncs to the client. */
+    /**
+     * Awards xp, redirecting it when this race could never spend it where it landed.
+     *
+     * <p>Not every race has every discipline - a Dwarf's tree holds combat, mining, smithing and
+     * runecraft and nothing else - so an activity that pays into Lore paid a Dwarf in a currency with
+     * nothing to buy. The old guard only skipped that when {@code allowCrossTraining} was <b>off</b>,
+     * and it defaults to on, so in practice the xp was banked and quietly wasted: one Dwarf reached
+     * <i>fifteen levels</i> of Lore, every point of it unspendable, while wondering why the tree said
+     * he had points he could not use.
+     *
+     * <p>Both settings now do something useful with it rather than losing it:
+     * <ul>
+     *   <li><b>on</b> - the xp is redirected into the nearest discipline this race actually has (see
+     *       {@link #NEIGHBOURS}), so reading a book still teaches a Dwarf <i>something</i>.</li>
+     *   <li><b>off</b> - the xp is not awarded at all, the strict reading: only your own people's
+     *       pursuits advance you. Nothing is banked that cannot be spent either way.</li>
+     * </ul>
+     */
     private static void award(ServerPlayerEntity player, Identifier race, Identifier discipline, long baseXp) {
-        if (!Kindreds.CONFIG.allowCrossTraining && !raceCanSpendIn(player, race, discipline)) {
-            return; // xp banked into a discipline this race has no nodes for could never be spent
+        Identifier target = discipline;
+        if (!raceCanSpendIn(player, race, discipline)) {
+            if (!Kindreds.CONFIG.allowCrossTraining) {
+                return;
+            }
+            target = nearestSpendable(player, race, discipline);
+            if (target == null) {
+                return;     // no tree, or a tree with no disciplines at all - nothing to redirect into
+            }
         }
-        ProgressionService.awardXp(player, race, discipline, baseXp, Kindreds.CONFIG.xpRateGlobal);
+        ProgressionService.awardXp(player, race, target, baseXp, Kindreds.CONFIG.xpRateGlobal);
         SyncKindredDataS2C.sendTo(player);
+    }
+
+    /**
+     * Where a discipline's xp goes when the race has no nodes for it: the first neighbour below that
+     * this race can actually spend in, else any discipline it has (lowest id, so the choice is stable
+     * rather than depending on registry order).
+     *
+     * <p>The pairings are by kinship of subject, not by power - lore and runecraft are both the study
+     * of hidden things, stealth and shadow are the same art under two names, smithing and mining are
+     * two halves of one craft - so a redirect still feels like it belongs to what you were doing.
+     */
+    private static final Map<String, List<String>> NEIGHBOURS = Map.ofEntries(
+            Map.entry("lore", List.of("runecraft", "song", "survival", "combat")),
+            Map.entry("runecraft", List.of("lore", "smithing", "song", "combat")),
+            Map.entry("song", List.of("lore", "leadership", "survival", "combat")),
+            Map.entry("leadership", List.of("combat", "song", "survival")),
+            Map.entry("stealth", List.of("shadow", "survival", "archery", "combat")),
+            Map.entry("shadow", List.of("stealth", "survival", "combat")),
+            Map.entry("survival", List.of("beast_lore", "stealth", "mining", "combat")),
+            Map.entry("beast_lore", List.of("survival", "leadership", "combat")),
+            Map.entry("archery", List.of("combat", "stealth", "survival")),
+            Map.entry("combat", List.of("leadership", "archery", "survival")),
+            Map.entry("mining", List.of("smithing", "survival", "combat")),
+            Map.entry("smithing", List.of("mining", "runecraft", "combat")));
+
+    private static Identifier nearestSpendable(ServerPlayerEntity player, Identifier race, Identifier discipline) {
+        for (String neighbour : NEIGHBOURS.getOrDefault(discipline.getPath(), List.of())) {
+            Identifier candidate = Identifier.of(Kindreds.MOD_ID, neighbour);
+            if (raceCanSpendIn(player, race, candidate)) {
+                return candidate;
+            }
+        }
+        // Nothing kindred left: fall back to any discipline this race owns, chosen deterministically.
+        return spendableDisciplines(player, race).stream().sorted(Comparator.comparing(Identifier::toString))
+                .findFirst().orElse(null);
+    }
+
+    /** Every discipline this race's tree actually has nodes in. */
+    private static java.util.Set<Identifier> spendableDisciplines(ServerPlayerEntity player, Identifier race) {
+        java.util.Set<Identifier> out = new java.util.HashSet<>();
+        if (player.getServer() == null) {
+            return out;
+        }
+        try {
+            for (com.kindreds.data.SkillTree tree : player.getServer().getRegistryManager()
+                    .getOrThrow(com.kindreds.data.KindredsRegistries.SKILL_TREE)) {
+                if (tree.race().equals(race)) {
+                    for (com.kindreds.data.SkillNode n : tree.nodes()) {
+                        out.add(n.cost().disciplineId());
+                    }
+                    return out;
+                }
+            }
+        } catch (RuntimeException ignored) {
+            // registries unavailable - caller falls back to not redirecting
+        }
+        return out;
     }
 
     /** Whether {@code race}'s tree actually has nodes in {@code discipline} - i.e. whether points
@@ -478,6 +602,7 @@ public final class ActivityHooks {
         int ticksSinceBiomeCheck;
         int ticksMounted;
         int ticksLeading;
+        int ticksSleeping;
         int ticksSinceRaceCheck; // cachedRace == null forces a check on first use regardless
         Optional<Identifier> cachedRace;
     }

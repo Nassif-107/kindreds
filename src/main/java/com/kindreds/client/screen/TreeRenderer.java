@@ -252,6 +252,14 @@ public final class TreeRenderer {
      * already culled via {@link #isCulled} - this always draws. */
     public static void drawNode(DrawContext ctx, SkillNode node, NodeState state, Theme theme,
                                  float screenX, float screenY, float radius, boolean hovered) {
+        drawNode(ctx, node, state, theme, screenX, screenY, radius, hovered, 0);
+    }
+
+    /** As above, with {@code ownedRank} so a multi-rank node can show how deep it has been taken.
+     * Depth was previously invisible on the canvas entirely - a node at rank 1 of 3 and one at 3 of 3
+     * drew identically, which is most of why deepening felt like it did nothing. */
+    public static void drawNode(DrawContext ctx, SkillNode node, NodeState state, Theme theme,
+                                 float screenX, float screenY, float radius, boolean hovered, int ownedRank) {
         // A capstone only renders its warning-tinted "seal" ring while still locked/sealed/available -
         // once unlocked (OWNED) it's fully lit like any other owned node, per "owned = fully lit".
         boolean sealed = node.deedAdvancement().isPresent() && state != NodeState.OWNED;
@@ -278,6 +286,31 @@ public final class TreeRenderer {
         drawDiamond(ctx, screenX, screenY, radius, color);
         int outline = hovered ? 0xFFFFFFFF : ThemeAssets.withAlpha(ThemeAssets.accent(theme), 200);
         drawDiamondOutline(ctx, screenX, screenY, radius, outline);
+        drawRankPips(ctx, node, screenX, screenY, radius, ownedRank);
+    }
+
+    /** A row of small pips under a multi-rank node: filled for ranks taken, hollow for ranks still to
+     * buy. This is the at-a-glance answer to "did that do anything" - the pip count changes the instant
+     * a rank lands, where the diamond itself looks the same at every depth. */
+    private static void drawRankPips(DrawContext ctx, SkillNode node, float cx, float cy, float radius, int ownedRank) {
+        int max = node.maxRank();
+        if (max <= 1) {
+            return;
+        }
+        int pip = 2;                       // pip half-size in px
+        int gap = 2;
+        int span = max * (pip * 2) + (max - 1) * gap;
+        int left = Math.round(cx) - span / 2;
+        int top = Math.round(cy + radius) + 2;
+        for (int i = 0; i < max; i++) {
+            int x0 = left + i * (pip * 2 + gap);
+            boolean filled = i < ownedRank;
+            int c = filled ? 0xFFFFC24A : 0x66000000;
+            ctx.fill(x0, top, x0 + pip * 2, top + pip * 2, c);
+            if (!filled) {
+                ctx.drawBorder(x0, top, pip * 2, pip * 2, 0x88FFC24A);
+            }
+        }
     }
 
     /** How many nodes of {@code discipline} the player could unlock right now - drives the

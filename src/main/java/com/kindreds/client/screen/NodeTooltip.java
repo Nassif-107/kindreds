@@ -109,10 +109,15 @@ public final class NodeTooltip {
 
         addWrapped(lines, tr, Text.literal(displayName(node.id())).formatted(Formatting.BOLD));
         // Depth, said plainly, and only for nodes that actually have any - a plain node should not
-        // grow a "Rank 1/1" line it gains nothing from.
+        // grow a "Rank 1/1" line it gains nothing from. The unowned case says "can be deepened"
+        // rather than "Rank 0", which reads as broken rather than as an invitation.
         if (node.maxRank() > 1) {
-            addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.rank",
-                    currentRank, node.maxRank())).formatted(Formatting.GOLD));
+            String line = currentRank <= 0
+                    ? I18n.translate("kindreds.tooltip.rank_available", node.maxRank())
+                    : currentRank >= node.maxRank()
+                        ? I18n.translate("kindreds.tooltip.rank_max", currentRank, node.maxRank())
+                        : I18n.translate("kindreds.tooltip.rank", currentRank, node.maxRank());
+            addWrapped(lines, tr, Text.literal(line).formatted(Formatting.GOLD));
         }
         addWrapped(lines, tr, Text.literal(flavor(node)).formatted(Formatting.GRAY));
 

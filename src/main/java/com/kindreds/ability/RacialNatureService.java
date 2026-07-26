@@ -167,10 +167,25 @@ public final class RacialNatureService {
             return;
         }
         int awake = AWAKE.merge(uuid, INTERVAL, Integer::sum);
-        int threshold = (dwarf || uruk) ? 96000 : 48000; // ~4 vs ~2 in-game days
-        if (Kindreds.CONFIG.enableBirthTraits && awake > threshold) {
-            // Short, continuously-refreshed so it lifts within seconds of sleeping.
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 60, 0, true, false, true));
+        int threshold = (dwarf || uruk) ? 144000 : 72000; // ~6 vs ~3 in-game days
+        if (!Kindreds.CONFIG.enableBirthTraits || awake <= threshold) {
+            return;
         }
+        // Only while a bed would actually take them. Weariness that arrives at noon is a punishment
+        // with no answer: vanilla refuses to let anyone sleep in daylight, so the debuff simply rode
+        // along for the rest of the day with nothing the player could do about it. Held back until
+        // night (or a thunderstorm, which vanilla also accepts), it always arrives with its own remedy
+        // to hand - and it is the small hours that a sleepless week should be felt in anyway.
+        if (!canSleepNow(player)) {
+            return;
+        }
+        // Short, continuously-refreshed so it lifts within seconds of sleeping.
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 60, 0, true, false, true));
+    }
+
+    /** Whether vanilla would presently allow this player into a bed - night, or a thunderstorm. */
+    private static boolean canSleepNow(ServerPlayerEntity player) {
+        net.minecraft.server.world.ServerWorld world = player.getWorld();
+        return world.isNight() || world.isThundering();
     }
 }
