@@ -110,10 +110,15 @@ public final class ActivityHooks {
     private static final int BIOME_CHECK_INTERVAL_TICKS = 100;
 
     private static final long LORE_ADVANCEMENT_XP = 15;
+    private static final long LORE_STUDY_XP = 3;         // pore over a lectern, book-shelf or map
+    private static final long LORE_STUDY_CD = 60;
+    private static final long SURVIVAL_HARVEST_XP = 2;   // bring in a ripe crop
 
     // Chunk 2 discipline tuning.
     private static final long SONG_PLAY_XP = 4;          // sound a drum, tend a bonfire or campfire
     private static final long SONG_RESTED_XP = 25;       // a night's rest ended in song
+    private static final long SONG_PIPE_XP = 5;          // a pipe at ease, the Shire's own art
+    private static final long SONG_PIPE_CD = 300;
     /** Ticks abed before waking counts as a night's rest (a bed skips ~5s of real time). */
     private static final int SLEEP_TICKS_FOR_SONG = 60;
     private static final long RUNECRAFT_USE_XP = 3;      // use an enchant/anvil/lectern/etc. station
@@ -145,6 +150,13 @@ public final class ActivityHooks {
             net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.BLOCK,
                     Identifier.of(Kindreds.MOD_ID, "song_hearths"));
 
+    /** Instruments and pipes - Song earned from what you carry rather than what you stand beside.
+     * Middle-earth ships five pipes and pipeweed to fill them; a pipe at ease by the road is as much
+     * the art of the hall as a drum is, and it is the one Song source that travels with you. */
+    private static final net.minecraft.registry.tag.TagKey<net.minecraft.item.Item> SONG_INSTRUMENTS =
+            net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.ITEM,
+                    Identifier.of(Kindreds.MOD_ID, "song_instruments"));
+
     /** Per-player, per-key last-award game time, for the cooldown-gated "use" hooks. */
     private static final Map<UUID, Map<String, Long>> COOLDOWNS = new HashMap<>();
 
@@ -167,6 +179,7 @@ public final class ActivityHooks {
         ServerTickEvents.END_SERVER_TICK.register(ActivityHooks::onEndServerTick);
         UseBlockCallback.EVENT.register(ActivityHooks::onUseBlock);
         UseEntityCallback.EVENT.register(ActivityHooks::onUseEntity);
+        net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.register(ActivityHooks::onUseItem);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             TICK_STATE.remove(handler.player.getUuid());
             COOLDOWNS.remove(handler.player.getUuid());
@@ -182,8 +195,25 @@ public final class ActivityHooks {
         Block block = world.getBlockState(hit.getBlockPos()).getBlock();
         if (world.getBlockState(hit.getBlockPos()).isIn(SONG_HEARTHS) && offCooldown(sp, "song", SONG_CD)) {
             award(sp, SONG, SONG_PLAY_XP);
+        } else if (isLoreStation(block) && offCooldown(sp, "lore_study", LORE_STUDY_CD)) {
+            // Books and maps are study; the forge and the enchanting-rune are craft. Splitting them
+            // gives Lore the one thing it never had - a source you can return to. Until now its only
+            // income was completing advancements, which are finite and mostly unrelated to a scholar.
+            award(sp, LORE, LORE_STUDY_XP);
         } else if (isRunecraftStation(block) && offCooldown(sp, "runecraft", RUNECRAFT_CD)) {
             award(sp, RUNECRAFT, RUNECRAFT_USE_XP);
+        }
+        return ActionResult.PASS;
+    }
+
+    // --- Song (pipes and instruments): UseItemCallback -------------------------------------------
+
+    private static ActionResult onUseItem(PlayerEntity player, World world, Hand hand) {
+        if (world.isClient() || hand != Hand.MAIN_HAND || !(player instanceof ServerPlayerEntity sp) || !isEligible(sp)) {
+            return ActionResult.PASS;
+        }
+        if (sp.getStackInHand(hand).isIn(SONG_INSTRUMENTS) && offCooldown(sp, "song_pipe", SONG_PIPE_CD)) {
+            award(sp, SONG, SONG_PIPE_XP);
         }
         return ActionResult.PASS;
     }
@@ -217,16 +247,28 @@ public final class ActivityHooks {
         award(player, BEAST_LORE, BEAST_TAME_XP);
     }
 
+    /** Where a thing is read or charted rather than forged. */
+    private static boolean isLoreStation(Block block) {
+        return block == Blocks.LECTERN || block == Blocks.CHISELED_BOOKSHELF
+                || block == Blocks.CARTOGRAPHY_TABLE || block == Blocks.BOOKSHELF;
+    }
+
     private static boolean isRunecraftStation(Block block) {
         return block == Blocks.ENCHANTING_TABLE || block == Blocks.ANVIL || block == Blocks.CHIPPED_ANVIL
-                || block == Blocks.DAMAGED_ANVIL || block == Blocks.LECTERN || block == Blocks.CHISELED_BOOKSHELF
-                || block == Blocks.SMITHING_TABLE || block == Blocks.CARTOGRAPHY_TABLE;
+                || block == Blocks.DAMAGED_ANVIL || block == Blocks.SMITHING_TABLE;
     }
 
     // --- Mining: PlayerBlockBreakEvents.AFTER ---------------------------------------------------
 
     private static void onBlockBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         if (!(player instanceof ServerPlayerEntity serverPlayer) || !isEligible(serverPlayer)) {
+            return;
+        }
+        // A ripe crop brought in is survival, not mining - and it is the source that matters most to
+        // the peoples who barely eat. Survival previously paid mainly for eating, so an Elf, who
+        // endures hunger by nature, could hardly earn it at all.
+        if (state.getBlock() instanceof net.minecraft.block.CropBlock crop && crop.isMature(state)) {
+            award(serverPlayer, SURVIVAL, SURVIVAL_HARVEST_XP);
             return;
         }
         float hardness = state.getHardness(world, pos);

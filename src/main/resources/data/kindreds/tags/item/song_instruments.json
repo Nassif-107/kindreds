@@ -1,0 +1,11 @@
+{
+  "values": [
+    { "id": "middle-earth:pipe", "required": false },
+    { "id": "middle-earth:clay_pipe", "required": false },
+    { "id": "middle-earth:brimmingbend_pipe", "required": false },
+    { "id": "middle-earth:longbottom_pipe", "required": false },
+    { "id": "middle-earth:riverbend_pipe", "required": false },
+
+    { "id": "minecraft:goat_horn", "required": false }
+  ]
+}

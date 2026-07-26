@@ -936,7 +936,7 @@
           "effect": {
             "type": "status_effect",
             "effect": "minecraft:regeneration",
-            "amplifier": 0,
+            "amplifier": 1,
             "duration_ticks": -1
           }
         }
