@@ -55,8 +55,14 @@ public record SyncKindredDataS2C(KindredData data) implements CustomPayload {
         ServerPlayNetworking.send(player, new SyncKindredDataS2C(snapshot(live)));
     }
 
-    /** A detached copy safe to hand to another thread. */
-    private static KindredData snapshot(KindredData live) {
+    /**
+     * A detached copy safe to hand to another thread.
+     *
+     * Package-private rather than private so a test can assert it carries every field. It grew a
+     * field-copying bug once already - see the nodeRanks line below - and the failure was silent
+     * at this layer, so it is worth being able to check directly.
+     */
+    static KindredData snapshot(KindredData live) {
         KindredData copy = new KindredData(
                 new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>(live.disciplineXp()),
                 new java.util.HashSet<>(live.unlockedNodes()),
@@ -72,6 +78,13 @@ public record SyncKindredDataS2C(KindredData data) implements CustomPayload {
         // §3a's Deeds-page voice lines) is freshly derived from that same live map, right before it
         // is thrown away here - see ThreatState#copy()'s javadoc for the full §3a/§7 reconciliation.
         copy.setThreat(live.threat().copy());
+        // Ranks are not a constructor parameter, so they must be copied explicitly - and omitting
+        // that had no visible symptom at this layer, because the packet codec carried the map
+        // faithfully. It was simply always empty by the time it arrived, so every owned node read
+        // as rank 1 on the client. That understated spent points, which surfaced as points the
+        // tree offered and the server then refused to spend, and made a rank-3 node's tooltip say
+        // "Rank 1 of 3".
+        copy.nodeRanks().putAll(live.nodeRanks());
         return copy;
     }
 }
