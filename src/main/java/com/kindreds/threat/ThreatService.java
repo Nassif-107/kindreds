@@ -142,17 +142,18 @@ public final class ThreatService {
      * The group-size cap is a bound, not a dial (spec §4) - it is what keeps a full server from
      * multiplying a mob past recognition.
      *
-     * <p>Raised from {@code 0.45} because at that value it bound before {@code groupScalingPercent}
-     * ever did: three players at the default 15% already reached +30%, so any setting past 25% was
-     * silently discarded - the dial an operator was handed did nothing while the bound they were not
-     * handed decided the answer. +100% still leaves a mob recognisable as itself; it is about the
-     * difference between meeting an orc alone and meeting the one that brought friends.
+     * <p>Raised from {@code 0.45}, where it bound before {@code groupScalingPercent} ever did: three
+     * players at the default 15% already reached +30%, so any setting past 25% was silently discarded
+     * - the dial an operator was handed did nothing while the bound they were not handed decided the
+     * answer. At {@code 3.0} the configured percentage is what actually governs for any realistic
+     * party, and this is left only as a sanity stop against a full server multiplying a mob into
+     * something unrecognisable.
      *
      * <p>Package-private rather than private so {@code GroupThreatTest} can assert against the bound
      * itself instead of a second copy of its value - a copy is what made changing it a two-file edit
      * with a failing test in between.
      */
-    static final float GROUP_CAP = 1.0f;
+    static final float GROUP_CAP = 3.0f;
     /** "Nearby" for a spawn decision, blocks (spec §4). */
     private static final double GROUP_RADIUS = 128.0;
 

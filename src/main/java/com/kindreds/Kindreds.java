@@ -61,6 +61,8 @@ public class Kindreds implements ModInitializer {
                 com.kindreds.network.SyncDeedsS2C.CODEC);
         com.kindreds.network.SetDifficultyC2S.registerServerHandler();
         com.kindreds.network.SetConfigFlagC2S.registerServerHandler();
+        com.kindreds.network.SetMenaceC2S.registerServerHandler();
+        com.kindreds.network.SetConfigValueC2S.registerServerHandler();
         RequestUnlockC2S.registerServerHandler();
         ActivateAbilityC2S.registerServerHandler();
         SetVisionLensC2S.registerServerHandler();
@@ -69,6 +71,14 @@ public class Kindreds implements ModInitializer {
         com.kindreds.network.TakeBargainC2S.registerServerHandler();
 
         KindredsCommand.register();
+
+        // ThreatMath is deliberately Minecraft-free, so it cannot read the config itself. Installing a
+        // supplier - rather than pushing a value on every config change - means there is exactly one
+        // wiring point and no cached copy anywhere that could serve a stale ceiling after an operator
+        // moves it from the rules screen mid-session.
+        com.kindreds.threat.ThreatMath.competenceMaxSource(
+                () -> CONFIG == null ? com.kindreds.threat.ThreatMath.COMPETENCE_MAX_DEFAULT
+                        : CONFIG.maxCompetence);
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             CONFIG = KindredsConfig.load(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));

@@ -285,7 +285,11 @@ public final class KindredsCommand {
             "maxDamageBonus", "xpBonus", "adaptiveStrength",
             // Task 1 (phase 2): the phase-2 dials - see KindredsConfig for what each one means.
             "maxHealthBonus", "eliteChance", "escortChance", "groupScalingPercent",
-            "dimensionMultiplierMiddleEarth", "dimensionMultiplierOverworld");
+            "dimensionMultiplierMiddleEarth", "dimensionMultiplierOverworld",
+            // The enemy-difficulty preset axis and the ceiling it moves. Reachable here as well as
+            // from the rules screen for the same reason every other dial is: a setting no command can
+            // reach is a setting an operator without a client cannot use.
+            "menace", "maxCompetence");
 
     private static final SuggestionProvider<ServerCommandSource> CONFIG_KEY_SUGGESTIONS =
             (context, builder) -> CommandSource.suggestMatching(CONFIG_KEYS, builder);
@@ -322,6 +326,8 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("  groupScalingPercent = " + c.groupScalingPercent), false);
         source.sendFeedback(() -> Text.literal("  dimensionMultiplierMiddleEarth = " + c.dimensionMultiplierMiddleEarth), false);
         source.sendFeedback(() -> Text.literal("  dimensionMultiplierOverworld = " + c.dimensionMultiplierOverworld), false);
+        source.sendFeedback(() -> Text.literal("  menace = " + c.menace), false);
+        source.sendFeedback(() -> Text.literal("  maxCompetence = " + c.maxCompetence), false);
         source.sendFeedback(() -> Text.literal("Change with: /kindreds config <key> <value>  (saved to kindreds-server.json)"), false);
         return 1;
     }
@@ -361,15 +367,31 @@ public final class KindredsCommand {
                     }
                     c.priorDecayPerHour = decay;
                 }
-                case "maxDamageBonus" -> c.maxDamageBonus = Integer.parseInt(value);
-                case "xpBonus" -> c.xpBonus = Integer.parseInt(value);
-                case "adaptiveStrength" -> c.adaptiveStrength = Integer.parseInt(value);
-                case "maxHealthBonus" -> c.maxHealthBonus = parsePercent(value, 0, 400);
-                case "eliteChance" -> c.eliteChance = parsePercent(value, 0, 100);
-                case "escortChance" -> c.escortChance = parsePercent(value, 0, 100);
-                case "groupScalingPercent" -> c.groupScalingPercent = parsePercent(value, 0, 100);
-                case "dimensionMultiplierMiddleEarth" -> c.dimensionMultiplierMiddleEarth = parseUnitRange(value, 0f, 2f);
-                case "dimensionMultiplierOverworld" -> c.dimensionMultiplierOverworld = parseUnitRange(value, 0f, 2f);
+                case "xpBonus", "adaptiveStrength", "maxDamageBonus", "maxHealthBonus", "eliteChance",
+                     "escortChance", "groupScalingPercent", "maxCompetence",
+                     "dimensionMultiplierMiddleEarth", "dimensionMultiplierOverworld" -> {
+                    // One branch for every dial the rules screen can also edit, bounded by that
+                    // screen's own table rather than by a second set of literals here. The old
+                    // per-key bounds were both duplicated and too tight - health stopped at 400%, the
+                    // dimension multipliers at 2.0 - and a limit that exists in two places is a limit
+                    // that will disagree with itself the first time either moves.
+                    com.kindreds.config.RuleDial dial = com.kindreds.config.RuleDial.byKey(key);
+                    double parsed = Double.parseDouble(value);
+                    if (parsed < dial.min || parsed > dial.max) {
+                        throw new IllegalArgumentException(
+                                "must be between " + dial.format(dial.min) + " and " + dial.format(dial.max));
+                    }
+                    dial.write(c, parsed);
+                    // A hand-set dial no longer matches whatever preset the file names, exactly as an
+                    // edit from the rules screen does not - say so rather than keep a stale label.
+                    c.menace = com.kindreds.config.Menace.CUSTOM;
+                }
+                case "menace" -> {
+                    com.kindreds.config.Menace m =
+                            com.kindreds.config.Menace.valueOf(value.toUpperCase(Locale.ROOT));
+                    c.menace = m;
+                    m.applyTo(c);
+                }
                 default -> {
                     source.sendError(Text.literal("Unknown key '" + key + "'. Valid: " + String.join(", ", CONFIG_KEYS)));
                     return 0;
@@ -397,27 +419,9 @@ public final class KindredsCommand {
         throw new IllegalArgumentException("expected true/false");
     }
 
-    /** Parses an integer percent value, rejecting anything outside {@code [min, max]} before it can
-     * ever reach the config - the {@code priorDecayPerHour} lesson: reject at the source rather than
-     * rely on a downstream clamp. */
-    private static int parsePercent(String v, int min, int max) {
-        int parsed = Integer.parseInt(v);
-        if (parsed < min || parsed > max) {
-            throw new IllegalArgumentException("must be between " + min + " and " + max);
-        }
-        return parsed;
-    }
-
-    /** Parses a float value, rejecting anything outside {@code [min, max]} before it can ever reach
-     * the config. Used for the dimension multipliers, which are unitless scale factors rather than
-     * percents. */
-    private static float parseUnitRange(String v, float min, float max) {
-        float parsed = Float.parseFloat(v);
-        if (parsed < min || parsed > max) {
-            throw new IllegalArgumentException("must be between " + min + " and " + max);
-        }
-        return parsed;
-    }
+    // parsePercent/parseUnitRange lived here and carried a second copy of every dial's bounds. They
+    // are gone: RuleDial owns those bounds now, and the one branch above reads them from it, so the
+    // command and the rules screen can no longer disagree about what a legal value is.
 
     // --- respec ------------------------------------------------------------------------------
 

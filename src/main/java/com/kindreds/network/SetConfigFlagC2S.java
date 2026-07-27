@@ -46,7 +46,7 @@ public record SetConfigFlagC2S(String key, boolean value) implements CustomPaylo
     /** The only fields this endpoint may ever write. */
     public static final Set<String> ALLOWED = Set.of(
             "enableBirthTraits", "enableCurses", "enableVision", "allowCrossTraining",
-            "allowGrantXp");
+            "allowGrantXp", "enableEnemyScaling");
 
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() {
@@ -78,13 +78,27 @@ public record SetConfigFlagC2S(String key, boolean value) implements CustomPaylo
             case "enableCurses" -> c.enableCurses = value;
             case "enableVision" -> c.enableVision = value;
             case "allowCrossTraining" -> c.allowCrossTraining = value;
+            // Was missing entirely while sitting in both ALLOWED and the screen's own row list, so the
+            // toggle rendered, accepted the click, passed the whitelist - and then fell through to the
+            // default branch and returned without writing anything. A switch that silently drops a key
+            // its own whitelist admits is the worst shape this bug could have taken: every layer
+            // reported success.
+            case "allowGrantXp" -> c.allowGrantXp = value;
+            // Belongs to the Menace axis (see below), and is the master switch for all of it.
+            case "enableEnemyScaling" -> c.enableEnemyScaling = value;
             default -> {
                 return;
             }
         }
-        // Changing any rule switches the config off its preset onto CUSTOM: the file no longer matches
-        // a named difficulty, and silently claiming it still does would be a lie.
-        c.difficulty = com.kindreds.config.Difficulty.CUSTOM;
+        // Only enemy scaling belongs to a preset, so only it moves a preset label.
+        //
+        // This used to stamp difficulty = CUSTOM for every flag, which was wrong twice over: none of
+        // the four lore switches is written by Difficulty#applyTo, so toggling racial curses threw
+        // away the server's difficulty label while changing nothing that label described. The enemy
+        // scaling switch genuinely is preset-owned, so that one - and only that one - moves Menace.
+        if ("enableEnemyScaling".equals(key)) {
+            c.menace = com.kindreds.config.Menace.CUSTOM;
+        }
         c.save(FabricLoader.getInstance().getConfigDir().resolve("kindreds-server.json"));
         Kindreds.LOGGER.info("[Kindreds] {} set {}={}", player.getGameProfile().getName(), key, value);
 

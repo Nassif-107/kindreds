@@ -21,11 +21,24 @@ import java.util.Locale;
 public class KindredsConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /** Difficulty preset. Applied over the tuning fields below whenever it is not {@link
+    /** Difficulty preset - <b>your</b> pacing and risk: xp rate, what a death costs, how much of your
+     * tree you may master. Applied over the tuning fields below whenever it is not {@link
      * Difficulty#CUSTOM}, so picking a feel beats hand-balancing six numbers. Defaults to
      * {@link Difficulty#ROAD}, whose values are exactly what this mod shipped with - so adding
      * presets changes nothing for an existing world until you choose otherwise. */
     public Difficulty difficulty = Difficulty.ROAD;
+
+    /**
+     * Enemy-difficulty preset - <b>their</b> danger, the second and independent axis. See
+     * {@link Menace} for why the two are separate.
+     *
+     * <p>Defaults to {@link Menace#CUSTOM} rather than to a named preset, and that is deliberate:
+     * {@code CUSTOM} applies nothing, so a config written before this field existed keeps every
+     * enemy-scaling number exactly as its operator left it. Defaulting to any real preset would
+     * silently overwrite a hand-tuned server on the first launch after an update - the one thing a
+     * difficulty setting must never do.
+     */
+    public Menace menace = Menace.CUSTOM;
 
     public DeathPenalty deathPenalty = DeathPenalty.KEEP;
     public double deathPercent = 0.25;
@@ -86,8 +99,21 @@ public class KindredsConfig {
      * HARD BOUNDS (max 2, same species, natural spawns only, mob-cap suppression) are deliberately
      * not configurable - they are what keeps escorts from ever being a runaway population. */
     public int escortChance = 30;
-    /** Extra group difficulty per additional nearby player, percent. The +45%% total cap is internal. */
+    /** Extra group difficulty per additional nearby player, percent. A generous internal stop keeps a
+     * full server from multiplying a mob past recognition, but this percentage is what governs for
+     * any realistic party - see {@code ThreatService#GROUP_CAP}. */
     public int groupScalingPercent = 15;
+    /**
+     * How far coasting may push the evidence multiplier above 1.0 - the ceiling on how hard the world
+     * may become for a player nothing threatens any more.
+     *
+     * <p>Was a hard constant at {@code 1.25} and became the binding limit on a live server, where all
+     * three players sat pinned at exactly it. The matching floor stays a constant and is not settable:
+     * the downward direction is the exploitable one (dying on purpose to soften the world), while
+     * nothing about the upward direction can be farmed - the only route to it is to genuinely stop
+     * being threatened. See {@code ThreatMath#competenceMax()}.
+     */
+    public float maxCompetence = 2.0f;
     /** Difficulty pacing per dimension: the old world stays gentler than the new one. */
     public float dimensionMultiplierMiddleEarth = 1.0f;
     public float dimensionMultiplierOverworld = 0.75f;
@@ -111,6 +137,12 @@ public class KindredsConfig {
                     loaded.fillMissingWithDefaults();
                     if (loaded.difficulty != null) {
                         loaded.difficulty.applyTo(loaded);
+                    }
+                    // Applied after the pacing preset because the two axes no longer overlap: since
+                    // Difficulty stopped writing enableEnemyScaling and scalingCurve, there is nothing
+                    // for this to contend with, and ordering is documentation rather than precedence.
+                    if (loaded.menace != null) {
+                        loaded.menace.applyTo(loaded);
                     }
                     return loaded;
                 }
@@ -176,6 +208,17 @@ public class KindredsConfig {
         }
         if (scalingCurve == null) {
             scalingCurve = ScalingCurve.FEEL_STRONGER;
+        }
+        // Absent from every config written before the second axis existed, and CUSTOM is the only
+        // value that leaves such a file's hand-tuned enemy numbers alone - see the field's javadoc.
+        if (menace == null) {
+            menace = Menace.CUSTOM;
+        }
+        // 0 is what Gson leaves a float field at when the key is absent, and a zero ceiling would
+        // clamp every competence to 1.0 - adaptation silently switched off by an upgrade rather than
+        // by a decision.
+        if (maxCompetence <= 0f) {
+            maxCompetence = 2.0f;
         }
     }
 

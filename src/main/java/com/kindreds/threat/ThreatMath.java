@@ -116,19 +116,68 @@ public final class ThreatMath {
      * one-way ratchet: the same evidence loop walks it back down the moment fights start costing
      * something.
      */
-    public static final float COMPETENCE_MAX = 2.0f;
+    public static final float COMPETENCE_MAX_DEFAULT = 2.0f;
 
     /**
-     * How far {@link #adaptiveBand} may open each side at {@code adaptiveStrength = 100}.
+     * The furthest a server may ever push {@link #competenceMax()}.
      *
-     * <p>Asymmetric for the reason above: the downward span stays at its original quarter so the
-     * anti-farm floor is reached at full strength exactly as it always was, while the upward span
-     * runs the full distance to {@link #COMPETENCE_MAX}. Keeping them equal would have meant raising
-     * the ceiling changed nothing at all, since this band - not {@link #bandFor}'s clamp - is what
-     * actually binds at the default {@code adaptiveStrength}.
+     * <p>Not a difficulty cap - it is a sanity bound on a number that multiplies into every
+     * difficulty decision the mod makes, so a typo'd config field produces a very hard world rather
+     * than a nonsensical one. Anything a difficulty preset would plausibly want sits far below it.
+     */
+    public static final float COMPETENCE_MAX_LIMIT = 10.0f;
+
+    /**
+     * Where the configured ceiling is read from.
+     *
+     * <p>A supplier rather than a field this class caches, because the ceiling is a live server
+     * setting an operator can change from the rules screen mid-session, and every cached copy is a
+     * chance to serve a stale one. {@code ThreatService} installs the real source at mod init; the
+     * default keeps this class usable - and its unit tests meaningful - with no Minecraft loaded,
+     * which is the whole point of {@link ThreatMath} being what it is.
+     */
+    private static volatile java.util.function.DoubleSupplier competenceMaxSource =
+            () -> COMPETENCE_MAX_DEFAULT;
+
+    /** Installs the live source. Called once from {@code Kindreds#onInitialize}. */
+    public static void competenceMaxSource(java.util.function.DoubleSupplier source) {
+        competenceMaxSource = source == null ? () -> COMPETENCE_MAX_DEFAULT : source;
+    }
+
+    /**
+     * The ceiling on how far coasting may push difficulty up, clamped to
+     * {@code [1.0, COMPETENCE_MAX_LIMIT]}.
+     *
+     * <p>Was a hard constant at {@code 1.25} until a live server found the wall: all three players sat
+     * pinned at exactly that value, with their per-family records pinned there too. The loop had
+     * correctly concluded they were coasting through everything and had no way left to say so, which
+     * is a control system with its output saturated - no longer a control system.
+     *
+     * <p>It is a setting rather than a bigger constant because how hard a world may become is a
+     * server's decision, and there is nothing to defend in this direction: the only route to the
+     * ceiling is to genuinely stop being threatened, and the same evidence loop walks it straight
+     * back down as soon as fights start costing something. {@link #COMPETENCE_MIN} stays a hard
+     * constant precisely because the <em>downward</em> direction is the exploitable one - a player
+     * dying on purpose to make the world soft - and that floor is not negotiable.
+     */
+    public static float competenceMax() {
+        double configured = competenceMaxSource.getAsDouble();
+        if (Double.isNaN(configured)) {
+            return COMPETENCE_MAX_DEFAULT;
+        }
+        return (float) Math.max(1.0, Math.min(COMPETENCE_MAX_LIMIT, configured));
+    }
+
+    /**
+     * How far {@link #adaptiveBand} may open downward at {@code adaptiveStrength = 100}.
+     *
+     * <p>The two directions are deliberately asymmetric. This one stays at its original quarter, so
+     * the anti-farm floor is reached at full strength exactly as it always was. The upward span runs
+     * the full distance to {@link #competenceMax()} instead - keeping them equal would have meant
+     * raising the ceiling changed nothing at all, since this band, not {@link #bandFor}'s clamp, is
+     * what actually binds at any normal {@code adaptiveStrength}.
      */
     private static final float ADAPTIVE_SPAN_DOWN = 0.25f;
-    private static final float ADAPTIVE_SPAN_UP = COMPETENCE_MAX - 1.0f;
 
     private static final long TICKS_PER_HOUR = 72000L;
 
@@ -141,11 +190,12 @@ public final class ThreatMath {
      * back a {@code [NaN, NaN]} band - the floor silently gone rather than merely wrong.
      */
     public static float[] bandFor(float min, float max) {
+        float ceiling = competenceMax();
         float safeMin = Float.isNaN(min) ? COMPETENCE_MIN : min;
-        float safeMax = Float.isNaN(max) ? COMPETENCE_MAX : max;
+        float safeMax = Float.isNaN(max) ? ceiling : max;
         return new float[]{
                 Math.max(COMPETENCE_MIN, Math.min(1.0f, safeMin)),
-                Math.min(COMPETENCE_MAX, Math.max(1.0f, safeMax))};
+                Math.min(ceiling, Math.max(1.0f, safeMax))};
     }
 
     /**
@@ -157,14 +207,14 @@ public final class ThreatMath {
      * <p>{@code adaptiveStrength} is deliberately clamped to {@code 0..1} here (via {@code s})
      * <em>and</em> the resulting band is passed through {@link #bandFor}, which clamps again - two
      * independent guards against the same invariant (a misconfigured {@code adaptiveStrength > 100}
-     * must never widen the band past {@link #COMPETENCE_MIN}/{@link #COMPETENCE_MAX}), because this
+     * must never widen the band past {@link #COMPETENCE_MIN}/{@link #competenceMax()}), because this
      * is the anti-farm floor and it must hold even if one of the two guards is later "simplified"
      * away. See {@code ThreatMathTest#adaptiveStrengthNeverWidensPastTheFloorEvenWithoutItsOwnClamp}
      * for the proof that {@link #bandFor}'s clamp alone is sufficient.
      */
     public static float[] adaptiveBand(int adaptiveStrength) {
         float s = Math.max(0f, Math.min(1f, adaptiveStrength / 100f));
-        return bandFor(1f - ADAPTIVE_SPAN_DOWN * s, 1f + ADAPTIVE_SPAN_UP * s);
+        return bandFor(1f - ADAPTIVE_SPAN_DOWN * s, 1f + (competenceMax() - 1f) * s);
     }
 
     /** Declared power, 0..100, as the weighted blend of its three terms. */

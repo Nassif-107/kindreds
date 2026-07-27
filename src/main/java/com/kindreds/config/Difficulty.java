@@ -51,7 +51,16 @@ public enum Difficulty {
         this.curve = curve;
     }
 
-    /** Writes this preset's values onto {@code config}. No-op for {@link #CUSTOM}. */
+    /**
+     * Writes this preset's values onto {@code config}. No-op for {@link #CUSTOM}.
+     *
+     * <p>Deliberately no longer writes {@code enableEnemyScaling} or {@code scalingCurve}: those moved
+     * to {@link Menace}, the separate enemy-difficulty axis. Bundling them here meant a player who
+     * wanted a punishing <em>world</em> had to accept crawling xp and a quarter of their progress
+     * burned on every death to get it - the two are different questions and now have different
+     * answers. The fields survive on this enum only as the pacing hint each preset was written with;
+     * nothing reads them any more except the settings screen's descriptions.
+     */
     public void applyTo(KindredsConfig config) {
         if (this == CUSTOM) {
             return;
@@ -62,7 +71,5 @@ public enum Difficulty {
         config.pointCapPercent = capPercent;
         config.pointSoftCap = 0;
         config.respecCost = respecCost;
-        config.enableEnemyScaling = enemyScaling;
-        config.scalingCurve = curve;
     }
 }

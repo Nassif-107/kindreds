@@ -53,7 +53,7 @@ class ThreatMathTest {
     @Test
     void competenceCannotEscapeItsBand() {
         float high = ThreatMath.foldFastKill(1.25f, 1.0f, ThreatTuning.DEFAULTS);
-        assertTrue(high <= ThreatMath.COMPETENCE_MAX, "rose past the ceiling: " + high);
+        assertTrue(high <= ThreatMath.competenceMax(), "rose past the ceiling: " + high);
         float low = 1.0f;
         for (int i = 0; i < 500; i++) {
             low = ThreatMath.foldDeath(low, 1.0f, ThreatTuning.DEFAULTS);
@@ -95,7 +95,7 @@ class ThreatMathTest {
     @Test
     void threatIsThePriorMovedOnlyWithinTheBand() {
         assertEquals(75f, ThreatMath.threat(100f, ThreatMath.COMPETENCE_MIN), 0.001f);
-        assertEquals(100f, ThreatMath.threat(100f, ThreatMath.COMPETENCE_MAX), 0.001f); // clamped
+        assertEquals(100f, ThreatMath.threat(100f, ThreatMath.competenceMax()), 0.001f); // clamped
         assertEquals(50f, ThreatMath.threat(50f, 1.0f), 0.001f);
     }
 
@@ -185,7 +185,7 @@ class ThreatMathTest {
         // asking for a wider band than the floor allows is silently refused - this is the exploit
         // guard, not a preference, so ThreatMath clamps its own inputs rather than trusting callers
         assertEquals(ThreatMath.COMPETENCE_MIN, ThreatMath.bandFor(0.0f, 2.0f)[0], 0.001f);
-        assertEquals(ThreatMath.COMPETENCE_MAX, ThreatMath.bandFor(0.0f, 2.0f)[1], 0.001f);
+        assertEquals(ThreatMath.competenceMax(), ThreatMath.bandFor(0.0f, 2.0f)[1], 0.001f);
         // but a tighter band is honoured
         assertEquals(0.9f, ThreatMath.bandFor(0.9f, 1.1f)[0], 0.001f);
         assertEquals(1.1f, ThreatMath.bandFor(0.9f, 1.1f)[1], 0.001f);
@@ -206,7 +206,7 @@ class ThreatMathTest {
         // Math.max/Math.min were left to propagate it, the band would silently become [NaN, NaN]
         float[] band = ThreatMath.bandFor(Float.NaN, Float.NaN);
         assertEquals(ThreatMath.COMPETENCE_MIN, band[0], 0.001f);
-        assertEquals(ThreatMath.COMPETENCE_MAX, band[1], 0.001f);
+        assertEquals(ThreatMath.competenceMax(), band[1], 0.001f);
     }
 
     @Test
@@ -229,7 +229,7 @@ class ThreatMathTest {
     void adaptiveStrengthOneHundredIsTheFullFloorBand() {
         float[] band = ThreatMath.adaptiveBand(100);
         assertEquals(ThreatMath.COMPETENCE_MIN, band[0], 0.0001f);
-        assertEquals(ThreatMath.COMPETENCE_MAX, band[1], 0.0001f);
+        assertEquals(ThreatMath.competenceMax(), band[1], 0.0001f);
     }
 
     @Test
@@ -240,7 +240,7 @@ class ThreatMathTest {
         // widened - so each side is derived from its own end rather than from one shared span.
         float[] band = ThreatMath.adaptiveBand(50);
         assertEquals(1.0f - (1.0f - ThreatMath.COMPETENCE_MIN) * 0.5f, band[0], 0.0001f);
-        assertEquals(1.0f + (ThreatMath.COMPETENCE_MAX - 1.0f) * 0.5f, band[1], 0.0001f);
+        assertEquals(1.0f + (ThreatMath.competenceMax() - 1.0f) * 0.5f, band[1], 0.0001f);
     }
 
     @Test
@@ -253,14 +253,14 @@ class ThreatMathTest {
         // assertion below. Derived from the constants rather than written out, so retuning either end
         // cannot quietly turn this into a test that proves nothing.
         float rawMin = 1f - (1f - ThreatMath.COMPETENCE_MIN) * 2.0f;
-        float rawMax = 1f + (ThreatMath.COMPETENCE_MAX - 1f) * 2.0f;
+        float rawMax = 1f + (ThreatMath.competenceMax() - 1f) * 2.0f;
         assertTrue(rawMin < ThreatMath.COMPETENCE_MIN, "test setup: raw band should violate the floor");
-        assertTrue(rawMax > ThreatMath.COMPETENCE_MAX, "test setup: raw band should violate the floor");
+        assertTrue(rawMax > ThreatMath.competenceMax(), "test setup: raw band should violate the floor");
 
         float[] band = ThreatMath.adaptiveBand(200);
         assertEquals(ThreatMath.COMPETENCE_MIN, band[0], 0.0001f,
                 "adaptiveStrength=200 widened past the floor: " + band[0]);
-        assertEquals(ThreatMath.COMPETENCE_MAX, band[1], 0.0001f,
+        assertEquals(ThreatMath.competenceMax(), band[1], 0.0001f,
                 "adaptiveStrength=200 widened past the floor: " + band[1]);
     }
 

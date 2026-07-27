@@ -6,10 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
- * Covers {@link Difficulty#applyTo}: each preset's (enableEnemyScaling, scalingCurve) pair, matched
- * against the design spec §6's own table, and the "presets don't clobber operator dials" guarantee -
- * the free dials ({@link KindredsConfig#weightCommitment} and friends) are calibration an operator
- * tunes independently of picking a feel, and {@link Difficulty#applyTo} must never touch them.
+ * Covers {@link Difficulty#applyTo}: each preset's pacing values, and the "presets don't clobber
+ * operator dials" guarantee - the free dials ({@link KindredsConfig#weightCommitment} and friends)
+ * are calibration an operator tunes independently of picking a feel, and {@link Difficulty#applyTo}
+ * must never touch them.
+ *
+ * <p>{@code enableEnemyScaling} and {@code scalingCurve} were asserted here as values this preset
+ * <em>writes</em>. They belong to {@link Menace} now - the separate enemy-difficulty axis - and are
+ * asserted below as values this one must <b>not</b> write. That inversion is the whole point of the
+ * split: wanting a punishing world should not oblige you to also accept crawling xp and a quarter of
+ * your progress burned on every death.
  */
 class DifficultyTest {
 
@@ -27,8 +33,14 @@ class DifficultyTest {
     private static final float SENTINEL_DIM_MULT_MIDDLE_EARTH = 0.65f;
     private static final float SENTINEL_DIM_MULT_OVERWORLD = 0.66f;
 
+    /** The enemy-axis values {@link Difficulty} must leave alone; {@link Menace} owns both. */
+    private static final boolean SENTINEL_SCALING = false;
+    private static final ScalingCurve SENTINEL_CURVE = ScalingCurve.EXACT_PACE;
+
     private static KindredsConfig sentinelConfig() {
         KindredsConfig c = new KindredsConfig();
+        c.enableEnemyScaling = SENTINEL_SCALING;
+        c.scalingCurve = SENTINEL_CURVE;
         c.weightCommitment = SENTINEL_WC;
         c.weightGear = SENTINEL_WG;
         c.weightRenown = SENTINEL_WR;
@@ -46,6 +58,8 @@ class DifficultyTest {
     }
 
     private static void assertFreeDialsUntouched(KindredsConfig c, String label) {
+        assertEquals(SENTINEL_SCALING, c.enableEnemyScaling, label + ": enableEnemyScaling is Menace's");
+        assertEquals(SENTINEL_CURVE, c.scalingCurve, label + ": scalingCurve is Menace's");
         assertEquals(SENTINEL_WC, c.weightCommitment, label + ": weightCommitment");
         assertEquals(SENTINEL_WG, c.weightGear, label + ": weightGear");
         assertEquals(SENTINEL_WR, c.weightRenown, label + ": weightRenown");
@@ -63,32 +77,36 @@ class DifficultyTest {
                 label + ": dimensionMultiplierOverworld");
     }
 
-    private static void assertPreset(Difficulty d, boolean expectedScaling, ScalingCurve expectedCurve) {
+    /** Every preset writes its own pacing values and nothing beyond them. */
+    private static void assertPreset(Difficulty d) {
         KindredsConfig c = sentinelConfig();
         d.applyTo(c);
-        assertEquals(expectedScaling, c.enableEnemyScaling, d + ": enableEnemyScaling");
-        assertEquals(expectedCurve, c.scalingCurve, d + ": scalingCurve");
+        assertEquals(d.xpRate, c.xpRateGlobal, 1e-9, d + ": xpRateGlobal");
+        assertEquals(d.death, c.deathPenalty, d + ": deathPenalty");
+        assertEquals(d.deathPercent, c.deathPercent, 1e-9, d + ": deathPercent");
+        assertEquals(d.capPercent, c.pointCapPercent, d + ": pointCapPercent");
+        assertEquals(d.respecCost, c.respecCost, d + ": respecCost");
         assertFreeDialsUntouched(c, d.name());
     }
 
     @Test
-    void firesideDisablesScalingWithFeelStronger() {
-        assertPreset(Difficulty.FIRESIDE, false, ScalingCurve.FEEL_STRONGER);
+    void firesidePacesForStory() {
+        assertPreset(Difficulty.FIRESIDE);
     }
 
     @Test
-    void roadEnablesScalingWithFeelStronger() {
-        assertPreset(Difficulty.ROAD, true, ScalingCurve.FEEL_STRONGER);
+    void roadPacesAsTheDefault() {
+        assertPreset(Difficulty.ROAD);
     }
 
     @Test
-    void longDefeatEnablesScalingWithExactPace() {
-        assertPreset(Difficulty.LONG_DEFEAT, true, ScalingCurve.EXACT_PACE);
+    void longDefeatPacesForCommitment() {
+        assertPreset(Difficulty.LONG_DEFEAT);
     }
 
     @Test
-    void doomEnablesScalingWithLongDefeatCurve() {
-        assertPreset(Difficulty.DOOM, true, ScalingCurve.LONG_DEFEAT);
+    void doomPacesHarshly() {
+        assertPreset(Difficulty.DOOM);
     }
 
     @Test
@@ -96,8 +114,6 @@ class DifficultyTest {
         // Sentinel values across every field applyTo would otherwise touch, not just the free
         // dials - CUSTOM's whole contract is "leaves the file alone".
         KindredsConfig c = sentinelConfig();
-        c.enableEnemyScaling = false;
-        c.scalingCurve = ScalingCurve.EXACT_PACE;
         c.xpRateGlobal = 42.0;
         c.deathPenalty = DeathPenalty.HARDCORE;
         c.deathPercent = 0.99;
@@ -107,8 +123,6 @@ class DifficultyTest {
 
         Difficulty.CUSTOM.applyTo(c);
 
-        assertFalse(c.enableEnemyScaling, "CUSTOM: enableEnemyScaling");
-        assertEquals(ScalingCurve.EXACT_PACE, c.scalingCurve, "CUSTOM: scalingCurve");
         assertEquals(42.0, c.xpRateGlobal, 1e-9, "CUSTOM: xpRateGlobal");
         assertEquals(DeathPenalty.HARDCORE, c.deathPenalty, "CUSTOM: deathPenalty");
         assertEquals(0.99, c.deathPercent, 1e-9, "CUSTOM: deathPercent");

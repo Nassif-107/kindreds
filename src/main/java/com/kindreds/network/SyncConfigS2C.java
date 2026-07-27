@@ -46,7 +46,10 @@ public record SyncConfigS2C(String json) implements CustomPayload {
                        int capPercent, int respecCost, boolean enemyScaling, boolean birthTraits,
                        boolean curses, boolean crossTraining, boolean vision, boolean grantXp,
                        String scalingCurve, int maxDamageBonus, int xpBonus,
-                       int maxHealthBonus, int eliteChance, int escortChance) {
+                       int maxHealthBonus, int eliteChance, int escortChance,
+                       String menace, int groupScalingPercent, int adaptiveStrength,
+                       double maxCompetence, double dimensionMultiplierMiddleEarth,
+                       double dimensionMultiplierOverworld) {
     }
 
     public static View snapshot() {
@@ -55,7 +58,31 @@ public record SyncConfigS2C(String json) implements CustomPayload {
                 c.deathPercent, c.pointSoftCap, c.pointCapPercent, c.respecCost, c.enableEnemyScaling,
                 c.enableBirthTraits, c.enableCurses, c.allowCrossTraining, c.enableVision,
                 c.allowGrantXp, String.valueOf(c.scalingCurve), c.maxDamageBonus, c.xpBonus,
-                c.maxHealthBonus, c.eliteChance, c.escortChance);
+                c.maxHealthBonus, c.eliteChance, c.escortChance,
+                String.valueOf(c.menace), c.groupScalingPercent, c.adaptiveStrength,
+                c.maxCompetence, c.dimensionMultiplierMiddleEarth, c.dimensionMultiplierOverworld);
+    }
+
+    /**
+     * The value of one {@link com.kindreds.config.RuleDial} as this view carries it.
+     *
+     * <p>Here rather than in the screen so the wire field and the row are matched in exactly one
+     * place: a dial added to the enum without a case here fails to compile, instead of silently
+     * rendering as a zero.
+     */
+    public static double dialValue(View v, com.kindreds.config.RuleDial dial) {
+        return switch (dial) {
+            case MAX_HEALTH_BONUS -> v.maxHealthBonus();
+            case MAX_DAMAGE_BONUS -> v.maxDamageBonus();
+            case ELITE_CHANCE -> v.eliteChance();
+            case ESCORT_CHANCE -> v.escortChance();
+            case GROUP_SCALING_PERCENT -> v.groupScalingPercent();
+            case XP_BONUS -> v.xpBonus();
+            case ADAPTIVE_STRENGTH -> v.adaptiveStrength();
+            case MAX_COMPETENCE -> v.maxCompetence();
+            case DIMENSION_MULTIPLIER_MIDDLE_EARTH -> v.dimensionMultiplierMiddleEarth();
+            case DIMENSION_MULTIPLIER_OVERWORLD -> v.dimensionMultiplierOverworld();
+        };
     }
 
     public static void sendTo(ServerPlayerEntity player) {
