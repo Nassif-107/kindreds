@@ -166,6 +166,14 @@ public class KindredsClient implements ClientModInitializer {
                 (payload, context) -> context.client().execute(() ->
                         com.kindreds.client.ClientDeeds.accept(payload.requirements())));
 
+        // The inscription reference, answered only when the page asks for it. The client cannot
+        // build this itself: Minecraft stopped shipping full recipe data to clients in 1.21.2, and
+        // Middle-earth's own table sends down only which words are lit.
+        ClientPlayNetworking.registerGlobalReceiver(com.kindreds.network.SyncInscriptionsS2C.ID,
+                (payload, context) -> context.client().execute(() ->
+                        com.kindreds.client.screen.InscriptionsScreen.accept(
+                                com.kindreds.network.SyncInscriptionsS2C.parse(payload.json()))));
+
         ClientPlayNetworking.registerGlobalReceiver(UnlockResultS2C.ID, (payload, context) ->
                 context.client().execute(() ->
                         SkillTreeScreen.handleUnlockResult(context.client(), payload.ok(), payload.reason())));
@@ -261,7 +269,13 @@ public class KindredsClient implements ClientModInitializer {
         // firing entirely at that point (an ordinary Disconnect/Leave, no crash needed) - see
         // VisionManager.onWorldLeave()'s javadoc. Matches the Mithril Locator mod's
         // ClientPlayConnectionEvents.DISCONNECT-driven state reset.
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> VisionManager.onWorldLeave());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            VisionManager.onWorldLeave();
+            // The inscription table belongs to the server that sent it. Kept across a disconnect it
+            // would describe the previous world's recipes on the next one, which is worse than an
+            // empty page because it looks authoritative.
+            com.kindreds.client.screen.InscriptionsScreen.forget();
+        });
 
         Kindreds.LOGGER.info("[Kindreds] client initialized");
     }

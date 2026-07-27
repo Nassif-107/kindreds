@@ -59,10 +59,13 @@ public class Kindreds implements ModInitializer {
                 com.kindreds.network.SyncConfigS2C.CODEC);
         PayloadTypeRegistry.playS2C().register(com.kindreds.network.SyncDeedsS2C.ID,
                 com.kindreds.network.SyncDeedsS2C.CODEC);
+        PayloadTypeRegistry.playS2C().register(com.kindreds.network.SyncInscriptionsS2C.ID,
+                com.kindreds.network.SyncInscriptionsS2C.CODEC);
         com.kindreds.network.SetDifficultyC2S.registerServerHandler();
         com.kindreds.network.SetConfigFlagC2S.registerServerHandler();
         com.kindreds.network.SetMenaceC2S.registerServerHandler();
         com.kindreds.network.SetConfigValueC2S.registerServerHandler();
+        com.kindreds.network.RequestInscriptionsC2S.registerServerHandler();
         RequestUnlockC2S.registerServerHandler();
         ActivateAbilityC2S.registerServerHandler();
         SetVisionLensC2S.registerServerHandler();

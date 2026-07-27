@@ -62,6 +62,14 @@ public class KindredHubScreen extends Screen {
         list.add(new Entry("S", "skills", this::openSkills, false));
         list.add(new Entry("A", "abilities", this::openAbilities, false));
         list.add(new Entry("D", "deeds", this::openDeeds, false));
+        // The inscription reference, offered only where there is something to reference. Gated on
+        // meinscriptions rather than on the base mod: without it the table reaches half the
+        // enchantments and the page would mostly document what is missing, which is a bug report
+        // rather than a guide. isModLoaded is the whole check - nothing from that mod is touched
+        // here, since the rows come from the server's own recipe registry.
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("meinscriptions")) {
+            list.add(new Entry("I", "inscriptions", this::openInscriptions, false));
+        }
         // Server rules are offered to an operator only. Not for secrecy - the server re-checks every
         // change regardless - but because a page nobody else can act on is a locked door on a menu.
         if (isOperator()) {
@@ -271,6 +279,10 @@ public class KindredHubScreen extends Screen {
 
     private void openDeeds() {
         MinecraftClient.getInstance().setScreen(new KindredDeedsScreen(ClientKindredData.INSTANCE, this));
+    }
+
+    private void openInscriptions() {
+        InscriptionsScreen.open(MinecraftClient.getInstance());
     }
 
     private void openRules() {
