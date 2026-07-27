@@ -182,6 +182,49 @@ public final class ThreatMath {
     private static final long TICKS_PER_HOUR = 72000L;
 
     /**
+     * Ceilings on the <em>derived</em> bearing values - what a mob actually arrives with, after its
+     * dial has been multiplied by threat, party size and dimension pacing. Applied by
+     * {@code MobScaler#applyBearing}.
+     *
+     * <h2>Why the dial's own maximum is not enough</h2>
+     * {@code scaledGroup} is a product of three independent factors and reaches about 2.8 in practice
+     * (full competence, a party of three, Middle-earth's 2.0 pacing), so a dial set to a value that
+     * reads as reasonable arrives nearly three times larger. Measured against the first pass of preset
+     * numbers, that produced an armour-16.7 mob taking 57% less damage on top of 4.2x health - an
+     * effective health multiplier of <b>12x</b> at the middle preset and 40x at the one above it,
+     * which is not difficulty but a mob that takes four minutes to kill. Bounding the dial alone
+     * cannot prevent it, because the dial is not what the mob receives.
+     *
+     * <h2>The individual numbers</h2>
+     * Armour stops at 10 (toughness 5), about a 28% cut rather than 57% - enough that chip damage
+     * stops working, which is the point, without making a real hit feel wasted. Knockback stops short
+     * of 1.0 <b>deliberately</b>: 1.0 is total immunity, and every dial above roughly a third was
+     * reaching it, so staggering an enemy - a core verb of this game's combat - had quietly stopped
+     * existing at every preset. At 0.75 a hit still moves them, just far less. Speed stops at +45% so
+     * a mob closes a gap rather than making distance meaningless, and follow range at +48 blocks,
+     * already most of a render distance.
+     *
+     * <p>They live here, in the class with no Minecraft in it, so a test can prove no preset breaches
+     * them without a server running - see {@code MenaceTest}.
+     */
+    public static final double MAX_SCALED_ARMOR = 10.0;
+    public static final double MAX_SCALED_KNOCKBACK = 0.75;
+    public static final double MAX_SCALED_SPEED = 0.45;
+    public static final double MAX_SCALED_FOLLOW = 48.0;
+
+    /**
+     * The largest {@code scaledGroup} the system can realistically produce, for balance arithmetic
+     * that needs to ask "what does this dial actually become in the world".
+     *
+     * <p>Full competence and prior put {@code scaled} at 1.0; a party of three at the default 25%
+     * adds half again; Middle-earth's pacing doubles it. Not a clamp - nothing enforces it, and a
+     * server that raises {@code groupScalingPercent} or the dimension multiplier will exceed it. It
+     * is the yardstick a preset should be chosen against, because choosing them against 1.0 is what
+     * produced the 12x mob described above.
+     */
+    public static final float TYPICAL_MAX_SCALED_GROUP = 3.0f;
+
+    /**
      * The band a server has asked for, clamped to what the floor allows. Clamped here rather than at
      * the call site deliberately: this must hold however a caller was configured or misconfigured.
      *

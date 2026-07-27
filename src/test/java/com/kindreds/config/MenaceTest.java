@@ -128,6 +128,87 @@ class MenaceTest {
     }
 
     /**
+     * No preset may produce a damage sponge.
+     *
+     * <p>This is the test the first pass of these numbers needed and did not have. Every bearing dial
+     * is written as its value at {@code scaledGroup == 1.0}, but that figure is a product of threat,
+     * party size and dimension pacing and reaches about 3 in play - so preset numbers chosen as
+     * though the multiplier were 1 arrive nearly tripled. {@link Menace#OPEN_WAR} measured out at a
+     * <b>12x</b> effective health multiplier that way (armour 16.7 cutting 57% of incoming damage on
+     * top of 4.2x health), and the preset above it at 40x. Nothing failed; it simply would have
+     * shipped as a mob that takes four minutes to kill.
+     *
+     * <p>Two tiers, because they are two different questions. The presets people actually play must
+     * stay genuinely fightable, so they are held to 10x. {@link Menace#WRATH_OF_SAURON} is documented
+     * as not balanced and not pretending to be, so holding it to a playable bound would be testing
+     * the opposite of what it is for - it only has to stay the right order of magnitude.
+     */
+    @Test
+    void noPresetBecomesADamageSpongeAtFullThreat() {
+        for (Menace m : Menace.values()) {
+            if (m == Menace.CUSTOM || !m.enemyScaling) {
+                continue;
+            }
+            double effectiveHealth = effectiveHealthMultiplier(m);
+            double bound = m == Menace.WRATH_OF_SAURON ? 20.0 : 10.0;
+            assertTrue(effectiveHealth <= bound,
+                    m + " arrives at " + Math.round(effectiveHealth) + "x effective health (bound "
+                            + Math.round(bound) + "x) - that is a mob that takes minutes to kill, not a"
+                            + " harder fight");
+        }
+    }
+
+    /**
+     * How many times over a mob's health a player must chew through at this preset, counting armour.
+     *
+     * <p>Health and armour are separately innocuous and jointly the whole problem - 4x health is a
+     * long fight, 57% damage reduction is a long fight, and together they are 12x - so the sponge test
+     * has to measure their product rather than either alone.
+     */
+    private static double effectiveHealthMultiplier(Menace m) {
+        float sg = com.kindreds.threat.ThreatMath.TYPICAL_MAX_SCALED_GROUP;
+        double armour = Math.min(com.kindreds.threat.ThreatMath.MAX_SCALED_ARMOR, m.armorBonus * sg);
+        double toughness = armour / 2.0;
+        // Vanilla's own armour formula, against a 10-damage swing - a decent hit from a real weapon.
+        double reduction = Math.min(20.0,
+                Math.max(armour / 5.0, armour - 10.0 / (2.0 + toughness / 4.0))) / 25.0;
+        return (1.0 + m.maxHealthBonus / 100.0 * sg) / (1.0 - reduction);
+    }
+
+    /** Toughness climbs with the ladder in felt terms too, not just in the raw dial - a preset that
+     * reads harder but fights identically to the one below it is a row that means nothing. */
+    @Test
+    void eachPresetIsActuallyTougherToChewThroughThanTheOneBelow() {
+        Menace[] ladder = {Menace.WATCHFUL_PEACE, Menace.GATHERING_DARK, Menace.OPEN_WAR,
+                Menace.THE_BLACK_TIDE, Menace.WRATH_OF_SAURON};
+        for (int i = 1; i < ladder.length; i++) {
+            assertTrue(effectiveHealthMultiplier(ladder[i]) > effectiveHealthMultiplier(ladder[i - 1]),
+                    ladder[i] + " is no harder to bring down than " + ladder[i - 1]);
+        }
+    }
+
+    /**
+     * Staggering an enemy must survive every preset.
+     *
+     * <p>Knockback resistance of 1.0 is total immunity, and because the dial is multiplied by a factor
+     * reaching 3, every preset with a dial above roughly a third reached it - which silently removed a
+     * core verb of the game's combat at <em>every</em> difficulty, including the gentle ones. The
+     * ceiling is what prevents that; this proves no preset relies on being clamped by it to stay
+     * sane, and that the ceiling itself still leaves room to stagger.
+     */
+    @Test
+    void mobsAreNeverFullyImmuneToKnockback() {
+        assertTrue(com.kindreds.threat.ThreatMath.MAX_SCALED_KNOCKBACK < 1.0,
+                "a ceiling of 1.0 is total knockback immunity, which is not a ceiling");
+        float sg = com.kindreds.threat.ThreatMath.TYPICAL_MAX_SCALED_GROUP;
+        for (Menace m : Menace.values()) {
+            double knockback = Math.min(com.kindreds.threat.ThreatMath.MAX_SCALED_KNOCKBACK,
+                    m.knockbackResistBonus / 100.0 * sg);
+            assertTrue(knockback < 1.0, m + " reaches total knockback immunity");
+        }
+    }
+
+    /**
      * Every dial the rules screen can edit must be one a preset also sets.
      *
      * <p>Otherwise picking a preset would silently leave a hand-edited value in place, and the

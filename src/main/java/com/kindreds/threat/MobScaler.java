@@ -42,6 +42,14 @@ public final class MobScaler {
     public static final Identifier SCALED_SPEED_ID = Identifier.of(Kindreds.MOD_ID, "scaled/movement_speed");
     public static final Identifier SCALED_FOLLOW_ID = Identifier.of(Kindreds.MOD_ID, "scaled/follow_range");
 
+    // The ceilings on what a mob may actually arrive with live in ThreatMath - the class with no
+    // Minecraft in it - so a test can prove no preset breaches them with no server running. See that
+    // class for why bounding the dials alone is not enough.
+    private static final double MAX_SCALED_ARMOR = ThreatMath.MAX_SCALED_ARMOR;
+    private static final double MAX_SCALED_KNOCKBACK = ThreatMath.MAX_SCALED_KNOCKBACK;
+    private static final double MAX_SCALED_SPEED = ThreatMath.MAX_SCALED_SPEED;
+    private static final double MAX_SCALED_FOLLOW = ThreatMath.MAX_SCALED_FOLLOW;
+
     /** Registers the {@code ENTITY_LOAD} handler that weighs, scales and (possibly) promotes every
      * mob entering the world. Call once from {@link Kindreds#onInitialize()}. */
     public static void register() {
@@ -190,21 +198,20 @@ public final class MobScaler {
             return;
         }
         var c = Kindreds.CONFIG;
-        // Armour, and toughness at half of it. Vanilla caps these at 30 and 20 respectively, so the
-        // dial's own range cannot produce a nonsense value even at its maximum.
-        double armour = c.armorBonus * scaledGroup;
+        // Armour, and toughness at half of it.
+        double armour = Math.min(MAX_SCALED_ARMOR, c.armorBonus * scaledGroup);
         addModifier(mob, EntityAttributes.ARMOR, SCALED_ARMOR_ID, armour,
                 EntityAttributeModifier.Operation.ADD_VALUE);
         addModifier(mob, EntityAttributes.ARMOR_TOUGHNESS, SCALED_TOUGHNESS_ID, armour / 2.0,
                 EntityAttributeModifier.Operation.ADD_VALUE);
         addModifier(mob, EntityAttributes.KNOCKBACK_RESISTANCE, SCALED_KNOCKBACK_ID,
-                (c.knockbackResistBonus / 100.0) * scaledGroup,
+                Math.min(MAX_SCALED_KNOCKBACK, (c.knockbackResistBonus / 100.0) * scaledGroup),
                 EntityAttributeModifier.Operation.ADD_VALUE);
         addModifier(mob, EntityAttributes.MOVEMENT_SPEED, SCALED_SPEED_ID,
-                (c.mobSpeedBonus / 100.0) * scaledGroup,
+                Math.min(MAX_SCALED_SPEED, (c.mobSpeedBonus / 100.0) * scaledGroup),
                 EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
         addModifier(mob, EntityAttributes.FOLLOW_RANGE, SCALED_FOLLOW_ID,
-                c.followRangeBonus * scaledGroup,
+                Math.min(MAX_SCALED_FOLLOW, c.followRangeBonus * scaledGroup),
                 EntityAttributeModifier.Operation.ADD_VALUE);
     }
 

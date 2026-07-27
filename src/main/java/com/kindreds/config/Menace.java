@@ -33,26 +33,26 @@ public enum Menace {
             0, 0, 0, 0),
 
     /** The Watchful Peace: the world notices you, and little more. Growing strength outruns it. */
-    WATCHFUL_PEACE(true, 60, 40, 10, 10, 10, 25, ScalingCurve.FEEL_STRONGER, 60, 1.25f, 1.0f, 0.75f,
-            1, 10, 5, 4),
+    WATCHFUL_PEACE(true, 40, 40, 10, 10, 10, 25, ScalingCurve.FEEL_STRONGER, 60, 1.25f, 1.0f, 0.75f,
+            1, 6, 5, 5),
 
     /** A shadow lengthening: enemies keep pace with you rather than falling behind, and champions
      * start appearing among them. The intended default for a server that wants the system on. */
-    GATHERING_DARK(true, 120, 110, 25, 30, 20, 60, ScalingCurve.EXACT_PACE, 100, 1.5f, 1.25f, 0.9f,
-            3, 25, 10, 8),
+    GATHERING_DARK(true, 70, 110, 25, 30, 20, 60, ScalingCurve.EXACT_PACE, 100, 1.5f, 1.25f, 0.9f,
+            2, 12, 9, 9),
 
     /** Open war: most fights bring a champion or an escort, and blows land hard enough to be feared.
      * The world now outgrows you rather than merely matching you. */
-    OPEN_WAR(true, 150, 175, 40, 50, 25, 100, ScalingCurve.LONG_DEFEAT, 100, 2.0f, 2.0f, 1.0f,
-            6, 40, 18, 14),
+    OPEN_WAR(true, 100, 175, 40, 50, 25, 100, ScalingCurve.LONG_DEFEAT, 100, 2.0f, 2.0f, 1.0f,
+            3, 18, 13, 13),
 
     /** The Black Tide: you are outmatched and travelling in company is no longer optional. */
-    THE_BLACK_TIDE(true, 250, 300, 65, 80, 40, 150, ScalingCurve.LONG_DEFEAT, 100, 3.0f, 3.0f, 1.5f,
-            12, 65, 30, 24),
+    THE_BLACK_TIDE(true, 160, 300, 65, 80, 40, 150, ScalingCurve.LONG_DEFEAT, 100, 3.0f, 3.0f, 1.5f,
+            4, 25, 17, 20),
 
     /** Everything the dials will give. Not balanced, and not pretending to be. */
-    WRATH_OF_SAURON(true, 400, 500, 100, 100, 60, 200, ScalingCurve.LONG_DEFEAT, 100, 5.0f, 4.0f, 2.0f,
-            20, 90, 45, 40),
+    WRATH_OF_SAURON(true, 250, 500, 100, 100, 60, 200, ScalingCurve.LONG_DEFEAT, 100, 5.0f, 4.0f, 2.0f,
+            6, 35, 22, 30),
 
     /** Hand-tuned: the preset system leaves the file alone. */
     CUSTOM(true, 0, 0, 0, 0, 0, 0, ScalingCurve.FEEL_STRONGER, 0, 1.0f, 1.0f, 1.0f,
@@ -79,6 +79,15 @@ public enum Menace {
      * difficulty's clothes. These four change the fight itself - armour rewards committing to real
      * hits, knockback resistance ends stun-locking, speed ends walking away, follow range ends
      * slipping past - so they are where a higher preset should actually be felt.
+     *
+     * <p><b>Every value here is what a mob gets at {@code scaledGroup == 1.0}, not what it arrives
+     * with.</b> That product - threat, party size and dimension pacing multiplied together - reaches
+     * about 2.8 in practice, so each of these is very nearly tripled in the world. The first pass of
+     * these numbers was written as though the multiplier were 1, and measured out at a 12x effective
+     * health multiplier for {@link #OPEN_WAR}: armour 16.7 cutting 57% of incoming damage on top of
+     * 4.2x health. {@code MobScaler}'s ceilings are the backstop against that, but the honest fix is
+     * that these are chosen against the real multiplier, and health was cut to make room for the
+     * armour now sharing its job - more interestingly than it did.
      */
     public final int armorBonus;
     public final int knockbackResistBonus;
