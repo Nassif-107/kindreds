@@ -455,7 +455,12 @@ public final class EliteMobs {
         if (world.getRandom().nextFloat() >= (configured / 100f) * scaled) {
             return;
         }
-        TagKey<Item> pool = switch (ThreatMath.bountyTier(scaled, world.getRandom().nextFloat())) {
+        // The creature's own base danger - what it is with nothing helping it - is the second gate.
+        // Scaled values would let the difficulty system qualify its own mobs: a zombie made dangerous
+        // by the settings would read as a dangerous creature. See ThreatMath#bountyTier.
+        double baseDanger = MobDanger.of(entity);
+        TagKey<Item> pool = switch (ThreatMath.bountyTier(scaled, baseDanger,
+                world.getRandom().nextFloat())) {
             case FABLED -> BOUNTY_FABLED;
             case RARE -> BOUNTY_RARE;
             case COMMON -> BOUNTY_COMMON;

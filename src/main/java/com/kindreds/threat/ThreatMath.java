@@ -230,7 +230,7 @@ public final class ThreatMath {
     /**
      * Minimum danger before a tier is reachable at all, and its share of the roll once it is.
      *
-     * <p>Gating on {@code scaled} rather than only on luck is the whole design. A flat chance means a
+     * <p>Gating on {@code scaled} rather than only on luck is half the design. A flat chance means a
      * mithril ingot is equally likely from a champion that never threatened you as from one that
      * nearly killed you, which teaches players to farm the safest elite they can find - the same
      * lesson the threat system exists to unteach. Below these thresholds the tier simply cannot drop,
@@ -239,6 +239,37 @@ public final class ThreatMath {
     private static final float RARE_MIN_SCALED = 0.30f;
     private static final float RARE_SHARE = 0.45f;
     private static final float FABLED_MIN_SCALED = 0.60f;
+
+    /**
+     * A zombie, as the yardstick every creature is measured against: 20 health by 3 damage, the same
+     * baseline {@link MobDanger#expectedAt} starts from.
+     */
+    private static final double ZOMBIE_DANGER = 60.0;
+
+    /**
+     * How dangerous the <b>creature itself</b> must be, in zombies, before it can carry a tier.
+     *
+     * <p>The other half of the design, and the half that was missing. {@code scaled} measures the
+     * danger the <em>player</em> stands in, so on its own it let a high-threat veteran pull mithril
+     * out of a scaled-up zombie: the fight was dangerous because of who was in it, not because of what
+     * they killed. That is still a farm, just a better-disguised one - stand somewhere frightening and
+     * cut down whatever wanders past.
+     *
+     * <p>Base danger is deliberately the measure, not scaled danger. Every mob's health and damage are
+     * inflated by this very system, so judging by the inflated figures would let the scaling qualify
+     * its own creatures - a zombie made dangerous by the difficulty setting would count as a dangerous
+     * creature. Base values are what the creature is when nothing is helping it, which is the only
+     * honest way to ask whether a troll or a farm animal just died.
+     *
+     * <p>The two numbers are set where they are so the tiers map onto creatures a player would
+     * recognise as belonging to them. A zombie or skeleton sits at one zombie by definition and can
+     * never pay above the common hoard, whatever the world is doing. An orc or a warg - a real foe,
+     * but the sort you meet by the dozen - clears the rare gate at one and a half. The fabled gate, at
+     * five, is out of reach of anything you fight routinely: it wants a troll or worse, which is the
+     * point of the phrase "fabled".
+     */
+    private static final double RARE_MIN_DANGER = 1.5 * ZOMBIE_DANGER;
+    private static final double FABLED_MIN_DANGER = 5.0 * ZOMBIE_DANGER;
     /**
      * Deliberately mean. At {@code 0.15} the whole chain - promotion to champion, the bounty roll,
      * then this tier - put a mithril ingot in the hands of a veteran party once per 96 dangerous mobs,
@@ -249,19 +280,29 @@ public final class ThreatMath {
     private static final float FABLED_SHARE = 0.10f;
 
     /**
-     * Which hoard a champion killed at {@code scaled} danger leaves, given a roll in {@code [0,1)}.
+     * Which hoard a fallen champion leaves: the danger the killer stood in ({@code scaled}), what the
+     * creature itself was worth ({@code mobBaseDanger}, from {@link MobDanger#of}), and a roll in
+     * {@code [0,1)}.
+     *
+     * <p><b>Both gates must pass.</b> They answer different questions - "was this fight dangerous"
+     * and "was this thing worth killing" - and either alone is farmable. Threat alone lets a veteran
+     * strip mithril off a scaled-up farm animal; creature danger alone lets a fully-equipped player
+     * safely butcher trolls forever. Requiring both means the fabled hoard comes only from a serious
+     * foe met in a world that could actually kill you.
      *
      * <p>Checked richest-first so the tiers nest rather than compete: a roll low enough for the fabled
-     * hoard would also have satisfied the rare one, and testing rare first would make the best tier
-     * unreachable. Pure, so the actual drop rates can be proved by unit test rather than estimated
-     * from play - see {@code BountyTest}.
+     * hoard would also satisfy the rare one, and testing rare first would make the best tier
+     * unreachable. Pure, so the real drop rates can be proved by unit test rather than estimated from
+     * play - see {@code BountyTest}.
      */
-    public static Bounty bountyTier(float scaled, float roll) {
+    public static Bounty bountyTier(float scaled, double mobBaseDanger, float roll) {
         float danger = Math.max(0f, Math.min(1f, scaled));
-        if (danger >= FABLED_MIN_SCALED && roll < FABLED_SHARE * danger) {
+        if (danger >= FABLED_MIN_SCALED && mobBaseDanger >= FABLED_MIN_DANGER
+                && roll < FABLED_SHARE * danger) {
             return Bounty.FABLED;
         }
-        if (danger >= RARE_MIN_SCALED && roll < RARE_SHARE * danger) {
+        if (danger >= RARE_MIN_SCALED && mobBaseDanger >= RARE_MIN_DANGER
+                && roll < RARE_SHARE * danger) {
             return Bounty.RARE;
         }
         return Bounty.COMMON;
