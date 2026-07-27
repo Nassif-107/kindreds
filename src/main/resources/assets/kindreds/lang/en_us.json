@@ -2576,5 +2576,9 @@
   "kindreds.menace.custom.desc": "Hand-tuned — set each number below yourself.",
   "kindreds.tooltip.rank_ladder": "What each rank gives:",
   "kindreds.tooltip.rank_step": "  %s.  %s",
-  "kindreds.tooltip.rank_no_change": "Deeper ranks change none of the above."
+  "kindreds.tooltip.rank_no_change": "Deeper ranks change none of the above.",
+  "kindreds.settings.armorBonus": "Armour they wear",
+  "kindreds.settings.knockbackResistBonus": "How hard they are to stagger",
+  "kindreds.settings.mobSpeedBonus": "How fast they close",
+  "kindreds.settings.followRangeBonus": "How far off they notice you"
 }

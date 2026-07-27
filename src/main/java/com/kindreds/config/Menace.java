@@ -29,27 +29,34 @@ package com.kindreds.config;
  */
 public enum Menace {
     /** No scaling at all. A vanilla orc is a vanilla orc; the world never answers. */
-    SHIRE(false, 0, 0, 0, 0, 0, 0, ScalingCurve.FEEL_STRONGER, 0, 1.0f, 1.0f, 1.0f),
+    SHIRE(false, 0, 0, 0, 0, 0, 0, ScalingCurve.FEEL_STRONGER, 0, 1.0f, 1.0f, 1.0f,
+            0, 0, 0, 0),
 
     /** The Watchful Peace: the world notices you, and little more. Growing strength outruns it. */
-    WATCHFUL_PEACE(true, 60, 40, 10, 10, 10, 25, ScalingCurve.FEEL_STRONGER, 60, 1.25f, 1.0f, 0.75f),
+    WATCHFUL_PEACE(true, 60, 40, 10, 10, 10, 25, ScalingCurve.FEEL_STRONGER, 60, 1.25f, 1.0f, 0.75f,
+            1, 10, 5, 4),
 
     /** A shadow lengthening: enemies keep pace with you rather than falling behind, and champions
      * start appearing among them. The intended default for a server that wants the system on. */
-    GATHERING_DARK(true, 120, 110, 25, 30, 20, 60, ScalingCurve.EXACT_PACE, 100, 1.5f, 1.25f, 0.9f),
+    GATHERING_DARK(true, 120, 110, 25, 30, 20, 60, ScalingCurve.EXACT_PACE, 100, 1.5f, 1.25f, 0.9f,
+            3, 25, 10, 8),
 
     /** Open war: most fights bring a champion or an escort, and blows land hard enough to be feared.
      * The world now outgrows you rather than merely matching you. */
-    OPEN_WAR(true, 150, 175, 40, 50, 25, 100, ScalingCurve.LONG_DEFEAT, 100, 2.0f, 2.0f, 1.0f),
+    OPEN_WAR(true, 150, 175, 40, 50, 25, 100, ScalingCurve.LONG_DEFEAT, 100, 2.0f, 2.0f, 1.0f,
+            6, 40, 18, 14),
 
     /** The Black Tide: you are outmatched and travelling in company is no longer optional. */
-    THE_BLACK_TIDE(true, 250, 300, 65, 80, 40, 150, ScalingCurve.LONG_DEFEAT, 100, 3.0f, 3.0f, 1.5f),
+    THE_BLACK_TIDE(true, 250, 300, 65, 80, 40, 150, ScalingCurve.LONG_DEFEAT, 100, 3.0f, 3.0f, 1.5f,
+            12, 65, 30, 24),
 
     /** Everything the dials will give. Not balanced, and not pretending to be. */
-    WRATH_OF_SAURON(true, 400, 500, 100, 100, 60, 200, ScalingCurve.LONG_DEFEAT, 100, 5.0f, 4.0f, 2.0f),
+    WRATH_OF_SAURON(true, 400, 500, 100, 100, 60, 200, ScalingCurve.LONG_DEFEAT, 100, 5.0f, 4.0f, 2.0f,
+            20, 90, 45, 40),
 
     /** Hand-tuned: the preset system leaves the file alone. */
-    CUSTOM(true, 0, 0, 0, 0, 0, 0, ScalingCurve.FEEL_STRONGER, 0, 1.0f, 1.0f, 1.0f);
+    CUSTOM(true, 0, 0, 0, 0, 0, 0, ScalingCurve.FEEL_STRONGER, 0, 1.0f, 1.0f, 1.0f,
+            0, 0, 0, 0);
 
     public final boolean enemyScaling;
     public final int maxHealthBonus;
@@ -64,11 +71,25 @@ public enum Menace {
     public final float maxCompetence;
     public final float dimensionMultiplierMiddleEarth;
     public final float dimensionMultiplierOverworld;
+    /**
+     * The bearing dials - what a fight feels like rather than how long it lasts.
+     *
+     * <p>They climb faster across the ladder than health does, on purpose. Health is experienced as
+     * duration: the same fight with more clicks in it, which past a point is tedium wearing
+     * difficulty's clothes. These four change the fight itself - armour rewards committing to real
+     * hits, knockback resistance ends stun-locking, speed ends walking away, follow range ends
+     * slipping past - so they are where a higher preset should actually be felt.
+     */
+    public final int armorBonus;
+    public final int knockbackResistBonus;
+    public final int mobSpeedBonus;
+    public final int followRangeBonus;
 
     Menace(boolean enemyScaling, int maxHealthBonus, int maxDamageBonus, int eliteChance,
            int escortChance, int groupScalingPercent, int xpBonus, ScalingCurve curve,
            int adaptiveStrength, float maxCompetence, float dimensionMultiplierMiddleEarth,
-           float dimensionMultiplierOverworld) {
+           float dimensionMultiplierOverworld, int armorBonus, int knockbackResistBonus,
+           int mobSpeedBonus, int followRangeBonus) {
         this.enemyScaling = enemyScaling;
         this.maxHealthBonus = maxHealthBonus;
         this.maxDamageBonus = maxDamageBonus;
@@ -81,6 +102,10 @@ public enum Menace {
         this.maxCompetence = maxCompetence;
         this.dimensionMultiplierMiddleEarth = dimensionMultiplierMiddleEarth;
         this.dimensionMultiplierOverworld = dimensionMultiplierOverworld;
+        this.armorBonus = armorBonus;
+        this.knockbackResistBonus = knockbackResistBonus;
+        this.mobSpeedBonus = mobSpeedBonus;
+        this.followRangeBonus = followRangeBonus;
     }
 
     /** Writes this preset's values onto {@code config}. No-op for {@link #CUSTOM}. */
@@ -100,5 +125,9 @@ public enum Menace {
         config.maxCompetence = maxCompetence;
         config.dimensionMultiplierMiddleEarth = dimensionMultiplierMiddleEarth;
         config.dimensionMultiplierOverworld = dimensionMultiplierOverworld;
+        config.armorBonus = armorBonus;
+        config.knockbackResistBonus = knockbackResistBonus;
+        config.mobSpeedBonus = mobSpeedBonus;
+        config.followRangeBonus = followRangeBonus;
     }
 }

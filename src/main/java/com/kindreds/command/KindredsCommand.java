@@ -289,7 +289,10 @@ public final class KindredsCommand {
             // The enemy-difficulty preset axis and the ceiling it moves. Reachable here as well as
             // from the rules screen for the same reason every other dial is: a setting no command can
             // reach is a setting an operator without a client cannot use.
-            "menace", "maxCompetence");
+            "menace", "maxCompetence",
+            // The bearing dials - armour, knockback resistance, speed, follow range. What a fight
+            // feels like rather than how long it lasts; see KindredsConfig for each one.
+            "armorBonus", "knockbackResistBonus", "mobSpeedBonus", "followRangeBonus");
 
     private static final SuggestionProvider<ServerCommandSource> CONFIG_KEY_SUGGESTIONS =
             (context, builder) -> CommandSource.suggestMatching(CONFIG_KEYS, builder);
@@ -328,6 +331,10 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("  dimensionMultiplierOverworld = " + c.dimensionMultiplierOverworld), false);
         source.sendFeedback(() -> Text.literal("  menace = " + c.menace), false);
         source.sendFeedback(() -> Text.literal("  maxCompetence = " + c.maxCompetence), false);
+        source.sendFeedback(() -> Text.literal("  armorBonus = " + c.armorBonus), false);
+        source.sendFeedback(() -> Text.literal("  knockbackResistBonus = " + c.knockbackResistBonus), false);
+        source.sendFeedback(() -> Text.literal("  mobSpeedBonus = " + c.mobSpeedBonus), false);
+        source.sendFeedback(() -> Text.literal("  followRangeBonus = " + c.followRangeBonus), false);
         source.sendFeedback(() -> Text.literal("Change with: /kindreds config <key> <value>  (saved to kindreds-server.json)"), false);
         return 1;
     }
@@ -369,7 +376,8 @@ public final class KindredsCommand {
                 }
                 case "xpBonus", "adaptiveStrength", "maxDamageBonus", "maxHealthBonus", "eliteChance",
                      "escortChance", "groupScalingPercent", "maxCompetence",
-                     "dimensionMultiplierMiddleEarth", "dimensionMultiplierOverworld" -> {
+                     "dimensionMultiplierMiddleEarth", "dimensionMultiplierOverworld",
+                     "armorBonus", "knockbackResistBonus", "mobSpeedBonus", "followRangeBonus" -> {
                     // One branch for every dial the rules screen can also edit, bounded by that
                     // screen's own table rather than by a second set of literals here. The old
                     // per-key bounds were both duplicated and too tight - health stopped at 400%, the

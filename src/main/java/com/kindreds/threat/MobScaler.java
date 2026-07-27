@@ -34,6 +34,13 @@ public final class MobScaler {
      * AbilityApplier lesson: a persistent modifier re-added under a fresh id compounds every
      * chunk cycle). */
     public static final Identifier SCALED_HEALTH_ID = Identifier.of(Kindreds.MOD_ID, "scaled/max_health");
+    /** The bearing attributes - see {@link #applyBearing}. Distinct ids so each dial can be turned off
+     * on its own without disturbing the others. */
+    public static final Identifier SCALED_ARMOR_ID = Identifier.of(Kindreds.MOD_ID, "scaled/armor");
+    public static final Identifier SCALED_TOUGHNESS_ID = Identifier.of(Kindreds.MOD_ID, "scaled/armor_toughness");
+    public static final Identifier SCALED_KNOCKBACK_ID = Identifier.of(Kindreds.MOD_ID, "scaled/knockback_resistance");
+    public static final Identifier SCALED_SPEED_ID = Identifier.of(Kindreds.MOD_ID, "scaled/movement_speed");
+    public static final Identifier SCALED_FOLLOW_ID = Identifier.of(Kindreds.MOD_ID, "scaled/follow_range");
 
     /** Registers the {@code ENTITY_LOAD} handler that weighs, scales and (possibly) promotes every
      * mob entering the world. Call once from {@link Kindreds#onInitialize()}. */
@@ -57,6 +64,7 @@ public final class MobScaler {
             }
             float scaledGroup = ThreatService.scaledGroupAt(world, mob.getBlockPos());
             applyHealth(mob, scaledGroup);
+            applyBearing(mob, scaledGroup);
 
             // Threaded through rather than re-fetched: mark is about to gain elite fields below, and
             // a second MobMark.of(mob) read here would lose that write the moment escort rolls
@@ -142,6 +150,80 @@ public final class MobScaler {
             EscortNpcSupport.copyNpcIdentity(escort, leader);
         };
         type.spawn(world, markAsEscort, pos, SpawnReason.NATURAL, false, false);
+    }
+
+    /**
+     * The four attributes that change how a fight <em>goes</em>, rather than how long it takes.
+     *
+     * <h2>Why these exist at all</h2>
+     * Max health was, for a long time, the only attribute this class touched. That makes for a
+     * difficulty setting a player experiences entirely as duration: the same rotation, the same
+     * shield, the same backpedal, more clicks. A mob with triple health is not a harder fight, it is
+     * a longer one - and past a point that reads as tedium rather than danger, which is why the
+     * health dial is deliberately the most conservative of the set.
+     *
+     * <p>Each of these changes a decision instead:
+     * <ul>
+     *   <li><b>Armour</b> makes chip damage worthless, so committing to real hits beats flailing.
+     *       Toughness rides along at half the armour value, because armour alone is fully defeated by
+     *       a big enough hit and the pair is what actually holds up.</li>
+     *   <li><b>Knockback resistance</b> ends stun-locking - the single most reliable way to make any
+     *       melee fight in this game free.</li>
+     *   <li><b>Movement speed</b> ends disengaging, and difficulty you can walk away from is optional
+     *       difficulty.</li>
+     *   <li><b>Follow range</b> means they notice you sooner and further, so "slip past it" becomes a
+     *       real decision rather than a default.</li>
+     * </ul>
+     *
+     * <h2>Operations, and why they differ</h2>
+     * Armour and follow range are {@code ADD_VALUE}: they are absolute quantities, and a percentage of
+     * a zombie's zero armour is zero. Movement speed is {@code ADD_MULTIPLIED_BASE} so it stays
+     * proportionate - a cave troll should not end up as fast as a warg because both got the same flat
+     * grant. Knockback resistance is {@code ADD_VALUE} onto a 0..1 scale where 1 is immunity, and
+     * vanilla clamps it there itself.
+     *
+     * <p>Every modifier is added under a fixed id after removing that same id, exactly as
+     * {@link #applyHealth} does, so a re-apply replaces rather than stacks.
+     */
+    private static void applyBearing(MobEntity mob, float scaledGroup) {
+        if (scaledGroup <= 0) {
+            return;
+        }
+        var c = Kindreds.CONFIG;
+        // Armour, and toughness at half of it. Vanilla caps these at 30 and 20 respectively, so the
+        // dial's own range cannot produce a nonsense value even at its maximum.
+        double armour = c.armorBonus * scaledGroup;
+        addModifier(mob, EntityAttributes.ARMOR, SCALED_ARMOR_ID, armour,
+                EntityAttributeModifier.Operation.ADD_VALUE);
+        addModifier(mob, EntityAttributes.ARMOR_TOUGHNESS, SCALED_TOUGHNESS_ID, armour / 2.0,
+                EntityAttributeModifier.Operation.ADD_VALUE);
+        addModifier(mob, EntityAttributes.KNOCKBACK_RESISTANCE, SCALED_KNOCKBACK_ID,
+                (c.knockbackResistBonus / 100.0) * scaledGroup,
+                EntityAttributeModifier.Operation.ADD_VALUE);
+        addModifier(mob, EntityAttributes.MOVEMENT_SPEED, SCALED_SPEED_ID,
+                (c.mobSpeedBonus / 100.0) * scaledGroup,
+                EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        addModifier(mob, EntityAttributes.FOLLOW_RANGE, SCALED_FOLLOW_ID,
+                c.followRangeBonus * scaledGroup,
+                EntityAttributeModifier.Operation.ADD_VALUE);
+    }
+
+    /** Removes {@code id} then re-adds it at {@code amount}, skipping entirely at zero so a disabled
+     * dial leaves no modifier behind at all. Silently skips an attribute the entity does not carry -
+     * not every mob has every attribute, and that is not an error worth a log line per spawn. */
+    private static void addModifier(MobEntity mob,
+                                    net.minecraft.registry.entry.RegistryEntry<net.minecraft.entity.attribute.EntityAttribute> attribute,
+                                    Identifier id, double amount,
+                                    EntityAttributeModifier.Operation operation) {
+        EntityAttributeInstance instance = mob.getAttributeInstance(attribute);
+        if (instance == null) {
+            return;
+        }
+        instance.removeModifier(id);
+        if (amount == 0) {
+            return;
+        }
+        instance.addPersistentModifier(new EntityAttributeModifier(id, amount, operation));
     }
 
     /** Health x (1 + maxHealthBonus * scaledGroup), then top up: raising max health does not raise

@@ -4,7 +4,9 @@ import com.kindreds.Kindreds;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -23,6 +25,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
@@ -58,9 +61,28 @@ public final class EliteMobs {
     private EliteMobs() {
     }
 
-    /** The four abilities, in the fixed order {@link #choose} indexes into - see the class javadoc
-     * for why the pool must be exhaustively reachable (an unreachable entry is a dead ability). */
-    private static final List<String> ABILITIES = List.of("aura", "rally", "swift", "bulwark");
+    /**
+     * The ability pool, in the fixed order {@link #choose} indexes into - see the class javadoc for
+     * why it must be exhaustively reachable (an unreachable entry is a dead ability).
+     *
+     * <p>Grown from four to nine. At a 40% promotion rate four abilities repeat constantly, and two of
+     * the original four ({@code aura}, {@code bulwark}) are passive stat effects the player never has
+     * to respond to - so a champion read as an ordinary mob with a gold name more often than not. The
+     * five added here all demand a decision instead:
+     * <ul>
+     *   <li>{@code breaker} - strikes through a raised shield and disables it. A shield blocks 100% of
+     *       a melee hit, so before this, any damage number at all could be answered by holding right
+     *       click. This is the single largest hole in the difficulty system, not a flourish.</li>
+     *   <li>{@code venom} - poisons on hit, so a won fight can still cost you.</li>
+     *   <li>{@code sunder} - strips armour for a while, making the next fight the real one.</li>
+     *   <li>{@code hunter} - re-acquires you rather than losing interest, so running is a delay
+     *       instead of an escape.</li>
+     *   <li>{@code warcry} - on death, wakes and hastens its kin nearby: killing the champion first
+     *       stops being free.</li>
+     * </ul>
+     */
+    private static final List<String> ABILITIES = List.of(
+            "aura", "rally", "swift", "bulwark", "breaker", "venom", "sunder", "hunter", "warcry");
     /** Three name keys per family (the brief's full 18-key lang table). */
     private static final int NAMES_PER_FAMILY = 3;
 
@@ -70,6 +92,14 @@ public final class EliteMobs {
     private static final double RALLY_RADIUS = 12.0;
     private static final int SWIFT_DURATION = 100;
     private static final int BULWARK_DURATION = CADENCE_TICKS + 1; // outlives the gap to the next tick
+
+    /** How long a broken shield stays unusable - vanilla's own axe-disable window. */
+    private static final int SHIELD_DISABLE_TICKS = 100;
+    private static final int VENOM_DURATION = 100;
+    private static final int SUNDER_DURATION = 200;
+    /** Radius of a dying champion's last call, and how long its kin are quickened by it. */
+    private static final double WARCRY_RADIUS = 16.0;
+    private static final int WARCRY_DURATION = 200;
 
     private static final float BOUNTY_CHANCE = 0.15f;
     private static final TagKey<Item> ELITE_BOUNTY_TAG =
@@ -145,10 +175,43 @@ public final class EliteMobs {
             }
         });
 
+        // The other direction: a champion landing a blow on a player. The handler above fires when an
+        // elite is HURT, which is the wrong moment for any ability whose whole point is what it does
+        // to you - and until these existed, every ability in the pool was either a passive stat effect
+        // or a retarget, so a champion never actually did anything to the player at all.
+        ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
+            if (!(entity instanceof ServerPlayerEntity player) || !scalingEnabled()) {
+                return;
+            }
+            if (!(source.getAttacker() instanceof MobEntity attacker)) {
+                return;
+            }
+            String ability = MobMark.of(attacker).eliteAbility();
+            switch (ability == null ? "" : ability) {
+                case "breaker" -> breakShield(player, blocked);
+                case "venom" -> player.addStatusEffect(
+                        new StatusEffectInstance(StatusEffects.POISON, VENOM_DURATION, 0));
+                // Weakness rather than a literal armour strip. Minecraft ships no armour-reduction
+                // effect, so stripping armour means a per-player attribute modifier plus expiry
+                // bookkeeping of our own - and the failure mode of that bookkeeping (the elite dies,
+                // the world unloads, the tick that would have removed it never runs) is a permanent
+                // debuff on a player's character. A self-expiring vanilla effect cannot leak, and
+                // "your blows land softer for a while" is the same beat.
+                case "sunder" -> player.addStatusEffect(
+                        new StatusEffectInstance(StatusEffects.WEAKNESS, SUNDER_DURATION, 0));
+                default -> {
+                    // every other ability triggers elsewhere
+                }
+            }
+        });
+
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (!MobMark.of(entity).elite() || !(entity.getWorld() instanceof ServerWorld world)
                     || !scalingEnabled()) {
                 return;
+            }
+            if ("warcry".equals(MobMark.of(entity).eliteAbility())) {
+                warcry(world, entity, source.getAttacker());
             }
             rerollLoot(world, entity, source);
             rollBounty(world, entity);
@@ -228,6 +291,80 @@ public final class EliteMobs {
             aura(world, mob);
         } else if ("bulwark".equals(ability)) {
             bulwark(mob);
+        } else if ("hunter".equals(ability)) {
+            hunt(world, mob);
+        }
+    }
+
+    /**
+     * A hunter re-acquires the nearest player rather than losing interest.
+     *
+     * <p>Vanilla mobs forget a target that breaks line of sight or outruns them for a few seconds,
+     * which makes running away the universal answer to any fight that is going badly - and a
+     * difficulty setting you can walk out of is an optional one. This only re-targets when the mob has
+     * nothing to chase, so it never overrides a fight already in progress, and it reaches no further
+     * than the mob's own follow range: it is persistence, not omniscience.
+     */
+    private static void hunt(ServerWorld world, MobEntity mob) {
+        if (mob.getTarget() != null && mob.getTarget().isAlive()) {
+            return;
+        }
+        double range = mob.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
+        // getClosestPlayer's simple overload does not filter by game mode, so the two checks are the
+        // filter: hunting a spectator would have the mob stalking someone who cannot be seen or hurt.
+        PlayerEntity nearest = world.getClosestPlayer(mob, range);
+        if (nearest != null && !nearest.isSpectator() && !nearest.isCreative()) {
+            mob.setTarget(nearest);
+        }
+    }
+
+    /**
+     * Strikes through a raised shield and puts it on cooldown.
+     *
+     * <p>The most important ability in the pool, because a raised shield blocks <b>100%</b> of a melee
+     * hit: before this, every damage number the difficulty system could produce was answered by
+     * holding right click, and no amount of {@code maxDamageBonus} changed that. Uses the same
+     * hundred-tick lockout vanilla's own axe-disable applies, so it is a punishment for standing still
+     * behind a shield rather than a removal of shields.
+     *
+     * <p>Triggers on {@code blocked}, and also on a hit taken while blocking - the two are not quite
+     * the same (a hit from behind the shield's arc lands unblocked while the player is still holding
+     * it) and a champion who only breaks shields it was already stopped by is a champion whose
+     * ability depends on it having failed first.
+     */
+    private static void breakShield(ServerPlayerEntity player, boolean blocked) {
+        if (!blocked && !player.isBlocking()) {
+            return;
+        }
+        ItemStack active = player.getActiveItem();
+        if (active.isEmpty()) {
+            return;
+        }
+        player.getItemCooldownManager().set(active, SHIELD_DISABLE_TICKS);
+        player.clearActiveItem();
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.ITEM_SHIELD_BREAK, player.getSoundCategory(), 0.8f, 0.8f);
+    }
+
+    /**
+     * A dying champion's last call: its kin nearby wake, turn on its killer, and are quickened.
+     *
+     * <p>Killing the leader first is the obvious play against any group, and it was strictly free -
+     * the escorts simply carried on as they were. This makes focusing the champion a real choice with
+     * a real cost, which is what an interesting decision is. Same family and same radius rules as
+     * {@link #rally}, so it reads as the same kind of event rather than a second, differently-shaped
+     * one.
+     */
+    private static void warcry(ServerWorld world, LivingEntity fallen, Entity killer) {
+        Box box = fallen.getBoundingBox().expand(WARCRY_RADIUS);
+        String family = MobDanger.family(fallen);
+        for (MobEntity ally : world.getEntitiesByClass(MobEntity.class, box,
+                m -> m.isAlive() && m != fallen && family.equals(MobDanger.family(m)))) {
+            ally.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, WARCRY_DURATION, 0));
+            ally.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, WARCRY_DURATION, 0));
+            if (killer instanceof LivingEntity living) {
+                ally.setTarget(living);
+            }
         }
     }
 

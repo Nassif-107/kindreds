@@ -28,6 +28,15 @@ import java.util.Locale;
 public enum RuleDial {
     MAX_HEALTH_BONUS("maxHealthBonus", 0, 2000, 25, 100, false),
     MAX_DAMAGE_BONUS("maxDamageBonus", 0, 2000, 25, 100, false),
+    // The bearing dials - what a fight feels like rather than how long it lasts. Armour stops at 30
+    // because vanilla clamps it there and toughness at 20, so a higher setting would be a number that
+    // does nothing. Knockback resistance is a percentage of full immunity and 100 is immunity, so it
+    // stops there for the same reason. Speed is capped well short of anything that could outrun a
+    // sprinting player from across a field: it should close a gap, not make a gap impossible.
+    ARMOR_BONUS("armorBonus", 0, 30, 1, 5, false),
+    KNOCKBACK_RESIST_BONUS("knockbackResistBonus", 0, 100, 5, 25, false),
+    MOB_SPEED_BONUS("mobSpeedBonus", 0, 60, 5, 20, false),
+    FOLLOW_RANGE_BONUS("followRangeBonus", 0, 64, 4, 16, false),
     ELITE_CHANCE("eliteChance", 0, 100, 5, 25, false),
     ESCORT_CHANCE("escortChance", 0, 100, 5, 25, false),
     GROUP_SCALING_PERCENT("groupScalingPercent", 0, 300, 5, 25, false),
@@ -76,6 +85,10 @@ public enum RuleDial {
         return switch (this) {
             case MAX_HEALTH_BONUS -> c.maxHealthBonus;
             case MAX_DAMAGE_BONUS -> c.maxDamageBonus;
+            case ARMOR_BONUS -> c.armorBonus;
+            case KNOCKBACK_RESIST_BONUS -> c.knockbackResistBonus;
+            case MOB_SPEED_BONUS -> c.mobSpeedBonus;
+            case FOLLOW_RANGE_BONUS -> c.followRangeBonus;
             case ELITE_CHANCE -> c.eliteChance;
             case ESCORT_CHANCE -> c.escortChance;
             case GROUP_SCALING_PERCENT -> c.groupScalingPercent;
@@ -93,6 +106,10 @@ public enum RuleDial {
         switch (this) {
             case MAX_HEALTH_BONUS -> c.maxHealthBonus = (int) Math.round(v);
             case MAX_DAMAGE_BONUS -> c.maxDamageBonus = (int) Math.round(v);
+            case ARMOR_BONUS -> c.armorBonus = (int) Math.round(v);
+            case KNOCKBACK_RESIST_BONUS -> c.knockbackResistBonus = (int) Math.round(v);
+            case MOB_SPEED_BONUS -> c.mobSpeedBonus = (int) Math.round(v);
+            case FOLLOW_RANGE_BONUS -> c.followRangeBonus = (int) Math.round(v);
             case ELITE_CHANCE -> c.eliteChance = (int) Math.round(v);
             case ESCORT_CHANCE -> c.escortChance = (int) Math.round(v);
             case GROUP_SCALING_PERCENT -> c.groupScalingPercent = (int) Math.round(v);

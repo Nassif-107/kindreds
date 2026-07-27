@@ -569,22 +569,22 @@ public final class KindredsDoctor {
             problems.add("phase-2 dials: Kindreds.CONFIG is null, cannot check ranges");
             return;
         }
+        // Bounds read from RuleDial rather than from literals repeated here - and they had already
+        // drifted: this still called maxHealthBonus out of range above 400 and the dimension
+        // multipliers above 2.0 after the screen and the command had been widened, so the diagnostic
+        // reported a correctly-configured server as broken. A checker with its own copy of the rules
+        // is a second source of truth, which is the one thing a checker must never be.
         List<String> outOfRange = new ArrayList<>();
-        dialInRange(outOfRange, problems, "maxDamageBonus", Kindreds.CONFIG.maxDamageBonus, 0, 400);
-        dialInRange(outOfRange, problems, "maxHealthBonus", Kindreds.CONFIG.maxHealthBonus, 0, 400);
-        dialInRange(outOfRange, problems, "eliteChance", Kindreds.CONFIG.eliteChance, 0, 100);
-        dialInRange(outOfRange, problems, "escortChance", Kindreds.CONFIG.escortChance, 0, 100);
-        dialInRange(outOfRange, problems, "groupScalingPercent", Kindreds.CONFIG.groupScalingPercent, 0, 100);
-        dialInRange(outOfRange, problems, "dimensionMultiplierMiddleEarth",
-                Kindreds.CONFIG.dimensionMultiplierMiddleEarth, 0f, 2f);
-        dialInRange(outOfRange, problems, "dimensionMultiplierOverworld",
-                Kindreds.CONFIG.dimensionMultiplierOverworld, 0f, 2f);
-        report(source, "phase2 dials", (7 - outOfRange.size()) + "/7 within range",
+        for (com.kindreds.config.RuleDial dial : com.kindreds.config.RuleDial.values()) {
+            dialInRange(outOfRange, problems, dial.key, dial.read(Kindreds.CONFIG), dial.min, dial.max);
+        }
+        int total = com.kindreds.config.RuleDial.values().length;
+        report(source, "phase2 dials", (total - outOfRange.size()) + "/" + total + " within range",
                 outOfRange.isEmpty() ? null : "out of range: " + String.join(", ", outOfRange));
     }
 
     private static void dialInRange(List<String> outOfRange, List<String> problems, String name,
-                                    int value, int min, int max) {
+                                    double value, double min, double max) {
         if (value < min || value > max) {
             outOfRange.add(name + "=" + value);
             problems.add(name + " is " + value + ", outside its allowed [" + min + "," + max + "] range");

@@ -91,8 +91,26 @@ public class KindredsConfig {
     /** 100 = the full evidence band; lower narrows it toward 1.0. It can never widen it (spec §2.4). */
     public int adaptiveStrength = 100;
 
-    /** How much extra max health a mob may arrive with at full group threat. Percent. */
+    /** How much extra max health a mob may arrive with at full group threat. Percent.
+     *
+     * <p>Deliberately the most conservative of the mob dials. Health is the one that a player
+     * experiences purely as duration - same fight, more clicks - so past a point it reads as tedium
+     * rather than danger. The four below are where "harder" actually lives. */
     public int maxHealthBonus = 100;
+
+    /** Flat armour points a mob may arrive with at full group threat; toughness rides along at half
+     * this. Makes chip damage worthless, so committing to real hits beats flailing. Vanilla caps
+     * armour at 30 and toughness at 20. */
+    public int armorBonus = 0;
+    /** Resistance to being knocked back, percent of full immunity. The end of stun-locking, which is
+     * the most reliable way to make any melee fight in this game free. */
+    public int knockbackResistBonus = 0;
+    /** Extra movement speed as a percentage of the mob's own base, so a troll stays slower than a
+     * warg instead of every mob converging on one speed. The end of walking away from a fight. */
+    public int mobSpeedBonus = 0;
+    /** Extra blocks of follow range - how far off a mob notices and commits to you. Turns "slip past
+     * it" into a decision rather than a default. */
+    public int followRangeBonus = 0;
     /** Chance an in-scope mob is promoted to an elite at full group threat. Percent; 0 disables. */
     public int eliteChance = 25;
     /** Chance a scaled mob brings 1-2 escorts at full group threat. Percent; 0 disables. The escort

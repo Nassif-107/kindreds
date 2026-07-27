@@ -2576,5 +2576,9 @@
   "kindreds.menace.custom.desc": "Вручную — задайте каждое число ниже сами.",
   "kindreds.tooltip.rank_ladder": "Что даёт каждый ранг:",
   "kindreds.tooltip.rank_step": "  %s.  %s",
-  "kindreds.tooltip.rank_no_change": "Следующие ранги ничего из этого не меняют."
+  "kindreds.tooltip.rank_no_change": "Следующие ранги ничего из этого не меняют.",
+  "kindreds.settings.armorBonus": "Их броня",
+  "kindreds.settings.knockbackResistBonus": "Насколько трудно их отбросить",
+  "kindreds.settings.mobSpeedBonus": "Как быстро они настигают",
+  "kindreds.settings.followRangeBonus": "С какого расстояния замечают"
 }

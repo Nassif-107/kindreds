@@ -49,7 +49,9 @@ public record SyncConfigS2C(String json) implements CustomPayload {
                        int maxHealthBonus, int eliteChance, int escortChance,
                        String menace, int groupScalingPercent, int adaptiveStrength,
                        double maxCompetence, double dimensionMultiplierMiddleEarth,
-                       double dimensionMultiplierOverworld) {
+                       double dimensionMultiplierOverworld,
+                       int armorBonus, int knockbackResistBonus, int mobSpeedBonus,
+                       int followRangeBonus) {
     }
 
     public static View snapshot() {
@@ -60,7 +62,8 @@ public record SyncConfigS2C(String json) implements CustomPayload {
                 c.allowGrantXp, String.valueOf(c.scalingCurve), c.maxDamageBonus, c.xpBonus,
                 c.maxHealthBonus, c.eliteChance, c.escortChance,
                 String.valueOf(c.menace), c.groupScalingPercent, c.adaptiveStrength,
-                c.maxCompetence, c.dimensionMultiplierMiddleEarth, c.dimensionMultiplierOverworld);
+                c.maxCompetence, c.dimensionMultiplierMiddleEarth, c.dimensionMultiplierOverworld,
+                c.armorBonus, c.knockbackResistBonus, c.mobSpeedBonus, c.followRangeBonus);
     }
 
     /**
@@ -74,6 +77,10 @@ public record SyncConfigS2C(String json) implements CustomPayload {
         return switch (dial) {
             case MAX_HEALTH_BONUS -> v.maxHealthBonus();
             case MAX_DAMAGE_BONUS -> v.maxDamageBonus();
+            case ARMOR_BONUS -> v.armorBonus();
+            case KNOCKBACK_RESIST_BONUS -> v.knockbackResistBonus();
+            case MOB_SPEED_BONUS -> v.mobSpeedBonus();
+            case FOLLOW_RANGE_BONUS -> v.followRangeBonus();
             case ELITE_CHANCE -> v.eliteChance();
             case ESCORT_CHANCE -> v.escortChance();
             case GROUP_SCALING_PERCENT -> v.groupScalingPercent();

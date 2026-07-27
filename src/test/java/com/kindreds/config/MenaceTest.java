@@ -113,6 +113,17 @@ class MenaceTest {
                     higher + " has fewer champions than " + lower);
             assertTrue(higher.maxCompetence >= lower.maxCompetence,
                     higher + " has a lower ceiling than " + lower);
+            // The bearing dials climb too, and they matter more than the sponge ones: a preset that
+            // raised health but left mobs as easy to stagger, outrun and slip past as the one below it
+            // would be a longer fight rather than a harder one.
+            assertTrue(higher.armorBonus >= lower.armorBonus,
+                    higher + " is no better armoured than " + lower);
+            assertTrue(higher.knockbackResistBonus >= lower.knockbackResistBonus,
+                    higher + " is no harder to stagger than " + lower);
+            assertTrue(higher.mobSpeedBonus >= lower.mobSpeedBonus,
+                    higher + " is no faster than " + lower);
+            assertTrue(higher.followRangeBonus >= lower.followRangeBonus,
+                    higher + " notices you no sooner than " + lower);
         }
     }
 
