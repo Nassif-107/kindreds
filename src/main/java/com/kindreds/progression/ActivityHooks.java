@@ -123,14 +123,33 @@ public final class ActivityHooks {
     private static final int SLEEP_TICKS_FOR_SONG = 60;
     private static final long RUNECRAFT_USE_XP = 3;      // use an enchant/anvil/lectern/etc. station
     private static final long BEAST_INTERACT_XP = 2;     // handle an animal
-    private static final long BEAST_RIDE_XP = 1;         // per interval while mounted on a beast
+    private static final long BEAST_RIDE_XP = 6;         // per interval of ground actually covered astride
     private static final long BEAST_TAME_XP = 20;        // one-time: successfully tame a wolf or horse
     private static final long LEADERSHIP_CHAMPION_XP = 12; // fell a mighty foe (max health >= 30)
     private static final long LEADERSHIP_LEAD_XP = 1;    // per interval with allies at your side
     private static final long SHADOW_INNOCENT_XP = 10;   // a dark deed: slay the innocent
-    /** Cooldowns (game ticks) so "use"-style hooks can't be spam-farmed. */
-    private static final long SONG_CD = 200, RUNECRAFT_CD = 60, BEAST_CD = 40;
+    /** Cooldowns (game ticks) so "use"-style hooks can't be spam-farmed.
+     *
+     * <p>{@code BEAST_CD} was 40 ticks, which made right-clicking an animal the fastest way to earn
+     * Beast-lore by a wide margin - 2 xp every two seconds, forever, from a penned cow. Handling
+     * animals is meant to be the trickle beside riding, not the whole income, so it now pays on the
+     * same ten-second rhythm the other "use" hooks do. */
+    private static final long SONG_CD = 200, RUNECRAFT_CD = 60, BEAST_CD = 200;
     private static final int RIDE_AWARD_INTERVAL = 100;   // 5s mounted
+
+    /**
+     * Ground that must actually pass under the beast during {@link #RIDE_AWARD_INTERVAL} for the
+     * window to pay - about a walking pace, so any mount genuinely travelling clears it and a mount
+     * standing still (or circling in a pen with a weight on the key) earns nothing.
+     */
+    private static final double RIDE_MIN_BLOCKS = 6.0;
+
+    /**
+     * The most one tick may contribute to that total. No mount in the game covers three blocks in a
+     * tick, so anything larger is a teleport, a portal, or an {@code /tp} - none of which is riding,
+     * and all of which would otherwise hand over a full window's credit for a single tick.
+     */
+    private static final double RIDE_MAX_STEP = 3.0;
     private static final int LEAD_AWARD_INTERVAL = 200;   // 10s leading
     private static final int LEAD_RADIUS = 16;
     private static final float CHAMPION_HEALTH = 30f;
@@ -421,17 +440,57 @@ public final class ActivityHooks {
         }
     }
 
-    /** Beast-lore: riding a tamed beast builds the bond. */
+    /**
+     * Beast-lore: riding a beast builds the bond - measured by the road covered, not the seconds sat.
+     *
+     * <h2>What counts as a beast</h2>
+     * Any living mount that isn't another player. The old test was {@code AnimalEntity}, which does
+     * cover every mount the base mod ships (its wargs, broadhoof goats, great horns and cave trolls
+     * all descend from {@code AbstractHorseEntity}, hence from {@code AnimalEntity}) - but that is a
+     * fact about today's Middle-earth jar, not a rule, and it silently excluded any mount a sibling
+     * mod might add on another branch of the hierarchy. "Whatever you are sitting on, if it is alive
+     * and it isn't a person" needs no maintenance as the modpack grows. Boats and carts fall out on
+     * their own: they are not {@link LivingEntity}, and neither is riding one beast-lore.
+     *
+     * <h2>Why distance, and why it now pays six</h2>
+     * The old rule paid 1 xp per five seconds astride, with no requirement that the beast move -
+     * about twelve an hour-minute, against the 60/min a player could get simply right-clicking a cow
+     * on the old two-second cooldown. Riding was thus both the discipline's headline activity and its
+     * worst source, and the fastest legitimate way to level Beast-lore was to hop on and off a horse
+     * repeatedly, which is what it looked like from the saddle. Paying by ground covered fixes the
+     * shape as well as the rate: a journey earns, a parked mount does not, and the number attaches to
+     * the thing the discipline is about.
+     */
     private static void tickBeastRide(ServerPlayerEntity player, PlayerTickState state, Optional<Identifier> race) {
-        if (!(player.getVehicle() instanceof net.minecraft.entity.passive.AnimalEntity)) {
+        Entity vehicle = player.getVehicle();
+        if (!(vehicle instanceof LivingEntity) || vehicle instanceof PlayerEntity) {
             state.ticksMounted = 0;
+            state.rideDistance = 0.0;
             return;
         }
+        double x = player.getX();
+        double z = player.getZ();
+        if (state.ticksMounted > 0) {
+            // Horizontal only: climbing a mountain is travel, but bobbing up and down in place is not.
+            double dx = x - state.lastRideX;
+            double dz = z - state.lastRideZ;
+            double step = Math.sqrt(dx * dx + dz * dz);
+            if (step <= RIDE_MAX_STEP) {
+                state.rideDistance += step;
+            }
+        }
+        state.lastRideX = x;
+        state.lastRideZ = z;
+
         if (++state.ticksMounted < RIDE_AWARD_INTERVAL) {
             return;
         }
-        state.ticksMounted = 0;
-        race.ifPresent(r -> award(player, r, BEAST_LORE, BEAST_RIDE_XP));
+        boolean travelled = state.rideDistance >= RIDE_MIN_BLOCKS;
+        state.ticksMounted = 1;      // 1, not 0: the position above is this window's starting point
+        state.rideDistance = 0.0;
+        if (travelled) {
+            race.ifPresent(r -> award(player, r, BEAST_LORE, BEAST_RIDE_XP));
+        }
     }
 
     /** Leadership: standing with allies (other players nearby) grows a captain's renown. */
@@ -666,6 +725,10 @@ public final class ActivityHooks {
         int sneakTicks;
         int ticksSinceBiomeCheck;
         int ticksMounted;
+        /** Ground covered astride during the current {@link #RIDE_AWARD_INTERVAL} window. */
+        double rideDistance;
+        double lastRideX;
+        double lastRideZ;
         int ticksLeading;
         int ticksSleeping;
         int ticksSinceRaceCheck; // cachedRace == null forces a check on first use regardless

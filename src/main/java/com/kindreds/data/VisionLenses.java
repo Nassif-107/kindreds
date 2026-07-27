@@ -32,8 +32,16 @@ public final class VisionLenses {
     }
 
     /** Every vision lens {@code data} has unlocked - i.e. every {@link VisionUnlock} ability
-     * carried by a node in {@code trees} that {@code data} owns - mapped to the radius authored on
-     * the (first) unlocking node, in encounter order.
+     * carried by a node in {@code trees} that {@code data} owns - mapped to the <b>widest</b> radius
+     * any unlocking node authored, in encounter order.
+     *
+     * <p>Widest, not first: more than one node may grant the same lens, and the Elf's tree does -
+     * {@code elf.archery.eye_of_the_eldar} opens keen-sight at 32 blocks, and
+     * {@code elf.lore.sight_beyond_sight} opens it at 40. Taking the first encountered meant that
+     * whichever node happened to appear earlier in the tree JSON won, so an Elf who bought both got
+     * the archery node's 32 and the lore node's larger sight silently did nothing - two points spent
+     * on a "vision" line that, for anyone already carrying the lens, granted no vision at all. Every
+     * grant of a lens now counts for the reach it declares.
      *
      * <p>Scans every tree (rather than resolving a single race tree the way {@code
      * RequestUnlockC2S} does for an unlock request) since there's no single "requested node" here
@@ -50,7 +58,7 @@ public final class VisionLenses {
                 }
                 for (AbilityDef ability : node.abilities()) {
                     if (ability instanceof VisionUnlock vision) {
-                        result.putIfAbsent(lensId(vision.visionId()), vision.radius());
+                        result.merge(lensId(vision.visionId()), vision.radius(), Math::max);
                     }
                 }
             }
