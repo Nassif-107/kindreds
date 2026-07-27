@@ -224,6 +224,49 @@ public final class ThreatMath {
      */
     public static final float TYPICAL_MAX_SCALED_GROUP = 3.0f;
 
+    /** The three hoards a fallen champion may leave, poorest first. */
+    public enum Bounty { COMMON, RARE, FABLED }
+
+    /**
+     * Minimum danger before a tier is reachable at all, and its share of the roll once it is.
+     *
+     * <p>Gating on {@code scaled} rather than only on luck is the whole design. A flat chance means a
+     * mithril ingot is equally likely from a champion that never threatened you as from one that
+     * nearly killed you, which teaches players to farm the safest elite they can find - the same
+     * lesson the threat system exists to unteach. Below these thresholds the tier simply cannot drop,
+     * however lucky the roll; above them its odds still climb with the danger.
+     */
+    private static final float RARE_MIN_SCALED = 0.30f;
+    private static final float RARE_SHARE = 0.45f;
+    private static final float FABLED_MIN_SCALED = 0.60f;
+    /**
+     * Deliberately mean. At {@code 0.15} the whole chain - promotion to champion, the bounty roll,
+     * then this tier - put a mithril ingot in the hands of a veteran party once per 96 dangerous mobs,
+     * which over an evening's fighting is a steady supply rather than a find. Mithril is the most
+     * precious substance in this world; at {@code 0.10} it is roughly one mob in 145, and still the
+     * best reason to pick a fight you might lose.
+     */
+    private static final float FABLED_SHARE = 0.10f;
+
+    /**
+     * Which hoard a champion killed at {@code scaled} danger leaves, given a roll in {@code [0,1)}.
+     *
+     * <p>Checked richest-first so the tiers nest rather than compete: a roll low enough for the fabled
+     * hoard would also have satisfied the rare one, and testing rare first would make the best tier
+     * unreachable. Pure, so the actual drop rates can be proved by unit test rather than estimated
+     * from play - see {@code BountyTest}.
+     */
+    public static Bounty bountyTier(float scaled, float roll) {
+        float danger = Math.max(0f, Math.min(1f, scaled));
+        if (danger >= FABLED_MIN_SCALED && roll < FABLED_SHARE * danger) {
+            return Bounty.FABLED;
+        }
+        if (danger >= RARE_MIN_SCALED && roll < RARE_SHARE * danger) {
+            return Bounty.RARE;
+        }
+        return Bounty.COMMON;
+    }
+
     /**
      * The band a server has asked for, clamped to what the floor allows. Clamped here rather than at
      * the call site deliberately: this must hold however a caller was configured or misconfigured.

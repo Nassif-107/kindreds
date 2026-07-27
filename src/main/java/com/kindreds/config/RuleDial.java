@@ -37,6 +37,7 @@ public enum RuleDial {
     KNOCKBACK_RESIST_BONUS("knockbackResistBonus", 0, 100, 5, 25, false),
     MOB_SPEED_BONUS("mobSpeedBonus", 0, 60, 5, 20, false),
     FOLLOW_RANGE_BONUS("followRangeBonus", 0, 64, 4, 16, false),
+    ELITE_BOUNTY_CHANCE("eliteBountyChance", 0, 100, 5, 25, false),
     ELITE_CHANCE("eliteChance", 0, 100, 5, 25, false),
     ESCORT_CHANCE("escortChance", 0, 100, 5, 25, false),
     GROUP_SCALING_PERCENT("groupScalingPercent", 0, 300, 5, 25, false),
@@ -89,6 +90,7 @@ public enum RuleDial {
             case KNOCKBACK_RESIST_BONUS -> c.knockbackResistBonus;
             case MOB_SPEED_BONUS -> c.mobSpeedBonus;
             case FOLLOW_RANGE_BONUS -> c.followRangeBonus;
+            case ELITE_BOUNTY_CHANCE -> c.eliteBountyChance;
             case ELITE_CHANCE -> c.eliteChance;
             case ESCORT_CHANCE -> c.escortChance;
             case GROUP_SCALING_PERCENT -> c.groupScalingPercent;
@@ -110,6 +112,7 @@ public enum RuleDial {
             case KNOCKBACK_RESIST_BONUS -> c.knockbackResistBonus = (int) Math.round(v);
             case MOB_SPEED_BONUS -> c.mobSpeedBonus = (int) Math.round(v);
             case FOLLOW_RANGE_BONUS -> c.followRangeBonus = (int) Math.round(v);
+            case ELITE_BOUNTY_CHANCE -> c.eliteBountyChance = (int) Math.round(v);
             case ELITE_CHANCE -> c.eliteChance = (int) Math.round(v);
             case ESCORT_CHANCE -> c.escortChance = (int) Math.round(v);
             case GROUP_SCALING_PERCENT -> c.groupScalingPercent = (int) Math.round(v);

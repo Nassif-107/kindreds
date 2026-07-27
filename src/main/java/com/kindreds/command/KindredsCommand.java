@@ -292,7 +292,8 @@ public final class KindredsCommand {
             "menace", "maxCompetence",
             // The bearing dials - armour, knockback resistance, speed, follow range. What a fight
             // feels like rather than how long it lasts; see KindredsConfig for each one.
-            "armorBonus", "knockbackResistBonus", "mobSpeedBonus", "followRangeBonus");
+            "armorBonus", "knockbackResistBonus", "mobSpeedBonus", "followRangeBonus",
+            "eliteBountyChance");
 
     private static final SuggestionProvider<ServerCommandSource> CONFIG_KEY_SUGGESTIONS =
             (context, builder) -> CommandSource.suggestMatching(CONFIG_KEYS, builder);
@@ -335,6 +336,7 @@ public final class KindredsCommand {
         source.sendFeedback(() -> Text.literal("  knockbackResistBonus = " + c.knockbackResistBonus), false);
         source.sendFeedback(() -> Text.literal("  mobSpeedBonus = " + c.mobSpeedBonus), false);
         source.sendFeedback(() -> Text.literal("  followRangeBonus = " + c.followRangeBonus), false);
+        source.sendFeedback(() -> Text.literal("  eliteBountyChance = " + c.eliteBountyChance), false);
         source.sendFeedback(() -> Text.literal("Change with: /kindreds config <key> <value>  (saved to kindreds-server.json)"), false);
         return 1;
     }
@@ -377,7 +379,8 @@ public final class KindredsCommand {
                 case "xpBonus", "adaptiveStrength", "maxDamageBonus", "maxHealthBonus", "eliteChance",
                      "escortChance", "groupScalingPercent", "maxCompetence",
                      "dimensionMultiplierMiddleEarth", "dimensionMultiplierOverworld",
-                     "armorBonus", "knockbackResistBonus", "mobSpeedBonus", "followRangeBonus" -> {
+                     "armorBonus", "knockbackResistBonus", "mobSpeedBonus", "followRangeBonus",
+                     "eliteBountyChance" -> {
                     // One branch for every dial the rules screen can also edit, bounded by that
                     // screen's own table rather than by a second set of literals here. The old
                     // per-key bounds were both duplicated and too tight - health stopped at 400%, the

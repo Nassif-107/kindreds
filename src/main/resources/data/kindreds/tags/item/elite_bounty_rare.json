@@ -1,0 +1,9 @@
+{
+  "values": [
+    { "id": "middle-earth:ruby", "required": false },
+    { "id": "middle-earth:sapphire", "required": false },
+    { "id": "middle-earth:mithril_nugget", "required": false },
+    { "id": "middle-earth:gold_coin_pile", "required": false },
+    { "id": "middle-earth:lembas", "required": false }
+  ]
+}

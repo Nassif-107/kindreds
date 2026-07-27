@@ -101,9 +101,22 @@ public final class EliteMobs {
     private static final double WARCRY_RADIUS = 16.0;
     private static final int WARCRY_DURATION = 200;
 
-    private static final float BOUNTY_CHANCE = 0.15f;
-    private static final TagKey<Item> ELITE_BOUNTY_TAG =
-            TagKey.of(RegistryKeys.ITEM, Identifier.of(Kindreds.MOD_ID, "elite_bounty"));
+    /**
+     * The three hoards, richest last. Datapack extension points, all three optional.
+     *
+     * <p>There was one tag, and it held {@code minecraft:diamond} - a single vanilla gem, dropped at a
+     * flat 15% by champions of every stripe. Two things were wrong with that. It was the wrong world:
+     * the base mod generates no diamond ore anywhere, so the only diamonds in Middle-earth were the
+     * ones this mod minted out of nothing. And it was the wrong shape: a flat chance pays the same for
+     * a champion that never threatened you as for one that nearly killed you, which teaches players to
+     * seek out the safest elite they can find - the precise habit the threat system exists to unteach.
+     */
+    private static final TagKey<Item> BOUNTY_COMMON =
+            TagKey.of(RegistryKeys.ITEM, Identifier.of(Kindreds.MOD_ID, "elite_bounty_common"));
+    private static final TagKey<Item> BOUNTY_RARE =
+            TagKey.of(RegistryKeys.ITEM, Identifier.of(Kindreds.MOD_ID, "elite_bounty_rare"));
+    private static final TagKey<Item> BOUNTY_FABLED =
+            TagKey.of(RegistryKeys.ITEM, Identifier.of(Kindreds.MOD_ID, "elite_bounty_fabled"));
 
     /** Every live elite, grouped by world, so the 40-tick cadence never has to scan the whole world
      * for the (rare) elites in it. See the class javadoc for how entries enter and leave this map. */
@@ -214,7 +227,7 @@ public final class EliteMobs {
                 warcry(world, entity, source.getAttacker());
             }
             rerollLoot(world, entity, source);
-            rollBounty(world, entity);
+            rollBounty(world, entity, source);
         });
     }
 
@@ -418,13 +431,36 @@ public final class EliteMobs {
         table.generateLoot(ctx, entity.getLootTableSeed(), stack -> entity.dropStack(world, stack));
     }
 
-    /** A 15%% chance for one random item from {@code kindreds:elite_bounty} - a datapack extension
-     * point, empty or missing tag skipped silently. */
-    private static void rollBounty(ServerWorld world, LivingEntity entity) {
-        if (world.getRandom().nextFloat() >= BOUNTY_CHANCE) {
+    /**
+     * The hoard a fallen champion leaves - both <em>whether</em> and <em>what</em> scaled by the
+     * danger it actually posed.
+     *
+     * <p>Danger is read per-killer via {@link ThreatService#scaledAgainst}, not from the world: a
+     * champion is only worth what it was worth to the person who felled it, and reading a global
+     * figure would let a strong player's presence enrich a weak one's kills. No killer (a fall, a
+     * cactus, another mob) means no bounty at all - nobody earned it.
+     *
+     * <p>Both rolls draw from the same {@link net.minecraft.util.math.random.Random}, and both scale:
+     * the drop chance with {@code eliteBountyChance * scaled}, the tier through
+     * {@link ThreatMath#bountyTier}, which refuses the better hoards outright below a danger
+     * threshold however lucky the roll. An empty or missing tag is skipped in silence, so a datapack
+     * may delete a whole tier without breaking anything.
+     */
+    private static void rollBounty(ServerWorld world, LivingEntity entity, DamageSource source) {
+        if (!(source.getAttacker() instanceof ServerPlayerEntity killer)) {
             return;
         }
-        Optional<RegistryEntry<Item>> item = Registries.ITEM.getRandomEntry(ELITE_BOUNTY_TAG, world.getRandom());
+        float scaled = ThreatService.scaledAgainst(killer, entity);
+        int configured = Kindreds.CONFIG == null ? 0 : Kindreds.CONFIG.eliteBountyChance;
+        if (world.getRandom().nextFloat() >= (configured / 100f) * scaled) {
+            return;
+        }
+        TagKey<Item> pool = switch (ThreatMath.bountyTier(scaled, world.getRandom().nextFloat())) {
+            case FABLED -> BOUNTY_FABLED;
+            case RARE -> BOUNTY_RARE;
+            case COMMON -> BOUNTY_COMMON;
+        };
+        Optional<RegistryEntry<Item>> item = Registries.ITEM.getRandomEntry(pool, world.getRandom());
         item.ifPresent(entry -> entity.dropStack(world, new ItemStack(entry.value())));
     }
 }

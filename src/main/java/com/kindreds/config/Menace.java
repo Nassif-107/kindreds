@@ -30,33 +30,33 @@ package com.kindreds.config;
 public enum Menace {
     /** No scaling at all. A vanilla orc is a vanilla orc; the world never answers. */
     SHIRE(false, 0, 0, 0, 0, 0, 0, ScalingCurve.FEEL_STRONGER, 0, 1.0f, 1.0f, 1.0f,
-            0, 0, 0, 0),
+            0, 0, 0, 0, 0),
 
     /** The Watchful Peace: the world notices you, and little more. Growing strength outruns it. */
     WATCHFUL_PEACE(true, 40, 40, 10, 10, 10, 25, ScalingCurve.FEEL_STRONGER, 60, 1.25f, 1.0f, 0.75f,
-            1, 6, 5, 5),
+            1, 6, 5, 5, 12),
 
     /** A shadow lengthening: enemies keep pace with you rather than falling behind, and champions
      * start appearing among them. The intended default for a server that wants the system on. */
     GATHERING_DARK(true, 70, 110, 25, 30, 20, 60, ScalingCurve.EXACT_PACE, 100, 1.5f, 1.25f, 0.9f,
-            2, 12, 9, 9),
+            2, 12, 9, 9, 16),
 
     /** Open war: most fights bring a champion or an escort, and blows land hard enough to be feared.
      * The world now outgrows you rather than merely matching you. */
     OPEN_WAR(true, 100, 175, 40, 50, 25, 100, ScalingCurve.LONG_DEFEAT, 100, 2.0f, 2.0f, 1.0f,
-            3, 18, 13, 13),
+            3, 18, 13, 13, 20),
 
     /** The Black Tide: you are outmatched and travelling in company is no longer optional. */
     THE_BLACK_TIDE(true, 160, 300, 65, 80, 40, 150, ScalingCurve.LONG_DEFEAT, 100, 3.0f, 3.0f, 1.5f,
-            4, 25, 17, 20),
+            4, 25, 17, 20, 28),
 
     /** Everything the dials will give. Not balanced, and not pretending to be. */
     WRATH_OF_SAURON(true, 250, 500, 100, 100, 60, 200, ScalingCurve.LONG_DEFEAT, 100, 5.0f, 4.0f, 2.0f,
-            6, 35, 22, 30),
+            6, 35, 22, 30, 40),
 
     /** Hand-tuned: the preset system leaves the file alone. */
     CUSTOM(true, 0, 0, 0, 0, 0, 0, ScalingCurve.FEEL_STRONGER, 0, 1.0f, 1.0f, 1.0f,
-            0, 0, 0, 0);
+            0, 0, 0, 0, 0);
 
     public final boolean enemyScaling;
     public final int maxHealthBonus;
@@ -93,12 +93,15 @@ public enum Menace {
     public final int knockbackResistBonus;
     public final int mobSpeedBonus;
     public final int followRangeBonus;
+    /** Chance a fallen champion leaves a hoard, at full danger. Climbs with the ladder: a world that
+     * asks more of you must pay more, or growing strong becomes a strictly worse trade. */
+    public final int eliteBountyChance;
 
     Menace(boolean enemyScaling, int maxHealthBonus, int maxDamageBonus, int eliteChance,
            int escortChance, int groupScalingPercent, int xpBonus, ScalingCurve curve,
            int adaptiveStrength, float maxCompetence, float dimensionMultiplierMiddleEarth,
            float dimensionMultiplierOverworld, int armorBonus, int knockbackResistBonus,
-           int mobSpeedBonus, int followRangeBonus) {
+           int mobSpeedBonus, int followRangeBonus, int eliteBountyChance) {
         this.enemyScaling = enemyScaling;
         this.maxHealthBonus = maxHealthBonus;
         this.maxDamageBonus = maxDamageBonus;
@@ -115,6 +118,7 @@ public enum Menace {
         this.knockbackResistBonus = knockbackResistBonus;
         this.mobSpeedBonus = mobSpeedBonus;
         this.followRangeBonus = followRangeBonus;
+        this.eliteBountyChance = eliteBountyChance;
     }
 
     /** Writes this preset's values onto {@code config}. No-op for {@link #CUSTOM}. */
@@ -138,5 +142,6 @@ public enum Menace {
         config.knockbackResistBonus = knockbackResistBonus;
         config.mobSpeedBonus = mobSpeedBonus;
         config.followRangeBonus = followRangeBonus;
+        config.eliteBountyChance = eliteBountyChance;
     }
 }

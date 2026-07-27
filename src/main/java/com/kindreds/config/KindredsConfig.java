@@ -111,6 +111,16 @@ public class KindredsConfig {
     /** Extra blocks of follow range - how far off a mob notices and commits to you. Turns "slip past
      * it" into a decision rather than a default. */
     public int followRangeBonus = 0;
+
+    /**
+     * Chance a fallen champion leaves a hoard, at full danger. Percent; 0 disables.
+     *
+     * <p>Multiplied by the killer's own {@code scaled} danger, so this is a ceiling rather than a flat
+     * rate - a champion that never threatened you pays little, and one that nearly killed you pays
+     * properly. What it leaves is drawn from one of three tiers by the same measure; see
+     * {@code ThreatMath#bountyTier}.
+     */
+    public int eliteBountyChance = 20;
     /** Chance an in-scope mob is promoted to an elite at full group threat. Percent; 0 disables. */
     public int eliteChance = 25;
     /** Chance a scaled mob brings 1-2 escorts at full group threat. Percent; 0 disables. The escort

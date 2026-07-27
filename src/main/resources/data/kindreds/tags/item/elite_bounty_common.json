@@ -1,0 +1,8 @@
+{
+  "values": [
+    { "id": "middle-earth:silver_coin", "required": false },
+    { "id": "middle-earth:gold_coin", "required": false },
+    { "id": "middle-earth:athelas", "required": false },
+    { "id": "middle-earth:silver_ingot", "required": false }
+  ]
+}

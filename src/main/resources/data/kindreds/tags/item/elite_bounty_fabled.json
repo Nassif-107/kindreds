@@ -1,0 +1,7 @@
+{
+  "values": [
+    { "id": "middle-earth:mithril_ingot", "required": false },
+    { "id": "middle-earth:starlight_phial", "required": false },
+    { "id": "middle-earth:raw_mithril", "required": false }
+  ]
+}

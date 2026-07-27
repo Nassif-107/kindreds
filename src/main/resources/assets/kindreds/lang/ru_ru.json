@@ -2580,5 +2580,6 @@
   "kindreds.settings.armorBonus": "Их броня",
   "kindreds.settings.knockbackResistBonus": "Насколько трудно их отбросить",
   "kindreds.settings.mobSpeedBonus": "Как быстро они настигают",
-  "kindreds.settings.followRangeBonus": "С какого расстояния замечают"
+  "kindreds.settings.followRangeBonus": "С какого расстояния замечают",
+  "kindreds.settings.eliteBountyChance": "Клады с вожаков"
 }
