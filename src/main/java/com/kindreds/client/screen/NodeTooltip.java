@@ -1,5 +1,6 @@
 package com.kindreds.client.screen;
 
+import com.kindreds.ability.PerkService;
 import com.kindreds.data.Discipline;
 import com.kindreds.data.KindredsRegistries;
 import com.kindreds.data.SkillNode;
@@ -127,6 +128,8 @@ public final class NodeTooltip {
             }
         }
 
+        addRankLadder(lines, tr, node, currentRank);
+
         SkillNode.Cost cost = node.cost();
         addWrapped(lines, tr, Text.literal(I18n.translate("kindreds.tooltip.cost",
                 cost.points(), disciplineName(client, cost.disciplineId()))).formatted(Formatting.AQUA));
@@ -178,6 +181,92 @@ public final class NodeTooltip {
 
     private static void addWrapped(List<OrderedText> out, TextRenderer tr, Text text) {
         out.addAll(tr.wrapLines(text, MAX_WIDTH));
+    }
+
+    // --- Rank ladder ------------------------------------------------------------------------------
+
+    /**
+     * What each rank of a deepening node actually gives, one line per rank.
+     *
+     * <p>The tooltip said "Rank 1 of 3" and then printed rank 1's numbers, at every rank - so a node
+     * taken to its third rank read exactly like a node taken to its first, and the only way to learn
+     * what the next two points bought was to spend them and compare. The depth worked; nothing said
+     * so. This is the missing half, and it is deliberately the whole ladder rather than just the next
+     * step: three short lines answer both "what do I have" and "is the rest worth it" at once, and
+     * ranked nodes in this mod top out at three.
+     *
+     * <p>The numbers come from the same code the game applies - {@link PerkService#atRank} for perks,
+     * and the attribute rule restated in exactly one place below - because a tooltip that computes
+     * them a second way is a tooltip that will eventually lie.
+     */
+    private static void addRankLadder(List<OrderedText> out, TextRenderer tr, SkillNode node, int currentRank) {
+        int max = node.maxRank();
+        if (max <= 1) {
+            return;
+        }
+        List<AbilityDef> deepening = new ArrayList<>();
+        for (AbilityDef ability : node.abilities()) {
+            if (deepensWithRank(ability)) {
+                deepening.add(ability);
+            }
+        }
+        if (deepening.isEmpty()) {
+            // A node authored with ranks whose every ability ignores them. Worth saying out loud: the
+            // player is being invited to spend points that buy nothing, which is a content bug they
+            // would otherwise pay to discover.
+            addWrapped(out, tr, Text.literal(I18n.translate("kindreds.tooltip.rank_no_change"))
+                    .withColor(ThemeAssets.WARNING_COLOR));
+            return;
+        }
+
+        addWrapped(out, tr, Text.literal(I18n.translate("kindreds.tooltip.rank_ladder")).formatted(Formatting.GOLD));
+        for (int rank = 1; rank <= max; rank++) {
+            List<String> parts = new ArrayList<>();
+            for (AbilityDef ability : deepening) {
+                parts.add(describeAtRank(ability, rank));
+            }
+            String body = I18n.translate("kindreds.tooltip.rank_step", rank, String.join(", ", parts));
+            // Owned ranks read as earned, the next one as the thing being offered, the rest as
+            // distant. Colour carries this rather than a marker glyph, which would not survive
+            // translation and would cost width the numbers need.
+            Formatting style = rank <= currentRank ? Formatting.GREEN
+                    : rank == currentRank + 1 ? Formatting.YELLOW
+                    : Formatting.DARK_GRAY;
+            addWrapped(out, tr, Text.literal(body).formatted(style));
+        }
+    }
+
+    /** Whether {@code ability}'s numbers actually move with rank. Mirrors what the appliers do:
+     * attribute amounts are multiplied by rank ({@code AbilityApplier#applyAttributeMod}) and perk
+     * params are scaled ({@code PerkService#atRank}), while status effects, vision lenses, active
+     * abilities and curses are applied at their authored strength however deep the node is taken. */
+    private static boolean deepensWithRank(AbilityDef ability) {
+        return switch (ability) {
+            case AttributeMod a -> a.amount() != 0;
+            // A perk whose every param is already a certainty or a ban is not deepened by rank either
+            // - scaleParam leaves those exactly as authored - so ask by comparison rather than by
+            // assuming every perk moves.
+            case PerkDef p -> !PerkService.atRank(p, 2).params().equals(p.params());
+            default -> false;
+        };
+    }
+
+    /** One ability's description as it reads at {@code rank}. */
+    private static String describeAtRank(AbilityDef ability, int rank) {
+        return switch (ability) {
+            // The one place the attribute rank rule is restated on the client. AbilityApplier applies
+            // `amount * rank`; keep the two in step.
+            case AttributeMod a -> String.format(Locale.ROOT, "%s%.1f %s",
+                    a.amount() >= 0 ? "+" : "", a.amount() * rank, attrName(a.attribute()));
+            case PerkDef p -> stripFormatting(describePerk(PerkService.atRank(p, rank)));
+            default -> stripFormatting(describe(ability));
+        };
+    }
+
+    /** Drops the inline colour codes some describers embed, so a ladder line's own rank colour is not
+     * cancelled halfway through by a §7 the perk text carries for its standalone use. */
+    private static String stripFormatting(String text) {
+        return text.replaceAll("§.", "");
     }
 
     // --- Text derivation --------------------------------------------------------------------------

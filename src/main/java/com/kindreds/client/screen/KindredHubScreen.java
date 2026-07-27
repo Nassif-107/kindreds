@@ -29,20 +29,22 @@ public class KindredHubScreen extends Screen {
     }
 
     /**
-     * Opens whichever page was last read - the hub itself the first time. Returning to the same
-     * page is the common case by a wide margin, and making the player re-pick it every time is a
-     * toll on the thing they do most.
+     * Opens the hub. Always the hub.
+     *
+     * <p>This used to reopen whichever page was last read, on the reasoning that returning to the
+     * same page is the common case. It is - but the saving was imaginary and the cost was not. The
+     * hub sits one keypress from every page anyway, so the shortcut spared a single click, while
+     * getting it wrong dropped the player into a screen they had not asked for and had to back out of
+     * to reach the one they wanted. A menu key whose destination depends on what you did last is a
+     * menu key you cannot press without first remembering what you did last.
+     *
+     * <p>What <em>is</em> worth remembering lives one level down - see
+     * {@link com.kindreds.client.ClientUiState}, which now recalls the discipline instead of the
+     * page. There is no cheap way back to a tab inside a screen inside the hub, so that one genuinely
+     * saves the player something.
      */
     public static void open(MinecraftClient client) {
-        KindredHubScreen hub = new KindredHubScreen();
-        switch (com.kindreds.client.ClientUiState.lastPage()) {
-            case TRAITS -> client.setScreen(new KindredCodexScreen(ClientKindredData.INSTANCE, hub));
-            case SKILLS -> client.setScreen(new SkillTreeScreen(ClientKindredData.INSTANCE, hub));
-            case ABILITIES -> client.setScreen(
-                    new com.kindreds.client.loadout.KindredLoadoutScreen(hub));
-            case DEEDS -> client.setScreen(new KindredDeedsScreen(ClientKindredData.INSTANCE, hub));
-            default -> client.setScreen(hub);
-        }
+        client.setScreen(new KindredHubScreen());
     }
 
     @Override
@@ -250,24 +252,24 @@ public class KindredHubScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    // No page is recorded on the way out any more - see open()'s javadoc for why the hub key stopped
+    // guessing. The discipline the skill page lands on is recorded by that page itself, where the
+    // player actually picks it.
+
     private void openTraits() {
-        com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.TRAITS);
         MinecraftClient.getInstance().setScreen(new KindredCodexScreen(ClientKindredData.INSTANCE, this));
     }
 
     private void openSkills() {
-        com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.SKILLS);
         MinecraftClient.getInstance().setScreen(new SkillTreeScreen(ClientKindredData.INSTANCE, this));
     }
 
     private void openAbilities() {
-        com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.ABILITIES);
         MinecraftClient.getInstance().setScreen(
                 new com.kindreds.client.loadout.KindredLoadoutScreen(this));
     }
 
     private void openDeeds() {
-        com.kindreds.client.ClientUiState.remember(com.kindreds.client.ClientUiState.Page.DEEDS);
         MinecraftClient.getInstance().setScreen(new KindredDeedsScreen(ClientKindredData.INSTANCE, this));
     }
 

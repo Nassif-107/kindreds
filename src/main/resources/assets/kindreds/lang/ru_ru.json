@@ -2573,5 +2573,8 @@
   "kindreds.menace.wrath_of_sauron": "Гнев Саурона",
   "kindreds.menace.wrath_of_sauron.desc": "Всё, что позволяют настройки. Это не баланс и им не притворяется.",
   "kindreds.menace.custom": "Своя настройка",
-  "kindreds.menace.custom.desc": "Вручную — задайте каждое число ниже сами."
+  "kindreds.menace.custom.desc": "Вручную — задайте каждое число ниже сами.",
+  "kindreds.tooltip.rank_ladder": "Что даёт каждый ранг:",
+  "kindreds.tooltip.rank_step": "  %s.  %s",
+  "kindreds.tooltip.rank_no_change": "Следующие ранги ничего из этого не меняют."
 }

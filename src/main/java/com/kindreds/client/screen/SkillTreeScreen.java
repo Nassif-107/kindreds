@@ -98,7 +98,17 @@ public class SkillTreeScreen extends Screen {
     /** Two ways to read the tree: MAP = whole constellation (all disciplines at once, pan/zoom);
      * BRANCH = one discipline, focused and readable (pick via the tabs). Both share the camera. */
     private enum ViewMode { MAP, BRANCH }
-    private ViewMode viewMode = ViewMode.MAP;
+    /**
+     * Opens focused on one discipline rather than on the whole constellation.
+     *
+     * <p>MAP is the better picture and the worse landing page. Eighty-odd nodes across seven lanes,
+     * fitted to the window, renders every node too small to read and every label too small to place -
+     * so the first thing the screen asked of a player who came to spend a single point was to find
+     * their lane again. BRANCH opens on the lane they were last in, at a size where the names are
+     * legible, and MAP stays one click away on the toggle for when the question is "where does this
+     * go" rather than "what do I take next".
+     */
+    private ViewMode viewMode = ViewMode.BRANCH;
     /** Set once the player picks a view themselves, so a resize never overrides their choice. */
     private boolean viewModeChosen;
     private int[] viewToggleButton = new int[4];
@@ -331,7 +341,14 @@ public class SkillTreeScreen extends Screen {
         tabDisciplines = present;
         disciplinesWithNodes = withNodes;
 
-        // Default focus: first discipline with points to spend, else the first present one.
+        // Default focus, in order of preference:
+        //   1. the discipline this player was last reading or last spent a point in,
+        //   2. the first with points waiting to be spent,
+        //   3. the first this race trains at all.
+        //
+        // The remembered name is validated against `present` rather than trusted: it survives a race
+        // change and a datapack edit, either of which can leave it naming a lane this tree does not
+        // have. An unrecognised name simply falls through to the old behaviour.
         KindredData data = currentData();
         selectedDiscipline = present.isEmpty() ? null : present.get(0);
         for (String disc : present) {
@@ -339,6 +356,10 @@ public class SkillTreeScreen extends Screen {
                 selectedDiscipline = disc;
                 break;
             }
+        }
+        String remembered = com.kindreds.client.ClientUiState.lastDiscipline();
+        if (remembered != null && present.contains(remembered)) {
+            selectedDiscipline = remembered;
         }
         selectedNode = null;
         fitted = false;
@@ -1407,6 +1428,10 @@ public class SkillTreeScreen extends Screen {
         for (int i = 0; i < tabRects.size(); i++) {
             if (within(tabRects.get(i), mouseX, mouseY)) {
                 selectedDiscipline = tabDisciplines.get(i);
+                // Recorded here rather than on unlock, because this is where the player states a
+                // preference: the lane you were reading is the lane you meant, whether or not you
+                // ended up spending anything in it.
+                com.kindreds.client.ClientUiState.rememberDiscipline(selectedDiscipline);
                 selectedNode = null;
                 if (viewMode == ViewMode.BRANCH) {
                     fitted = false; // re-fit to the newly focused discipline

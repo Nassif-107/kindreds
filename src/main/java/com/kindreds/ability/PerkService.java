@@ -134,6 +134,18 @@ public final class PerkService {
      * silently become "always", which is a different perk rather than a deeper one. Each rank closes
      * half of the remaining gap to 1.0, so more ranks always help and never guarantee.
      */
+    /**
+     * {@code perk} as it reads at {@code rank} - the public face of {@link #scaled}, so the skill-tree
+     * tooltip can show what a rank actually buys rather than restating rank 1's numbers at every depth.
+     *
+     * <p>Exposed rather than reimplemented on the client for the obvious reason: a tooltip that
+     * derives these numbers a second way is a tooltip that will eventually disagree with the game.
+     * Pure and side-effect free, so it is safe to call per frame.
+     */
+    public static PerkDef atRank(PerkDef perk, int rank) {
+        return rank <= 1 ? perk : scaled(perk, rank);
+    }
+
     private static PerkDef scaled(PerkDef perk, int rank) {
         Map<String, Float> scaledParams = new java.util.HashMap<>(perk.params().size());
         perk.params().forEach((key, value) -> scaledParams.put(key, scaleParam(key, value, rank)));
