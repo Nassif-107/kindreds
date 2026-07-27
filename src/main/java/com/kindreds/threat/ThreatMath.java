@@ -98,7 +98,38 @@ public final class ThreatMath {
      * {@link ThreatTuning}; {@link #bandFor} refuses to widen it past these.
      */
     public static final float COMPETENCE_MIN = 0.75f;
-    public static final float COMPETENCE_MAX = 1.25f;
+
+    /**
+     * The ceiling on how far coasting may push difficulty up.
+     *
+     * <p>Raised from {@code 1.25} once it stopped being a ceiling and started being a wall: on a live
+     * server all three players sat pinned at exactly 1.25, with their {@code orc_kin} and
+     * {@code spiders} family records pinned there too. The loop had correctly concluded they were
+     * coasting through everything and had no way left to say so - which is a control system with its
+     * output saturated, i.e. no longer a control system.
+     *
+     * <p>The two limits are deliberately asymmetric now, because they defend different things.
+     * {@link #COMPETENCE_MIN} is the anti-farm floor: it stops a player dying on purpose to make the
+     * world soft, so it stays where it was. This one only governs how hard the world may become for
+     * someone who keeps winning, and nothing is exploitable about that direction - the only way to
+     * reach it is to genuinely stop being threatened. It is also self-correcting rather than a
+     * one-way ratchet: the same evidence loop walks it back down the moment fights start costing
+     * something.
+     */
+    public static final float COMPETENCE_MAX = 2.0f;
+
+    /**
+     * How far {@link #adaptiveBand} may open each side at {@code adaptiveStrength = 100}.
+     *
+     * <p>Asymmetric for the reason above: the downward span stays at its original quarter so the
+     * anti-farm floor is reached at full strength exactly as it always was, while the upward span
+     * runs the full distance to {@link #COMPETENCE_MAX}. Keeping them equal would have meant raising
+     * the ceiling changed nothing at all, since this band - not {@link #bandFor}'s clamp - is what
+     * actually binds at the default {@code adaptiveStrength}.
+     */
+    private static final float ADAPTIVE_SPAN_DOWN = 0.25f;
+    private static final float ADAPTIVE_SPAN_UP = COMPETENCE_MAX - 1.0f;
+
     private static final long TICKS_PER_HOUR = 72000L;
 
     /**
@@ -133,7 +164,7 @@ public final class ThreatMath {
      */
     public static float[] adaptiveBand(int adaptiveStrength) {
         float s = Math.max(0f, Math.min(1f, adaptiveStrength / 100f));
-        return bandFor(1f - 0.25f * s, 1f + 0.25f * s);
+        return bandFor(1f - ADAPTIVE_SPAN_DOWN * s, 1f + ADAPTIVE_SPAN_UP * s);
     }
 
     /** Declared power, 0..100, as the weighted blend of its three terms. */

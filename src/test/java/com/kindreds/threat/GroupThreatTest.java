@@ -17,9 +17,14 @@ class GroupThreatTest {
     }
 
     @Test
-    void groupBonusIsCappedAtFortyFivePercent() {
+    void groupBonusIsCappedHoweverManyPlayersPileIn() {
+        // Asserted against the bound itself, not a copy of its value: the point of this test is that
+        // a full server cannot multiply a mob without limit, not what this month's limit happens to
+        // be. The setup is deliberately far past any plausible bound - 8 extra players at 15% is
+        // +120% uncapped - so it keeps binding whatever GROUP_CAP is set to.
         float group = ThreatService.groupOf(List.of(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f), 0.15f);
-        assertEquals(1f * 1.45f, group, 0.001f, "8 extra players x 15% = 120%, but the cap is 45%");
+        assertEquals(1f + ThreatService.GROUP_CAP, group, 0.001f,
+                "8 extra players x 15% = +120% uncapped; the cap must bind");
     }
 
     @Test

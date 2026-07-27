@@ -234,21 +234,26 @@ class ThreatMathTest {
 
     @Test
     void adaptiveStrengthFiftyIsHalfwayNarrowed() {
+        // Halfway between "no adaptation" (1.0) and each end of the full band. The two ends are
+        // deliberately asymmetric - the floor is the anti-farm bound and stayed where it was, while
+        // the ceiling governs how hard the world may become for someone who keeps winning and was
+        // widened - so each side is derived from its own end rather than from one shared span.
         float[] band = ThreatMath.adaptiveBand(50);
-        assertEquals(0.875f, band[0], 0.0001f);
-        assertEquals(1.125f, band[1], 0.0001f);
+        assertEquals(1.0f - (1.0f - ThreatMath.COMPETENCE_MIN) * 0.5f, band[0], 0.0001f);
+        assertEquals(1.0f + (ThreatMath.COMPETENCE_MAX - 1.0f) * 0.5f, band[1], 0.0001f);
     }
 
     @Test
     void adaptiveStrengthNeverWidensPastTheFloorEvenWithoutItsOwnClamp() {
         // A misconfigured adaptiveStrength of 200% must never widen the band past the anti-farm
         // floor. Prove it is genuinely enforced (not just numerically coincidental) by computing the
-        // RAW, unclamped band the naive formula would produce at s=2.0 - min = 1 - 0.25*2 = 0.5,
-        // max = 1 + 0.25*2 = 1.5 - and showing that raw pair sits outside the floor. If adaptiveBand
-        // stopped calling bandFor (or its own s-clamp), it would return this raw, floor-violating
-        // pair instead of the actual assertion below.
-        float rawMin = 1f - 0.25f * 2.0f;
-        float rawMax = 1f + 0.25f * 2.0f;
+        // RAW, unclamped band the naive formula would produce at s=2.0 - twice each side's span -
+        // and showing that raw pair sits outside the floor. If adaptiveBand stopped calling bandFor
+        // (or its own s-clamp), it would return this raw, floor-violating pair instead of the actual
+        // assertion below. Derived from the constants rather than written out, so retuning either end
+        // cannot quietly turn this into a test that proves nothing.
+        float rawMin = 1f - (1f - ThreatMath.COMPETENCE_MIN) * 2.0f;
+        float rawMax = 1f + (ThreatMath.COMPETENCE_MAX - 1f) * 2.0f;
         assertTrue(rawMin < ThreatMath.COMPETENCE_MIN, "test setup: raw band should violate the floor");
         assertTrue(rawMax > ThreatMath.COMPETENCE_MAX, "test setup: raw band should violate the floor");
 

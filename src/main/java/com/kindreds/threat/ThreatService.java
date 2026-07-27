@@ -110,7 +110,19 @@ public final class ThreatService {
         return ThreatMath.scaled(threatOf(player), Kindreds.CONFIG.scalingCurveExponent());
     }
 
-    /** As {@link #scaledFor}, adjusted by the player's record against this mob's family. */
+    /**
+     * As {@link #scaledFor}, adjusted by the player's record against this mob's family.
+     *
+     * <p>Carries the dimension multiplier, which it previously did not. That omission made the
+     * setting mean two different things depending on which effect read it: health, elite promotion
+     * and escorts all went through {@link #scaledGroupAt} and were paced by it, while incoming damage
+     * came through here and silently ignored it. An operator raising
+     * {@code dimensionMultiplierMiddleEarth} to make Middle-earth harder therefore got a world of
+     * tougher mobs that hit exactly as softly as before - the opposite of what the dial says, and the
+     * one axis where "harder" is actually felt. Deliberately not group-scaled: incoming damage is
+     * per-victim by design, so that two players fighting one troll each meet the difficulty each has
+     * earned rather than the party's.
+     */
     public static float scaledAgainst(ServerPlayerEntity player, LivingEntity mob) {
         if (Kindreds.CONFIG == null || !Kindreds.CONFIG.enableEnemyScaling) {
             return 0f;
@@ -120,12 +132,27 @@ public final class ThreatService {
         float family = data.threat().familyCompetence().getOrDefault(MobDanger.family(mob), global);
         float competence = ThreatMath.effectiveCompetence(global, family);
         float threat = ThreatMath.threat(data.threat().priorMark(), competence);
-        return ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
+        float scaled = ThreatMath.scaled(threat, Kindreds.CONFIG.scalingCurveExponent());
+        return scaled * dimensionMultiplier(player.getWorld().getRegistryKey().getValue().getNamespace(),
+                Kindreds.CONFIG.dimensionMultiplierMiddleEarth,
+                Kindreds.CONFIG.dimensionMultiplierOverworld);
     }
 
-    /** The +45%% group-size cap is a bound, not a dial (spec §4) - it is what keeps a full server
-     * from multiplying a mob past recognition. */
-    private static final float GROUP_CAP = 0.45f;
+    /**
+     * The group-size cap is a bound, not a dial (spec §4) - it is what keeps a full server from
+     * multiplying a mob past recognition.
+     *
+     * <p>Raised from {@code 0.45} because at that value it bound before {@code groupScalingPercent}
+     * ever did: three players at the default 15% already reached +30%, so any setting past 25% was
+     * silently discarded - the dial an operator was handed did nothing while the bound they were not
+     * handed decided the answer. +100% still leaves a mob recognisable as itself; it is about the
+     * difference between meeting an orc alone and meeting the one that brought friends.
+     *
+     * <p>Package-private rather than private so {@code GroupThreatTest} can assert against the bound
+     * itself instead of a second copy of its value - a copy is what made changing it a two-file edit
+     * with a failing test in between.
+     */
+    static final float GROUP_CAP = 1.0f;
     /** "Nearby" for a spawn decision, blocks (spec §4). */
     private static final double GROUP_RADIUS = 128.0;
 
