@@ -64,7 +64,14 @@ public final class InscriptionIndex {
                 continue;
             }
             Draft draft = drafts.computeIfAbsent(id, key -> new Draft());
-            draft.words = new ArrayList<>(recipe.inputWords);
+            // Levels of one enchantment normally share a word set, and where they do not, an
+            // assemblable set beats an unassemblable one. Taking whichever recipe the registry
+            // happened to yield last made a row's stone depend on iteration order, so Smite could
+            // read "ruby" on one boot and "impossible" on the next with no data change at all.
+            List<String> candidate = new ArrayList<>(recipe.inputWords);
+            if (draft.words == null || (isImpossible(draft.words) && !isImpossible(candidate))) {
+                draft.words = candidate;
+            }
             draft.maxLevel = Math.max(draft.maxLevel, recipe.level);
             draft.minCost = Math.min(draft.minCost, recipe.levelCost);
             draft.maxCost = Math.max(draft.maxCost, recipe.levelCost);
@@ -89,6 +96,11 @@ public final class InscriptionIndex {
             return byCategory != 0 ? byCategory : a.enchantment().compareTo(b.enchantment());
         });
         return rows;
+    }
+
+    /** Whether a word set spans two catalysts and so can never be assembled. */
+    private static boolean isImpossible(List<String> words) {
+        return "impossible".equals(stoneFor(words));
     }
 
     private static final class Draft {
@@ -149,11 +161,18 @@ public final class InscriptionIndex {
     /**
      * The catalyst a word set needs, or {@code "any"} when every word is common.
      *
-     * <p>Read from Middle-earth's own {@code InscriptionWordBank}, which maps each catalyst item to
-     * the words it grants, rather than from a copy of that table kept here - a copy would be one
-     * datapack away from lying. A set touching two catalysts cannot be assembled at all, since the
-     * table holds one stone; that is reported as {@code "impossible"} instead of being hidden,
-     * because a recipe nobody can make is exactly what a reference page should be shouting about.
+     * <p>Read from Middle-earth's own {@code InscriptionWordBank} rather than a copy kept here,
+     * because a copy is one datapack away from lying. Lapis grants the thirteen common words and
+     * nothing else, so it is present in almost every set and never identifies one; each of the
+     * other four catalysts grants only its own words. A set touching two of them cannot be
+     * assembled, since the table holds a single catalyst.
+     *
+     * <p>That should now never happen. Every recipe the pack ships was audited against this bank
+     * and all 155 resolve to exactly one stone - the only five that ever did not were the base
+     * mod's Smite, which asked for a word ({@code spirit}) the bank has never contained, and
+     * meinscriptions now replaces those files at their own path rather than adding working ones
+     * beside them. It is still reported rather than hidden, because a recipe nobody can make is
+     * what a reference page should be shouting about.
      */
     private static String stoneFor(List<String> words) {
         Map<String, Integer> owners = new TreeMap<>();
@@ -162,11 +181,8 @@ public final class InscriptionIndex {
             if (!words.contains(pair.getValue())) {
                 continue;
             }
-            Identifier id = Registries.ITEM.getId(pair.getKey());
-            owners.merge(id.getPath(), 1, Integer::sum);
+            owners.merge(Registries.ITEM.getId(pair.getKey()).getPath(), 1, Integer::sum);
         }
-        // Lapis grants only the common words, so it is present for every set and never identifies
-        // one. Naming it as "the stone this needs" would be true and useless.
         owners.remove(Registries.ITEM.getId(Items.LAPIS_LAZULI).getPath());
         if (owners.isEmpty()) {
             return "any";
