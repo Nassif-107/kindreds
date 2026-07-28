@@ -1,17 +1,23 @@
 package com.kindreds.client.screen;
 
-import com.kindreds.inscription.InscriptionCategory;
 import com.kindreds.inscription.InscriptionIndex;
 import com.kindreds.network.RequestInscriptionsC2S;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The inscription table, written out - what each enchantment costs, and what it is cut from.
@@ -22,6 +28,19 @@ import java.util.List;
  * arithmetic on that is not a puzzle, it is a wiki tab open on a second monitor. This is the page
  * that makes the second monitor unnecessary.
  *
+ * <h2>Grouped by the stone you have to bring</h2>
+ * The first version was one flat list sorted by category - the order the data happened to be in,
+ * not the order the question gets asked. A player walks to the table holding one catalyst, and what
+ * they want is everything that catalyst can cut. So the page is grouped by stone, each group headed
+ * by the stone itself as a drawn item, and the inscriptions needing no stone at all come first,
+ * because those are the ones anybody can make.
+ *
+ * <h2>The detail lives in the hover</h2>
+ * A row carries the name, how far it goes, what it costs and what it must be cut with - what the
+ * eye scans for. What the enchantment actually does, the price of every level, the words to lay
+ * down, and what it can never share an item with all appear on hover. Putting that in the row made
+ * a wall of text; leaving it out made a page that answered nothing.
+ *
  * <p>Rows are the server's, not this mod's - see {@code InscriptionIndex}. What is shown is whatever
  * the connected server actually runs, so a datapack that adds or reprices an inscription shows up
  * here without anybody editing a table.
@@ -31,9 +50,13 @@ public class InscriptionsScreen extends Screen {
     /** Set by the network handler when the server answers; null while the request is in flight. */
     private static volatile List<InscriptionIndex.Entry> rows;
 
+    private static final int ROW_H = 12;
+    private static final int HEADER_H = 18;
+
     private final Screen parent;
     private int scroll;
     private int maxScroll;
+    private InscriptionIndex.Entry hovered;
 
     public InscriptionsScreen(Screen parent) {
         super(Text.translatable("kindreds.inscriptions.title"));
@@ -65,151 +88,215 @@ public class InscriptionsScreen extends Screen {
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         super.render(ctx, mouseX, mouseY, delta);
 
-        int panelW = Math.min(420, this.width - 24);
+        int panelW = Math.min(440, this.width - 24);
         int x = (this.width - panelW) / 2;
-        int top = 10;
-        int bottom = this.height - 10;
+        int top = 34;
+        int bottom = this.height - 26;
 
-        ctx.fill(x - 8, top, x + panelW + 8, bottom, 0xE0120F0A);
-        ctx.drawBorder(x - 8, top, panelW + 16, bottom - top, 0xFF4A3D28);
-        ctx.drawCenteredTextWithShadow(this.textRenderer,
-            Text.translatable("kindreds.inscriptions.title").formatted(Formatting.GOLD),
-            this.width / 2, top + 6, 0xFFD8B45F);
+        ctx.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 14, 0xFFD9C89A);
 
-        List<InscriptionIndex.Entry> table = rows;
-        if (table == null) {
+        if (rows == null) {
             ctx.drawCenteredTextWithShadow(this.textRenderer,
-                Text.translatable("kindreds.inscriptions.waiting").formatted(Formatting.GRAY),
-                this.width / 2, top + 40, 0xFF8A7C60);
+                Text.translatable("kindreds.inscriptions.loading").formatted(Formatting.GRAY),
+                this.width / 2, this.height / 2, 0xFF8A7A5C);
             return;
         }
-        if (table.isEmpty()) {
+        if (rows.isEmpty()) {
             ctx.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("kindreds.inscriptions.none").formatted(Formatting.GRAY),
-                this.width / 2, top + 40, 0xFF8A7C60);
+                this.width / 2, this.height / 2, 0xFF8A7A5C);
             return;
         }
 
-        int headerBottom = top + 20;
-        // The column heads sit outside the scrolled band so they stay readable while the body moves.
-        drawColumns(ctx, x, headerBottom, panelW,
-            Text.translatable("kindreds.inscriptions.col.enchantment").formatted(Formatting.DARK_GRAY),
-            Text.translatable("kindreds.inscriptions.col.words").formatted(Formatting.DARK_GRAY),
-            Text.translatable("kindreds.inscriptions.col.stone").formatted(Formatting.DARK_GRAY),
-            Text.translatable("kindreds.inscriptions.col.chisel").formatted(Formatting.DARK_GRAY),
-            Text.translatable("kindreds.inscriptions.col.cost").formatted(Formatting.DARK_GRAY));
-        int bodyTop = headerBottom + 12;
-
-        List<Object[]> lines = layout(table);
-        int contentHeight = lines.size() * ROW_H;
-        maxScroll = Math.max(0, contentHeight - (bottom - bodyTop - 6));
+        List<Object> flow = layout();
+        int contentH = 0;
+        for (Object item : flow) {
+            contentH += item instanceof String ? HEADER_H : ROW_H;
+        }
+        maxScroll = Math.max(0, contentH - (bottom - top));
         scroll = Math.max(0, Math.min(scroll, maxScroll));
 
-        ctx.enableScissor(x - 8, bodyTop, x + panelW + 8, bottom - 4);
-        int y = bodyTop - scroll;
-        for (Object[] line : lines) {
-            if (y + ROW_H >= bodyTop && y <= bottom) {
-                if (line[0] == null) {
-                    // A section heading: the category, in the panel's own gold.
-                    ctx.drawText(this.textRenderer,
-                        Text.translatable((String) line[1]).formatted(Formatting.GOLD),
-                        x, y + 2, 0xFFD8B45F, false);
-                } else {
-                    drawRow(ctx, x, y, panelW, (InscriptionIndex.Entry) line[0]);
+        ctx.enableScissor(x, top, x + panelW, bottom);
+        hovered = null;
+        int y = top - scroll;
+        for (Object item : flow) {
+            if (item instanceof String stone) {
+                if (y + HEADER_H > top && y < bottom) {
+                    drawStoneHeader(ctx, x, y, panelW, stone, countUnder(flow, stone));
                 }
+                y += HEADER_H;
+                continue;
+            }
+            InscriptionIndex.Entry row = (InscriptionIndex.Entry) item;
+            if (y + ROW_H > top && y < bottom) {
+                boolean under = mouseX >= x && mouseX <= x + panelW
+                    && mouseY >= Math.max(y, top) && mouseY < Math.min(y + ROW_H, bottom);
+                if (under) {
+                    hovered = row;
+                }
+                drawRow(ctx, x, y, panelW, row, under);
             }
             y += ROW_H;
         }
         ctx.disableScissor();
 
-        if (maxScroll > 0) {
-            ctx.drawCenteredTextWithShadow(this.textRenderer,
-                Text.translatable("kindreds.inscriptions.scroll").formatted(Formatting.DARK_GRAY),
-                this.width / 2, bottom - 12, 0xFF6A5F4A);
+        ctx.drawCenteredTextWithShadow(this.textRenderer,
+            Text.translatable("kindreds.inscriptions.hint", rows.size())
+                .formatted(Formatting.DARK_GRAY),
+            this.width / 2, this.height - 18, 0xFF6A5F4A);
+
+        if (hovered != null) {
+            ctx.drawTooltip(this.textRenderer, explain(hovered), mouseX, mouseY);
         }
     }
 
-    private static final int ROW_H = 11;
+    /** Headers and rows in reading order, stone by stone. */
+    private List<Object> layout() {
+        Map<String, List<InscriptionIndex.Entry>> byStone = new LinkedHashMap<>();
+        for (InscriptionIndex.Entry row : rows) {
+            byStone.computeIfAbsent(row.stone(), key -> new ArrayList<>()).add(row);
+        }
+        List<Object> flow = new ArrayList<>();
+        for (Map.Entry<String, List<InscriptionIndex.Entry>> group : byStone.entrySet()) {
+            flow.add(group.getKey());
+            flow.addAll(group.getValue());
+        }
+        return flow;
+    }
 
-    /** Section headings interleaved with their rows, so one walk draws the whole page. */
-    private List<Object[]> layout(List<InscriptionIndex.Entry> table) {
-        List<Object[]> lines = new ArrayList<>();
-        String section = null;
-        for (InscriptionIndex.Entry row : table) {
-            if (!row.category().equals(section)) {
-                section = row.category();
-                if (!lines.isEmpty()) {
-                    lines.add(new Object[]{null, "kindreds.inscriptions.blank"});
+    private static int countUnder(List<Object> flow, String stone) {
+        int seen = 0;
+        boolean counting = false;
+        for (Object item : flow) {
+            if (item instanceof String header) {
+                if (counting) {
+                    break;
                 }
-                lines.add(new Object[]{null, categoryKey(section)});
+                counting = header.equals(stone);
+            } else if (counting) {
+                seen++;
             }
-            lines.add(new Object[]{row, null});
+        }
+        return seen;
+    }
+
+    /** The stone itself, drawn, with what it is and how much it can cut. */
+    private void drawStoneHeader(DrawContext ctx, int x, int y, int panelW, String stone, int count) {
+        ctx.fill(x, y + 1, x + panelW, y + HEADER_H - 2, 0x33000000);
+        ItemStack icon = stoneItem(stone);
+        if (!icon.isEmpty()) {
+            ctx.drawItem(icon, x + 3, y + 1);
+        }
+        ctx.drawText(this.textRenderer, Text.translatable("kindreds.inscriptions.stone." + stone),
+            x + 23, y + 5, stoneColour(stone), false);
+        Text tally = Text.translatable("kindreds.inscriptions.count", count);
+        ctx.drawText(this.textRenderer, tally,
+            x + panelW - this.textRenderer.getWidth(tally) - 6, y + 5, 0xFF5A5040, false);
+    }
+
+    private void drawRow(DrawContext ctx, int x, int y, int panelW, InscriptionIndex.Entry row,
+                         boolean under) {
+        if (under) {
+            ctx.fill(x, y, x + panelW, y + ROW_H, 0x40FFE9A8);
+        }
+        int[] at = columns(panelW);
+
+        ctx.drawText(this.textRenderer, Text.translatable(row.enchantmentKey()),
+            x + at[0], y + 2, 0xFFE8E0CC, false);
+        ctx.drawText(this.textRenderer, Text.literal(roman(row.maxLevel())),
+            x + at[1], y + 2, 0xFFAAA08C, false);
+
+        String cost = row.minCost() == row.maxCost()
+            ? Integer.toString(row.maxCost())
+            : row.minCost() + "-" + row.maxCost();
+        ctx.drawText(this.textRenderer, Text.literal(cost), x + at[2], y + 2, 0xFF7FD4D4, false);
+
+        ctx.drawText(this.textRenderer,
+            Text.translatable("kindreds.inscriptions.chisel." + row.chisel()),
+            x + at[3], y + 2, chiselColour(row.chisel()), false);
+
+        if (row.conflicts() != null && !row.conflicts().isEmpty()) {
+            // A mark, not a list. The list is long and the hover has room for it; what the row has
+            // to say is only "this one is a choice, not an addition".
+            ctx.drawText(this.textRenderer, Text.literal("!"), x + panelW - 9, y + 2, 0xFFD05050, false);
+        }
+    }
+
+    /** Everything the row could not hold, in the order somebody deciding would want it. */
+    private List<Text> explain(InscriptionIndex.Entry row) {
+        List<Text> lines = new ArrayList<>();
+        lines.add(Text.translatable(row.enchantmentKey()).formatted(Formatting.WHITE));
+
+        // What it actually does. Ours to write: vanilla ships a name and explains nothing anywhere
+        // in the game, which is the single most common reason to go and look something up.
+        lines.add(Text.translatable(effectKey(row.enchantment())).formatted(Formatting.GRAY));
+        lines.add(Text.empty());
+
+        lines.add(Text.translatable("kindreds.inscriptions.tip.stone",
+            Text.translatable("kindreds.inscriptions.stone." + row.stone()))
+            .formatted(Formatting.GOLD));
+        lines.add(Text.translatable("kindreds.inscriptions.tip.words",
+            String.join(", ", row.words())).formatted(Formatting.AQUA));
+
+        if (row.levels() != null && !row.levels().isEmpty()) {
+            lines.add(Text.empty());
+            lines.add(Text.translatable("kindreds.inscriptions.tip.levels")
+                .formatted(Formatting.YELLOW));
+            for (InscriptionIndex.Rung rung : row.levels()) {
+                lines.add(Text.translatable("kindreds.inscriptions.tip.level",
+                        roman(rung.level()), rung.cost(),
+                        Text.translatable("kindreds.inscriptions.chisel." + rung.chisel()))
+                    .formatted(Formatting.DARK_GRAY));
+            }
+        }
+
+        if (row.conflicts() != null && !row.conflicts().isEmpty()) {
+            lines.add(Text.empty());
+            lines.add(Text.translatable("kindreds.inscriptions.tip.conflicts")
+                .formatted(Formatting.RED));
+            for (String other : row.conflicts()) {
+                lines.add(Text.literal("  ")
+                    .append(Text.translatable(nameKeyOf(other))).formatted(Formatting.DARK_RED));
+            }
         }
         return lines;
     }
 
-    private static String categoryKey(String category) {
-        return switch (category) {
-            case InscriptionCategory.WEAPON -> "kindreds.inscriptions.cat.weapon";
-            case InscriptionCategory.ARCHERY -> "kindreds.inscriptions.cat.archery";
-            case InscriptionCategory.ARMOUR -> "kindreds.inscriptions.cat.armour";
-            case InscriptionCategory.TOOL -> "kindreds.inscriptions.cat.tool";
-            default -> "kindreds.inscriptions.cat.other";
-        };
+    /** {@code minecraft:sharpness} → {@code kindreds.inscriptions.effect.minecraft.sharpness}. */
+    private static String effectKey(String enchantmentId) {
+        return "kindreds.inscriptions.effect." + enchantmentId.replace(':', '.');
     }
 
-    /** The five column x-offsets, as fractions of the panel, so the table reflows with the window. */
-    private void drawColumns(DrawContext ctx, int x, int y, int panelW, Text... cells) {
-        int[] at = columns(panelW);
-        for (int i = 0; i < cells.length && i < at.length; i++) {
-            ctx.drawText(this.textRenderer, cells[i], x + at[i], y, 0xFF6A5F4A, false);
-        }
+    /** {@code minecraft:sharpness} → vanilla's own {@code enchantment.minecraft.sharpness}. */
+    private static String nameKeyOf(String enchantmentId) {
+        int colon = enchantmentId.indexOf(':');
+        return colon < 0 ? enchantmentId
+            : "enchantment." + enchantmentId.substring(0, colon) + "."
+              + enchantmentId.substring(colon + 1);
+    }
+
+    /**
+     * The catalyst as an item, so a group is headed by the thing you go and fetch.
+     *
+     * <p>Lapis stands for the common set: it is the stone the table always takes, so an inscription
+     * needing nothing else is one you can cut with lapis alone.
+     */
+    private static ItemStack stoneItem(String stone) {
+        return switch (stone) {
+            case "any" -> new ItemStack(Items.LAPIS_LAZULI);
+            case "emerald" -> new ItemStack(Items.EMERALD);
+            case "impossible" -> new ItemStack(Items.BARRIER);
+            default -> {
+                Item item = Registries.ITEM.get(Identifier.of("middle-earth", stone));
+                yield item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item);
+            }
+        };
     }
 
     private static int[] columns(int panelW) {
-        return new int[]{
-            0,
-            (int) (panelW * 0.34),
-            (int) (panelW * 0.64),
-            (int) (panelW * 0.78),
-            (int) (panelW * 0.90),
-        };
+        return new int[]{6, panelW - 152, panelW - 110, panelW - 76};
     }
 
-    private void drawRow(DrawContext ctx, int x, int y, int panelW, InscriptionIndex.Entry row) {
-        int[] at = columns(panelW);
-
-        // The enchantment's own vanilla name, with its level range when it has more than one.
-        Text name = Text.translatable(row.enchantmentKey());
-        String label = row.maxLevel() > 1
-            ? name.getString() + " I-" + roman(row.maxLevel())
-            : name.getString();
-        ctx.drawText(this.textRenderer, Text.literal(trim(label, at[1] - at[0] - 4))
-            .formatted(Formatting.WHITE), x, y + 1, 0xFFECE3CD, false);
-
-        ctx.drawText(this.textRenderer,
-            Text.literal(trim(String.join(" + ", row.words()), at[2] - at[1] - 4))
-                .formatted(Formatting.GRAY), x + at[1], y + 1, 0xFFB6A888, false);
-
-        // The stone, in its own colour, because that is how it is recognised in the world.
-        ctx.drawText(this.textRenderer,
-            Text.translatable("kindreds.inscriptions.stone." + row.stone())
-                .withColor(stoneColour(row.stone())),
-            x + at[2], y + 1, stoneColour(row.stone()), false);
-
-        ctx.drawText(this.textRenderer,
-            Text.translatable("kindreds.inscriptions.chisel." + row.chisel())
-                .withColor(chiselColour(row.chisel())),
-            x + at[3], y + 1, chiselColour(row.chisel()), false);
-
-        String cost = row.minCost() == row.maxCost()
-            ? String.valueOf(row.minCost())
-            : row.minCost() + "-" + row.maxCost();
-        ctx.drawText(this.textRenderer, Text.literal(cost).formatted(Formatting.AQUA),
-            x + at[4], y + 1, 0xFF7FD0E0, false);
-    }
-
-    /** Roman numerals to V, which is every level any enchantment in the game reaches. */
     private static String roman(int level) {
         return switch (level) {
             case 1 -> "I";
@@ -217,45 +304,34 @@ public class InscriptionsScreen extends Screen {
             case 3 -> "III";
             case 4 -> "IV";
             case 5 -> "V";
-            default -> String.valueOf(level);
+            default -> Integer.toString(level);
         };
     }
 
     private static int stoneColour(String stone) {
         return switch (stone) {
-            case "emerald" -> 0xFF5CD65C;
-            case "ruby" -> 0xFFE05555;
-            case "sapphire" -> 0xFF5C8CE0;
-            case "adamant" -> 0xFFE0E0E0;
+            case "ruby" -> 0xFFD05A5A;
+            case "sapphire" -> 0xFF5A7AD0;
+            case "emerald" -> 0xFF5AC07A;
+            case "adamant" -> 0xFFC0A8E0;
+            case "any" -> 0xFF9AA8C0;
             case "impossible" -> 0xFFFF4040;
-            default -> 0xFF9A8F76;
+            default -> 0xFFBFAE8C;
         };
     }
 
     private static int chiselColour(String chisel) {
         return switch (chisel) {
             case "iron" -> 0xFFB0B0B0;
-            case "steel" -> 0xFF8FB8D8;
-            case "mithril" -> 0xFF9FE8E8;
-            default -> 0xFF9A8F76;
+            case "steel" -> 0xFFD8D8E0;
+            case "mithril" -> 0xFF9FE8F0;
+            default -> 0xFF8A8A8A;
         };
-    }
-
-    /** Clips a cell to its column rather than letting it run into the next one. */
-    private String trim(String text, int width) {
-        if (this.textRenderer.getWidth(text) <= width) {
-            return text;
-        }
-        String cut = this.textRenderer.trimToWidth(text, Math.max(0, width - 6));
-        return cut + "…";
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontal, double vertical) {
-        if (maxScroll <= 0) {
-            return super.mouseScrolled(mouseX, mouseY, horizontal, vertical);
-        }
-        scroll = Math.max(0, Math.min(scroll - (int) Math.round(vertical * 16), maxScroll));
+        scroll = Math.max(0, Math.min(maxScroll, scroll - (int) (vertical * 18)));
         return true;
     }
 
@@ -263,8 +339,6 @@ public class InscriptionsScreen extends Screen {
     public void close() {
         if (this.client != null) {
             this.client.setScreen(parent);
-            return;
         }
-        super.close();
     }
 }

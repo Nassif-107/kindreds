@@ -72,6 +72,35 @@ public class UiScreenshotTest implements FabricClientGameTest {
             shoot(context, "05-settings", () -> new KindredsSettingsScreen(null));
             shoot(context, "06-radial", AbilityRadialScreen::new);
 
+            // The inscriptions page, with a table stood up by hand. It normally arrives from the
+            // server on request, and a screenshot test that waited for a packet would photograph
+            // "Reading the table..." - which is exactly what a page nobody has checked looks like.
+            com.kindreds.client.screen.InscriptionsScreen.accept(java.util.List.of(
+                new com.kindreds.inscription.InscriptionIndex.Entry(
+                    "minecraft:unbreaking", "enchantment.minecraft.unbreaking", 3,
+                    java.util.List.of("resilient", "core"), "any", "iron", 4, 10, "TOOL",
+                    java.util.List.of(
+                        new com.kindreds.inscription.InscriptionIndex.Rung(1, 4, "iron"),
+                        new com.kindreds.inscription.InscriptionIndex.Rung(2, 7, "iron"),
+                        new com.kindreds.inscription.InscriptionIndex.Rung(3, 10, "steel")),
+                    java.util.List.of()),
+                new com.kindreds.inscription.InscriptionIndex.Entry(
+                    "minecraft:sharpness", "enchantment.minecraft.sharpness", 5,
+                    java.util.List.of("cutter", "forceful"), "ruby", "mithril", 3, 15, "WEAPON",
+                    java.util.List.of(
+                        new com.kindreds.inscription.InscriptionIndex.Rung(1, 3, "iron"),
+                        new com.kindreds.inscription.InscriptionIndex.Rung(5, 15, "mithril")),
+                    java.util.List.of("minecraft:smite", "minecraft:bane_of_arthropods")),
+                new com.kindreds.inscription.InscriptionIndex.Entry(
+                    "minecraft:mending", "enchantment.minecraft.mending", 1,
+                    java.util.List.of("blessing", "core", "gifted"), "emerald", "mithril", 50, 50,
+                    "OTHER",
+                    java.util.List.of(
+                        new com.kindreds.inscription.InscriptionIndex.Rung(1, 50, "mithril")),
+                    java.util.List.of("minecraft:infinity"))));
+            shoot(context, "09-inscriptions",
+                () -> new com.kindreds.client.screen.InscriptionsScreen(null));
+
             shoot(context, "08-traits", () -> new com.kindreds.client.screen.KindredCodexScreen(
                     ClientKindredData.INSTANCE, null));
 

@@ -63,6 +63,38 @@ public final class InscriptionCategory {
         return OTHER;
     }
 
+    /**
+     * Enchantments that cannot sit on the same item as this one.
+     *
+     * <p>Read from the enchantment's own {@code exclusiveSet} rather than a table written here,
+     * because vanilla's exclusivities are data and a datapack may change them. This is the thing a
+     * player most wants to know before spending levels: Sharpness or Smite or Bane of Arthropods is
+     * a choice, not a shopping list, and nothing in the game says so until the table refuses.
+     *
+     * @return sorted enchantment ids, never null
+     */
+    public static java.util.List<String> conflictsFor(String enchantmentId) {
+        Enchantment enchantment = resolve(enchantmentId);
+        if (enchantment == null) {
+            return java.util.List.of();
+        }
+        java.util.List<String> out = new java.util.ArrayList<>();
+        try {
+            for (var entry : enchantment.exclusiveSet()) {
+                entry.getKey().ifPresent(key -> {
+                    String id = key.getValue().toString();
+                    if (!id.equals(enchantmentId)) {
+                        out.add(id);
+                    }
+                });
+            }
+        } catch (RuntimeException ignored) {
+            // An exclusivity list this version cannot resolve costs the warning, not the page.
+        }
+        java.util.Collections.sort(out);
+        return java.util.List.copyOf(out);
+    }
+
     private static Enchantment resolve(String enchantmentId) {
         Identifier id = Identifier.tryParse(enchantmentId);
         if (id == null) {

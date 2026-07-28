@@ -36,10 +36,22 @@ public final class InscriptionIndex {
     private InscriptionIndex() {
     }
 
-    /** One inscription, flattened to what the page needs. */
+    /**
+     * One inscription, flattened to what the page needs.
+     *
+     * @param levels    what each level of this inscription costs and demands, cheapest first, so
+     *                  the page can say "III costs 12 and wants a steel chisel" instead of only a
+     *                  range
+     * @param conflicts enchantments that cannot share an item with this one
+     */
     public record Entry(String enchantment, String enchantmentKey, int maxLevel,
                         List<String> words, String stone, String chisel,
-                        int minCost, int maxCost, String category) {
+                        int minCost, int maxCost, String category,
+                        List<Rung> levels, List<String> conflicts) {
+    }
+
+    /** One level of one inscription: what it costs and what it has to be cut with. */
+    public record Rung(int level, int cost, String chisel) {
     }
 
     /**
@@ -78,6 +90,7 @@ public final class InscriptionIndex {
             // The deepest chisel any level of this inscription asks for is the one worth printing:
             // it is the one that actually gates finishing the enchantment.
             draft.chisel = deepest(draft.chisel, chiselOf(recipe));
+            draft.rungs.put(recipe.level, new Rung(recipe.level, recipe.levelCost, chiselOf(recipe)));
         }
 
         List<Entry> rows = new ArrayList<>(drafts.size());
@@ -89,9 +102,18 @@ public final class InscriptionIndex {
             rows.add(new Entry(row.getKey(), translationKey(row.getKey()), draft.maxLevel,
                 draft.words, stoneFor(draft.words), draft.chisel,
                 draft.minCost == Integer.MAX_VALUE ? 0 : draft.minCost, draft.maxCost,
-                InscriptionCategory.of(row.getKey())));
+                InscriptionCategory.of(row.getKey()),
+                List.copyOf(draft.rungs.values()),
+                InscriptionCategory.conflictsFor(row.getKey())));
         }
+        // Grouped by the stone you must bring, because that is the decision a player makes first:
+        // they walk to the table holding one catalyst, and everything that stone can cut is the
+        // list they actually want. Category and name order within it.
         rows.sort((a, b) -> {
+            int byStone = stoneOrder(a.stone()) - stoneOrder(b.stone());
+            if (byStone != 0) {
+                return byStone;
+            }
             int byCategory = a.category().compareTo(b.category());
             return byCategory != 0 ? byCategory : a.enchantment().compareTo(b.enchantment());
         });
@@ -104,11 +126,26 @@ public final class InscriptionIndex {
     }
 
     private static final class Draft {
+        /** Sorted by level, so the page prints I, II, III in order without sorting again. */
+        final Map<Integer, Rung> rungs = new TreeMap<>();
         List<String> words;
         int maxLevel;
         int minCost = Integer.MAX_VALUE;
         int maxCost;
         String chisel = "";
+    }
+
+    /** Common-word inscriptions first: they need no stone at all and are what a newcomer can cut. */
+    private static int stoneOrder(String stone) {
+        return switch (stone) {
+            case "any" -> 0;
+            case "ruby" -> 1;
+            case "sapphire" -> 2;
+            case "emerald" -> 3;
+            case "adamant" -> 4;
+            case "impossible" -> 9;
+            default -> 5;
+        };
     }
 
     /** {@code minecraft:sharpness} → {@code enchantment.minecraft.sharpness}, vanilla's own key. */
