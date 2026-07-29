@@ -60,9 +60,21 @@ public class InscriptionsScreen extends Screen {
      * text over moving grass and a hotbar is unreadable - the eye keeps finding the world instead
      * of the row. A reference page is read, not glanced at, so it gets an opaque ground.
      */
-    private static final int PARCHMENT = 0xFF241D14;
+    private static final int PARCHMENT = 0xFF191410;
+    private static final int PANEL_INNER = 0xFF241D14;
     private static final int PARCHMENT_EDGE = 0xFF4A3B28;
     private static final int BAND = 0x18FFFFFF;
+
+    /**
+     * How the page is grouped.
+     *
+     * <p>Both orders answer a real question and neither answers the other. Standing at the table
+     * holding a ruby, you want everything ruby can cut; deciding what to put on a new sword, you
+     * want everything a sword can take. So it is a button, kept between openings.
+     */
+    private enum Grouping { STONE, CATEGORY }
+
+    private static Grouping grouping = Grouping.STONE;
 
     private final Screen parent;
     private int scroll;
@@ -91,6 +103,26 @@ public class InscriptionsScreen extends Screen {
     }
 
     @Override
+    protected void init() {
+        int panelW = Math.min(620, this.width - 48);
+        int x = (this.width - panelW) / 2;
+        addDrawableChild(net.minecraft.client.gui.widget.ButtonWidget
+            .builder(groupingLabel(), button -> {
+                grouping = grouping == Grouping.STONE ? Grouping.CATEGORY : Grouping.STONE;
+                scroll = 0;
+                button.setMessage(groupingLabel());
+            })
+            .dimensions(x + panelW - 112, 16, 112, 18)
+            .build());
+    }
+
+    private static net.minecraft.text.Text groupingLabel() {
+        return Text.translatable(grouping == Grouping.STONE
+            ? "kindreds.inscriptions.group.stone"
+            : "kindreds.inscriptions.group.category");
+    }
+
+    @Override
     public boolean shouldPause() {
         return false;
     }
@@ -99,19 +131,23 @@ public class InscriptionsScreen extends Screen {
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         super.render(ctx, mouseX, mouseY, delta);
 
-        // Wider than before and opaque. The columns need the room, and the world behind was making
-        // the text unreadable.
-        int panelW = Math.min(560, this.width - 40);
+        // The whole window. A hundred and fifty rows is not a dialog over the world, it is a page
+        // you read, and letting the world through at the edges was the thing that made it look
+        // unfinished however good the rows were.
+        ctx.fill(0, 0, this.width, this.height, PARCHMENT);
+
+        int panelW = Math.min(620, this.width - 48);
         int x = (this.width - panelW) / 2;
-        int top = 36;
-        int bottom = this.height - 30;
+        int top = 44;
+        int bottom = this.height - 32;
 
-        ctx.fill(x - 6, top - 22, x + panelW + 6, bottom + 6, PARCHMENT);
-        drawEdge(ctx, x - 6, top - 22, x + panelW + 6, bottom + 6);
+        ctx.fill(x - 8, top - 26, x + panelW + 8, bottom + 8, PANEL_INNER);
+        drawEdge(ctx, x - 8, top - 26, x + panelW + 8, bottom + 8);
 
-        ctx.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, top - 16,
+        ctx.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, top - 20,
             0xFFD9C89A);
-        drawColumnHeadings(ctx, x, top - 4, panelW);
+        drawColumnHeadings(ctx, x, top - 6, panelW);
+        ctx.fill(x, top + 3, x + panelW, top + 4, 0x33FFE9A8);
         top += 8;
 
         if (rows == null) {
@@ -192,18 +228,51 @@ public class InscriptionsScreen extends Screen {
             Text.translatable("kindreds.inscriptions.col.chisel"), x + at[3], y, 0xFF6A5F4A, false);
     }
 
-    /** Headers and rows in reading order, stone by stone. */
+    /** Headers and rows in reading order, grouped the way the button says. */
     private List<Object> layout() {
-        Map<String, List<InscriptionIndex.Entry>> byStone = new LinkedHashMap<>();
+        Map<String, List<InscriptionIndex.Entry>> groups = new java.util.TreeMap<>();
         for (InscriptionIndex.Entry row : rows) {
-            byStone.computeIfAbsent(row.stone(), key -> new ArrayList<>()).add(row);
+            groups.computeIfAbsent(keyOf(row), key -> new ArrayList<>()).add(row);
         }
         List<Object> flow = new ArrayList<>();
-        for (Map.Entry<String, List<InscriptionIndex.Entry>> group : byStone.entrySet()) {
+        for (Map.Entry<String, List<InscriptionIndex.Entry>> group : groups.entrySet()) {
+            // Within a group, the other axis orders it: browsing rubies you still want the weapons
+            // together, and browsing weapons you still want a stone's worth in one place.
+            group.getValue().sort((a, b) -> {
+                int byOther = otherKeyOf(a).compareTo(otherKeyOf(b));
+                return byOther != 0 ? byOther : a.enchantment().compareTo(b.enchantment());
+            });
             flow.add(group.getKey());
             flow.addAll(group.getValue());
         }
         return flow;
+    }
+
+    private static String keyOf(InscriptionIndex.Entry row) {
+        return grouping == Grouping.STONE ? stoneSortKey(row.stone()) : row.category();
+    }
+
+    private static String otherKeyOf(InscriptionIndex.Entry row) {
+        return grouping == Grouping.STONE ? row.category() : stoneSortKey(row.stone());
+    }
+
+    /** Sorts the groups deliberately: no stone first, then the four catalysts. */
+    private static String stoneSortKey(String stone) {
+        return switch (stone) {
+            case "any" -> "0_any";
+            case "middle-earth:ruby" -> "1_middle-earth:ruby";
+            case "middle-earth:sapphire" -> "2_middle-earth:sapphire";
+            case "minecraft:emerald" -> "3_minecraft:emerald";
+            case "middle-earth:adamant" -> "4_middle-earth:adamant";
+            case "impossible" -> "9_impossible";
+            default -> "5_" + stone;
+        };
+    }
+
+    /** The bare value again, for a key that carries a sort prefix. */
+    private static String unkey(String key) {
+        int underscore = key.indexOf('_');
+        return underscore > 0 && Character.isDigit(key.charAt(0)) ? key.substring(underscore + 1) : key;
     }
 
     private static int countUnder(List<Object> flow, String stone) {
@@ -222,14 +291,21 @@ public class InscriptionsScreen extends Screen {
         return seen;
     }
 
-    /** The stone itself, drawn, with what it is and how much it can cut. */
-    private void drawStoneHeader(DrawContext ctx, int x, int y, int panelW, String stone, int count) {
-        ctx.fill(x, y + 1, x + panelW, y + HEADER_H - 2, 0x33000000);
-        ItemStack icon = stoneItem(stone);
+    /** A group heading: the stone as a real item, or the category with something it goes on. */
+    private void drawStoneHeader(DrawContext ctx, int x, int y, int panelW, String key, int count) {
+        ctx.fill(x, y + 1, x + panelW, y + HEADER_H - 2, 0x44000000);
+        ctx.fill(x, y + HEADER_H - 2, x + panelW, y + HEADER_H - 1, 0x33FFE9A8);
+
+        String value = unkey(key);
+        boolean byStone = grouping == Grouping.STONE;
+        ItemStack icon = byStone ? stoneItem(value) : categoryItem(value);
         if (!icon.isEmpty()) {
             ctx.drawItem(icon, x + 3, y + 1);
         }
-        ctx.drawText(this.textRenderer, stoneName(stone), x + 23, y + 5, stoneColour(stone), false);
+        net.minecraft.text.Text label = byStone ? stoneName(value)
+            : Text.translatable("kindreds.inscriptions.cat." + unkey(value));
+        int colour = byStone ? stoneColour(value) : 0xFFD9C89A;
+        ctx.drawText(this.textRenderer, label, x + 23, y + 5, colour, false);
         Text tally = Text.translatable("kindreds.inscriptions.count", count);
         ctx.drawText(this.textRenderer, tally,
             x + panelW - this.textRenderer.getWidth(tally) - 6, y + 5, 0xFF5A5040, false);
@@ -251,20 +327,56 @@ public class InscriptionsScreen extends Screen {
         ctx.drawText(this.textRenderer, Text.literal(roman(row.maxLevel())),
             x + at[1], y + 2, 0xFFAAA08C, false);
 
-        String cost = row.minCost() == row.maxCost()
-            ? Integer.toString(row.maxCost())
-            : row.minCost() + "-" + row.maxCost();
-        ctx.drawText(this.textRenderer, Text.literal(cost), x + at[2], y + 2, 0xFF7FD4D4, false);
+        // The whole ladder, in the row: "3 / 5 / 7" beats "3-7", because the number a player wants
+        // is the price of the level they are actually going for, and a range makes them guess.
+        ctx.drawText(this.textRenderer, costLadder(row), x + at[2], y + 2, 0xFF7FD4D4, false);
 
-        ctx.drawText(this.textRenderer,
-            Text.translatable("kindreds.inscriptions.chisel." + row.chisel()),
-            x + at[3], y + 2, chiselColour(row.chisel()), false);
+        // Likewise the chisels, one per level, so it is plain that level I is iron even when the
+        // last level wants mithril.
+        ctx.drawText(this.textRenderer, chiselLadder(row), x + at[3], y + 2, 0xFFB8AC94, false);
 
         if (row.conflicts() != null && !row.conflicts().isEmpty()) {
-            // A mark, not a list. The list is long and the hover has room for it; what the row has
-            // to say is only "this one is a choice, not an addition".
-            ctx.drawText(this.textRenderer, Text.literal("!"), x + panelW - 9, y + 2, 0xFFD05050, false);
+            // Named, not marked. A bare "!" read as an error and explained nothing; the word says
+            // what it means, and the hover lists what it clashes with.
+            Text clash = Text.translatable("kindreds.inscriptions.exclusive");
+            ctx.drawText(this.textRenderer, clash,
+                x + panelW - this.textRenderer.getWidth(clash) - 4, y + 2, 0xFFC98A3A, false);
         }
+    }
+
+    /** {@code 3 / 5 / 7} - what each level costs, in order. */
+    private static Text costLadder(InscriptionIndex.Entry row) {
+        if (row.levels() == null || row.levels().isEmpty()) {
+            return Text.literal(Integer.toString(row.maxCost()));
+        }
+        StringBuilder out = new StringBuilder();
+        for (InscriptionIndex.Rung rung : row.levels()) {
+            if (out.length() > 0) {
+                out.append(" / ");
+            }
+            out.append(rung.cost());
+        }
+        return Text.literal(out.toString());
+    }
+
+    /**
+     * The chisels each level needs, collapsed when they are all the same.
+     *
+     * <p>{@code iron > mithril} says the ladder starts cheap and ends dear, which is the thing the
+     * old single value hid; a row whose levels all want the same chisel just says it once.
+     */
+    private static Text chiselLadder(InscriptionIndex.Entry row) {
+        if (row.levels() == null || row.levels().isEmpty()) {
+            return Text.translatable("kindreds.inscriptions.chisel." + row.chisel());
+        }
+        String first = row.levels().get(0).chisel();
+        String last = row.levels().get(row.levels().size() - 1).chisel();
+        if (first.equals(last)) {
+            return Text.translatable("kindreds.inscriptions.chisel." + first);
+        }
+        return Text.translatable("kindreds.inscriptions.chisel." + first)
+            .append(Text.literal(" > "))
+            .append(Text.translatable("kindreds.inscriptions.chisel." + last));
     }
 
     /** Everything the row could not hold, in the order somebody deciding would want it. */
@@ -325,9 +437,23 @@ public class InscriptionsScreen extends Screen {
      * <p>Lapis stands for the common set: it is the stone the table always takes, so an inscription
      * needing nothing else is one you can cut with lapis alone.
      */
+    /** Something a player would put the inscription on, so a category reads at a glance. */
+    private static ItemStack categoryItem(String category) {
+        return switch (unkey(category)) {
+            case "weapon" -> new ItemStack(Items.IRON_SWORD);
+            case "archery" -> new ItemStack(Items.BOW);
+            case "armour" -> new ItemStack(Items.IRON_CHESTPLATE);
+            case "tool" -> new ItemStack(Items.IRON_PICKAXE);
+            default -> new ItemStack(Items.BOOK);
+        };
+    }
+
     private static ItemStack stoneItem(String stone) {
         if ("any".equals(stone)) {
-            return new ItemStack(Items.LAPIS_LAZULI);
+            // No catalyst at all. The table's word bank grants the common words under a null key -
+            // there is nothing to put in the slot, so a book stands for "just the chisel", where a
+            // lapis icon would have sent people digging for lapis they never needed.
+            return new ItemStack(Items.WRITABLE_BOOK);
         }
         if ("impossible".equals(stone)) {
             return new ItemStack(Items.BARRIER);
@@ -358,7 +484,7 @@ public class InscriptionsScreen extends Screen {
     }
 
     private static int[] columns(int panelW) {
-        return new int[]{6, panelW - 152, panelW - 110, panelW - 76};
+        return new int[]{6, panelW - 250, panelW - 218, panelW - 120};
     }
 
     private static String roman(int level) {
