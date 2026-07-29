@@ -525,6 +525,15 @@ public class InscriptionsScreen extends Screen {
         return true;
     }
 
+    /**
+     * Back to wherever this was opened from.
+     *
+     * <p>Usually the hub, but from the table's own button it is the table - and returning to that
+     * instance rather than to null is what keeps the container open, so a player who came to look
+     * something up is still standing at the table with their chisel in the slot when they close the
+     * page. Setting null instead would tell the server to close the container and drop them out of
+     * the table entirely, which is exactly the round trip the button exists to remove.
+     */
     @Override
     public void close() {
         if (this.client != null) {

@@ -2674,5 +2674,7 @@
   "kindreds.inscriptions.col.level": "Max",
   "kindreds.inscriptions.group.stone": "Grouped by stone",
   "kindreds.inscriptions.group.category": "Grouped by kind",
-  "kindreds.inscriptions.exclusive": "exclusive"
+  "kindreds.inscriptions.exclusive": "exclusive",
+  "kindreds.inscriptions.open": "Inscriptions",
+  "kindreds.inscriptions.open.tip": "Every inscription this server knows: the words, the stone, the chisel and the price."
 }

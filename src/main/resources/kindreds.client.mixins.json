@@ -3,6 +3,8 @@
   "package": "com.kindreds.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
-  "client": [],
+  "client": [
+    "InscriptionTableScreenMixin"
+  ],
   "server": []
 }

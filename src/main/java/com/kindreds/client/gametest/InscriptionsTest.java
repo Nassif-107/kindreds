@@ -41,6 +41,11 @@ public final class InscriptionsTest implements FabricClientGameTest {
 
             report(table);
 
+            // The table's own screen, to prove the injected button is really there. Opened through
+            // the block's screen handler would need a placed table and a right-click; constructing
+            // the screen directly exercises the same init() the mixin injects into.
+            reportTableButton(context, singleplayer);
+
             InscriptionsScreen.accept(table);
             context.setScreen(() -> new InscriptionsScreen(null));
             context.waitTicks(20);
@@ -48,6 +53,42 @@ public final class InscriptionsTest implements FabricClientGameTest {
                 .disableCounterPrefix());
             context.setScreen(() -> null);
             context.waitTicks(10);
+        }
+    }
+
+    /**
+     * Whether the button the mixin adds to Middle-earth's own table actually appeared.
+     *
+     * <p>The injection carries require = 0 so a base-mod rename costs the button rather than the
+     * client, which means nothing anywhere reports its absence. This does.
+     */
+    private static void reportTableButton(ClientGameTestContext context,
+                                          TestSingleplayerContext singleplayer) {
+        try {
+            List<String> buttons = context.computeOnClient(client -> {
+                var handler = new net.sevenstars.middleearth.gui.inscriptiontable
+                    .InscriptionTableScreenHandler(1, client.player.getInventory());
+                var screen = new net.sevenstars.middleearth.gui.inscriptiontable
+                    .InscriptionTableScreen(handler, client.player.getInventory(),
+                        net.minecraft.text.Text.empty());
+                screen.init(client, 1600, 1000);
+                List<String> found = new ArrayList<>();
+                for (var child : screen.children()) {
+                    if (child instanceof net.minecraft.client.gui.widget.ButtonWidget button) {
+                        found.add(button.getMessage().getString());
+                    }
+                }
+                return found;
+            });
+            LOGGER.info("buttons on the table screen: {}", buttons);
+            if (buttons.stream().anyMatch(name -> name.toLowerCase().contains("inscription")
+                    || name.contains("Надпис"))) {
+                LOGGER.info("OK: the inscriptions button is on the table");
+            } else {
+                LOGGER.warn("FAIL: the mixin did not add its button - the table has {}", buttons);
+            }
+        } catch (Throwable failure) {
+            LOGGER.warn("could not check the table screen", failure);
         }
     }
 

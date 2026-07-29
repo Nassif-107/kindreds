@@ -2674,5 +2674,7 @@
   "kindreds.inscriptions.col.level": "Макс",
   "kindreds.inscriptions.group.stone": "По камню",
   "kindreds.inscriptions.group.category": "По назначению",
-  "kindreds.inscriptions.exclusive": "исключает"
+  "kindreds.inscriptions.exclusive": "исключает",
+  "kindreds.inscriptions.open": "Надписи",
+  "kindreds.inscriptions.open.tip": "Все надписи, что знает сервер: слова, камень, зубило и цена."
 }

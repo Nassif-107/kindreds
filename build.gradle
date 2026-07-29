@@ -11,6 +11,15 @@ dependencies {
     // Compile-only interop with the base Middle-earth mod (present in the instance, not on Maven):
     modCompileOnly files("${instMods}/SevenStarsAPI-1.0.1-1.21.8-beta.jar")
     modCompileOnly files("${instMods}/Middle-earth-1.0.1-1.21.8-beta.jar")
+    // The base mod on the test classpath as well, so a test can check that the symbols our
+    // mixins target still exist. Compile-only does not reach tests, and the inscriptions button
+    // injects with require = 0 - a rename would cost the button silently without this.
+    testImplementation files("${instMods}/Middle-earth-1.0.1-1.21.8-beta.jar")
+
+    // Reads those class files out of the jar. Loading them is not an option: a screen class drags
+    // in Minecraft's rendering hierarchy and fails verification outside a running game.
+    testImplementation 'org.ow2.asm:asm:9.7'
+
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
