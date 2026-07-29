@@ -45,6 +45,14 @@ loom {
             property "fabric.client.gametest"
             property "kindreds.gametest.only", "inscriptions"
         }
+        // The table driven for real: three slots filled, words selected through the handler's own
+        // path, and an assertion on what it produces. Separate again, so it is quick to re-run.
+        tableTest {
+            client()
+            name = "Inscription Table Test"
+            property "fabric.client.gametest"
+            property "kindreds.gametest.only", "table"
+        }
         // Task 8a: server-side gametests with mock players fighting real mobs through real event
         // hooks - see the com.kindreds.gametest package. "fabric-api.gametest" is the real system
         // property (net.fabricmc.fabric.impl.gametest.GameTestSystemProperties.ENABLED, verified by
