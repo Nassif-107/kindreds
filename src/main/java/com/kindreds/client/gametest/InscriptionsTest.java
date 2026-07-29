@@ -32,6 +32,9 @@ public final class InscriptionsTest implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        if (!GameTestFilter.shouldRun("inscriptions")) {
+            return;
+        }
         try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
             context.getInput().resizeWindow(1600, 1000);
             context.waitTicks(40);

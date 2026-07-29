@@ -450,10 +450,11 @@ public class InscriptionsScreen extends Screen {
 
     private static ItemStack stoneItem(String stone) {
         if ("any".equals(stone)) {
-            // No catalyst at all. The table's word bank grants the common words under a null key -
-            // there is nothing to put in the slot, so a book stands for "just the chisel", where a
-            // lapis icon would have sent people digging for lapis they never needed.
-            return new ItemStack(Items.WRITABLE_BOOK);
+            // A stone is still required - getWords() gates on hasAll(), which wants all three
+            // slots filled - but which stone does not matter, because these recipes use only the
+            // common words every catalyst is accompanied by. Lapis stands for "the cheapest one
+            // you have", which is the practical answer.
+            return new ItemStack(Items.LAPIS_LAZULI);
         }
         if ("impossible".equals(stone)) {
             return new ItemStack(Items.BARRIER);

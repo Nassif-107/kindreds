@@ -13,6 +13,7 @@
     ],
     "fabric-client-gametest": [
       "com.kindreds.client.gametest.InscriptionsTest",
+      "com.kindreds.client.gametest.InscriptionTableTest",
       "com.kindreds.client.gametest.UiScreenshotTest",
       "com.kindreds.client.gametest.KindredsFunctionalTest",
       "com.kindreds.client.gametest.AbilityVisualTest",
