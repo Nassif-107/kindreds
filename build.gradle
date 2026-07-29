@@ -28,6 +28,14 @@ loom {
             name = "Client Game Test"
             property "fabric.client.gametest"
         }
+        // Just the inscriptions page. The full client gametest runs five entrypoints and takes
+        // minutes; this one boots, prints what the table resolved to, photographs it and stops.
+        inscriptionsTest {
+            client()
+            name = "Inscriptions Test"
+            property "fabric.client.gametest"
+            property "kindreds.gametest.only", "inscriptions"
+        }
         // Task 8a: server-side gametests with mock players fighting real mobs through real event
         // hooks - see the com.kindreds.gametest package. "fabric-api.gametest" is the real system
         // property (net.fabricmc.fabric.impl.gametest.GameTestSystemProperties.ENABLED, verified by

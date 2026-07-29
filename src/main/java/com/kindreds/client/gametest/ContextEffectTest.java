@@ -52,6 +52,10 @@ public class ContextEffectTest implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        if (!GameTestFilter.shouldRun("context")) {
+            return;
+        }
+
         try (TestSingleplayerContext sp = context.worldBuilder().create()) {
             sp.getClientWorld().waitForChunksRender();
             sp.getServer().runCommand("gamerule doDaylightCycle false");

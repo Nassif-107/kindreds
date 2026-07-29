@@ -50,6 +50,10 @@ public class KindredsFunctionalTest implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        if (!GameTestFilter.shouldRun("functional")) {
+            return;
+        }
+
         try (TestSingleplayerContext sp = context.worldBuilder().create()) {
             sp.getClientWorld().waitForChunksRender();
             sp.getServer().runCommand("gamerule doDaylightCycle false");

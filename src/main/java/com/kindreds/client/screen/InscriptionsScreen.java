@@ -53,6 +53,17 @@ public class InscriptionsScreen extends Screen {
     private static final int ROW_H = 12;
     private static final int HEADER_H = 18;
 
+    /**
+     * Solid, not translucent.
+     *
+     * <p>The first version let the world through, and a page of a hundred and fifty rows of small
+     * text over moving grass and a hotbar is unreadable - the eye keeps finding the world instead
+     * of the row. A reference page is read, not glanced at, so it gets an opaque ground.
+     */
+    private static final int PARCHMENT = 0xFF241D14;
+    private static final int PARCHMENT_EDGE = 0xFF4A3B28;
+    private static final int BAND = 0x18FFFFFF;
+
     private final Screen parent;
     private int scroll;
     private int maxScroll;
@@ -88,12 +99,20 @@ public class InscriptionsScreen extends Screen {
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         super.render(ctx, mouseX, mouseY, delta);
 
-        int panelW = Math.min(440, this.width - 24);
+        // Wider than before and opaque. The columns need the room, and the world behind was making
+        // the text unreadable.
+        int panelW = Math.min(560, this.width - 40);
         int x = (this.width - panelW) / 2;
-        int top = 34;
-        int bottom = this.height - 26;
+        int top = 36;
+        int bottom = this.height - 30;
 
-        ctx.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 14, 0xFFD9C89A);
+        ctx.fill(x - 6, top - 22, x + panelW + 6, bottom + 6, PARCHMENT);
+        drawEdge(ctx, x - 6, top - 22, x + panelW + 6, bottom + 6);
+
+        ctx.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, top - 16,
+            0xFFD9C89A);
+        drawColumnHeadings(ctx, x, top - 4, panelW);
+        top += 8;
 
         if (rows == null) {
             ctx.drawCenteredTextWithShadow(this.textRenderer,
@@ -119,12 +138,14 @@ public class InscriptionsScreen extends Screen {
         ctx.enableScissor(x, top, x + panelW, bottom);
         hovered = null;
         int y = top - scroll;
+        int rowIndex = 0;
         for (Object item : flow) {
             if (item instanceof String stone) {
                 if (y + HEADER_H > top && y < bottom) {
                     drawStoneHeader(ctx, x, y, panelW, stone, countUnder(flow, stone));
                 }
                 y += HEADER_H;
+                rowIndex = 0;
                 continue;
             }
             InscriptionIndex.Entry row = (InscriptionIndex.Entry) item;
@@ -134,8 +155,9 @@ public class InscriptionsScreen extends Screen {
                 if (under) {
                     hovered = row;
                 }
-                drawRow(ctx, x, y, panelW, row, under);
+                drawRow(ctx, x, y, panelW, row, rowIndex, under);
             }
+            rowIndex++;
             y += ROW_H;
         }
         ctx.disableScissor();
@@ -148,6 +170,26 @@ public class InscriptionsScreen extends Screen {
         if (hovered != null) {
             ctx.drawTooltip(this.textRenderer, explain(hovered), mouseX, mouseY);
         }
+    }
+
+    private static void drawEdge(DrawContext ctx, int left, int top, int right, int bottom) {
+        ctx.fill(left, top, right, top + 1, PARCHMENT_EDGE);
+        ctx.fill(left, bottom - 1, right, bottom, PARCHMENT_EDGE);
+        ctx.fill(left, top, left + 1, bottom, PARCHMENT_EDGE);
+        ctx.fill(right - 1, top, right, bottom, PARCHMENT_EDGE);
+    }
+
+    /** What the columns are, said once, so the numbers are not a guess. */
+    private void drawColumnHeadings(DrawContext ctx, int x, int y, int panelW) {
+        int[] at = columns(panelW);
+        ctx.drawText(this.textRenderer,
+            Text.translatable("kindreds.inscriptions.col.enchantment"), x + at[0], y, 0xFF6A5F4A, false);
+        ctx.drawText(this.textRenderer,
+            Text.translatable("kindreds.inscriptions.col.level"), x + at[1], y, 0xFF6A5F4A, false);
+        ctx.drawText(this.textRenderer,
+            Text.translatable("kindreds.inscriptions.col.cost"), x + at[2], y, 0xFF6A5F4A, false);
+        ctx.drawText(this.textRenderer,
+            Text.translatable("kindreds.inscriptions.col.chisel"), x + at[3], y, 0xFF6A5F4A, false);
     }
 
     /** Headers and rows in reading order, stone by stone. */
@@ -187,17 +229,20 @@ public class InscriptionsScreen extends Screen {
         if (!icon.isEmpty()) {
             ctx.drawItem(icon, x + 3, y + 1);
         }
-        ctx.drawText(this.textRenderer, Text.translatable("kindreds.inscriptions.stone." + stone),
-            x + 23, y + 5, stoneColour(stone), false);
+        ctx.drawText(this.textRenderer, stoneName(stone), x + 23, y + 5, stoneColour(stone), false);
         Text tally = Text.translatable("kindreds.inscriptions.count", count);
         ctx.drawText(this.textRenderer, tally,
             x + panelW - this.textRenderer.getWidth(tally) - 6, y + 5, 0xFF5A5040, false);
     }
 
     private void drawRow(DrawContext ctx, int x, int y, int panelW, InscriptionIndex.Entry row,
-                         boolean under) {
+                         int index, boolean under) {
         if (under) {
-            ctx.fill(x, y, x + panelW, y + ROW_H, 0x40FFE9A8);
+            ctx.fill(x, y, x + panelW, y + ROW_H, 0x50FFE9A8);
+        } else if ((index & 1) == 1) {
+            // Faint banding. The name is at the left and the chisel is far to the right; without it
+            // the eye loses the line somewhere in the middle.
+            ctx.fill(x, y, x + panelW, y + ROW_H, BAND);
         }
         int[] at = columns(panelW);
 
@@ -232,8 +277,7 @@ public class InscriptionsScreen extends Screen {
         lines.add(Text.translatable(effectKey(row.enchantment())).formatted(Formatting.GRAY));
         lines.add(Text.empty());
 
-        lines.add(Text.translatable("kindreds.inscriptions.tip.stone",
-            Text.translatable("kindreds.inscriptions.stone." + row.stone()))
+        lines.add(Text.translatable("kindreds.inscriptions.tip.stone", stoneName(row.stone()))
             .formatted(Formatting.GOLD));
         lines.add(Text.translatable("kindreds.inscriptions.tip.words",
             String.join(", ", row.words())).formatted(Formatting.AQUA));
@@ -282,15 +326,35 @@ public class InscriptionsScreen extends Screen {
      * needing nothing else is one you can cut with lapis alone.
      */
     private static ItemStack stoneItem(String stone) {
-        return switch (stone) {
-            case "any" -> new ItemStack(Items.LAPIS_LAZULI);
-            case "emerald" -> new ItemStack(Items.EMERALD);
-            case "impossible" -> new ItemStack(Items.BARRIER);
-            default -> {
-                Item item = Registries.ITEM.get(Identifier.of("middle-earth", stone));
-                yield item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item);
-            }
-        };
+        if ("any".equals(stone)) {
+            return new ItemStack(Items.LAPIS_LAZULI);
+        }
+        if ("impossible".equals(stone)) {
+            return new ItemStack(Items.BARRIER);
+        }
+        // A full item id now, because the catalysts are not all in one namespace: ruby, sapphire
+        // and adamant are Middle-earth's, emerald is vanilla's.
+        Identifier id = Identifier.tryParse(stone);
+        if (id == null) {
+            return ItemStack.EMPTY;
+        }
+        Item item = Registries.ITEM.get(id);
+        return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item);
+    }
+
+    /**
+     * The stone's own name, from whichever mod owns it.
+     *
+     * <p>Asking the item for its name rather than keeping our own list means a stone is always
+     * called what the rest of the game calls it, in whatever language the player is using, and a
+     * datapack that renames one is followed for free.
+     */
+    private Text stoneName(String stone) {
+        if ("any".equals(stone) || "impossible".equals(stone)) {
+            return Text.translatable("kindreds.inscriptions.stone." + stone);
+        }
+        ItemStack icon = stoneItem(stone);
+        return icon.isEmpty() ? Text.literal(stone) : icon.getName().copy();
     }
 
     private static int[] columns(int panelW) {
@@ -310,10 +374,10 @@ public class InscriptionsScreen extends Screen {
 
     private static int stoneColour(String stone) {
         return switch (stone) {
-            case "ruby" -> 0xFFD05A5A;
-            case "sapphire" -> 0xFF5A7AD0;
-            case "emerald" -> 0xFF5AC07A;
-            case "adamant" -> 0xFFC0A8E0;
+            case "middle-earth:ruby" -> 0xFFD05A5A;
+            case "middle-earth:sapphire" -> 0xFF5A7AD0;
+            case "minecraft:emerald" -> 0xFF5AC07A;
+            case "middle-earth:adamant" -> 0xFFC0A8E0;
             case "any" -> 0xFF9AA8C0;
             case "impossible" -> 0xFFFF4040;
             default -> 0xFFBFAE8C;

@@ -65,6 +65,7 @@ public final class InscriptionIndex {
         if (server == null) {
             return List.of();
         }
+        reportWordBank();
         InscriptionCategory.serverFor(server);
         Map<String, Draft> drafts = new LinkedHashMap<>();
         for (var entry : server.getRecipeManager().values()) {
@@ -125,6 +126,37 @@ public final class InscriptionIndex {
         return "impossible".equals(stoneFor(words));
     }
 
+    /** One-shot diagnostic: what the word bank actually looks like from here. */
+    private static boolean dumped;
+
+    public static void reportWordBank() {
+        if (dumped) {
+            return;
+        }
+        dumped = true;
+        try {
+            Map<String, List<String>> byItem = new TreeMap<>();
+            for (Map.Entry<Item, String> pair : net.sevenstars.middleearth.recipe.inscription
+                    .InscriptionWordBank.wordBank.entries()) {
+                Item item = pair.getKey();
+                String id = item == null ? "NULL-ITEM"
+                    : Registries.ITEM.getId(item) + " [" + item.getClass().getSimpleName() + "]";
+                byItem.computeIfAbsent(id, key -> new ArrayList<>()).add(pair.getValue());
+            }
+            com.kindreds.Kindreds.LOGGER.info("[kindreds] word bank has {} catalysts:", byItem.size());
+            byItem.forEach((id, words) ->
+                com.kindreds.Kindreds.LOGGER.info("[kindreds]   {} -> {}", id, words));
+
+            for (String path : new String[]{"iron_chisel", "steel_chisel", "mithril_chisel"}) {
+                Item chisel = Registries.ITEM.get(Identifier.of("middle-earth", path));
+                com.kindreds.Kindreds.LOGGER.info("[kindreds] chisel {} resolves to {}",
+                    path, chisel == Items.AIR ? "AIR (missing!)" : Registries.ITEM.getId(chisel));
+            }
+        } catch (Throwable failure) {
+            com.kindreds.Kindreds.LOGGER.warn("[kindreds] could not read the word bank", failure);
+        }
+    }
+
     private static final class Draft {
         /** Sorted by level, so the page prints I, II, III in order without sorting again. */
         final Map<Integer, Rung> rungs = new TreeMap<>();
@@ -139,10 +171,10 @@ public final class InscriptionIndex {
     private static int stoneOrder(String stone) {
         return switch (stone) {
             case "any" -> 0;
-            case "ruby" -> 1;
-            case "sapphire" -> 2;
-            case "emerald" -> 3;
-            case "adamant" -> 4;
+            case "middle-earth:ruby" -> 1;
+            case "middle-earth:sapphire" -> 2;
+            case "minecraft:emerald" -> 3;
+            case "middle-earth:adamant" -> 4;
             case "impossible" -> 9;
             default -> 5;
         };
@@ -156,6 +188,19 @@ public final class InscriptionIndex {
 
     /**
      * Which chisel a recipe demands, as a bare word.
+     *
+     * <h2>Cheapest that still works</h2>
+     * The tiers nest: {@code early_chisels} contains the mid and late tags as well as iron, so an
+     * early recipe accepts all three chisels and a late one accepts only mithril. Probing for
+     * acceptance in cheapest-first order therefore names the cheapest chisel that still works,
+     * which is the honest answer - and the runtime probe confirms it: an early recipe answers true
+     * for iron, steel and mithril alike.
+     *
+     * <p>The column looked wrong for a different reason. Rows are merged across levels and take the
+     * deepest chisel any level needs, so a five-level inscription whose last level wants mithril
+     * reports mithril for the whole row even though level one is cuttable with iron. That is
+     * correct for a single-line summary and useless for deciding what to carry, which is why the
+     * hover now lists the chisel of every level separately.
      *
      * <p>Read from the ingredient rather than from the tag name, because the tag is not on the
      * recipe object - only the resolved {@link net.minecraft.recipe.Ingredient} is. The tiers nest
@@ -198,29 +243,43 @@ public final class InscriptionIndex {
     /**
      * The catalyst a word set needs, or {@code "any"} when every word is common.
      *
-     * <p>Read from Middle-earth's own {@code InscriptionWordBank} rather than a copy kept here,
-     * because a copy is one datapack away from lying. Lapis grants the thirteen common words and
-     * nothing else, so it is present in almost every set and never identifies one; each of the
-     * other four catalysts grants only its own words. A set touching two of them cannot be
-     * assembled, since the table holds a single catalyst.
+     * <h2>The common words are keyed to a null item, and that was the whole bug</h2>
+     * Read at runtime, {@code InscriptionWordBank.wordBank} looks like this:
      *
-     * <p>That should now never happen. Every recipe the pack ships was audited against this bank
-     * and all 155 resolve to exactly one stone - the only five that ever did not were the base
-     * mod's Smite, which asked for a word ({@code spirit}) the bank has never contained, and
-     * meinscriptions now replaces those files at their own path rather than adding working ones
-     * beside them. It is still reported rather than hidden, because a recipe nobody can make is
-     * what a reference page should be shouting about.
+     * <pre>
+     *   NULL-ITEM              -> resilient, blessing, warded, tidal, traveller, edge, cutter,
+     *                             piercer, core, giant, collector, draw, point
+     *   middle-earth:ruby      -> fierce, forceful, noiseless, bane
+     *   middle-earth:sapphire  -> pierce, flame, sturdy
+     *   minecraft:emerald      -> broad, careful, long, gifted
+     *   middle-earth:adamant   -> swift
+     * </pre>
+     *
+     * The thirteen common words hang off a <em>null</em> key rather than off lapis. Asking
+     * {@code Registries.ITEM.getId(null)} for that key answers {@code minecraft:air}, so every set
+     * containing any common word gained a phantom "air" catalyst - and since almost every recipe
+     * uses common words, almost every recipe looked like it needed two stones and was reported
+     * impossible. Forty-eight of them, with a header reading {@code stone.air} above the rest.
+     *
+     * <p>Skipping the null key is therefore not defensive coding; it is the meaning of the data.
+     * A word with no catalyst is a word the table always grants.
+     *
+     * <p>Two stones genuinely is impossible - the table holds one catalyst - so that is still
+     * reported rather than hidden. It should simply now be rare.
      */
     private static String stoneFor(List<String> words) {
         Map<String, Integer> owners = new TreeMap<>();
         for (Map.Entry<Item, String> pair : net.sevenstars.middleearth.recipe.inscription
                 .InscriptionWordBank.wordBank.entries()) {
-            if (!words.contains(pair.getValue())) {
+            if (pair.getKey() == null || !words.contains(pair.getValue())) {
                 continue;
             }
-            owners.merge(Registries.ITEM.getId(pair.getKey()).getPath(), 1, Integer::sum);
+            Identifier id = Registries.ITEM.getId(pair.getKey());
+            if (id == null || Registries.ITEM.get(id) == Items.AIR) {
+                continue;
+            }
+            owners.merge(id.toString(), 1, Integer::sum);
         }
-        owners.remove(Registries.ITEM.getId(Items.LAPIS_LAZULI).getPath());
         if (owners.isEmpty()) {
             return "any";
         }
@@ -229,4 +288,5 @@ public final class InscriptionIndex {
         }
         return owners.keySet().iterator().next();
     }
+
 }

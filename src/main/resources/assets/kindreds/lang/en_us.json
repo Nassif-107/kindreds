@@ -2670,5 +2670,6 @@
   "kindreds.inscriptions.effect.middle-earth.ailment_protection": "You shrug off poison, wither and the like sooner.",
   "kindreds.inscriptions.effect.middle-earth.stride": "You walk a little faster. +0.5% movement speed per level.",
   "kindreds.inscriptions.effect.middle-earth.stealthy_trail": "You leave less sign of your passing, and make less noise doing it.",
-  "kindreds.inscriptions.effect.middle-earth.tree_feller": "A whole trunk comes down with one cut."
+  "kindreds.inscriptions.effect.middle-earth.tree_feller": "A whole trunk comes down with one cut.",
+  "kindreds.inscriptions.col.level": "Max"
 }

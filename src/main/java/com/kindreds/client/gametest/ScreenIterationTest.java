@@ -42,6 +42,10 @@ public class ScreenIterationTest implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        if (!GameTestFilter.shouldRun("screens")) {
+            return;
+        }
+
         try (TestSingleplayerContext sp = context.worldBuilder().create()) {
             sp.getClientWorld().waitForChunksRender();
 

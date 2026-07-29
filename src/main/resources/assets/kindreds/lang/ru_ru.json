@@ -2589,7 +2589,7 @@
   "kindreds.inscriptions.none": "На этом сервере инскрипций нет.",
   "kindreds.inscriptions.scroll": "прокрутите, чтобы увидеть больше",
   "kindreds.inscriptions.blank": " ",
-  "kindreds.inscriptions.col.enchantment": "Инскрипция",
+  "kindreds.inscriptions.col.enchantment": "Надпись",
   "kindreds.inscriptions.col.words": "Слова",
   "kindreds.inscriptions.col.stone": "Камень",
   "kindreds.inscriptions.col.chisel": "Зубило",
@@ -2670,5 +2670,6 @@
   "kindreds.inscriptions.effect.middle-earth.ailment_protection": "Яд, иссушение и подобное сходят с вас быстрее.",
   "kindreds.inscriptions.effect.middle-earth.stride": "Вы идёте чуть быстрее. +0.5% к скорости за уровень.",
   "kindreds.inscriptions.effect.middle-earth.stealthy_trail": "Вы оставляете меньше следов и меньше шума.",
-  "kindreds.inscriptions.effect.middle-earth.tree_feller": "Целый ствол падает с одного удара."
+  "kindreds.inscriptions.effect.middle-earth.tree_feller": "Целый ствол падает с одного удара.",
+  "kindreds.inscriptions.col.level": "Макс"
 }
