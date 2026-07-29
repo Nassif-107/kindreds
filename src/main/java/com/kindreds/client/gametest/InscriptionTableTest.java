@@ -85,6 +85,10 @@ public final class InscriptionTableTest implements FabricClientGameTest {
                 findings.addAll(run(singleplayer, attempt));
             }
 
+            // And then every row the page shows, because four hand-picked cases are not the claim
+            // the page makes. The claim is that anything it lists can actually be made.
+            findings.addAll(sweepEveryRow(singleplayer));
+
             LOGGER.info("================ the table ================");
             findings.forEach(line -> LOGGER.info("{}", line));
             LOGGER.info("==========================================");
@@ -167,9 +171,30 @@ public final class InscriptionTableTest implements FabricClientGameTest {
 
                 String chose = handler.enchant == null ? "nothing"
                     : handler.enchant.getKey().map(key -> key.getValue().toString()).orElse("?");
-                return chose + " | level " + handler.level
-                    + " | cost " + handler.getLevelCost()
-                    + " | words " + handler.getWords();
+                String promised = chose + " | level " + handler.level
+                    + " | cost " + handler.getLevelCost();
+
+                // And now the part that was never tested: actually press the button. Reporting the
+                // right answer and putting it on the item are different code paths, and only the
+                // second one is what a player gets.
+                int levelsBefore = 60;
+                player.experienceLevel = levelsBefore;
+                int cost = handler.getLevelCost();
+                handler.enchantItem();
+
+                ItemStack after = handler.input.getStack(ITEM);
+                var got = net.minecraft.enchantment.EnchantmentHelper.getEnchantments(after);
+                StringBuilder on = new StringBuilder();
+                got.getEnchantments().forEach(e -> on.append(
+                    e.getKey().map(k -> k.getValue().toString()).orElse("?"))
+                    .append(" ").append(got.getLevel(e)).append(" "));
+
+                return promised
+                    + " || ON THE ITEM: " + (on.length() == 0 ? "nothing" : on.toString().trim())
+                    + " | levels " + levelsBefore + " -> " + player.experienceLevel
+                    + " (asked " + cost + ")"
+                    + " | chisel " + handler.input.getStack(CHISEL).getDamage() + " damage"
+                    + " | gem " + (handler.input.getStack(GEM).isEmpty() ? "consumed" : "kept");
             });
             out.add("    table says: " + result);
 
@@ -191,6 +216,114 @@ public final class InscriptionTableTest implements FabricClientGameTest {
         }
         return out;
     }
+
+    /**
+     * Every inscription the page lists, made at the real table.
+     *
+     * <p>The page promises that what it shows is what you get. Nothing had ever checked that across
+     * the whole list, and both bugs found today were cases where a row said one thing and the table
+     * did another. This walks all of them: for each row, put the stone it names and a mithril
+     * chisel in the table, lay its words down in order, and see whether the enchantment that comes
+     * out is the one promised.
+     */
+    private static List<String> sweepEveryRow(TestSingleplayerContext singleplayer) {
+        List<String> out = new ArrayList<>();
+        out.add("--- every row on the page, made for real");
+        try {
+            List<String> problems = singleplayer.getServer().computeOnServer(server -> {
+                var player = server.getPlayerManager().getPlayerList().stream()
+                    .findFirst().orElseThrow();
+                List<com.kindreds.inscription.InscriptionIndex.Entry> rows =
+                    com.kindreds.inscription.InscriptionIndex.build(server);
+                List<String> failures = new ArrayList<>();
+                int made = 0;
+
+                for (var row : rows) {
+                    InscriptionTableScreenHandler handler =
+                        new InscriptionTableScreenHandler(1, player.getInventory());
+                    handler.player = player;
+
+                    // Any stone satisfies hasAll() for a common-word recipe; a specific one is
+                    // needed for the rest, and the page is what says which.
+                    String stoneId = "any".equals(row.stone())
+                        ? "minecraft:lapis_lazuli" : row.stone();
+                    handler.input.setStack(GEM, stack(stoneId));
+                    handler.input.setStack(CHISEL, stack("middle-earth:mithril_chisel"));
+                    handler.input.setStack(ITEM, targetFor(server, row.enchantment()));
+
+                    for (String word : row.words()) {
+                        handler.updateWords(true, word, false);
+                    }
+
+                    String got = handler.enchant == null ? null
+                        : handler.enchant.getKey().map(k -> k.getValue().toString()).orElse(null);
+                    if (row.enchantment().equals(got)) {
+                        made++;
+                    } else {
+                        failures.add(row.enchantment() + " " + row.words()
+                            + " stone=" + row.stone() + " -> table gave " + got);
+                    }
+                }
+                failures.add(0, "made " + made + " of " + rows.size());
+                return failures;
+            });
+            for (String line : problems) {
+                out.add("    " + line);
+            }
+            if (problems.size() == 1) {
+                out.add("    OK: every inscription the page lists can actually be made");
+            }
+        } catch (Throwable failure) {
+            out.add("    THREW: " + failure);
+            LOGGER.warn("sweep threw", failure);
+        }
+        return out;
+    }
+
+    /**
+     * An item this particular enchantment will actually accept.
+     *
+     * <p>Asked of the enchantment rather than guessed from the category, because the first sweep
+     * did guess and reported twenty-six false failures: Channeling on a sword, Multishot on a bow,
+     * Frost Walker on a chestplate. {@code canEnchant} was right to refuse every one of them. The
+     * page groups by broad kind, which is the right thing for a reader and useless for choosing a
+     * test item - only the enchantment knows it goes on a trident.
+     */
+    private static ItemStack targetFor(net.minecraft.server.MinecraftServer server,
+                                       String enchantmentId) {
+        List<ItemStack> candidates = List.of(
+            new ItemStack(Items.DIAMOND_SWORD), new ItemStack(Items.TRIDENT),
+            new ItemStack(Items.BOW), new ItemStack(Items.CROSSBOW),
+            new ItemStack(Items.MACE), new ItemStack(Items.DIAMOND_PICKAXE),
+            new ItemStack(Items.DIAMOND_AXE), new ItemStack(Items.SHEARS),
+            new ItemStack(Items.FISHING_ROD), new ItemStack(Items.DIAMOND_HELMET),
+            new ItemStack(Items.DIAMOND_CHESTPLATE), new ItemStack(Items.DIAMOND_LEGGINGS),
+            new ItemStack(Items.DIAMOND_BOOTS), new ItemStack(Items.SHIELD),
+            new ItemStack(Items.ELYTRA), new ItemStack(Items.CARVED_PUMPKIN));
+
+        var id = net.minecraft.util.Identifier.tryParse(enchantmentId);
+        if (id != null) {
+            var registry = server.getRegistryManager()
+                .getOrThrow(net.minecraft.registry.RegistryKeys.ENCHANTMENT);
+            var enchantment = registry.get(net.minecraft.registry.RegistryKey.of(
+                net.minecraft.registry.RegistryKeys.ENCHANTMENT, id));
+            if (enchantment != null) {
+                for (ItemStack candidate : candidates) {
+                    if (enchantment.isAcceptableItem(candidate)) {
+                        return candidate;
+                    }
+                }
+                // Nothing vanilla fits. Middle-earth's own enchantments name its own gear through
+                // tags like #middle-earth:enchantable/incomplete_armors, so the honest way to find
+                // an item is to ask the definition what it supports rather than to keep guessing.
+                for (var entry : enchantment.definition().supportedItems()) {
+                    return new ItemStack(entry.value());
+                }
+            }
+        }
+        return new ItemStack(Items.DIAMOND_SWORD);
+    }
+
 
     /** An item by id, or nothing at all for an empty slot. */
     private static ItemStack stack(String id) {
